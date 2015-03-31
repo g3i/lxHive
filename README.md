@@ -34,27 +34,27 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 * [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
 * [OpenSSL](https://www.openssl.org/)
 
-### HowTo
+### Setup
 
 1. Install dependencies via `composer install`.
 3. Set up your database & client account:
 
 ```bash
 
-#Browse to application root
+# Browse to application root
 $ cd /<path_to_aplication_root>
-#View available commands
+# View available commands
 $ ./X
-#Set up database: follow prompts
+# Set up database
 $ ./X setup:db
-#Set up oAuth client: follow prompts
+# Set up OAuth scopes
 $ ./X setup:oauth
-#Create user: follow prompts
+# Create a new user
 $ ./X user:create
 
 ```
 
-* Note: As an administrator you should first create a key for yourself and assign the *super* role to it.
+* Note: As an administrator you should first create a new user and authentication token for yourself and assign the *super* role to it.
 
 ## Documentation
 
