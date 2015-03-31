@@ -27,7 +27,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Requirements
 
-* PHP >= 5.3.3,
+* PHP >= 5.4,
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
