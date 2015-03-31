@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>API\Service\Attachment | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+    
+    
+    </head>
+
+    <body id="class" data-name="class:API_Service_Attachment" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../API.html">API</a></li>
+                                        <li><a href="../../API/Service.html">Service</a></li>
+    
+                <li>Attachment</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Attachment</h1>
+    </div>
+
+    <p>    class
+    <strong>Attachment</strong>        extends <a href="../../API/Service.html"><abbr title="API\Service">Service</abbr></a></p>
+
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p>Constructor.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDocumentManager">getDocumentManager</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Slim\Slim">Slim</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSlim">getSlim</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSlim">setSlim</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Document/Attachment.html"><abbr title="API\Document\Attachment">Attachment</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_fetchMetadataBySha2">fetchMetadataBySha2</a>(string $sha2)
+                                            <p>Fetches file metadata from Mongo.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_fetchFileBySha2">fetchFileBySha2</a>(string $sha2)
+                                            <p>Fetches the actual file from the filesystem.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">in <a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a> at line 39</div>
+        <code>                    
+    <strong>__construct</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Constructor.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>Slim framework</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getDocumentManager">
+        <div class="location">in <a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a> at line 47</div>
+        <code>                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+    <strong>getDocumentManager</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Sokil\Mongo\Client">Client</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSlim">
+        <div class="location">in <a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a> at line 55</div>
+        <code>                    <abbr title="Slim\Slim">Slim</abbr>
+    <strong>getSlim</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Slim\Slim">Slim</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSlim">
+        <div class="location">in <a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a> at line 62</div>
+        <code>                    
+    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_fetchMetadataBySha2">
+        <div class="location">at line 38</div>
+        <code>                    <a href="../../API/Document/Attachment.html"><abbr title="API\Document\Attachment">Attachment</abbr></a>
+    <strong>fetchMetadataBySha2</strong>(string $sha2)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Fetches file metadata from Mongo.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$sha2</td>
+                <td>The sha2 hash of the file</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Document/Attachment.html"><abbr title="API\Document\Attachment">Attachment</abbr></a></td>
+            <td>The attachment document</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_fetchFileBySha2">
+        <div class="location">at line 57</div>
+        <code>                    string
+    <strong>fetchFileBySha2</strong>(string $sha2)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Fetches the actual file from the filesystem.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$sha2</td>
+                <td>The sha2 hash of the file</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td>File contents</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

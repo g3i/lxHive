@@ -1,0 +1,15 @@
+name: BrightCookie LRS
+database:
+    host_uri: 'mongodb://127.0.0.1'
+    db_name: lxHive
+xAPI:
+    latest_version: 1.0.3
+    statement_get_limit: 100
+    default_statement_get_format: exact
+    supported_versions: [1.0.3]
+    supported_auth_scopes: [{ name: super, description: 'Administrate the LRS' }, { name: statements/read, description: 'Read statements' }, { name: statements/read/mine, description: 'Read own statements' }, { name: attachments, description: 'Include attachments' }, { name: state, description: 'Access the State API' }, { name: profile, description: 'Access the Profile API' }, { name: define, description: '(Re)define new Activities' }, { name: all/read, description: 'Full read-only access' }, { name: all, description: 'Full access' }]
+    oauth: { reauthorize_time: 0, reauthenticate_time: 2592000 }
+filesystem:
+    exposed_url: /attachments
+    in_use: local
+    local: { root_dir: '%app.root%/storage/files' }

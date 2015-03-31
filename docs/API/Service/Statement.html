@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>API\Service\Statement | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../css/sami.css">
+        <script src="../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../js/bootstrap.min.js"></script>
+        <script src="../../js/typeahead.min.js"></script>
+        <script src="../../sami.js"></script>
+    
+    
+    </head>
+
+    <body id="class" data-name="class:API_Service_Statement" data-root-path="../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../classes.html">Classes</a></li>
+                                            <li><a href="../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../traits.html">Traits</a></li>
+                    <li><a href="../../doc-index.html">Index</a></li>
+                    <li><a href="../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../API.html">API</a></li>
+                                        <li><a href="../../API/Service.html">Service</a></li>
+    
+                <li>Statement</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Statement</h1>
+    </div>
+
+    <p>    class
+    <strong>Statement</strong>        extends <a href="../../API/Service.html"><abbr title="API\Service">Service</abbr></a></p>
+
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p>Constructor.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDocumentManager">getDocumentManager</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Slim\Slim">Slim</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSlim">getSlim</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSlim">setSlim</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_statementGet">statementGet</a>(array $request)
+                                            <p>Fetches statements according to the given parameters.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_statementPost">statementPost</a>($request)
+                                            <p>Tries to  a statement with a specified statementId.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_statementPut">statementPut</a>($request)
+                                            <p>Tries to PUT a statement with a specified statementId.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getStatements">getStatements</a>()
+                                            <p>Gets the Statements.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setStatements">setStatements</a>(array $statements)
+                                            <p>Sets the Statements.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getAttachments">getAttachments</a>()
+                                            <p>Gets the Attachments.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setAttachments">setAttachments</a>(array $attachments)
+                                            <p>Sets the Attachments.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getLimit">getLimit</a>()
+                                            <p>Gets the The limit associated with the document query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setLimit">setLimit</a>(int $limit)
+                                            <p>Sets the The limit associated with the document query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getFormat">getFormat</a>()
+                                            <p>Gets the Format associated with the query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setFormat">setFormat</a>(string $format)
+                                            <p>Sets the Format associated with the query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDescending">getDescending</a>()
+                                            <p>Gets the Descending order associated with the query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setDescending">setDescending</a>(bool $descending)
+                                            <p>Sets the Descending order associated with the query.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\cursor">cursor</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCursor">getCursor</a>()
+                                            <p>Gets the Cursor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setCursor">setCursor</a>(<abbr title="Sokil\Mongo\Cursor">Cursor</abbr> $cursor)
+                                            <p>Sets the Cursor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSingle">getSingle</a>()
+                                            <p>Gets the Is this a single statement fetch?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSingle">setSingle</a>(bool $single)
+                                            <p>Sets the Is this a single statement fetch?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getMatch">getMatch</a>()
+                                            <p>Gets the Is this a single statement match?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setMatch">setMatch</a>(bool $match)
+                                            <p>Sets the Is this a single statement match?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\API\Document\Auth\AbstractToken">AbstractToken</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getAccessToken">getAccessToken</a>()
+                                            <p>Gets the Access token to check for permissions.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCount">getCount</a>()
+                                            <p>Gets the Provide a statement count.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setCount">setCount</a>(int $count)
+                                            <p>Sets the Provide a statement count.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">in <a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a> at line 39</div>
+        <code>                    
+    <strong>__construct</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Constructor.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>Slim framework</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getDocumentManager">
+        <div class="location">in <a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a> at line 47</div>
+        <code>                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+    <strong>getDocumentManager</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Sokil\Mongo\Client">Client</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSlim">
+        <div class="location">in <a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a> at line 55</div>
+        <code>                    <abbr title="Slim\Slim">Slim</abbr>
+    <strong>getSlim</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Slim\Slim">Slim</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSlim">
+        <div class="location">in <a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a> at line 62</div>
+        <code>                    
+    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_statementGet">
+        <div class="location">at line 106</div>
+        <code>                    array
+    <strong>statementGet</strong>(array $request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Fetches statements according to the given parameters.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$request</td>
+                <td>The HTTP request object.</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>An array of statement objects.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_statementPost">
+        <div class="location">at line 309</div>
+        <code>                    array
+    <strong>statementPost</strong>($request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Tries to  a statement with a specified statementId.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$request</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>An array of statement documents or a single statement document.</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_statementPut">
+        <div class="location">at line 444</div>
+        <code>                    
+    <strong>statementPut</strong>($request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Tries to PUT a statement with a specified statementId.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$request</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getStatements">
+        <div class="location">at line 509</div>
+        <code>                    array
+    <strong>getStatements</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Statements.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setStatements">
+        <div class="location">at line 521</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setStatements</strong>(array $statements)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Statements.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$statements</td>
+                <td>the statements</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getAttachments">
+        <div class="location">at line 533</div>
+        <code>                    array
+    <strong>getAttachments</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Attachments.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setAttachments">
+        <div class="location">at line 545</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setAttachments</strong>(array $attachments)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Attachments.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$attachments</td>
+                <td>the attachments</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getLimit">
+        <div class="location">at line 557</div>
+        <code>                    int
+    <strong>getLimit</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the The limit associated with the document query.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setLimit">
+        <div class="location">at line 569</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setLimit</strong>(int $limit)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the The limit associated with the document query.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$limit</td>
+                <td>the limit</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getFormat">
+        <div class="location">at line 581</div>
+        <code>                    string
+    <strong>getFormat</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Format associated with the query.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setFormat">
+        <div class="location">at line 593</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setFormat</strong>(string $format)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Format associated with the query.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$format</td>
+                <td>the format</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getDescending">
+        <div class="location">at line 605</div>
+        <code>                    bool
+    <strong>getDescending</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Descending order associated with the query.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setDescending">
+        <div class="location">at line 617</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setDescending</strong>(bool $descending)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Descending order associated with the query.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$descending</td>
+                <td>the descending</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCursor">
+        <div class="location">at line 629</div>
+        <code>                    <abbr title="API\Service\cursor">cursor</abbr>
+    <strong>getCursor</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Cursor.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\cursor">cursor</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setCursor">
+        <div class="location">at line 641</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setCursor</strong>(<abbr title="Sokil\Mongo\Cursor">Cursor</abbr> $cursor)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Cursor.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Sokil\Mongo\Cursor">Cursor</abbr></td>
+                <td>$cursor</td>
+                <td>the cursor</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSingle">
+        <div class="location">at line 653</div>
+        <code>                    bool
+    <strong>getSingle</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Is this a single statement fetch?.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSingle">
+        <div class="location">at line 665</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setSingle</strong>(bool $single)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Is this a single statement fetch?.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$single</td>
+                <td>the is single</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getMatch">
+        <div class="location">at line 683</div>
+        <code>                    bool
+    <strong>getMatch</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Is this a single statement match?.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setMatch">
+        <div class="location">at line 695</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setMatch</strong>(bool $match)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Is this a single statement match?.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$match</td>
+                <td>the is match</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getAccessToken">
+        <div class="location">at line 707</div>
+        <code>                    <abbr title="API\Service\API\Document\Auth\AbstractToken">AbstractToken</abbr>
+    <strong>getAccessToken</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Access token to check for permissions.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\API\Document\Auth\AbstractToken">AbstractToken</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCount">
+        <div class="location">at line 717</div>
+        <code>                    int
+    <strong>getCount</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Provide a statement count.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setCount">
+        <div class="location">at line 729</div>
+        <code>                    <a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a>
+    <strong>setCount</strong>(int $count)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Provide a statement count.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$count</td>
+                <td>the count</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../API/Service/Statement.html"><abbr title="API\Service\Statement">Statement</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

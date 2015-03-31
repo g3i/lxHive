@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>API\Service\Auth\Basic | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../css/sami.css">
+        <script src="../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../js/bootstrap.min.js"></script>
+        <script src="../../../js/typeahead.min.js"></script>
+        <script src="../../../sami.js"></script>
+    
+    
+    </head>
+
+    <body id="class" data-name="class:API_Service_Auth_Basic" data-root-path="../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../traits.html">Traits</a></li>
+                    <li><a href="../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../../API.html">API</a></li>
+                                        <li><a href="../../../API/Service.html">Service</a></li>
+                                        <li><a href="../../../API/Service/Auth.html">Auth</a></li>
+    
+                <li>Basic</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Basic</h1>
+    </div>
+
+    <p>    class
+    <strong>Basic</strong>        extends <a href="../../../API/Service.html"><abbr title="API\Service">Service</abbr></a>        implements
+        <a href="../../../API/Service/Auth/AuthInterface.html"><abbr title="API\Service\Auth\AuthInterface">AuthInterface</abbr></a></p>
+
+    
+    
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p>Constructor.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDocumentManager">getDocumentManager</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Slim\Slim">Slim</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSlim">getSlim</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSlim">setSlim</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_addToken">addToken</a>($name, $description, $expiresAt, <a href="../../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a> $user, array $scopes = array())
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_fetchToken">fetchToken</a>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $key, <abbr title="API\Service\Auth\[type]">[type]</abbr> $secret)
+                                            <p>[fetchToken description].</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_deleteToken">deleteToken</a>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $clientId)
+                                            <p>[deleteToken description].</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_expireToken">expireToken</a>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $clientId, <abbr title="API\Service\Auth\[type]">[type]</abbr> $accessToken)
+                                            <p>[expireToken description].</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_fetchTokens">fetchTokens</a>()
+                                            <p>[fetchTokens description].</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getScopeByName">getScopeByName</a>($name)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_accessTokenGet">accessTokenGet</a>($request)
+                                            <p>Tries to get an access token.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_accessTokenPost">accessTokenPost</a>($request)
+                                            <p>Tries to create a new access token.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_accessTokenDelete">accessTokenDelete</a>($request)
+                                            <p>Tries to delete an access token.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\AbstractToken">AbstractToken</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_extractToken">extractToken</a>(<abbr title="Slim\Http\Request">Request</abbr> $request)
+                                            <p>Fetches the token document, parsing it from the request.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getAccessTokens">getAccessTokens</a>()
+                                            <p>Gets the Access tokens.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setAccessTokens">setAccessTokens</a>(array $accessTokens)
+                                            <p>Sets the Access tokens.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Service\Auth\cursor">cursor</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCursor">getCursor</a>()
+                                            <p>Gets the Cursor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setCursor">setCursor</a>(<abbr title="API\Service\Auth\cursor">cursor</abbr> $cursor)
+                                            <p>Sets the Cursor.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSingle">getSingle</a>()
+                                            <p>Gets the Is this a single access token fetch?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSingle">setSingle</a>(bool $single)
+                                            <p>Sets the Is this a single access token fetch?.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">in <a href="../../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a> at line 39</div>
+        <code>                    
+    <strong>__construct</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Constructor.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>Slim framework</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getDocumentManager">
+        <div class="location">in <a href="../../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a> at line 47</div>
+        <code>                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+    <strong>getDocumentManager</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Sokil\Mongo\Client">Client</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSlim">
+        <div class="location">in <a href="../../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a> at line 55</div>
+        <code>                    <abbr title="Slim\Slim">Slim</abbr>
+    <strong>getSlim</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Slim\Slim">Slim</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSlim">
+        <div class="location">in <a href="../../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a> at line 62</div>
+        <code>                    
+    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_addToken">
+        <div class="location">at line 57</div>
+        <code>                    
+    <strong>addToken</strong>($name, $description, $expiresAt, <a href="../../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a> $user, array $scopes = array())</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$name</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$description</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$expiresAt</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td><a href="../../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a></td>
+                <td>$user</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$scopes</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_fetchToken">
+        <div class="location">at line 101</div>
+        <code>                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+    <strong>fetchToken</strong>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $key, <abbr title="API\Service\Auth\[type]">[type]</abbr> $secret)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>[fetchToken description].</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+                <td>$key</td>
+                <td>[description]</td>
+            </tr>
+                    <tr>
+                <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+                <td>$secret</td>
+                <td>[description]</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+            <td>[description]</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_deleteToken">
+        <div class="location">at line 135</div>
+        <code>                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+    <strong>deleteToken</strong>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $clientId)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>[deleteToken description].</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+                <td>$clientId</td>
+                <td>[description]</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+            <td>[description]</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_expireToken">
+        <div class="location">at line 156</div>
+        <code>                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+    <strong>expireToken</strong>(<abbr title="API\Service\Auth\[type]">[type]</abbr> $clientId, <abbr title="API\Service\Auth\[type]">[type]</abbr> $accessToken)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>[expireToken description].</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+                <td>$clientId</td>
+                <td>[description]</td>
+            </tr>
+                    <tr>
+                <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+                <td>$accessToken</td>
+                <td>[description]</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+            <td>[description]</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_fetchTokens">
+        <div class="location">at line 177</div>
+        <code>                    <abbr title="API\Service\Auth\[type]">[type]</abbr>
+    <strong>fetchTokens</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>[fetchTokens description].</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\[type]">[type]</abbr></td>
+            <td>[description]</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getScopeByName">
+        <div class="location">at line 187</div>
+        <code>                    
+    <strong>getScopeByName</strong>($name)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$name</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_accessTokenGet">
+        <div class="location">at line 204</div>
+        <code>                    
+    <strong>accessTokenGet</strong>($request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Tries to get an access token.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$request</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_accessTokenPost">
+        <div class="location">at line 216</div>
+        <code>                    
+    <strong>accessTokenPost</strong>($request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Tries to create a new access token.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$request</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_accessTokenDelete">
+        <div class="location">at line 251</div>
+        <code>                    
+    <strong>accessTokenDelete</strong>($request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Tries to delete an access token.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$request</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_extractToken">
+        <div class="location">at line 260</div>
+        <code>                    <abbr title="API\Service\Auth\AbstractToken">AbstractToken</abbr>
+    <strong>extractToken</strong>(<abbr title="Slim\Http\Request">Request</abbr> $request)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Fetches the token document, parsing it from the request.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Http\Request">Request</abbr></td>
+                <td>$request</td>
+                <td>Slim request</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\AbstractToken">AbstractToken</abbr></td>
+            <td>$user</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Service\Auth\AuthFailureException">AuthFailureException</abbr></td>
+                <td>If authentication cannot be extracted from the Request</td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getAccessTokens">
+        <div class="location">at line 294</div>
+        <code>                    array
+    <strong>getAccessTokens</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Access tokens.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setAccessTokens">
+        <div class="location">at line 306</div>
+        <code>                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+    <strong>setAccessTokens</strong>(array $accessTokens)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Access tokens.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>array</td>
+                <td>$accessTokens</td>
+                <td>the access tokens</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCursor">
+        <div class="location">at line 318</div>
+        <code>                    <abbr title="API\Service\Auth\cursor">cursor</abbr>
+    <strong>getCursor</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Cursor.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="API\Service\Auth\cursor">cursor</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setCursor">
+        <div class="location">at line 330</div>
+        <code>                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+    <strong>setCursor</strong>(<abbr title="API\Service\Auth\cursor">cursor</abbr> $cursor)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Cursor.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Service\Auth\cursor">cursor</abbr></td>
+                <td>$cursor</td>
+                <td>the cursor</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSingle">
+        <div class="location">at line 342</div>
+        <code>                    bool
+    <strong>getSingle</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the Is this a single access token fetch?.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSingle">
+        <div class="location">at line 354</div>
+        <code>                    <a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a>
+    <strong>setSingle</strong>(bool $single)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the Is this a single access token fetch?.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>bool</td>
+                <td>$single</td>
+                <td>the is single</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../API/Service/Auth/Basic.html"><abbr title="API\Service\Auth\Basic">Basic</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

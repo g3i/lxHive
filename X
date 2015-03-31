@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+/*
+ * This file is part of lxHive LRS - http://lxhive.org/
+ *
+ * Copyright (C) 2015 Brightcookie Pty Ltd
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lxHive. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For authorship information, please view the AUTHORS
+ * file that was distributed with this source code.
+ */
+require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/public/index.php';
+
+use Symfony\Component\Console\Application;
+use API\Console\UserCreateCommand;
+use API\Console\BasicTokenCreateCommand;
+use API\Console\BasicTokenListCommand;
+use API\Console\BasicTokenDeleteCommand;
+use API\Console\BasicTokenExpireCommand;
+use API\Console\OAuthClientCreateCommand;
+use API\Console\OAuthClientListCommand;
+use API\Console\AuthScopeCreateCommand;
+use API\Console\SetupDbCommand;
+use API\Console\SetupOAuthCommand;
+
+$application = new Application();
+$application->add(new UserCreateCommand());
+$application->add(new BasicTokenListCommand());
+$application->add(new BasicTokenDeleteCommand());
+$application->add(new BasicTokenExpireCommand());
+$application->add(new BasicTokenCreateCommand());
+$application->add(new OAuthClientCreateCommand());
+$application->add(new OAuthClientListCommand());
+$application->add(new AuthScopeCreateCommand());
+$application->add(new SetupDbCommand());
+$application->add(new SetupOAuthCommand());
+$application->run();
+ 
+?>

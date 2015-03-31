@@ -1,0 +1,56 @@
+body{
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #f9f9f9;
+    color: rgb(85, 86, 90);
+    padding-bottom: 2em;
+}
+.alert-error {
+    position: relative;
+    margin-bottom: 1em;
+    padding: 1em;
+    background-color: rgb(202, 60, 60);
+    color: #ffffff;
+}
+.pure-button,
+.alert{
+    border-radius: 5px;
+}
+ul.alert{
+    list-style-type: none;
+}
+#lx_logo{
+    max-height: 50px;
+    margin: 0 auto;
+}
+h1,
+h2{
+    text-align: center;
+}
+h1{
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+h2{
+    margin-top: 0;
+    padding-top:0;
+}    
+pure-button{
+text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+.button-xlarge{
+    font-weight: bold;
+}
+.button-allow{
+    padding-left: 4em;
+    padding-right: 4em;
+    background: rgb(28, 184, 65);
+}
+.button-disallow{
+    background: rgb(202, 60, 60);
+    font-weight: normal;
+}
+.pure-form fieldset{
+    background: #ffffff;
+    padding: 2em 1em;
+    border-radius: 5px;
+}
