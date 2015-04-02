@@ -163,7 +163,7 @@ class User extends Service
         $collection  = $this->getDocumentManager()->getCollection('authScopes');
         $cursor      = $collection->find();
 
-        $this->cursor;
+        $this->cursor = $cursor;
 
         return $this;
     }
