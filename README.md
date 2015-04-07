@@ -34,9 +34,11 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 * [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
 * [OpenSSL](https://www.openssl.org/)
 * 
+
 #### Notes: 
+
 * Make sure you have set the `date.timezone` setting in your php.ini
-* 
+
 ### Setup
 
 1. Install dependencies via `composer install`.
@@ -58,6 +60,7 @@ $ ./X user:create
 ```
 
 #### Notes: 
+
 * As an administrator you should first create a new user and authentication token for yourself and assign the *super* role to it.
 
 ## Documentation
