@@ -84,11 +84,11 @@ if (PHP_SAPI !== 'cli') {
 
 // Error handling
 $app->error(function (\Exception $e) {
-    $code      = $e->getCode();
-    if ($code === 0) {
+    $code = $e->getCode();
+    if ($code < 100) {
         $code = 500;
     }
-    Resource::error($e->getCode(), $e->getMessage());
+    Resource::error($code, $e->getMessage());
 });
 
 // Database layer setup
