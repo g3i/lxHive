@@ -13,3 +13,5 @@ SamiConfig.php
 cache/*
 
 storage/files/*
+
+src/xAPI/Config/Config.yml
