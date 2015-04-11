@@ -39,7 +39,7 @@ use Slim\Views\Twig;
 use API\Service\Auth\Exception as AuthFailureException;
 
 // Set up a new Slim instance - default mode is production (it is overriden with SLIM_MODE environment variable)
-$app = new Slim(['mode' => 'production', 'view' => new Twig()]);
+$app = new Slim(['mode' => 'production']);
 
 $appRoot = dirname(__DIR__);
 
@@ -172,6 +172,14 @@ $app->hook('slim.before.dispatch', function () use ($app) {
             return $token;
         }
     });
+
+    // Load Twig only if this is a request where we actually need it!
+    if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
+        $twigContainer = new Twig();
+        $app->container->singleton('view', function () use ($twigContainer) {
+            return $twigContainer;
+        });
+    }
 });
 
 // Start with routing - dynamic for now
