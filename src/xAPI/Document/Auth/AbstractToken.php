@@ -62,15 +62,15 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
     public function getExpiresIn()
     {
         $dateTime = new \DateTime();
-        $dateTime->setTimestamp($this->getExpiresAt());
+        $dateTime->setTimestamp($this->getExpiresAt()->sec);
         $until = \API\Util\Date::secondsUntil($dateTime);
-
         return $until;
     }
 
     public function setExpiresIn($expiresIn)
     {
         $until = \API\Util\Date::dateFromSeconds($expiresIn);
+        $until = \API\Util\Date::dateStringToMongoDate($until);
         $this->setExpiresAt($until);
 
         return $this;
@@ -80,9 +80,8 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
     {
         if ($this->getExpired()) {
             return true;
-        } elseif ($this->getExpiresIn === 0) {
+        } else if ($this->getExpiresIn() <= 0) {
             $this->setExpired(true);
-
             return true;
         } else {
             return false;
