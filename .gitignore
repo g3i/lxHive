@@ -11,3 +11,5 @@ sami.phar
 SamiConfig.php
 
 cache/*
+
+storage/files/*

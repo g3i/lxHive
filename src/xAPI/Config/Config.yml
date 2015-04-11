@@ -8,7 +8,7 @@ xAPI:
     default_statement_get_format: exact
     supported_versions: [1.0.3]
     supported_auth_scopes: [{ name: super, description: 'Administrate the LRS' }, { name: statements/read, description: 'Read statements' }, { name: statements/read/mine, description: 'Read own statements' }, { name: attachments, description: 'Include attachments' }, { name: state, description: 'Access the State API' }, { name: profile, description: 'Access the Profile API' }, { name: define, description: '(Re)define new Activities' }, { name: all/read, description: 'Full read-only access' }, { name: all, description: 'Full access' }]
-    oauth: { reauthorize_time: 0, reauthenticate_time: 2592000, branding: {enabled: false, logo_path: null, header: null, footer: null, css_path: null} }
+    oauth: { reauthorize_time: 0, reauthenticate_time: 2592000, branding: { enabled: true, logo_path: burex, header: null, footer: null, css_path: null } }
 filesystem:
     exposed_url: /attachments
     in_use: local
