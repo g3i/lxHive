@@ -4,7 +4,7 @@ htrouter.phar
 
 storage/logs/*
 
-src/xAPI/View/V10/OAuth/.Cache/*
+src/xAPI/View/V10/OAuth/.Cache/[A-z0-9]*
 
 sami.phar
 
