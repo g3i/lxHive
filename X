@@ -21,8 +21,28 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  */
-require __DIR__ . '/vendor/autoload.php';
-require_once __DIR__.'/public/index.php';
+$argv = $_SERVER['argv'];
+array_shift($argv);
+$_SERVER['argv'] = $argv;
+
+if (isset($argv[0])) {
+	$workingDirectory = $argv[0];
+} else {
+	$workingDirectory = __DIR__;
+}
+
+if (!file_exists($workingDirectory . '/public/index.php')) {
+	echo 'You must run X from the root directory of your lxHive install or specify its correct path as the first argument!' . PHP_EOL;
+	exit;
+}
+
+if (!file_exists($workingDirectory . '/vendor/autoload.php')) {
+	echo 'You must run composer install before running X!' . PHP_EOL;
+	exit;
+}
+
+require_once $workingDirectory . '/vendor/autoload.php';
+require_once $workingDirectory . '/public/index.php';
 
 use Symfony\Component\Console\Application;
 use API\Console\UserCreateCommand;
