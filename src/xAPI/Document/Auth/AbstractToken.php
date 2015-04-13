@@ -84,7 +84,7 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
     {
         if ($this->getExpired()) {
             return true;
-        } else if ($this->getExpiresIn() <= 0) {
+        } else if (null !== $this->getExpiresIn() && $this->getExpiresIn() <= 0) {
             $this->setExpired(true);
             return true;
         } else {
