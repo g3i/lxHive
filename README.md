@@ -33,7 +33,6 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 * [Composer](https://getcomposer.org/) installed
 * [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
 * [OpenSSL](https://www.openssl.org/)
-* 
 
 #### Notes: 
 
@@ -42,12 +41,13 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 ### Setup
 
 1. Install dependencies via `composer install`.
+2. Point your server's `DocumentRoot` directive to the `public` folder
 3. Set up your database & client account:
 
 ```bash
 
 # Browse to application root
-$ cd /<path_to_aplication_root>
+$ cd /<path_to_application_root>
 # View available commands
 $ ./X
 # Set up database
