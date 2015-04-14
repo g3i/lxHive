@@ -39,7 +39,7 @@ use Slim\Views\Twig;
 use API\Service\Auth\Exception as AuthFailureException;
 
 // Set up a new Slim instance - default mode is production (it is overriden with SLIM_MODE environment variable)
-$app = new Slim(['mode' => 'production']);
+$app = new Slim();
 
 $appRoot = dirname(__DIR__);
 
