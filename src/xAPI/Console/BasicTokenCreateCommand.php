@@ -54,7 +54,7 @@ class BasicTokenCreateCommand extends Command
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
-        $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite).');
+        $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
         $expiresAt = $helper->ask($input, $output, $question);
 
         $userService = new UserService($this->getSlim());
@@ -68,21 +68,27 @@ class BasicTokenCreateCommand extends Command
         $email = $helper->ask($input, $output, $question);
         $user = $users[$email];
 
+        $userService->fetchAvailablePermissions();
+        $scopesDictionary = [];
+        foreach ($userService->getCursor() as $scope) {
+            $scopesDictionary[$scope->getName()] = $scope;
+        }
+
         $question = new ChoiceQuestion(
-            'Please select which scopes you would like to enable (defaults to all available).',
-            $this->getSlim()->config('xAPI')['supported_auth_scopes'],
+            'Please select which scopes you would like to enable (defaults to super). If you select super, all other permissions are also inherited: ',
+            array_keys($scopesDictionary),
             '0'
         );
         $question->setMultiselect(true);
 
-        $scopes = $helper->ask($input, $output, $question);
-        $scopeDocuments = [];
-        foreach ($scopes as $scope) {
-            $scopeDocument = $basicAuthService->getScopeByName($scope);
-            $scopeDocuments[] = $scopeDocument;
+        $selectedScopeNames = $helper->ask($input, $output, $question);
+
+        $selectedScopes = [];
+        foreach ($selectedScopeNames as $selectedScopeName) {
+            $selectedScopes[] = $scopesDictionary[$selectedScopeName];
         }
 
-        $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $scopeDocuments);
+        $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes);
         $text  = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');

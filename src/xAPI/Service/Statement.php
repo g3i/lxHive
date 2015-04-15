@@ -315,6 +315,11 @@ class Statement extends Service
             $jsonRequest = $request;
         }
 
+        // TODO: Move header validation in json-schema as well
+        if ($jsonRequest->getMediaType() !== 'application/json') {
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+        }
+
         // Validation has been completed already - everyhing is assumed to be valid
         $body = $jsonRequest->getBody();
         $body = json_decode($body, true);
@@ -444,6 +449,11 @@ class Statement extends Service
     public function statementPut($request)
     {
         // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
+        // TODO: Move header validation in json-schema as well
+        if ($request->getMediaType() !== 'application/json') {
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+        }
+
         $body = $request->getBody();
         $body = json_decode($body, true);
 

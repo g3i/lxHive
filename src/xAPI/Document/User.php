@@ -74,44 +74,6 @@ class User extends Document implements \JsonSerializable
         }
     }
 
-    public function getExpiresIn()
-    {
-        $dateTime = new \DateTime($this->getExpiresAt());
-        $until = \API\Util\Date::secondsUntil($dateTime);
-
-        return $until;
-    }
-
-    public function setExpiresIn($expiresIn)
-    {
-        $until = \API\Util\Date::dateFromSeconds($expiresIn);
-        $this->setExpiresAt($until);
-
-        return $this;
-    }
-
-    public function getExpired()
-    {
-        if ($this->getExpired()) {
-            return true;
-        } elseif ($this->getExpiresIn === 0) {
-            $this->setExpired(true);
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function getValid()
-    {
-        if ($this->isExpired()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public function renderSummary()
     {
         $return = ['email' => $this->_data['email'], 'permissions' => $this->_data['permissions']];

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "Schema for POST-ing Statements",
+    "description": "Schema for the xAPI Statements endpoint",
     "getParameters": {
         "type": ["object", "array"],
         "oneOf" : [
@@ -257,9 +257,6 @@
                     "additionalProperties": false
                 },
                 "timestamp": {
-                    "type": "string"
-                },
-                "stored": {
                     "type": "string"
                 },
                 "authority": {

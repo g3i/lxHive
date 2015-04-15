@@ -39,14 +39,23 @@ use Slim\Views\Twig;
 use API\Service\Auth\Exception as AuthFailureException;
 
 // Set up a new Slim instance - default mode is production (it is overriden with SLIM_MODE environment variable)
-$app = new Slim(['mode' => 'production', 'view' => new Twig()]);
+$app = new Slim();
 
 $appRoot = dirname(__DIR__);
 
 // Prepare config loader
 Config\Yaml::getInstance()->addParameters(['app.root' => $appRoot]);
 // Default config
-Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.yml');
+try {
+    Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.yml');
+} catch (\Exception $e) {
+    if (PHP_SAPI === 'cli' && ((isset($argv[1]) && $argv[1] === 'setup:db') || (isset($argv[0]) && !isset($argv[1])))) {
+        // Database setup in progress, ignore exception
+    } else {
+        throw new \Exception('You must run the setup:db command using the X CLI tool!');
+    }
+}
+
 
 // Only invoked if mode is "production"
 $app->configureMode('production', function () use ($app, $appRoot) {
@@ -84,11 +93,11 @@ if (PHP_SAPI !== 'cli') {
 
 // Error handling
 $app->error(function (\Exception $e) {
-    $code      = $e->getCode();
-    if ($code === 0) {
+    $code = $e->getCode();
+    if ($code < 100) {
         $code = 500;
     }
-    Resource::error($e->getCode(), $e->getMessage());
+    Resource::error($code, $e->getMessage());
 });
 
 // Database layer setup
@@ -172,6 +181,14 @@ $app->hook('slim.before.dispatch', function () use ($app) {
             return $token;
         }
     });
+
+    // Load Twig only if this is a request where we actually need it!
+    if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
+        $twigContainer = new Twig();
+        $app->container->singleton('view', function () use ($twigContainer) {
+            return $twigContainer;
+        });
+    }
 });
 
 // Start with routing - dynamic for now

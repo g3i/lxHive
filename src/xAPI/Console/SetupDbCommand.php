@@ -68,7 +68,7 @@ class SetupDbCommand extends Command
         $question = new Question('Enter the name of your MongoDB database (default: "lxHive"): ', 'lxHive');
         $mongoDatabase = $helper->ask($input, $output, $question);
 
-        $currentConfig = Yaml::parse(file_get_contents(__DIR__.'/../Config/Config.yml'));
+        $currentConfig = Yaml::parse(file_get_contents(__DIR__.'/../Config/Config.template.yml'));
 
         $mergingArray = ['name' => $name, 'database' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]];
 

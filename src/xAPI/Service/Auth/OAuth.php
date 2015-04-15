@@ -90,8 +90,11 @@ class OAuth extends Service implements AuthInterface
 
         $accessTokenDocument = $collection->createDocument();
 
-        $accessTokenDocument->setExpiresAt($expiresAt);
-        $accessTokenDocument->setCreatedAt(time());
+        $expiresDate = new \DateTime();
+        $expiresDate->setTimestamp($expiresAt);
+        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
+        $currentDate = new \DateTime();
+        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
         $accessTokenDocument->addRelation('user', $user);
         $accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];
