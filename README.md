@@ -1,7 +1,7 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/453dbc6d-7ae8-4825-beed-0099f2ce1aca/mini.png)](https://insight.sensiolabs.com/projects/453dbc6d-7ae8-4825-beed-0099f2ce1aca)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6/mini.png)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
 
 ## <a name="introduction" />Introduction
 
