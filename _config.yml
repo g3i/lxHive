@@ -2,7 +2,7 @@
 title: lxHive - a fast and lightweight open source xAPI LRS
 email: support@brightcookie.com.au
 url: http://localhost:4000
-baseurl: /
+baseurl: http://www.lxHive.com
 description: "lxHive is a fast and lightweight open source xAPI conformant Learning Record Store (LRS). lxHive logs and returns activity statements as defined in the Experience API specification."
 
 # Color settings (hex-codes without the leading hash-tag)
