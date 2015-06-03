@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>lxHive - a fast and lightweight open source xAPI LRS</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="lxHive is a fast and lightweight open source xAPI conformant Learning Record Store (LRS). lxHive logs and returns activity statements as defined in the Experience API specification.">
+    <link rel="canonical" href="http://localhost:4000/">
+
+    <!-- Custom CSS & Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,400,700' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+    <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+     <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">
+                    <i class="fa fa-play-circle"></i>  <span class="light">lx</span>Hive
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#features">Features</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#download">Download</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+        <!-- Intro Header -->
+    <header class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading"><img src="/img/lxHive.logo.white.png" alt="lxHive"></h1>
+                        <p class="intro-text">
+                            A fast and lightweight open source xAPI conformant LRS.<br>Created by <img class="brightcookie-logo" height="45" src="/img/logo.bc-globe.png" alt=""> <a class="brightcookie" href="http://www.brightcookie.com.au/">Brightcookie</a>.
+                        </p>
+                        <a href="#about" class="btn btn-circle page-scroll">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+        <!-- About Section -->
+    <section id="about" class="container content-section">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2 class="text-center"><span class="light">lx</span>Hive</h2>
+                <p><span class="lxHive"><strong>lx</strong>Hive</span> is a fast and lightweight open source xAPI conformant Learning Record Store (LRS). lxHive logs and returns activity statements as defined in the <a href="https://github.com/adlnet/xAPI-Spec">Experience API specification</a> (formerly TinCan API) currently at xAPI Version 1.0.3</p>
+                <p>The results of learning experiences are stored in a Learning Record Store (LRS). The LRS is defined as part of the Experience API Specification and controls at its core the following functions:</p>
+                <ul>
+                    <li>authentication of authorised users</li>
+                    <li>validation of compliance to the xAPI Standard</li>
+                    <li>the storage of learning related data</li>
+                    <li>retrieval of learning related data</li>
+                </ul>
+                <p><span class="lxHive"><strong>lx</strong>Hive</span> is Open Source and published under <a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GNU GPL v3</a></p>
+            </div>
+        </div>
+        <div class="row text-center">
+            <a href="#features" class="btn btn-circle page-scroll">
+                <i class="fa fa-angle-double-down animated"></i>
+            </a>
+        </div>
+    </section>
+
+        <!-- About Section -->
+    <section id="features" class="content-section text-center">
+
+        
+         <div class="features-section">
+             
+            <div class="container text-left">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2 class="text-center">Features</h2>
+                    <p>The application uses MongoDB and PHP and should be easy to install on any web server. It supports Basic Authentication, OAuth 2.0 (Authorization Code Grant) and supports pluggable file storage mechanisms.</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="features-section light">
+            <div class="container">
+                <div class="col-md-4">
+                    <p><img class="img-responsive framework-logo" src="/img/logo-oauth-2.png" alt="oAuth 2"></p>
+                    <p>Secure Authentication with <strong><a href="http://oauth.net/2/">OAuth 2</a></strong></p>
+                </div>
+                <div class="col-md-4">
+                    <p><img class="img-responsive framework-logo" src="/img/logo.mongodb.png"  height="90" alt="Mongo DB"></p>
+                    <p>High performance storage with <strong><a href="https://www.mongodb.org/">Mongo DB</a></strong></p>
+                </div>
+
+                <div class="col-md-4">
+                    <p><img class="img-responsive framework-logo" src="/img/logo.slim.png"  height="90" alt="Slim framework"></p>
+                    <p>Powerful routing with <strong><a href="http://www.slimframework.com/">Slim</a></strong> PHP Framework</p>
+                </div>
+            </div>
+            <div class="container text-center">
+                <a href="#download" class="btn btn-circle page-scroll">
+                    <i class="fa fa-angle-double-down animated"></i>
+                </a>
+            </div>
+        </div>
+        
+    </section>
+
+        <!-- Download Section -->
+    <section id="download" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Download <span class="light">lx</span>Hive</h2>
+                    <p>Clone or fork <span class="light">lx</span>Hive from Github.</p>
+                    <p>
+                        <a href="https://github.com/Brightcookie/lxHive" class="btn btn-primary btn-lg"><i class="fa fa-github fa-fw"></i> lXhive on Github</a>
+                    </p>
+                    <p>
+                        <a href="https://github.com/Brightcookie/lxHive/wiki" class="btn btn-default btn-xs btn-lg">Documentation</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Contact Section -->
+    <section id="contact" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Contact</h2>
+                <p>
+                    Launch an issue on Github, leave a message on Facebook or email us.<br>
+                    Or visit us in our office on level-3, 18-20 Grenfell Street, Adelaide SA 
+                </p>
+                </p>
+                <ul class="list-inline banner-social-buttons">
+                    
+                    <li>
+                        <a href="https://github.com/Brightcookie/lxHive/issues" class="btn btn-default btn-lg"><i class="fa fa-github"></i> <span class="network-name">Issues</span></a>
+                    </li>
+                    
+                    <li>
+                        <a href="mailto: supprt@brightcookie.com.au" class="btn btn-default btn-lg"><i class="fa fa-envelope"></i> <span class="network-name">Email</span></a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://www.facebook.com/lxhive" class="btn btn-default btn-lg"><i class="fa fa-facebook-square"></i> <span class="network-name">facebook</span></a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </section>
+
+        <!-- Map Section -->
+    <div id="map"></div>
+
+        <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; Brightcookie Pty Ltd 2015</p>
+        </div>
+    </footer>
+
+     <!-- jQuery Version 1.11.0 -->
+    <script src="/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="/js/jquery.easing.min.js"></script>
+
+    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvd44BOwW8_f3RJHCNHQmuv8Db2zkpL7Q&sensor=false">
+    
+    </script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/js/grayscale.js"></script>
+
+    </body>
+</html>
