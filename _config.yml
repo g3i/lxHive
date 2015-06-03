@@ -27,7 +27,7 @@ color:
   #selection: '#fcfcfc'
 
 fonts:
-  main: '"Roboto Condensed", sans-serif,,Helvetica,Arial,sans-serif'
+  main: '"Roboto Condensed", sans-serif, Helvetica, Arial, sans-serif'
   
 formats:
   lxHive: '<span class="lxHive inline">lx<strong>Hive</strong></span>'
