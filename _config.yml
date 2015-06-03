@@ -41,8 +41,8 @@ social:
   - title: 'Issues'
     url: https://github.com/Brightcookie/lxHive/issues
     icon: '<i class="fa fa-github"></i>'
-  - title: Email
-    url: 'mailto: supprt@brightcookie.com.au'
+  - title: Enquiries
+    url: 'http://www.brightcookie.com/contact-us/'
     'icon': '<i class="fa fa-envelope"></i>'
   - title: facebook
     url: https://www.facebook.com/lxhive
