@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>API\Resource\V10\Agents\Profile | API</title>
+
+            <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../../../../css/sami.css">
+        <script src="../../../../js/jquery-1.11.1.min.js"></script>
+        <script src="../../../../js/bootstrap.min.js"></script>
+        <script src="../../../../js/typeahead.min.js"></script>
+        <script src="../../../../sami.js"></script>
+    
+    
+    </head>
+
+    <body id="class" data-name="class:API_Resource_V10_Agents_Profile" data-root-path="../../../../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="../../../../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../../../../index.html">API</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../../../../classes.html">Classes</a></li>
+                                            <li><a href="../../../../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../../../../interfaces.html">Interfaces</a></li>
+                    <li><a href="../../../../traits.html">Traits</a></li>
+                    <li><a href="../../../../doc-index.html">Index</a></li>
+                    <li><a href="../../../../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                                                            <li><a href="../../../../API.html">API</a></li>
+                                        <li><a href="../../../../API/Resource.html">Resource</a></li>
+                                        <li><a href="../../../../API/Resource/V10.html">V10</a></li>
+                                        <li><a href="../../../../API/Resource/V10/Agents.html">Agents</a></li>
+    
+                <li>Profile</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Profile</h1>
+    </div>
+
+    <p>    class
+    <strong>Profile</strong>        extends <a href="../../../../API/Resource.html"><abbr title="API\Resource">Resource</abbr></a></p>
+
+    
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>STATUS_OK</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_CREATED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_ACCEPTED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NO_CONTENT</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_MULTIPLE_CHOICES</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_MOVED_PERMANENTLY</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_FOUND</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NOT_MODIFIED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_USE_PROXY</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_TEMPORARY_REDIRECT</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_BAD_REQUEST</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_UNAUTHORIZED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_FORBIDDEN</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NOT_FOUND</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NOT_FOUND_MESSAGE</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_METHOD_NOT_ALLOWED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_METHOD_NOT_ALLOWED_MESSAGE</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NOT_ACCEPTED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_CONFLICT</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_PRECONDITION_FAILED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_INTERNAL_SERVER_ERROR</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+                    <tr>
+                <td>STATUS_NOT_IMPLEMENTED</td>
+                <td class="last">
+                    <p><em>
+</em></p>
+                    <p>
+</p>
+                </td>
+            </tr>
+            </table>
+
+    
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>()
+                                            <p>Construct.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method___construct"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_init">init</a>()
+                                            <p>Get agent profile service.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_get">get</a>()
+                                            <p>Handle the Statement GET request.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_post">post</a>()
+                                            <p>Default post method.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_put">put</a>()
+                                            <p>Default put method.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_delete">delete</a>()
+                                            <p>Default delete method.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_options">options</a>()
+                                            <p>General options method.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_error">error</a>(int $code, string $message = &#039;&#039;)
+                                            <p>Error handler.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_error"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_response">response</a>(int $status = 200, array $data = null, array $allow = array())
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_response"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_jsonResponse">jsonResponse</a>($status = 200, $data = array(), $allow = array())
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_jsonResponse"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_multipartResponse">multipartResponse</a>($status = 200, $parts = array(), $allow = array())
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_multipartResponse"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_load">load</a>($version, $resource, $subResource)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_load"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Slim\Slim">Slim</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSlim">getSlim</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_getSlim"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setSlim">setSlim</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_setSlim"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDocumentManager">getDocumentManager</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../API/Resource.html#method_getDocumentManager"><abbr title="API\Resource">Resource</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../../API/Service/AgentProfile.html"><abbr title="API\Service\AgentProfile">AgentProfile</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getAgentProfileService">getAgentProfileService</a>()
+                                            <p>Gets the value of agentProfileService.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../../../../API/Resource/V10/Agents/Profile.html"><abbr title="API\Resource\V10\Agents\Profile">Profile</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_setAgentProfileService">setAgentProfileService</a>(<abbr title="API\Resource\V10\Agents\API\Service\AgentProfile">AgentProfile</abbr> $agentProfileService)
+                                            <p>Sets the value of agentProfileService.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___construct">
+        <div class="location">in <a href="../../../../API/Resource.html#method___construct"><abbr title="API\Resource">Resource</abbr></a> at line 66</div>
+        <code>                    
+    <strong>__construct</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Construct.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_init">
+        <div class="location">at line 41</div>
+        <code>                    
+    <strong>init</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Get agent profile service.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_get">
+        <div class="location">at line 49</div>
+        <code>                    
+    <strong>get</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Handle the Statement GET request.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_post">
+        <div class="location">at line 92</div>
+        <code>                    
+    <strong>post</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Default post method.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_put">
+        <div class="location">at line 74</div>
+        <code>                    
+    <strong>put</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Default put method.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_delete">
+        <div class="location">at line 110</div>
+        <code>                    
+    <strong>delete</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Default delete method.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_options">
+        <div class="location">at line 128</div>
+        <code>                    
+    <strong>options</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>General options method.</p>                                </div>
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_error">
+        <div class="location">in <a href="../../../../API/Resource.html#method_error"><abbr title="API\Resource">Resource</abbr></a> at line 126</div>
+        <code>        static            
+    <strong>error</strong>(int $code, string $message = &#039;&#039;)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Error handler.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$code</td>
+                <td>Error code</td>
+            </tr>
+                    <tr>
+                <td>string</td>
+                <td>$message</td>
+                <td>Error message</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_response">
+        <div class="location">in <a href="../../../../API/Resource.html#method_response"><abbr title="API\Resource">Resource</abbr></a> at line 136</div>
+        <code>        static            
+    <strong>response</strong>(int $status = 200, array $data = null, array $allow = array())</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$status</td>
+                <td>HTTP status code</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$data</td>
+                <td>The data</td>
+            </tr>
+                    <tr>
+                <td>array</td>
+                <td>$allow</td>
+                <td>Allowed methods</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_jsonResponse">
+        <div class="location">in <a href="../../../../API/Resource.html#method_jsonResponse"><abbr title="API\Resource">Resource</abbr></a> at line 159</div>
+        <code>        static            
+    <strong>jsonResponse</strong>($status = 200, $data = array(), $allow = array())</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$status</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$data</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$allow</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_multipartResponse">
+        <div class="location">in <a href="../../../../API/Resource.html#method_multipartResponse"><abbr title="API\Resource">Resource</abbr></a> at line 167</div>
+        <code>        static            
+    <strong>multipartResponse</strong>($status = 200, $parts = array(), $allow = array())</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$status</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$parts</td>
+                <td>
+</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$allow</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_load">
+        <div class="location">in <a href="../../../../API/Resource.html#method_load"><abbr title="API\Resource">Resource</abbr></a> at line 195</div>
+        <code>        static            mixed
+    <strong>load</strong>($version, $resource, $subResource)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$version</td>
+                <td>The xAPI version requested</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$resource</td>
+                <td>The main resource</td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$subResource</td>
+                <td>An optional subresource</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSlim">
+        <div class="location">in <a href="../../../../API/Resource.html#method_getSlim"><abbr title="API\Resource">Resource</abbr></a> at line 213</div>
+        <code>                    <abbr title="Slim\Slim">Slim</abbr>
+    <strong>getSlim</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Slim\Slim">Slim</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setSlim">
+        <div class="location">in <a href="../../../../API/Resource.html#method_setSlim"><abbr title="API\Resource">Resource</abbr></a> at line 221</div>
+        <code>                    
+    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="Slim\Slim">Slim</abbr></td>
+                <td>$slim</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getDocumentManager">
+        <div class="location">in <a href="../../../../API/Resource.html#method_getDocumentManager"><abbr title="API\Resource">Resource</abbr></a> at line 229</div>
+        <code>                    <abbr title="Sokil\Mongo\Client">Client</abbr>
+    <strong>getDocumentManager</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Sokil\Mongo\Client">Client</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getAgentProfileService">
+        <div class="location">at line 140</div>
+        <code>                    <a href="../../../../API/Service/AgentProfile.html"><abbr title="API\Service\AgentProfile">AgentProfile</abbr></a>
+    <strong>getAgentProfileService</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Gets the value of agentProfileService.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../../API/Service/AgentProfile.html"><abbr title="API\Service\AgentProfile">AgentProfile</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_setAgentProfileService">
+        <div class="location">at line 152</div>
+        <code>                    <a href="../../../../API/Resource/V10/Agents/Profile.html"><abbr title="API\Resource\V10\Agents\Profile">Profile</abbr></a>
+    <strong>setAgentProfileService</strong>(<abbr title="API\Resource\V10\Agents\API\Service\AgentProfile">AgentProfile</abbr> $agentProfileService)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Sets the value of agentProfileService.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><abbr title="API\Resource\V10\Agents\API\Service\AgentProfile">AgentProfile</abbr></td>
+                <td>$agentProfileService</td>
+                <td>the agent service</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../../../../API/Resource/V10/Agents/Profile.html"><abbr title="API\Resource\V10\Agents\Profile">Profile</abbr></a></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>
