@@ -30,5 +30,28 @@
         ga('create', 'UA-63908505-1', 'auto');
         ga('send', 'pageview');
     </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org/",
+        "@type": "WebApplication",
+        "name": "lxHive",
+        "description": "{{ site.description }}",
+        "applicationCategory": "http://en.wikipedia.org/wiki/Learning_Record_Store",
+        "applicationSubCategory": "https://github.com/adlnet/xAPI-Spec",
+        "downloadUrl": "https://github.com/Brightcookie/lxHive",
+        "applicationSuite" : "lxBundle",
+        "image": "{{ site.baseurl }}/img/lxHive.logo.png",
+        "operatingSystem": "*NIX, Windows Server",
+        "license": "http://www.gnu.org/licenses/gpl-3.0.en.html",
+        "author": {
+            "@type" : "Organization",
+            "url" : "http://www.brightcookie.com",
+            "name": "Brightcookie",
+            "legalName" : "Brightcookie Pty Ltd",
+            "logo" : "{{ site.baseurl }}/img/logo.bc-globe.png"
+        }
+    }
+    </script>
 
 </head>
