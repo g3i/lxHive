@@ -17,14 +17,6 @@ color:
   links-hover: 'rgba(0, 131, 215, .5)'
   selection: '#fcfcfc'
   light-grey: '#f3f3f3'
-  
-  #primary: '#000000'
-  #primary-bg: '#000000'
-  #white-alpha-3: 'rgba(255,255,255,.3)'
-  #white-alpha-1: 'rgba(255,255,255,.1)'
-  #links: '#219ab3'
-  #links-hover: '#11505d'
-  #selection: '#fcfcfc'
 
 fonts:
   main: '"Roboto Condensed", sans-serif, Helvetica, Arial, sans-serif'
@@ -47,7 +39,11 @@ social:
   - title: facebook
     url: https://www.facebook.com/lxhive
     icon: '<i class="fa fa-facebook-square"></i>'
-    
+
+# GA and linked data
+analytics:
+  key: 'UA-63908505-1'
+
 # Build settings
 markdown: kramdown
 permalink: pretty

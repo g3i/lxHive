@@ -1,23 +1,4 @@
-<<<<<<< HEAD
 _site
-
 _Dev
-=======
-vendor/*
 
-htrouter.phar
 
-storage/logs/*
-
-src/xAPI/View/V10/OAuth/.Cache/[A-z0-9]*
-
-sami.phar
-
-SamiConfig.php
-
-cache/*
-
-storage/files/*
-
-src/xAPI/Config/Config.yml
->>>>>>> 5aae6099b78e779d7fc0c796ad465554feaaa402

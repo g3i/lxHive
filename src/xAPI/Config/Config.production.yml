@@ -1,3 +1,0 @@
-# Production configuration overrides
-log.enable: true
-debug:      false

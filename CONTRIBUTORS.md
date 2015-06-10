@@ -1,1 +1,0 @@
-Jakob Murko - sraka1
