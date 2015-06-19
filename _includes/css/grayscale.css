@@ -394,11 +394,9 @@ img::-moz-selection {
 body {
     webkit-tap-highlight-color: {{ site.color.white-alpha-3 }};
 }
+/* nav */
 
-#features{
-
-}
-
+/* features*/
 .features-section {
     width: 100%;
     padding: 50px 0;
