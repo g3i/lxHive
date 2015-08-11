@@ -127,6 +127,14 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Invalid access token specified.', Resource::STATUS_FORBIDDEN);
         }
 
+        $expiresAt = $accessTokenDocument->getExpiresAt();
+
+        if ($expiresAt !== null) {
+            if ($expiresAt->sec <= time()) {
+                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
+            }
+        }
+
         $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
