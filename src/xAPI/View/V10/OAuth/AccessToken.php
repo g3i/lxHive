@@ -39,7 +39,7 @@ class AccessToken extends View
             'expiresAt' => $accessTokenDocument->getExpiresAt()->sec,
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
             'createdAt' => $accessTokenDocument->getCreatedAt()->sec,
-            'expired' => $accessTokenDocument->getExpired(),
+            'expired' => $accessTokenDocument->isExpired(),
             'scopes' => array_values($accessTokenDocument->scopes),
             'user' => $accessTokenDocument->user->renderSummary(),
         ];
