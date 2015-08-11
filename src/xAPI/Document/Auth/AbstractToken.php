@@ -96,15 +96,6 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
         }
     }
 
-    public function isValid()
-    {
-        if ($this->isExpired()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public function jsonSerialize()
     {
         return $this->_data;
