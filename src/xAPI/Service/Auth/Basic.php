@@ -224,6 +224,10 @@ class Basic extends Service implements AuthInterface
             $body = json_decode($body, true);
         }
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Invalid JSON posted. Cannot continue!', Resource::STATUS_BAD_REQUEST);
+        }
+
         $requestParams = new Set($body);
 
         if ($requestParams->get('user')['email'] === null) {
@@ -247,7 +251,7 @@ class Basic extends Service implements AuthInterface
             'expiresAt' => null
         ]);
 
-        $params = $defaultParams->replace($requestParams->all());
+        $params = new Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
 
         $scopeDocuments = [];
         $scopes = $params->get('scopes');
