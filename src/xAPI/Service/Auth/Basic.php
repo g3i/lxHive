@@ -114,8 +114,7 @@ class Basic extends Service implements AuthInterface
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
         if ($expiresAt !== null) {
-            $dateTime = new \DateTime($expiresAt);
-            if ($dateTime->getTimestamp() >= time()) {
+            if ($expiresAt->sec <= time()) {
                 throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
             }
         }
