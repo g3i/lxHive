@@ -30,6 +30,7 @@ use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Document\User;
 use API\Service\User as UserService;
+use API\Util;
 
 class Basic extends Service implements AuthInterface
 {
@@ -223,11 +224,30 @@ class Basic extends Service implements AuthInterface
             $body = json_decode($body, true);
         }
 
-        $params = new Set($body);
+        $requestParams = new Set($body);
 
-        if ($params->get('user')['email'] === null || $params->get('user')['password'] === null || $params->get('user')['permissions'] === null || $params->get('name') === null || $params->get('description') === null || $params->get('expiresAt') === null || $params->get('scopes') === null) {
-            throw new \Exception('Invalid request', Resource::STATUS_BAD_REQUEST);
+        if ($requestParams->get('user')['email'] === null) {
+            throw new \Exception('Invalid request, user.email property not present!', Resource::STATUS_BAD_REQUEST);
         }
+
+        $currentDate = new \DateTime();
+
+        $defaultParams = new Set([
+            'user' => [
+                'password' => 'password',
+                'permissions' => [
+                    'all'
+                ]
+            ],
+            'scopes' => [
+                'all'
+            ],
+            'name' => 'Token for ' . $requestParams->get('user')['email'],
+            'description' => 'Token generated at ' . Util\Date::dateTimeToISO8601($currentDate),
+            'expiresAt' => null
+        ]);
+
+        $params = $defaultParams->replace($requestParams->all());
 
         $scopeDocuments = [];
         $scopes = $params->get('scopes');
