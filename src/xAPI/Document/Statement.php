@@ -137,7 +137,23 @@ class Statement extends Document implements JsonSerializable
         $activities = [];
         // Main activity
         if ((isset($this->_data['statement']['object']['objectType']) && $this->_data['statement']['object']['objectType'] === 'Activity') || !isset($this->_data['statement']['object']['objectType'])) {
-            $activities[] = $this->_data['statement']['object'];
+            $activity = $this->_data['statement']['object'];
+            
+            // Sort of a hack - PHP's copy-on-write needs to be executed, otherwise the MongoDB PHP driver
+            // overwrites the contents of the variable being passed to the batchInsert call - regardless of
+            // whether the variable has been passed by reference or not!
+            // See more:
+            // http://php.net/manual/en/mongocollection.insert.php Insert behaviour
+            // http://php.net/manual/en/mongocollection.batchinsert.php Should behave the same as insert, however, does not
+            // https://jira.mongodb.org/browse/PHP-383
+            // http://www.phpinternalsbook.com/zvals/memory_management.html#reference-counting-and-copy-on-write
+            // 
+            // TODO: Report bug to Mongo bug tracker
+            // 
+            $activity['DUMMY'] = 'DUMMY';
+            unset($activity['DUMMY']);
+            
+            $activities[] = $activity;
         }
 
         /* Commented out for now due to performance reasons

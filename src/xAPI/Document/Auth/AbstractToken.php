@@ -45,6 +45,10 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
             if ($scope->getName() === $permissionName || $scope->getName() === 'super') {
                 return true;
             }
+
+            if ($permissionName !== 'super' && $scope->getName() === 'all') {
+                return true;
+            }
         }
 
         return false;
