@@ -56,6 +56,8 @@ try {
     }
 }
 
+// Use Mongo's native long int
+ini_set('mongo.native_long', 1);
 
 // Only invoked if mode is "production"
 $app->configureMode('production', function () use ($app, $appRoot) {
