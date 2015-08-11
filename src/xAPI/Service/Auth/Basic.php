@@ -263,11 +263,20 @@ class Basic extends Service implements AuthInterface
             $permissionDocuments[] = $permissionDocument;
         }
 
+        if (is_numeric($params->get('expiresAt'))) {
+            $expiresAt = $params->get('expiresAt');
+        } else if (null === $params->get('expiresAt')) {
+            $expiresAt = null;
+        } else {
+            $expiresAt = new \DateTime($params->get('expiresAt'));
+            $expiresAt = $expiresAt->getTimestamp();
+        }
+
         $userService = new UserService($this->getSlim());
         $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
         $user->save();
 
-        $this->addToken($params->get('name'), $params->get('description'), $params->get('expiresAt'), $user, $scopeDocuments);
+        $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 
         return $this;
     }
