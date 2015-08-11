@@ -76,7 +76,7 @@ class User extends Document implements \JsonSerializable
 
     public function renderSummary()
     {
-        $return = ['email' => $this->_data['email'], 'permissions' => $this->_data['permissions']];
+        $return = ['email' => $this->_data['email'], 'permissions' => array_values($this->permissions)];
 
         return $return;
     }

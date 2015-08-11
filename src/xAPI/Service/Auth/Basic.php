@@ -236,8 +236,15 @@ class Basic extends Service implements AuthInterface
             $scopeDocuments[] = $scopeDocument;
         }
 
+        $permissionDocuments = [];
+        $permissions = $params->get('user')['permissions'];
+        foreach ($permissions as $permission) {
+            $permissionDocument = $this->getScopeByName($permission);
+            $permissionDocuments[] = $permissionDocument;
+        }
+
         $userService = new UserService($this->getSlim());
-        $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $params->get('user')['permissions']);
+        $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
         $user->save();
 
         $this->addToken($params->get('name'), $params->get('description'), $params->get('expiresAt'), $user, $scopeDocuments);
