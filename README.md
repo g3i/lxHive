@@ -5,8 +5,8 @@
 
 ## <a name="introduction" />Introduction
 
-**lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS). 
-**lxHive** logs and returns activity statements as defined in the [Experience API specification](https://github.com/adlnet/xAPI-Spec) (formerly TinCan API) currently at xAPI Version 1.0.3. 
+**lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
+**lxHive** logs and returns activity statements as defined in the [Experience API specification](https://github.com/adlnet/xAPI-Spec) (formerly TinCan API) currently at xAPI Version 1.0.3.
 
 The Experience API (also referred to as 'xAPI') is a learning software specification that allows online learning content and systems to interact allowing recording and tracking of all types of learning experiences. It is designed to replace the legacy SCORM Standard and is steered by the US Dept. of Defense [ADL](http://www.adlnet.gov/) (Advanced Distributed Learning). It allows for the efficient aggregation and analysis of learning data as well as allowing learning designers a flexible and intelligent way to design better learning experiences. The Experience API is able to accept learning experiences from any device and/or medium (mobile, tablet, desktop), both in an offline as well as online mode.
 
@@ -27,14 +27,14 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Requirements
 
-* PHP >= 5.4,
+* PHP >= 5.4, ith [mongo extension](http://php.net/manual/en/mongo.installation.php)
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
 * [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
 * [OpenSSL](https://www.openssl.org/)
 
-#### Notes: 
+#### Notes:
 
 * Make sure you have set the `date.timezone` setting in your php.ini
 
@@ -59,13 +59,32 @@ $ ./X user:create
 
 ```
 
-#### Notes: 
+5. Optionally: Further customise your configuration in `src/xAPI/Config/Config.yml`
+
+4. Set up you local file system:
+
+    * Create your storage directory as defined in `Config.yml > filesystem.local`.
+    * Create the required `files` and `log` sub directories.
+    * Assign the appropiate `r\w` permissions for your system.
+
+Default file storage structure:
+
+```
+[lxHivE]
+    |_ [storage]
+    |   |_ [files]
+    |   |_ [logs]
+    |
+    ...
+```
+
+#### Notes:
 
 * As an administrator you should first create a new user and authentication token for yourself and assign the *super* role to it.
 
 ## Documentation
 
-See the Wiki and the `docs` directory for more detailed documentation. 
+See the Wiki and the `docs` directory for more detailed documentation.
 
 ## Contributors
 
