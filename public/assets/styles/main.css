@@ -4,6 +4,24 @@ body{
     color: rgb(85, 86, 90);
     padding-bottom: 2em;
 }
+.text-center{
+    text-align: center;
+}
+
+/**
+ * Branding
+ */
+
+#LxHive-Logo,
+#Custom-Logo{
+    max-height: 50px;
+    margin: 0 auto;
+}
+
+/*
+ * Alerts
+ */
+
 .alert-error {
     position: relative;
     margin-bottom: 1em;
@@ -11,17 +29,17 @@ body{
     background-color: rgb(202, 60, 60);
     color: #ffffff;
 }
-.pure-button,
 .alert{
     border-radius: 5px;
 }
 ul.alert{
     list-style-type: none;
 }
-#lx_logo{
-    max-height: 50px;
-    margin: 0 auto;
-}
+
+/*
+ * Headlines
+ */
+
 h1,
 h2{
     text-align: center;
@@ -33,9 +51,17 @@ h1{
 h2{
     margin-top: 0;
     padding-top:0;
-}    
+}
+
+/*
+ * Buttons
+ */
+
+.pure-button{
+    border-radius: 5px;
+}
 pure-button{
-text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 .button-xlarge{
     font-weight: bold;
