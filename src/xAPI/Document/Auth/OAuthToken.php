@@ -46,11 +46,6 @@ class OAuthToken extends AbstractToken
         ];
     }
 
-    public function getExpired()
-    {
-        return (bool) !($this->getExpiresAt() > time());
-    }
-
     public function generateAuthority()
     {
         $slim = Slim::getInstance();
