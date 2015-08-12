@@ -40,6 +40,8 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
+#### Application install and set-up
+
 1. Install dependencies via `composer install`.
 2. Point your server's `DocumentRoot` directive to the `public` folder
 3. Set up your database & client account:
@@ -59,9 +61,13 @@ $ ./X user:create
 
 ```
 
-5. Optionally: Further customise your configuration in `src/xAPI/Config/Config.yml`
+#### Set-up file Storage and extended config
 
-4. Set up you local file system:
+1. Optionally: Further customise your configuration in `src/xAPI/Config/Config.yml`
+
+    * TODO: explain options
+
+2. Set up you local file system:
 
     * Create your storage directory as defined in `Config.yml > filesystem.local`.
     * Create the required `files` and `log` sub directories.
