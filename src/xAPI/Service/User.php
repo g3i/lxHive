@@ -27,8 +27,10 @@ namespace API\Service;
 use API\Service;
 use API\Resource;
 use API\Util\OAuth;
+use API\Util\Rememberme\MongoStorage as RemembermeMongoStorage;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
+use Birke\Rememberme;
 
 class User extends Service
 {
@@ -107,18 +109,48 @@ class User extends Service
         $this->single = true;
         $this->users = [$document];
 
-        //Set the session
+        // Set the session
         $_SESSION['userId'] = $document->getId();
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
+
+        // Set the Remember me cookie
+        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
+        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
+
+
+        if ($params->has('rememberMe')) {
+            $rememberMe->createCookie($document->getId());
+        } else {
+            $rememberMe->clearCookie();
+        }
 
         return $document;
     }
 
     public function loggedIn()
     {
+        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
+        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
+        
         if (isset($_SESSION['userId']) && isset($_SESSION['expiresAt']) && $_SESSION['expiresAt'] > time()) {
+            if(!empty($_COOKIE[$rememberMe->getCookieName()]) && !$rememberMe->cookieIsValid()) {
+                return false;
+            }
             $_SESSION['expiresAt'] = time() + 3600; //Renew session on every activity
             return true;
+        } else if { // Remember me cookie
+            $loginresult = $rememberMe->login();
+            if ($loginresult) {
+                // Load user into session and return true
+                // Set the session
+                $_SESSION['userId'] = $loginresult;
+                $_SESSION['expiresAt'] = time() + 3600; //1 hour
+                $_SESSION['rememberedByCookie'] = true;
+            } else {
+                if ($rememberMe->loginTokenWasInvalid()) {
+                    throw new \Exception('Remember me cookie invalid!', Resource::STATUS_BAD_REQUEST);
+                }
+            }
         } else {
             return false;
         }
