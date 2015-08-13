@@ -67,7 +67,7 @@ $app->configureMode('production', function () use ($app, $appRoot) {
     // Set up logging
     $logger = new Logger\MonologWriter([
         'handlers' => [
-            new StreamHandler($appRoot.'/storage/logs/'.date('Y-m-d').'.log'),
+            new StreamHandler($appRoot.'/storage/logs/production.'.date('Y-m-d').'.log'),
         ],
     ]);
 
@@ -82,7 +82,7 @@ $app->configureMode('development', function () use ($app, $appRoot) {
     // Set up logging
     $logger = new Logger\MonologWriter([
         'handlers' => [
-            new StreamHandler($appRoot.'/storage/logs/'.date('Y-m-d').'.log'),
+            new StreamHandler($appRoot.'/storage/logs/development.'.date('Y-m-d').'.log'),
         ],
     ]);
 
