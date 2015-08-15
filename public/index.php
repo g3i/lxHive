@@ -122,9 +122,14 @@ $app->hook('slim.before.router', function () use ($app) {
         $app->environment()['REQUEST_METHOD'] = strtoupper($method);
         mb_parse_str($app->request->getBody(), $postData);
         $parameters = new Set($postData);
-        $content = $parameters->get('content');
-        $app->environment()['slim.input'] = $content;
-        $parameters->remove('content');
+        if ($parameters->has('content')) {
+            $content = $parameters->get('content');
+            $app->environment()['slim.input'] = $content;
+            $parameters->remove('content');
+        } else {
+            // Content is the only valid body parameter...everything else are either headers or query parameters
+            $app->environment()['slim.input'] = '';
+        }
         $app->request->headers->replace($parameters->all());
         $app->environment()['slim.request.query_hash'] = $parameters->all();
     }
