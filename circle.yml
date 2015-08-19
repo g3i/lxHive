@@ -3,4 +3,4 @@ machine:
         version: 5.5.11
 dependencies:
     pre:
-        - pecl install mongo
+        - yes '' | pecl -q install -f mongo
