@@ -1,6 +1,6 @@
 machine:
-	php:
-		version: 5.5.11
+    php:
+        version: 5.5.11
 dependencies:
-	pre:
-		- pecl install mongo
+    pre:
+        - pecl install mongo
