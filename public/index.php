@@ -198,7 +198,7 @@ $app->hook('slim.before.dispatch', function () use ($app) {
     }
 
     // Content type check 
-    if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getContentType(), ['application/json', 'multipart/mixed'])) {
+    if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed'])) {
         // Bad Content-Type
         throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);;
     }
