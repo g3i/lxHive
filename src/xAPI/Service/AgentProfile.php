@@ -143,10 +143,11 @@ class AgentProfile extends Service
 
         $result = $cursor->findOne();
 
-        // Check If-Match and If-None-Match here
-        if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
-            throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        }
+        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
+        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
+        // if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
+        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
+        // }
 
         // If-Match first
         if ($request->headers('If-Match') && $result && ($this->trimHeader($request->headers('If-Match')) !== $result->getHash())) {
@@ -330,10 +331,11 @@ class AgentProfile extends Service
             throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
         }
 
-        // Check If-Match and If-None-Match here
-        if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
-            throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        }
+        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
+        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
+        // if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
+        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
+        // }
 
         // If-Match first
         if ($request->headers('If-Match') && $result && ($this->trimHeader($request->headers('If-Match')) !== $result->getHash())) {
