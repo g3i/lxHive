@@ -82,6 +82,8 @@ class ActivityState extends Service
                 $uniqueIdentifier = 'openid';
             } elseif (isset($agent['account'])) {
                 $uniqueIdentifier = 'account';
+            } else {
+                throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
             }
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -111,6 +113,8 @@ class ActivityState extends Service
             $uniqueIdentifier = 'openid';
         } elseif (isset($agent['account'])) {
             $uniqueIdentifier = 'account';
+        } else {
+            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
         }
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -159,6 +163,8 @@ class ActivityState extends Service
             $uniqueIdentifier = 'openid';
         } elseif (isset($agent['account'])) {
             $uniqueIdentifier = 'account';
+        } else {
+            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
         }
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -250,6 +256,8 @@ class ActivityState extends Service
             $uniqueIdentifier = 'openid';
         } elseif (isset($agent['account'])) {
             $uniqueIdentifier = 'account';
+        } else {
+            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
         }
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -322,6 +330,8 @@ class ActivityState extends Service
             $uniqueIdentifier = 'openid';
         } elseif (isset($agent['account'])) {
             $uniqueIdentifier = 'account';
+        } else {
+            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
         }
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
