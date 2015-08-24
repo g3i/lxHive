@@ -75,7 +75,7 @@ class MongoStorage implements StorageInterface
 
         $sessionDocument->setCredential($credential);
         $sessionDocument->setToken($token);
-        $sessionDocument->setPersistentToken($per);
+        $sessionDocument->setPersistentToken($persistentToken);
 
         $sessionDocument->save();
 

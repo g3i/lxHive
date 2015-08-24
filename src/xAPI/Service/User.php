@@ -133,12 +133,9 @@ class User extends Service
         $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
         
         if (isset($_SESSION['userId']) && isset($_SESSION['expiresAt']) && $_SESSION['expiresAt'] > time()) {
-            if(!empty($_COOKIE[$rememberMe->getCookieName()]) && !$rememberMe->cookieIsValid()) {
-                return false;
-            }
             $_SESSION['expiresAt'] = time() + 3600; //Renew session on every activity
             return true;
-        } else if { // Remember me cookie
+        } else if (!empty($_COOKIE[$rememberMe->getCookieName()]) && $rememberMe->cookieIsValid()) { // Remember me cookie
             $loginresult = $rememberMe->login();
             if ($loginresult) {
                 // Load user into session and return true
@@ -154,6 +151,23 @@ class User extends Service
         } else {
             return false;
         }
+    }
+
+    public function findById($id)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+
+        $result = $collection->getDocument($id);
+
+        return $result;
+    }
+
+    public function getLoggedIn()
+    {
+        $userId = $_SESSION['userId'];
+        $userDocument = $this->findById($userId);
+
+        return $userDocument;
     }
 
     public function addUser($email, $password, $permissions)

@@ -63,7 +63,7 @@ class Authorize extends Resource
         if ($this->userService->loggedIn()) {
             $this->oAuthService->authorizeGet($request);
             // Authorization is always requested
-            $view = new OAuthAuthorizeView(['service' => $this->oAuthService]);
+            $view = new OAuthAuthorizeView(['service' => $this->oAuthService, 'userService' => $this->userService]);
             $view = $view->renderGet();
             Resource::response(Resource::STATUS_OK, $view);
         } else {
