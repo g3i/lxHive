@@ -32,7 +32,7 @@ class AccessToken extends View
 {
     public function render()
     {
-        $accessTokenDocument = reset($this->service->getAccessTokens());
+        $accessTokenDocument = $this->service->getAccessTokens()[0];
 
         $view = [
             'token' => $accessTokenDocument->getToken(),

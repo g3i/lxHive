@@ -64,7 +64,7 @@ class Profile extends Resource
 
         if ($this->agentProfileService->getSingle()) {
             $view = $view->renderGetSingle();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
+            Resource::response(Resource::STATUS_OK, $view);
         } else {
             $view = $view->renderGet();
             Resource::jsonResponse(Resource::STATUS_OK, $view);

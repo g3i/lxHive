@@ -122,9 +122,14 @@ $app->hook('slim.before.router', function () use ($app) {
         $app->environment()['REQUEST_METHOD'] = strtoupper($method);
         mb_parse_str($app->request->getBody(), $postData);
         $parameters = new Set($postData);
-        $content = $parameters->get('content');
-        $app->environment()['slim.input'] = $content;
-        $parameters->remove('content');
+        if ($parameters->has('content')) {
+            $content = $parameters->get('content');
+            $app->environment()['slim.input'] = $content;
+            $parameters->remove('content');
+        } else {
+            // Content is the only valid body parameter...everything else are either headers or query parameters
+            $app->environment()['slim.input'] = '';
+        }
         $app->request->headers->replace($parameters->all());
         $app->environment()['slim.request.query_hash'] = $parameters->all();
     }
@@ -190,6 +195,12 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         $app->container->singleton('view', function () use ($twigContainer) {
             return $twigContainer;
         });
+    }
+
+    // Content type check 
+    if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
+        // Bad Content-Type
+        throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);;
     }
 });
 
