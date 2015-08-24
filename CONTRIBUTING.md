@@ -34,6 +34,7 @@ Use the following nomenclature when naming your branch:
   * If you are working on a bugfix, prefix the branch name with bugfix-*
   * If you are working on a new feature/improvement, prefix the branch name with feature-*
   * If you are working solely on increasing ADL test compliance, prefix the branch name with compliance-*
+  * You will also notice some branches named release-x.y.z (where x.y.z is a valid semantic versioning version), which will be opened by the core maintainers in preparation for a new release (ironing out bugs out of new features before the release is made available). 
 * Commit logical units of work.
 * Follow the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md), 
 [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md), 
