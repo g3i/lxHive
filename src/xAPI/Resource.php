@@ -194,11 +194,11 @@ abstract class Resource
      */
     public static function load($version, $resource, $subResource)
     {
-        $version = 'V'.$version;
+        $versionNamespace = $version->generateClassNamespace();
         if (null !== $subResource) {
-            $class = __NAMESPACE__.'\\Resource\\'.$version.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
+            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
         } else {
-            $class = __NAMESPACE__.'\\Resource\\'.$version.'\\'.ucfirst($resource);
+            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource);
         }
         if (!class_exists($class)) {
             return;

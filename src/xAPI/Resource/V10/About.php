@@ -34,7 +34,7 @@ class About extends Resource
     {
         $versions = $this->getSlim()->config('xAPI')['supported_versions'];
 
-        $view = new AboutView(['version' => $versions]);
+        $view = new AboutView(['versions' => $versions]);
         $view = $view->render();
 
         Resource::jsonResponse(Resource::STATUS_OK, $view);
