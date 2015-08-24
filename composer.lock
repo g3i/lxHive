@@ -4,8 +4,50 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fb65769a68b9ffc34b5786702e0aabe6",
+    "hash": "b6ddc86542484464ce6da8c57ac03732",
     "packages": [
+        {
+            "name": "birke/rememberme",
+            "version": "1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gbirke/rememberme.git",
+                "reference": "4e71b0d9c692db28ae78c7eea752c4599b87dc2c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gbirke/rememberme/zipball/4e71b0d9c692db28ae78c7eea752c4599b87dc2c",
+                "reference": "4e71b0d9c692db28ae78c7eea752c4599b87dc2c",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Birke\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriel Birke",
+                    "email": "gb@birke-software.de"
+                }
+            ],
+            "description": "Secure \"Remember Me\" functionality",
+            "homepage": "https://github.com/gbirke/rememberme",
+            "keywords": [
+                "cookie",
+                "remember",
+                "security"
+            ],
+            "time": "2015-07-22 18:26:14"
+        },
         {
             "name": "flynsarmy/slim-monolog",
             "version": "v1.0.1",
@@ -603,12 +645,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sokil/php-mongo.git",
-                "reference": "cbfb7e21d26b8a0c3bf9010ef58f6c0e904610f7"
+                "reference": "37b66fe3f0400990652e570b02d9246956901e5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sokil/php-mongo/zipball/cbfb7e21d26b8a0c3bf9010ef58f6c0e904610f7",
-                "reference": "cbfb7e21d26b8a0c3bf9010ef58f6c0e904610f7",
+                "url": "https://api.github.com/repos/sokil/php-mongo/zipball/37b66fe3f0400990652e570b02d9246956901e5a",
+                "reference": "37b66fe3f0400990652e570b02d9246956901e5a",
                 "shasum": ""
             },
             "require": {
@@ -652,7 +694,7 @@
                 "mongodb",
                 "odm"
             ],
-            "time": "2015-08-10 06:12:23"
+            "time": "2015-08-21 06:38:21"
         },
         {
             "name": "symfony/console",

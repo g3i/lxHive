@@ -30,6 +30,7 @@
                 <form class="pure-form pure-form-aligned" action="" method="POST">
                     <fieldset>
                         <h2>Authorize application <span>{{ service.client.name }}?</h2>
+                        <h5>Logged in as {{ userService.getLoggedIn().getEmail() }}</h5>
                         {% if branding.enabled and branding.header %}
                             {{ branding.header }}
                         {% endif %}
