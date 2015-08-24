@@ -37,6 +37,7 @@ use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use Slim\Views\Twig;
 use API\Service\Auth\Exception as AuthFailureException;
+use API\Util\Versioning;
 
 // Set up a new Slim instance - default mode is production (it is overriden with SLIM_MODE environment variable)
 $app = new Slim();
@@ -135,7 +136,7 @@ $app->hook('slim.before.router', function () use ($app) {
     }
 });
 
-// Parse version - TODO: create a Version class
+// Parse version
 $app->hook('slim.before.dispatch', function () use ($app) {
     // Version
     $app->container->singleton('version', function () use ($app) {
@@ -148,14 +149,10 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         if ($versionString === null) {
             throw new \Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
         } else {
-            $versions = explode('.', $versionString);
-            if (isset($versions[0]) && isset($versions[1])) {
-                $major = $versions[0];
-                $minor = $versions[1];
-                $version = $major.$minor;
-
+            try {
+                $version = Versioning::fromString($versionString);
                 return $version;
-            } else {
+            } catch (\InvalidArgumentException $e) {
                 throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
             }
         }
