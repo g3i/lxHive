@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>Authorize</title>
         <title>Log in to {{ name }}</title>
-        {% include 'header.twig' %}
+        {% include 'head.twig' %}
     </head>
     <body>
         <div class="main pure-g">
@@ -13,9 +13,9 @@
             <div class="pure-u-1 pure-u-md-1-3">
                 <h1>
                 {% if branding.enabled and branding.logo_path %}
-                    <img id="custom_logo" class="pure-img" src="{{ branding.logo_path }}" alt="lxHive" title="">
+                    <img id="custom-logo" class="pure-img" src="{{ branding.logo_path }}" alt="lxHive" title="">
                 {% else %}
-                    <img id="lx_logo" class="pure-img" src="/assets/images/lxHive.logo.png" alt="lxHive" title="">
+                    <img id="lxhive-logo" class="pure-img" src="/assets/images/lxHive.logo.png" alt="lxHive" title="">
                 {% endif %}
                 </h1>
 
@@ -30,6 +30,7 @@
                 <form class="pure-form pure-form-aligned" action="" method="POST">
                     <fieldset>
                         <h2>Authorize application <span>{{ service.client.name }}?</h2>
+                        <h5>Logged in as {{ userService.getLoggedIn().getEmail() }}</h5>
                         {% if branding.enabled and branding.header %}
                             {{ branding.header }}
                         {% endif %}

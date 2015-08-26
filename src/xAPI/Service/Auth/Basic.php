@@ -30,6 +30,7 @@ use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Document\User;
 use API\Service\User as UserService;
+use API\Util;
 
 class Basic extends Service implements AuthInterface
 {
@@ -114,8 +115,7 @@ class Basic extends Service implements AuthInterface
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
         if ($expiresAt !== null) {
-            $dateTime = new \DateTime($expiresAt);
-            if ($dateTime->getTimestamp() >= time()) {
+            if ($expiresAt->sec <= time()) {
                 throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
             }
         }
@@ -223,11 +223,34 @@ class Basic extends Service implements AuthInterface
             $body = json_decode($body, true);
         }
 
-        $params = new Set($body);
-
-        if ($params->get('user')['email'] === null || $params->get('user')['password'] === null || $params->get('user')['permissions'] === null || $params->get('name') === null || $params->get('description') === null || $params->get('expiresAt') === null || $params->get('scopes') === null) {
-            throw new \Exception('Invalid request', Resource::STATUS_BAD_REQUEST);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Invalid JSON posted. Cannot continue!', Resource::STATUS_BAD_REQUEST);
         }
+
+        $requestParams = new Set($body);
+
+        if ($requestParams->get('user')['email'] === null) {
+            throw new \Exception('Invalid request, user.email property not present!', Resource::STATUS_BAD_REQUEST);
+        }
+
+        $currentDate = new \DateTime();
+
+        $defaultParams = new Set([
+            'user' => [
+                'password' => 'password',
+                'permissions' => [
+                    'all'
+                ]
+            ],
+            'scopes' => [
+                'all'
+            ],
+            'name' => 'Token for ' . $requestParams->get('user')['email'],
+            'description' => 'Token generated at ' . Util\Date::dateTimeToISO8601($currentDate),
+            'expiresAt' => null
+        ]);
+
+        $params = new Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
 
         $scopeDocuments = [];
         $scopes = $params->get('scopes');
@@ -243,11 +266,20 @@ class Basic extends Service implements AuthInterface
             $permissionDocuments[] = $permissionDocument;
         }
 
+        if (is_numeric($params->get('expiresAt'))) {
+            $expiresAt = $params->get('expiresAt');
+        } else if (null === $params->get('expiresAt')) {
+            $expiresAt = null;
+        } else {
+            $expiresAt = new \DateTime($params->get('expiresAt'));
+            $expiresAt = $expiresAt->getTimestamp();
+        }
+
         $userService = new UserService($this->getSlim());
         $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
         $user->save();
 
-        $this->addToken($params->get('name'), $params->get('description'), $params->get('expiresAt'), $user, $scopeDocuments);
+        $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 
         return $this;
     }

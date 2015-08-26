@@ -26,6 +26,8 @@ namespace API\Console;
 
 use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -38,6 +40,13 @@ class UserCreateCommand extends Command
         $this
             ->setName('user:create')
             ->setDescription('Creates a new user')
+            ->setDefinition(
+                new InputDefinition(array(
+                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
+                    new InputOption('password', 'p', InputOption::VALUE_OPTIONAL),
+                    new InputOption('permissions', 'pm', InputOption::VALUE_OPTIONAL),
+                ))
+            )
         ;
     }
 
@@ -47,11 +56,19 @@ class UserCreateCommand extends Command
 
         $helper = $this->getHelper('question');
 
-        $question = new Question('Please enter an e-mail: ', 'untitled');
-        $email = $helper->ask($input, $output, $question);
+        if (null === $input->getOption('email')) {
+            $question = new Question('Please enter an e-mail: ', 'untitled');
+            $email = $helper->ask($input, $output, $question);
+        } else {
+            $email = $input->getOption('email');
+        }
 
-        $question = new Question('Please enter a password: ', '');
-        $password = $helper->ask($input, $output, $question);
+        if (null === $input->getOption('password')) {
+            $question = new Question('Please enter a password: ', '');
+            $password = $helper->ask($input, $output, $question);
+        } else {
+            $password = $input->getOption('password');
+        }
 
         $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
@@ -59,14 +76,18 @@ class UserCreateCommand extends Command
             $permissionsDictionary[$permission->getName()] = $permission;
         }
 
-        $question = new ChoiceQuestion(
-            'Please select which permissions you would like to enable (defaults to super). If you select super, all other permissions are also inherited: ',
-            array_keys($permissionsDictionary),
-            '0'
-        );
-        $question->setMultiselect(true);
+        if (null === $input->getOption('permissions')) {
+            $question = new ChoiceQuestion(
+                'Please select which permissions you would like to enable (defaults to super). If you select super, all other permissions are also inherited: ',
+                array_keys($permissionsDictionary),
+                '0'
+            );
+            $question->setMultiselect(true);
 
-        $selectedPermissionNames = $helper->ask($input, $output, $question);
+            $selectedPermissionNames = $helper->ask($input, $output, $question);
+        } else {
+            $selectedPermissionNames = explode(',', $input->getOption('permissions'));
+        }
 
         $selectedPermissions = [];
         foreach ($selectedPermissionNames as $selectedPermissionName) {

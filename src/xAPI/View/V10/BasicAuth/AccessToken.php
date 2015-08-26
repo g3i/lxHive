@@ -30,15 +30,15 @@ class AccessToken extends View
 {
     public function render()
     {
-        $accessTokenDocument = reset($this->service->getAccessTokens());
+        $accessTokenDocument = $this->service->getAccessTokens()[0];
 
         $view = [
             'key'       => $accessTokenDocument->getKey(),
             'secret'    => $accessTokenDocument->getSecret(),
-            'expiresAt' => $accessTokenDocument->getExpiresAt(),
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => $accessTokenDocument->getCreatedAt(),
-            'expired'   => $accessTokenDocument->getExpired(),
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
+            'expired'   => $accessTokenDocument->isExpired(),
             'scopes'    => array_values($accessTokenDocument->scopes),
             'user'      => $accessTokenDocument->user->renderSummary(),
         ];

@@ -30,20 +30,32 @@ use API\View;
 
 class AccessToken extends View
 {
-    public function renderGet()
+    public function render()
     {
-        $accessTokenDocument = reset($this->service->getAccessTokens());
+        $accessTokenDocument = $this->service->getAccessTokens()[0];
 
         $view = [
-            'token'     => $accessTokenDocument->getToken(),
-            'expiresAt' => $accessTokenDocument->getExpiresAt(),
+            'token' => $accessTokenDocument->getToken(),
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => $accessTokenDocument->getCreatedAt(),
-            'expired'   => $accessTokenDocument->getExpired(),
-            'scopes'    => array_values($accessTokenDocument->scopes),
-            'user'      => $accessTokenDocument->user->renderSummary(),
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
+            'expired' => $accessTokenDocument->isExpired(),
+            'scopes' => array_values($accessTokenDocument->scopes),
+            'user' => $accessTokenDocument->user->renderSummary(),
         ];
 
         return $view;
+    }
+
+    public function renderGet()
+    {
+        // POST is same as GET
+        return $this->render();
+    }
+
+    public function renderPost()
+    {
+        // POST is same as GET
+        return $this->render();
     }
 }

@@ -22,18 +22,11 @@
  * file that was distributed with this source code.
  */
 
-namespace API\View\V10;
+namespace API\Document\Auth;
 
-use API\View;
+use Sokil\Mongo\Document;
 
-//use API\Document\Statement as StatementDocument; Re-do later
-
-class About extends View
+class PersistentSession extends Document implements \JsonSerializable
 {
-    public function render()
-    {
-        $object = ['version' => $this->versions];
 
-        return $object;
-    }
 }

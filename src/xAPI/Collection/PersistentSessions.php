@@ -22,18 +22,14 @@
  * file that was distributed with this source code.
  */
 
-namespace API\View\V10;
+namespace API\Collection;
 
-use API\View;
+use Sokil\Mongo\Collection;
 
-//use API\Document\Statement as StatementDocument; Re-do later
-
-class About extends View
+class PersistentSessions extends Collection
 {
-    public function render()
+    public function getDocumentClassName(array $documentData = null)
     {
-        $object = ['version' => $this->versions];
-
-        return $object;
+        return '\\API\\Document\\Auth\\PersistentSession';
     }
 }
