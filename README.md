@@ -3,7 +3,7 @@
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
 
-* now also available as [Saas edition]{https://saas.lxhive.com/}
+* now also available as [Saas edition](https://saas.lxhive.com/}
 
 ## <a name="introduction" />Introduction
 
