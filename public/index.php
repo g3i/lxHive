@@ -184,7 +184,7 @@ $app->hook('slim.before.dispatch', function () use ($app) {
 
             try {
                 $token = $basicAuthService->extractToken($app->request);
-                $app->requestLog->addRelation('basicAuthToken', $token)->save();
+                $app->requestLog->addRelation('basicToken', $token)->save();
             } catch (AuthFailureException $e) {
                 // Ignore
             }
