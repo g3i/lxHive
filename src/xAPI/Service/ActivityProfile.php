@@ -174,7 +174,7 @@ class ActivityProfile extends Service
         $activityProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('activityProfiles', $activityProfileDocument)->save();
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         $this->single = true;
         $this->activityStates = [$activityProfileDocument];
@@ -246,7 +246,7 @@ class ActivityProfile extends Service
         $activityProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('activityProfiles', $activityProfileDocument)->save();
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         $this->single = true;
         $this->activityProfiles = [$activityProfileDocument];
@@ -298,7 +298,7 @@ class ActivityProfile extends Service
         }
 
         // Add to log
-        $this->getSlim()->log->addRelation('activityProfiles', $result)->save();
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
 
         $result->delete();
 

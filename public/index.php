@@ -159,8 +159,8 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         }
     });
 
-    // Logging 
-    $app->container->singleton('log', function () use ($app) {
+    // Request logging 
+    $app->container->singleton('requestLog', function () use ($app) {
         $logService = new LogService($app);
         $logDocument = $logService->logRequest($app->request);
 
@@ -177,14 +177,14 @@ $app->hook('slim.before.dispatch', function () use ($app) {
 
             try {
                 $token = $oAuthService->extractToken($app->request);
-                $app->log->addRelation('oAuthToken', $token)->save();
+                $app->requestLog->addRelation('oAuthToken', $token)->save();
             } catch (AuthFailureException $e) {
                 // Ignore
             }
 
             try {
                 $token = $basicAuthService->extractToken($app->request);
-                $app->log->addRelation('basicAuthToken', $token)->save();
+                $app->requestLog->addRelation('basicAuthToken', $token)->save();
             } catch (AuthFailureException $e) {
                 // Ignore
             }

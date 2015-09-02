@@ -218,7 +218,7 @@ class ActivityState extends Service
         $activityStateDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('activityStates', $activityStateDocument)->save();
+        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         $this->single = true;
         $this->activityStates = [$activityStateDocument];
@@ -296,7 +296,7 @@ class ActivityState extends Service
         $activityStateDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('activityStates', $activityStateDocument)->save();
+        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         $this->single = true;
         $this->activityStates = [$activityStateDocument];

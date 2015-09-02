@@ -202,7 +202,7 @@ class AgentProfile extends Service
         $agentProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('agentProfiles', $agentProfileDocument)->save();
+        $this->getSlim()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         $this->single = true;
         $this->activityStates = [$agentProfileDocument];
@@ -294,7 +294,7 @@ class AgentProfile extends Service
         $agentProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->log->addRelation('agentProfiles', $agentProfileDocument)->save();
+        $this->getSlim()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         $this->single = true;
         $this->activityProfiles = [$agentProfileDocument];
@@ -358,7 +358,7 @@ class AgentProfile extends Service
         }
 
         // Add to log
-        $this->getSlim()->log->addRelation('agentProfiles', $result)->save();
+        $this->getSlim()->requestLog->addRelation('agentProfiles', $result)->save();
 
         $result->delete();  
 
