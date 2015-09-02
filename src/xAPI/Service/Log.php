@@ -38,6 +38,7 @@ class Log extends Service
     public function logRequest($request)
     {
         $collection  = $this->getDocumentManager()->getCollection('logs');
+        $document = $collection->createDocument();
 
         $document->setIp($request->getIp());
         $document->setMethod($request->getMethod());
