@@ -2,7 +2,8 @@
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6/mini.png)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
+
+* now also available as [Saas edition](https://saas.lxhive.com/)
 
 ## <a name="introduction" />Introduction
 
