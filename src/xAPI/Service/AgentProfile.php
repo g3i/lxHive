@@ -201,6 +201,9 @@ class AgentProfile extends Service
         $agentProfileDocument->setHash(sha1($rawBody));
         $agentProfileDocument->save();
 
+        // Add to log
+        $this->getSlim()->log->addRelation('agentProfiles', $agentProfileDocument)->save();
+
         $this->single = true;
         $this->activityStates = [$agentProfileDocument];
 
@@ -290,6 +293,9 @@ class AgentProfile extends Service
         $agentProfileDocument->setHash(sha1($rawBody));
         $agentProfileDocument->save();
 
+        // Add to log
+        $this->getSlim()->log->addRelation('agentProfiles', $agentProfileDocument)->save();
+
         $this->single = true;
         $this->activityProfiles = [$agentProfileDocument];
 
@@ -351,7 +357,10 @@ class AgentProfile extends Service
             }
         }
 
-        $result->delete();
+        // Add to log
+        $this->getSlim()->log->addRelation('agentProfiles', $result)->save();
+
+        $result->delete();  
 
         return $this;
     }
