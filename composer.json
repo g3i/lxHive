@@ -16,16 +16,17 @@
         "slim/slim": "2.*",
         "techsterx/slim-config-yaml": "dev-master",
         "flynsarmy/slim-monolog": "~1.0",
-        "sokil/php-mongo": "dev-master",
+        "sokil/php-mongo": "~1.13",
         "justinrainbow/json-schema": "dev-master",
         "league/url": "~3.3",
-        "rhumsaa/uuid": "~2.8",
+        "ramsey/uuid": "~2.8",
         "league/flysystem": "~0.5",
         "symfony/console": "*",
         "slim/views": "~0.1",
         "twig/twig": "~1.18",
         "symfony/yaml": "~2.6",
-        "birke/rememberme": "~1.0"
+        "birke/rememberme": "~1.0",
+        "sokil/php-mongo-migrator": "~0.2"
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*"

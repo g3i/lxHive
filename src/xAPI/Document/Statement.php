@@ -106,6 +106,17 @@ class Statement extends Document implements JsonSerializable
         }
     }
 
+    public function isReferencing()
+    {
+        if (isset($this->_data['statement']['object']['objectType'])
+            && ($this->_data['statement']['object']['objectType'] = 'StatementRef'))
+        {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getReferencedStatement()
     {
         $referencedId = $this->_data['statement']['object']['id'];

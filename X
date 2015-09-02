@@ -55,6 +55,11 @@ use API\Console\OAuthClientListCommand;
 use API\Console\AuthScopeCreateCommand;
 use API\Console\SetupDbCommand;
 use API\Console\SetupOAuthCommand;
+use Sokil\Mongo\Migrator\Console\Command\Create as MigrationCreateCommand;
+use Sokil\Mongo\Migrator\Console\Command\Init as MigrationInitCommand;
+use Sokil\Mongo\Migrator\Console\Command\Migrate as MigrationMigrateCommand;
+use Sokil\Mongo\Migrator\Console\Command\Rollback as MigrationRollbackCommand;
+use Sokil\Mongo\Migrator\Console\Command\Status as MigrationStatusCommand;
 
 $application = new Application();
 $application->add(new UserCreateCommand());
@@ -67,6 +72,21 @@ $application->add(new OAuthClientListCommand());
 $application->add(new AuthScopeCreateCommand());
 $application->add(new SetupDbCommand());
 $application->add(new SetupOAuthCommand());
+$migrationCreateCommand = new MigrationCreateCommand();
+$migrationCreateCommand->setName('db:migration:create');
+$migrationInitCommand = new MigrationInitCommand();
+$migrationInitCommand->setName('db:migration:init');
+$migrationMigrateCommand = new MigrationMigrateCommand();
+$migrationMigrateCommand->setName('db:migration:migrate');
+$migrationRollbackCommand = new MigrationRollbackCommand();
+$migrationRollbackCommand->setName('db:migration:rollback');
+$migrationStatusCommand = new MigrationStatusCommand();
+$migrationStatusCommand->setName('db:migration:status');
+$application->add($migrationCreateCommand);
+$application->add($migrationInitCommand);
+$application->add($migrationMigrateCommand);
+$application->add($migrationRollbackCommand);
+$application->add($migrationStatusCommand);
 $application->run();
  
 ?>

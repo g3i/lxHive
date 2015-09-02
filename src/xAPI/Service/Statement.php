@@ -158,96 +158,180 @@ class Statement extends Service
             if ($params->has('related_agents') && $params->get('related_agents') === 'true') {
                 if ($uniqueIdentifier === 'account') {
                     $cursor->whereOr(
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.authority.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.authority.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.context.team.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.context.team.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.object.objectType', 'SubStatement'),
+                                $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            )
                         ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                        ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.authority.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.authority.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                        ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.context.team.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.context.team.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                        ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                        ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.object.objectType', 'SubStatement'),
-                            $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.authority.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.authority.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.context.team.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.context.team.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.context.instructor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.context.instructor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.object.objectType', 'SubStatement'),
+                                $collection->expression()->where('references.object.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.object.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            )
                         )
                     );
                 } else {
                     $cursor->whereOr(
-                        $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->where('statement.authority.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->where('statement.context.team.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.object.objectType', 'SubStatement'),
-                            $collection->expression()->where('statement.object.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('statement.authority.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('statement.context.team.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('statement.context.instructor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.object.objectType', 'SubStatement'),
+                                $collection->expression()->where('statement.object.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                            )
+                        ),
+                        $collection->expression()->whereOr(
+                            $collection->expression()->where('references.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('references.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('references.authority.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('references.context.team.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('references.context.instructor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.object.objectType', 'SubStatement'),
+                                $collection->expression()->where('references.object.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                            )
                         )
                     );
                 }
             } else {
                 if ($uniqueIdentifier === 'account') {
                     $cursor->whereOr(
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            )
                         ),
-                        $collection->expression()->whereAnd(
-                            $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
-                            $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            ),
+                            $collection->expression()->whereAnd(
+                                $collection->expression()->where('references.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
+                                $collection->expression()->where('references.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
+                            )
                         )
                     );
                 } else {
                     $cursor->whereOr(
-                        $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                        $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                        $collection->expression()->whereOr(
+                            $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                        ),
+                        $collection->expression()->whereOr(
+                            $collection->expression()->where('references.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
+                            $collection->expression()->where('references.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
+                        )
                     );
                 }
             }
         }
 
         if ($params->has('verb')) {
-            $cursor->where('statement.verb.id', $params->get('verb'));
+            $cursor->whereOr(
+                $collection->expression()->where('statement.verb.id', $params->get('verb')),
+                $collection->expression()->where('references.verb.id', $params->get('verb'))
+            );
         }
 
-        // This could probably be optimized
         if ($params->has('activity')) {
             // Handle related
             if ($params->has('related_activities') && $params->get('related_activities') === 'true') {
                 $cursor->whereOr(
-                    $collection->expression()->where('statement.object.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.category.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.grouping.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.other.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
-                    $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
-                    $collection->expression()->whereAnd(
-                        $collection->expression()->where('statement.object.objectType', 'SubStatement'),
-                        $collection->expression()->where('statement.object.object', $params->get('activity'))
+                    $collection->expression()->whereOr(
+                        $collection->expression()->where('statement.object.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.category.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.grouping.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.other.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->whereAnd(
+                            $collection->expression()->where('statement.object.objectType', 'SubStatement'),
+                            $collection->expression()->where('statement.object.object', $params->get('activity'))
+                        )
+                    ),
+                    $collection->expression()->whereOr(
+                        $collection->expression()->where('references.object.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.category.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.grouping.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.other.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->where('references.context.contextActivities.parent.id', $params->get('activity')),
+                        $collection->expression()->whereAnd(
+                            $collection->expression()->where('references.object.objectType', 'SubStatement'),
+                            $collection->expression()->where('references.object.object', $params->get('activity'))
+                        )
                     )
                 );
             } else {
-                $cursor->where('statement.object.id', $params->get('activity'));
+                $cursor->whereOr(
+                    $collection->expression()->where('statement.object.id', $params->get('activity')),
+                    $collection->expression()->where('references.object.id', $params->get('activity'))
+                );
             }
         }
 
         if ($params->has('registration')) {
-            $cursor->where('statement.context.registration', $params->get('registration'));
+            $cursor->whereOr(
+                $collection->expression()->where('statement.context.registration', $params->get('registration')),
+                $collection->expression()->where('references.context.registration', $params->get('registration'))
+            );
         }
 
+        // Date based filters
         if ($params->has('since')) {
             $since = Util\Date::dateStringToMongoDate($params->get('since'));
             $cursor->whereGreaterOrEqual('mongo_timestamp', $since);
@@ -388,6 +472,17 @@ class Statement extends Service
                 $statementDocument->setDefaultTimestamp();
                 $statementDocument->fixAttachmentLinks($attachmentBase);
                 $statementDocument->setDefaultId();
+                if ($statementDocument->isReferencing()) {
+                    // Copy values of referenced statement chain inside current statement for faster query-ing
+                    // (space-time tradeoff)
+                    $referencedStatement = $statementDocument->getReferencedStatement();
+
+                    $existingReferences = [];
+                    if (null !== $referencedStatement->getReferences()) {
+                        $existingReferences = $referencedStatement->getReferences();
+                    }
+                    $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
+                }
                 $statements[] = $statementDocument->toArray();
                 $this->statements[] = $statementDocument;
                 if ($statementDocument->isVoiding()) {
@@ -418,6 +513,18 @@ class Statement extends Service
             $statementDocument->setDefaultTimestamp();
             $statementDocument->fixAttachmentLinks($attachmentBase);
             $statementDocument->setDefaultId();
+
+            if ($statementDocument->isReferencing()) {
+                // Copy values of referenced statement chain inside current statement for faster query-ing
+                // (space-time tradeoff)
+                $referencedStatement = $statementDocument->getReferencedStatement();
+
+                $existingReferences = [];
+                if (null !== $referencedStatement->getReferences()) {
+                    $existingReferences = $referencedStatement->getReferences();
+                }
+                $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
+            }
 
             if ($statementDocument->isVoiding()) {
                 $referencedStatement = $statementDocument->getReferencedStatement();
@@ -502,6 +609,33 @@ class Statement extends Service
             $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
             $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
             $statementDocument->setDefaultTimestamp();
+            $statementDocument->fixAttachmentLinks($attachmentBase);
+
+            if ($statementDocument->isReferencing()) {
+                // Copy values of referenced statement chain inside current statement for faster query-ing
+                // (space-time tradeoff)
+                $referencedStatement = $statementDocument->getReferencedStatement();
+
+                $existingReferences = [];
+                if (null !== $referencedStatement->getReferences()) {
+                    $existingReferences = $referencedStatement->getReferences();
+                }
+                $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
+            }
+
+            if ($statementDocument->isVoiding()) {
+                $referencedStatement = $statementDocument->getReferencedStatement();
+                $referencedStatement->setVoided(true);
+                $referencedStatement->save();
+            }
+
+            if ($this->getAccessToken()->hasPermission('define')) {
+                $activities = $statementDocument->extractActivities();
+                if (count($activities) > 0) {
+                    $activityCollection->insertMultiple($activities);
+                }
+            }
+
             $statementDocument->save();
 
             $this->single = true;
