@@ -555,13 +555,22 @@ class Statement extends Service
      */
     public function statementPut($request)
     {
+        // Check for multipart request
+        if ($request->isMultipart()) {
+            $jsonRequest = $request->parts()->get(0);
+        } else {
+            $jsonRequest = $request;
+        }
+
+
         // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
         // TODO: Move header validation in json-schema as well
-        if ($request->getMediaType() !== 'application/json') {
+        if ($jsonRequest->getMediaType() !== 'application/json') {
             throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
         }
 
-        $body = $request->getBody();
+        // Validation has been completed already - everyhing is assumed to be valid
+        $body = $jsonRequest->getBody();
         $body = json_decode($body, true);
 
         // Some clients escape the JSON - handle them
@@ -569,11 +578,52 @@ class Statement extends Service
             $body = json_decode($body, true);
         }
 
+        // Save attachments - this could be in a queue perhaps...
+        if ($request->isMultipart()) {
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
+
+            $attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
+
+            $partCount = $request->parts()->count();
+
+            for ($i = 1; $i < $partCount; $i++) {
+                $part           = $request->parts()->get($i);
+
+                $attachmentBody = $part->getBody();
+
+                $detectedEncoding = mb_detect_encoding($attachmentBody);
+                $contentEncoding = $part->headers('Content-Transfer-Encoding');
+
+                if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
+                    try {
+                        $attachmentBody = iconv('UTF-8', 'ISO-8859-1//IGNORE', $attachmentBody);
+                    } catch (\Exception $e) {
+                        //Use raw file on failed conversion (do nothing!)
+                    }
+                }
+
+                $hash           = $part->headers('X-Experience-API-Hash');
+                $contentType    = $part->headers('Content-Type');
+
+                $attachmentDocument = $attachmentCollection->createDocument();
+                $attachmentDocument->setSha2($hash);
+                $attachmentDocument->setContentType($contentType);
+                $attachmentDocument->setTimestamp(new MongoDate());
+                $attachmentDocument->save();
+
+                $fsAdapter->put($hash, $attachmentBody);
+            }
+        }
+
+        $attachmentBase = $this->getSlim()->url->getBaseUrl().$this->getSlim()->config('filesystem')['exposed_url'];
+
+
         // Single
         $params = new Set($request->get());
 
-        $collection  = $this->getDocumentManager()->getCollection('statements');
-        $cursor      = $collection->find();
+        $activityCollection  = $this->getDocumentManager()->getCollection('activities');
+        $collection          = $this->getDocumentManager()->getCollection('statements');
+        $cursor              = $collection->find();
 
         // Single statement
         $cursor->where('statement.id', $params->get('statementId'));
