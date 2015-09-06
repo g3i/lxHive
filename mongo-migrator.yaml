@@ -1,0 +1,29 @@
+default_environment: development
+
+path:
+    migrations: migrations
+    
+environments:
+    development:
+        dsn: mongodb://localhost
+        
+        default_database: test
+        
+        log_database: test
+        log_collection: migrations
+    
+    staging:
+        dsn: mongodb://localhost
+        
+        default_database: test
+        
+        log_database: test
+        log_collection: migrations
+    
+    production:
+        dsn: mongodb://localhost
+        
+        default_database: test
+        
+        log_database: test
+        log_collection: migrations
