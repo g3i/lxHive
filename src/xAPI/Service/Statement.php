@@ -481,7 +481,8 @@ class Statement extends Service
                     if (null !== $referencedStatement->getReferences()) {
                         $existingReferences = $referencedStatement->getReferences();
                     }
-                    $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
+                    $existingReferences[] = $referencedStatement->getStatement();
+                    $statementDocument->setReferences($existingReferences);
                 }
                 $statements[] = $statementDocument->toArray();
                 $this->statements[] = $statementDocument;
@@ -523,7 +524,9 @@ class Statement extends Service
                 if (null !== $referencedStatement->getReferences()) {
                     $existingReferences = $referencedStatement->getReferences();
                 }
-                $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
+                $existingReferences[] = $referencedStatement->getStatement();
+
+                $statementDocument->setReferences($existingReferences);
             }
 
             if ($statementDocument->isVoiding()) {
