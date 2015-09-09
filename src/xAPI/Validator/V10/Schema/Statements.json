@@ -372,17 +372,16 @@
                     },
                     "patternProperties": {
                         "^(choices|scale|source|target|steps)$": {
-                            "type": "object",
-                            "required": ["id"],
-                            "properties": {
-                                "id": {
-                                    "type": "string"
+                            "type": ["object", "array"],
+                            "oneOf" : [
+                                {
+                                    "$ref": "Statements.json#/definitions/interaction"
                                 },
-                                "description": {
-                                    "$ref": "Statements.json#/definitions/languagemap"
+                                {
+                                    "type": "array",
+                                    "items": {"$ref": "Statements.json#/definitions/interaction"}
                                 }
-                            },
-                            "additionalProperties": false
+                            ]
                         }
                     },
                     "additionalProperties": false
@@ -598,6 +597,19 @@
                     "format": "uri"
                 }
             }
+        },
+        "interaction": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "description": {
+                    "$ref": "Statements.json#/definitions/languagemap"
+                }
+            },
+            "additionalProperties": false
         }
     }
 }
