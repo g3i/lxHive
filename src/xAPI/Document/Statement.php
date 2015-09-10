@@ -98,8 +98,19 @@ class Statement extends Document implements JsonSerializable
         if (isset($this->_data['statement']['verb']['id'])
             && ($this->_data['statement']['verb']['id'] === 'http://adlnet.gov/expapi/verbs/voided')
             && isset($this->_data['statement']['object']['objectType'])
-            && ($this->_data['statement']['object']['objectType'] = 'StatementRef')
+            && ($this->_data['statement']['object']['objectType'] === 'StatementRef')
         ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isReferencing()
+    {
+        if (isset($this->_data['statement']['object']['objectType'])
+            && ($this->_data['statement']['object']['objectType'] === 'StatementRef'))
+        {
             return true;
         } else {
             return false;
