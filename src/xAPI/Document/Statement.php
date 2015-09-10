@@ -44,6 +44,7 @@ class Statement extends Document implements JsonSerializable
         ],
         'mongo_timestamp' => null,
         'voided'          => false,
+        'logId'           => null
     ];
 
     public function setStatement($statement)

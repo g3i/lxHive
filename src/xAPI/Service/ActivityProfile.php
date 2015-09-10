@@ -173,6 +173,9 @@ class ActivityProfile extends Service
         $activityProfileDocument->setHash(sha1($rawBody));
         $activityProfileDocument->save();
 
+        // Add to log
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+
         $this->single = true;
         $this->activityStates = [$activityProfileDocument];
 
@@ -242,6 +245,9 @@ class ActivityProfile extends Service
         $activityProfileDocument->setHash(sha1($rawBody));
         $activityProfileDocument->save();
 
+        // Add to log
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+
         $this->single = true;
         $this->activityProfiles = [$activityProfileDocument];
 
@@ -290,6 +296,9 @@ class ActivityProfile extends Service
                 throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
             }
         }
+
+        // Add to log
+        $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
 
         $result->delete();
 

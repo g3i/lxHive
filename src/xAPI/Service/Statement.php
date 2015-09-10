@@ -497,6 +497,9 @@ class Statement extends Service
                         $activityCollection->insertMultiple($activities);
                     }
                 }
+
+                // Add to log
+                $this->getSlim()->requestLog->addRelation('statements', $statementDocument)->save();
             }
             $collection->insertMultiple($statements); // Batch operation is much faster
         // Single statement
@@ -543,6 +546,9 @@ class Statement extends Service
             }
 
             $statementDocument->save();
+
+            // Add to log
+            $this->getSlim()->requestLog->addRelation('statements', $statementDocument)->save();
 
             $this->single = true;
             $this->statements = [$statementDocument];
@@ -690,6 +696,9 @@ class Statement extends Service
             }
 
             $statementDocument->save();
+
+            // Add to log
+            $this->getSlim()->requestLog->addRelation('statements', $statementDocument)->save();
 
             $this->single = true;
             $this->statements = [$statementDocument];
