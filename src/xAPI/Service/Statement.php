@@ -497,12 +497,16 @@ class Statement extends Service
                         $activityCollection->insertMultiple($activities);
                     }
                 }
+                // Save statement
+                $statementDocument->save();
 
                 // Add to log
                 $this->getSlim()->requestLog->addRelation('statements', $statementDocument)->save();
             }
-            $collection->insertMultiple($statements); // Batch operation is much faster
-        // Single statement
+            // $collection->insertMultiple($statements); // Batch operation is much faster ~600%
+            // However, because we add every single statement to the access log, we can't use it
+            // The only way to still use (fast) batch inserts would be to move the attachment of
+            // statements to their respective log entries in a async queue!
         } else {
             $statementDocument = $collection->createDocument();
             // Overwrite authority - unless it's a super token and manual authority is set
