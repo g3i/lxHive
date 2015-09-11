@@ -18,20 +18,26 @@ class StatementRefs extends \Sokil\Mongo\Migrator\AbstractMigration
 
     private function addReferences($statementDocument)
     {
-    	if ($statementDocument->isReferencing()) {
-            $referencedStatement = $statementDocument->getReferencedStatement();
+    	try {
+	    	if ($statementDocument->isReferencing()) {
+	 
+	    		$referencedStatement = $statementDocument->getReferencedStatement();
 
-            if ($referencedStatement->isReferencing()) {
-            	$this->addReferences($referencedStatement->getReferencedStatement());
-            }
+	            if ($referencedStatement->isReferencing()) {
+	            	$this->addReferences($referencedStatement);
+	            }
 
-            $existingReferences = [];
-            if (null !== $referencedStatement->getReferences()) {
-                $existingReferences = $referencedStatement->getReferences();
-            }
-            $statementDocument->setReferences(array_push($existingReferences, $referencedStatement->getStatement()));
-        	$statementDocument->save();
-        }
+	            $existingReferences = [];
+	            if (null !== $referencedStatement->getReferences()) {
+	                $existingReferences = $referencedStatement->getReferences();
+	            }
+	            $existingReferences[] = $referencedStatement->getStatement();
+	            $statementDocument->setReferences($existingReferences);
+	        	$statementDocument->save();
+	        }
+		} catch (\Exception $e) {
+			return false;
+		}
     }
     
     public function down()
@@ -51,7 +57,7 @@ class StatementRefs extends \Sokil\Mongo\Migrator\AbstractMigration
             $referencedStatement = $statementDocument->getReferencedStatement();
 
             if ($referencedStatement->isReferencing()) {
-            	$this->removeReferences($referencedStatement->getReferencedStatement());
+            	$this->removeReferences($referencedStatement);
             }
 
             $noReferences = [];
