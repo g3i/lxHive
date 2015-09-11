@@ -35,6 +35,7 @@ use Slim\Helper\Set;
 use Sokil\Mongo\Client;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
+use API\Service\Log as LogService;
 use Slim\Views\Twig;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
@@ -158,6 +159,14 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         }
     });
 
+    // Request logging 
+    $app->container->singleton('requestLog', function () use ($app) {
+        $logService = new LogService($app);
+        $logDocument = $logService->logRequest($app->request);
+
+        return $logDocument;
+    });
+
     // Auth - token
     $app->container->singleton('auth', function () use ($app) {
         if (!$app->request->isOptions() && !($app->request->getPathInfo() === '/about')) {
@@ -168,12 +177,14 @@ $app->hook('slim.before.dispatch', function () use ($app) {
 
             try {
                 $token = $oAuthService->extractToken($app->request);
+                $app->requestLog->addRelation('oAuthToken', $token)->save();
             } catch (AuthFailureException $e) {
                 // Ignore
             }
 
             try {
                 $token = $basicAuthService->extractToken($app->request);
+                $app->requestLog->addRelation('basicToken', $token)->save();
             } catch (AuthFailureException $e) {
                 // Ignore
             }

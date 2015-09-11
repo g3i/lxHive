@@ -109,7 +109,7 @@ class BasicTokenCreateCommand extends Command
         
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
-                'Please select which scopes you would like to enable (defaults to super). If you select super, all other permissions are also inherited: ',
+                'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
                 array_keys($scopesDictionary),
                 '0'
             );

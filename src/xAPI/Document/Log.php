@@ -22,42 +22,30 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Document\Auth;
+namespace API\Document;
 
-use Slim\Slim;
+use Sokil\Mongo\Document;
 
-class BasicToken extends AbstractToken
+class Log extends Document
 {
     protected $_data = [
-        'userId'           => null,
-        'key'              => null,
-        'secret'           => null,
-        'expiresAt'        => null,
-        'createdAt'        => null,
+        'ip'                => null,
+        'method'            => null,
+        'endpoint'          => null,
+        'timestamp'         => null,
+        'basicTokenId'      => null,
+        'oAuthTokenId'      => null
     ];
 
     public function relations()
     {
         return [
-            'user' => [self::RELATION_BELONGS, 'users', 'userId'],
-            'scopes' => [self::RELATION_MANY_MANY, 'authScopes', 'scopeIds', true],
-            'logs' => [self::RELATION_HAS_MANY, 'logs', 'basicTokenId']
+            'basicToken'       => [self::RELATION_BELONGS, 'basicTokens', 'basicTokenId'],
+            'oAuthToken'       => [self::RELATION_BELONGS, 'oAuthTokens', 'oAuthTokenId'],
+            'statements'       => [self::RELATION_HAS_MANY, 'statements', 'logId'],
+            'activityProfiles' => [self::RELATION_HAS_MANY, 'activityProfiles', 'logId'],
+            'activityStates'   => [self::RELATION_HAS_MANY, 'activityStates', 'logId'],
+            'agentProfiles'    => [self::RELATION_HAS_MANY, 'agentProfiles', 'logId']
         ];
-    }
-
-    public function generateAuthority()
-    {
-        $slim = Slim::getInstance();
-        $url = $slim->url;
-        $host = $url->getHost()->__toString();
-        $authority = [
-            'objectType' => 'Agent',
-            'account'    => [
-                'homePage' => $host,
-                'name'     => $this->user->getEmail(),
-            ],
-        ];
-
-        return $authority;
     }
 }

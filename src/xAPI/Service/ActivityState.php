@@ -217,6 +217,9 @@ class ActivityState extends Service
         $activityStateDocument->setHash(sha1($rawBody));
         $activityStateDocument->save();
 
+        // Add to log
+        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
+
         $this->single = true;
         $this->activityStates = [$activityStateDocument];
 
@@ -291,6 +294,9 @@ class ActivityState extends Service
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($rawBody));
         $activityStateDocument->save();
+
+        // Add to log
+        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         $this->single = true;
         $this->activityStates = [$activityStateDocument];
