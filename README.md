@@ -29,7 +29,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Requirements
 
-* PHP >= 5.4, ith [mongo extension](http://php.net/manual/en/mongo.installation.php)
+* PHP >= 5.4, with [mongo extension](http://php.net/manual/en/mongo.installation.php) installed
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
