@@ -346,6 +346,10 @@
                             "type": "string",
                             "format": "uri"
                         },
+                        "moreInfo": {
+                            "type": "string",
+                            "format": "uri"
+                        },
                         "interactionType": {
                             "enum": [
                                 "true-false",
