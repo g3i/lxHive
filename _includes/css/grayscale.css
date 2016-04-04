@@ -228,7 +228,7 @@ a:focus {
   -moz-animation-timing-function: linear;
 }
 
-@-webkit-keyframes pulse {  
+@-webkit-keyframes pulse {
   0 {
   -webkit-transform: scale(1);
   transform: scale(1);
@@ -245,7 +245,7 @@ a:focus {
   }
 }
 
-@-moz-keyframes pulse {  
+@-moz-keyframes pulse {
   0 {
   -moz-transform: scale(1);
   transform: scale(1);
@@ -407,6 +407,20 @@ body {
   background-size: cover;
   -o-background-size: cover;
 }
+
+.features-section .feature {
+    margin-bottom: 20px;
+    padding: 20px;
+}
+.features-section .feature p:last-child{
+    margin-bottom: 0;
+}
+
+.features-section .feature .logo-wrapper{
+height: 100px;
+   max-height: 100px;
+}
+
 .features-section.light{
   background-color:{{ site.color.body-bg }};
 }
