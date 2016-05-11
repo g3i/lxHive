@@ -346,6 +346,10 @@
                             "type": "string",
                             "format": "uri"
                         },
+                        "moreInfo": {
+                            "type": "string",
+                            "format": "uri"
+                        },
                         "interactionType": {
                             "enum": [
                                 "true-false",
@@ -392,7 +396,7 @@
         "extensions": {
             "patternProperties": {
                 "^[a-zA-Z][a-zA-Z+.-]*:": {
-                    "type": ["string", "number"]
+                    "type": ["string", "number", "object"]
                 }
             },
             "additionalProperties": false
