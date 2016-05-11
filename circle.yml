@@ -1,6 +1,3 @@
-machine:
-    php:
-        version: 5.5.11
 dependencies:
     pre:
         - yes '' | pecl -q install -f mongo
