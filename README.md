@@ -1,6 +1,8 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
+* v0.9.1
+
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
 
 * now also available as [Saas edition](https://saas.lxhive.com/)
