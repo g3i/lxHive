@@ -67,7 +67,7 @@ $app->configureMode('production', function () use ($app, $appRoot) {
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
 
     // Debug mode
-    if($app->debug){
+    if ($app->debug) {
         $app->log->setLevel(\Slim\Log::DEBUG);
     }
 
@@ -87,7 +87,7 @@ $app->configureMode('development', function () use ($app, $appRoot) {
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
 
     // Debug mode
-    if($app->debug){
+    if ($app->debug) {
         $app->log->setLevel(\Slim\Log::DEBUG);
     }
 
