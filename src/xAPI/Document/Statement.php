@@ -232,6 +232,37 @@ class Statement extends Document implements JsonSerializable
 
     public function renderIds()
     {
-        throw new \InvalidArgumentException('The \'ids\' statement format is currently not supported.', Resource::STATUS_NOT_IMPLEMENTED);
+        $statement = $this->getStatement();
+
+        if ($statement['actor']['objectType'] === 'Group') {
+            $statement['actor'] = array_map(function ($singleMember) {
+                return $this->simplifyObject($singleMember);
+            }, $statement['actor']);
+        } else {
+            $statement['actor'] = $this->simplifyObject($statement['actor']);
+        }
+
+        $statement['object'] = $this->simplifyObject($statement['object']);
+
+        return $statement;
+    }
+
+    private function simplifyObject($object)
+    {
+        if (isset($object['mbox'])) {
+            $uniqueIdentifier = 'mbox';
+        } elseif (isset($object['mbox_sha1sum'])) {
+            $uniqueIdentifier = 'mbox_sha1sum';
+        } elseif (isset($object['openid'])) {
+            $uniqueIdentifier = 'openid';
+        } elseif (isset($object['account'])) {
+            $uniqueIdentifier = 'account';
+        }
+        $object = [
+            'objectType' => $uniqueIdentifier,
+            $uniqueIdentifier => $object[$uniqueIdentifier]
+        ];
+
+        return $object;
     }
 }
