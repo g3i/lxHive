@@ -224,4 +224,14 @@ class Statement extends Document implements JsonSerializable
     {
         return $this->getStatement()['id'];
     }
+
+    public function renderCanonical()
+    {
+        throw new \InvalidArgumentException('The \'canonical\' statement format is currently not supported.', Resource::STATUS_NOT_IMPLEMENTED);
+    }
+
+    public function renderIds()
+    {
+        throw new \InvalidArgumentException('The \'ids\' statement format is currently not supported.', Resource::STATUS_NOT_IMPLEMENTED);
+    }
 }
