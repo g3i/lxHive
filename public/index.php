@@ -162,10 +162,16 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         } else {
             try {
                 $version = Versioning::fromString($versionString);
-                return $version;
             } catch (\InvalidArgumentException $e) {
                 throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
             }
+
+            $compare = version_compare($app->config('xAPI')['latest_version'], $versionString);
+            if($compare < 0){
+                throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
+            }
+
+            return $version;
         }
     });
 
