@@ -79,8 +79,10 @@ class Statements extends Resource
 
         // Multipart responses are intentionally disabled for now
         //if (null === $attachments) {
+            $this->setHeaders();
             Resource::jsonResponse(Resource::STATUS_OK, $view);
         //} else {
+        //    $this->setHeaders();
         //    Resource::multipartResponse(Resource::STATUS_OK, $view, $attachments);
         //}
     }
@@ -100,6 +102,7 @@ class Statements extends Resource
         $this->statementService->statementPut($request);
 
         //Always an empty response, unless there was an Exception
+        $this->setHeaders();
         Resource::response(Resource::STATUS_NO_CONTENT);
     }
 
@@ -127,6 +130,7 @@ class Statements extends Resource
         $view = new StatementView(['service' => $this->statementService]);
         $view = $view->renderPost();
 
+        $this->setHeaders();
         Resource::jsonResponse(Resource::STATUS_OK, $view);
     }
 
@@ -205,4 +209,17 @@ class Statements extends Resource
 
         return $requests;
     }
+
+    /**
+     * Sets specific headers for this request
+     *
+     * @return void
+     */
+
+    protected function setHeaders()
+    {
+        $date = \API\Util\Date::dateTimeToISO8601(new \DateTime());
+        $this->getSlim()->response->headers->set('X-Experience-API-Consistent-Through', $date);
+    }
+
 }

@@ -396,7 +396,7 @@
         "extensions": {
             "patternProperties": {
                 "^[a-zA-Z][a-zA-Z+.-]*:": {
-                    "type": ["string", "number"]
+                    "type": ["string", "number", "object"]
                 }
             },
             "additionalProperties": false

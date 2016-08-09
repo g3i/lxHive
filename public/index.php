@@ -66,6 +66,11 @@ $app->configureMode('production', function () use ($app, $appRoot) {
     // Add config
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
 
+    // Debug mode
+    if ($app->debug) {
+        $app->log->setLevel(\Slim\Log::DEBUG);
+    }
+
     // Set up logging
     $logger = new Logger\MonologWriter([
         'handlers' => [
@@ -80,6 +85,11 @@ $app->configureMode('production', function () use ($app, $appRoot) {
 $app->configureMode('development', function () use ($app, $appRoot) {
     // Add config
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
+
+    // Debug mode
+    if ($app->debug) {
+        $app->log->setLevel(\Slim\Log::DEBUG);
+    }
 
     // Set up logging
     $logger = new Logger\MonologWriter([
@@ -109,7 +119,7 @@ $app->hook('slim.before', function () use ($app) {
     $app->container->singleton('mongo', function () use ($app) {
         $client = new Client($app->config('database')['host_uri']);
         $client->map([
-            $app->config('database')['db_name']  => '\API\Collection',
+            $app->config('database')['db_name'] => '\API\Collection',
         ]);
         $client->useDatabase($app->config('database')['db_name']);
 
@@ -152,14 +162,20 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         } else {
             try {
                 $version = Versioning::fromString($versionString);
-                return $version;
             } catch (\InvalidArgumentException $e) {
                 throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
             }
+
+            $compare = version_compare($app->config('xAPI')['latest_version'], $versionString);
+            if ($compare < 0) {
+                throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
+            }
+
+            return $version;
         }
     });
 
-    // Request logging 
+    // Request logging
     $app->container->singleton('requestLog', function () use ($app) {
         $logService = new LogService($app);
         $logDocument = $logService->logRequest($app->request);
@@ -205,10 +221,10 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         });
     }
 
-    // Content type check 
+    // Content type check
     if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
         // Bad Content-Type
-        throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);;
+        throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);
     }
 });
 

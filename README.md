@@ -1,6 +1,9 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
+* v0.9.1
+* supports xAPI specs <= 1.0.2
+
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
 
 * now also available as [Saas edition](https://saas.lxhive.com/)
@@ -10,7 +13,7 @@
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
 **lxHive** logs and returns activity statements as defined in the [Experience API specification](https://github.com/adlnet/xAPI-Spec) (formerly TinCan API) currently at xAPI Version 1.0.3.
 
-The Experience API (also referred to as 'xAPI') is a learning software specification that allows online learning content and systems to interact allowing recording and tracking of all types of learning experiences. It is designed to replace the legacy SCORM Standard and is steered by the US Dept. of Defense [ADL](http://www.adlnet.gov/) (Advanced Distributed Learning). It allows for the efficient aggregation and analysis of learning data as well as allowing learning designers a flexible and intelligent way to design better learning experiences. The Experience API is able to accept learning experiences from any device and/or medium (mobile, tablet, desktop), both in an offline as well as online mode.
+The Experience API (also referred to as 'xAPI') is a learning software specification that allows online learning content and systems to [interact](https://tincanapi.com/overview/) allowing recording and tracking of all types of learning experiences. It is designed to replace the legacy SCORM Standard and is steered by the US Dept. of Defense [ADL](http://www.adlnet.gov/) (Advanced Distributed Learning). It allows for the efficient aggregation and analysis of learning data as well as allowing learning designers a flexible and intelligent way to design better learning experiences. The Experience API is able to accept learning experiences from any device and/or medium (mobile, tablet, desktop), both in an offline as well as online mode.
 
 The results of learning experiences are stored in a Learning Record Store (LRS). The LRS is defined as part of the Experience API Specification and controls at its core the following functions:
 
@@ -29,7 +32,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Requirements
 
-* PHP >= 5.4, ith [mongo extension](http://php.net/manual/en/mongo.installation.php)
+* PHP >= 5.4, with [mongo extension](http://php.net/manual/en/mongo.installation.php) installed
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
