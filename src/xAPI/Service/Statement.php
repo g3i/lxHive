@@ -361,12 +361,14 @@ class Statement extends Service
             $this->format = $params->get('format');
         }
 
-        if ($params->has('ascending') && $params->get('ascending') === 'true') {
-            $cursor->sort(['_id' => 1]);
-            $this->descending = false;
-        } else {
-            $cursor->sort(['_id' => -1]);
-            $this->descending = true;
+        $this->descending = true;
+        $cursor->sort(['_id' => -1]);
+        if ($params->has('ascending')) {
+            $asc = $params->get('ascending');
+            if(strtolower($asc) === 'true' || $asc === '1') {
+                $cursor->sort(['_id' => 1]);
+                $this->descending = false;
+            }
         }
 
         if ($params->has('limit') && $params->get('limit') < $this->getSlim()->config('xAPI')['statement_get_limit'] && $params->get('limit') > 0) {
@@ -401,7 +403,7 @@ class Statement extends Service
 
         // TODO: Move header validation in json-schema as well
         if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
 
         // Validation has been completed already - everyhing is assumed to be valid
@@ -579,7 +581,7 @@ class Statement extends Service
         // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
         // TODO: Move header validation in json-schema as well
         if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
 
         // Validation has been completed already - everyhing is assumed to be valid
