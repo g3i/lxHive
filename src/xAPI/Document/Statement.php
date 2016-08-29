@@ -224,4 +224,59 @@ class Statement extends Document implements JsonSerializable
     {
         return $this->getStatement()['id'];
     }
+
+    public function renderCanonical()
+    {
+        throw new \InvalidArgumentException('The \'canonical\' statement format is currently not supported.', Resource::STATUS_NOT_IMPLEMENTED);
+    }
+
+    public function renderIds()
+    {
+        $statement = $this->getStatement();
+
+        if ($statement['actor']['objectType'] === 'Group') {
+            $statement['actor'] = array_map(function ($singleMember) {
+                return $this->simplifyObject($singleMember);
+            }, $statement['actor']);
+        } else {
+            $statement['actor'] = $this->simplifyObject($statement['actor']);
+        }
+
+        if ($statement['object']['objectType'] !== 'SubStatement') {
+            $statement['object'] = $this->simplifyObject($statement['object']);
+        } else {
+            if ($statement['object']['actor']['objectType'] === 'Group') {
+                $statement['object']['actor'] = array_map(function ($singleMember) {
+                    return $this->simplifyObject($singleMember);
+                }, $statement['object']['actor']);
+            } else {
+                $statement['object']['actor'] = $this->simplifyObject($statement['object']['actor']);
+            }
+            $statement['object']['object'] = $this->simplifyObject($statement['object']['object']);
+        }
+
+        return $statement;
+    }
+
+    private function simplifyObject($object)
+    {
+        if (isset($object['mbox'])) {
+            $uniqueIdentifier = 'mbox';
+        } elseif (isset($object['mbox_sha1sum'])) {
+            $uniqueIdentifier = 'mbox_sha1sum';
+        } elseif (isset($object['openid'])) {
+            $uniqueIdentifier = 'openid';
+        } elseif (isset($object['account'])) {
+            $uniqueIdentifier = 'account';
+        } elseif (isset($object['id'])) {
+            $uniqueIdentifier = 'id';
+        }
+
+        $object = [
+            'objectType' => $object['objectType'],
+            $uniqueIdentifier => $object[$uniqueIdentifier]
+        ];
+
+        return $object;
+    }
 }

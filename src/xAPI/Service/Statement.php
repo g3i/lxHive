@@ -155,9 +155,9 @@ class Statement extends Service
             } elseif (isset($agent['account'])) {
                 $uniqueIdentifier = 'account';
             }
-            if ($params->has('related_agents') && $params->get('related_agents') === 'true') {
+            if ($params->has('related_agents') && $params->get('related_agents') === 'true') { 
                 if ($uniqueIdentifier === 'account') {
-                    $cursor->whereOr(
+                    $cursor->whereAnd(
                         $collection->expression()->whereOr(
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
@@ -183,9 +183,7 @@ class Statement extends Service
                                 $collection->expression()->where('statement.object.objectType', 'SubStatement'),
                                 $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
                                 $collection->expression()->where('statement.object.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                            )
-                        ),
-                        $collection->expression()->whereOr(
+                            ),
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
                                 $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
@@ -214,7 +212,7 @@ class Statement extends Service
                         )
                     );
                 } else {
-                    $cursor->whereOr(
+                    $cursor->whereAnd(
                         $collection->expression()->whereOr(
                             $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
                             $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
@@ -224,9 +222,7 @@ class Statement extends Service
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('statement.object.objectType', 'SubStatement'),
                                 $collection->expression()->where('statement.object.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
-                            )
-                        ),
-                        $collection->expression()->whereOr(
+                            ),
                             $collection->expression()->where('references.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
                             $collection->expression()->where('references.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
                             $collection->expression()->where('references.authority.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
@@ -241,7 +237,7 @@ class Statement extends Service
                 }
             } else {
                 if ($uniqueIdentifier === 'account') {
-                    $cursor->whereOr(
+                    $cursor->whereAnd(
                         $collection->expression()->whereOr(
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('statement.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
@@ -250,9 +246,7 @@ class Statement extends Service
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
                                 $collection->expression()->where('statement.object.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
-                            )
-                        ),
-                        $collection->expression()->whereOr(
+                            ),
                             $collection->expression()->whereAnd(
                                 $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.homePage', $agent[$uniqueIdentifier]['homePage']),
                                 $collection->expression()->where('references.actor.'.$uniqueIdentifier.'.name', $agent[$uniqueIdentifier]['name'])
@@ -264,12 +258,10 @@ class Statement extends Service
                         )
                     );
                 } else {
-                    $cursor->whereOr(
+                    $cursor->whereAnd(
                         $collection->expression()->whereOr(
                             $collection->expression()->where('statement.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
-                            $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
-                        ),
-                        $collection->expression()->whereOr(
+                            $collection->expression()->where('statement.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
                             $collection->expression()->where('references.actor.'.$uniqueIdentifier, $agent[$uniqueIdentifier]),
                             $collection->expression()->where('references.object.'.$uniqueIdentifier, $agent[$uniqueIdentifier])
                         )
@@ -277,18 +269,18 @@ class Statement extends Service
                 }
             }
         }
-
         if ($params->has('verb')) {
-            $cursor->whereOr(
-                $collection->expression()->where('statement.verb.id', $params->get('verb')),
-                $collection->expression()->where('references.verb.id', $params->get('verb'))
+            $cursor->whereAnd(
+                $collection->expression()->whereOr(
+                    $collection->expression()->where('statement.verb.id', $params->get('verb')),
+                    $collection->expression()->where('references.verb.id', $params->get('verb'))
+                )
             );
         }
-
         if ($params->has('activity')) {
             // Handle related
             if ($params->has('related_activities') && $params->get('related_activities') === 'true') {
-                $cursor->whereOr(
+                $cursor->whereAnd(
                     $collection->expression()->whereOr(
                         $collection->expression()->where('statement.object.id', $params->get('activity')),
                         $collection->expression()->where('statement.context.contextActivities.parent.id', $params->get('activity')),
@@ -300,9 +292,7 @@ class Statement extends Service
                         $collection->expression()->whereAnd(
                             $collection->expression()->where('statement.object.objectType', 'SubStatement'),
                             $collection->expression()->where('statement.object.object', $params->get('activity'))
-                        )
-                    ),
-                    $collection->expression()->whereOr(
+                        ),
                         $collection->expression()->where('references.object.id', $params->get('activity')),
                         $collection->expression()->where('references.context.contextActivities.parent.id', $params->get('activity')),
                         $collection->expression()->where('references.context.contextActivities.category.id', $params->get('activity')),
@@ -317,17 +307,21 @@ class Statement extends Service
                     )
                 );
             } else {
-                $cursor->whereOr(
-                    $collection->expression()->where('statement.object.id', $params->get('activity')),
-                    $collection->expression()->where('references.object.id', $params->get('activity'))
+                $cursor->whereAnd(
+                    $collection->expression()->whereOr(
+                        $collection->expression()->where('statement.object.id', $params->get('activity')),
+                        $collection->expression()->where('references.object.id', $params->get('activity'))
+                    )
                 );
             }
         }
 
         if ($params->has('registration')) {
-            $cursor->whereOr(
-                $collection->expression()->where('statement.context.registration', $params->get('registration')),
-                $collection->expression()->where('references.context.registration', $params->get('registration'))
+            $cursor->whereAnd(
+                $collection->expression()->whereOr(
+                    $collection->expression()->where('statement.context.registration', $params->get('registration')),
+                    $collection->expression()->where('references.context.registration', $params->get('registration'))
+                )
             );
         }
 
@@ -361,12 +355,14 @@ class Statement extends Service
             $this->format = $params->get('format');
         }
 
-        if ($params->has('ascending') && $params->get('ascending') === 'true') {
-            $cursor->sort(['_id' => 1]);
-            $this->descending = false;
-        } else {
-            $cursor->sort(['_id' => -1]);
-            $this->descending = true;
+        $this->descending = true;
+        $cursor->sort(['_id' => -1]);
+        if ($params->has('ascending')) {
+            $asc = $params->get('ascending');
+            if(strtolower($asc) === 'true' || $asc === '1') {
+                $cursor->sort(['_id' => 1]);
+                $this->descending = false;
+            }
         }
 
         if ($params->has('limit') && $params->get('limit') < $this->getSlim()->config('xAPI')['statement_get_limit'] && $params->get('limit') > 0) {
@@ -401,7 +397,7 @@ class Statement extends Service
 
         // TODO: Move header validation in json-schema as well
         if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
 
         // Validation has been completed already - everyhing is assumed to be valid
@@ -579,7 +575,7 @@ class Statement extends Service
         // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
         // TODO: Move header validation in json-schema as well
         if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
 
         // Validation has been completed already - everyhing is assumed to be valid
