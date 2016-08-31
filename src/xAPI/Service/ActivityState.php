@@ -204,7 +204,7 @@ class ActivityState extends Service
 
         $activityStateDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact($currentDate);
         $activityStateDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
 
         $activityStateDocument->setActivityId($params->get('activityId'));
@@ -282,7 +282,7 @@ class ActivityState extends Service
 
         $activityStateDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact($currentDate);
         $activityStateDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $activityStateDocument->setActivityId($params->get('activityId'));
 
