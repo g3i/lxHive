@@ -462,7 +462,7 @@ class Statement extends Service
                 }
                 $statementDocument->setStatement($statement);
                 // Dates
-                $currentDate = Util\Date::dateTimeExact($currentDate);
+                $currentDate = Util\Date::dateTimeExact();
                 $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
                 $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
                 $statementDocument->setDefaultTimestamp();
@@ -511,7 +511,7 @@ class Statement extends Service
             }
             $statementDocument->setStatement($body);
             // Dates
-            $currentDate = Util\Date::dateTimeExact($currentDate);
+            $currentDate = Util\Date::dateTimeExact();
             $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
             $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
             $statementDocument->setDefaultTimestamp();
@@ -664,7 +664,7 @@ class Statement extends Service
             // Set the statement
             $statementDocument->setStatement($body);
             // Dates
-            $currentDate = Util\Date::dateTimeExact($currentDate);
+            $currentDate = Util\Date::dateTimeExact();
             $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
             $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
             $statementDocument->setDefaultTimestamp();
