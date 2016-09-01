@@ -44,7 +44,7 @@ class Log extends Service
         $document->setIp($request->getIp());
         $document->setMethod($request->getMethod());
         $document->setEndpoint($request->getPathInfo());
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact();
         $document->setTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
 
         $document->save();

@@ -29,6 +29,7 @@ use API\Resource;
 use API\Util;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
+use DateTime;
 
 class ActivityProfile extends Service
 {
@@ -165,7 +166,7 @@ class ActivityProfile extends Service
 
         $activityProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $activityProfileDocument->setActivityId($params->get('activityId'));
         $activityProfileDocument->setProfileId($params->get('profileId'));
@@ -237,7 +238,7 @@ class ActivityProfile extends Service
 
         $activityProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $activityProfileDocument->setActivityId($params->get('activityId'));
         $activityProfileDocument->setProfileId($params->get('profileId'));
