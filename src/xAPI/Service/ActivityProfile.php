@@ -166,7 +166,7 @@ class ActivityProfile extends Service
 
         $activityProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = Util\Date::dateTimeExact($currentDate);
+        $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $activityProfileDocument->setActivityId($params->get('activityId'));
         $activityProfileDocument->setProfileId($params->get('profileId'));
@@ -238,7 +238,7 @@ class ActivityProfile extends Service
 
         $activityProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = Util\Date::dateTimeExact($currentDate);
+        $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $activityProfileDocument->setActivityId($params->get('activityId'));
         $activityProfileDocument->setProfileId($params->get('profileId'));
