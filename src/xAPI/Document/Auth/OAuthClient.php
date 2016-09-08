@@ -47,4 +47,14 @@ class OAuthClient extends Document implements \JsonSerializable
     {
         return $this->_data;
     }
+
+    public function renderSummary()
+    {
+        $return = [
+            'name' => $this->_data['name'],
+            'description' =>  $this->_data['description']
+        ];
+
+        return $return;
+    }
 }

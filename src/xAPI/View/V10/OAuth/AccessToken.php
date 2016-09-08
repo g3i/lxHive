@@ -42,6 +42,7 @@ class AccessToken extends View
             'expired' => $accessTokenDocument->isExpired(),
             'scopes' => array_values($accessTokenDocument->scopes),
             'user' => $accessTokenDocument->user->renderSummary(),
+            'client' => $accessTokenDocument->client->renderSummary(),
         ];
 
         return $view;
