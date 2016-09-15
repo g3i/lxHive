@@ -29,6 +29,12 @@ use MongoDate;
 
 class Date
 {
+    public static function dateTimeExact()
+    {
+        $date = DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)));
+        return $date;
+    }
+
     public static function dateStringToMongoDate($dateString)
     {
         $date = new DateTime($dateString);

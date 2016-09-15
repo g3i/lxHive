@@ -218,7 +218,7 @@ class Statements extends Resource
 
     protected function setHeaders()
     {
-        $date = \API\Util\Date::dateTimeToISO8601(new \DateTime());
+        $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
         $this->getSlim()->response->headers->set('X-Experience-API-Consistent-Through', $date);
     }
 

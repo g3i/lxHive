@@ -193,7 +193,7 @@ class AgentProfile extends Service
 
         $agentProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact();
         $agentProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $agentProfileDocument->setAgent($agent);
         $agentProfileDocument->setProfileId($params->get('profileId'));
@@ -284,7 +284,7 @@ class AgentProfile extends Service
 
         $agentProfileDocument->setContent($rawBody);
         // Dates
-        $currentDate = new \DateTime();
+        $currentDate = Util\Date::dateTimeExact();
         $agentProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
 
         $agentProfileDocument->setAgent($agent);

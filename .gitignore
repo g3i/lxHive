@@ -19,3 +19,5 @@ storage/files/*
 src/xAPI/Config/Config.yml
 
 sftp-config.json
+
+.DS_Store
