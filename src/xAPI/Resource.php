@@ -142,7 +142,7 @@ abstract class Resource
 
         $slim->status($status);
         $slim->response->headers->set('Access-Control-Allow-Origin', '*');
-        $slim->response->headers->set('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS');
+        $slim->response->headers->set('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE');
         $slim->response->headers->set('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match');
         $slim->response->headers->set('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true');
         $slim->response->headers->set('X-Experience-API-Version', $slim->config('xAPI')['latest_version']);
