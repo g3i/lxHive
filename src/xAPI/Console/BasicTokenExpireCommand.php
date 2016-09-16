@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use API\Service\AccessToken as AccessTokenService;
+use API\Service\Auth\Basic as AccessTokenService;
 
 class BasicTokenExpireCommand extends Command
 {
