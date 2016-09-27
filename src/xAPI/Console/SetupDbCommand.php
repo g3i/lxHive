@@ -51,7 +51,7 @@ class SetupDbCommand extends Command
         $name = $helper->ask($input, $output, $question);
 
         $connectionSuccess = false;
-        while (!$connectionSuccesful) {
+        while (!$connectionSuccess) {
             $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
             $mongoHostname = $helper->ask($input, $output, $question);
 
