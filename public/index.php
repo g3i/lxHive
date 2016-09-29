@@ -148,7 +148,7 @@ $app->hook('slim.before.router', function () use ($app) {
 });
 
 // Parse version
-$app->hook('slim.before.dispatch', function () use ($app) {
+$app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
     // Version
     $app->container->singleton('version', function () use ($app) {
         if ($app->request->isOptions() || $app->request->getPathInfo() === '/about' || strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
@@ -218,6 +218,7 @@ $app->hook('slim.before.dispatch', function () use ($app) {
         $app->container->singleton('view', function () use ($twigContainer) {
             return $twigContainer;
         });
+        $app->view->parserOptions['cache'] = $appRoot.'/storage/.Cache';
     }
 
     // Content type check
