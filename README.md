@@ -45,7 +45,9 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
-#### Application install and set-up
+* see also our Wiki for a comprehensive [step-bystep guide](https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)
+
+#### 1. Application install and set-up
 
 1. Install dependencies via `composer install`.
 2. Point your server's `DocumentRoot` directive to the `public` folder
@@ -66,7 +68,18 @@ $ ./X user:create
 
 ```
 
-#### Set-up file Storage and extended config
+#### Notes:
+
+* As an administrator you should first create a new user and authentication token for yourself and assign the *super* role to it.
+
+#### 2. Create autentication records for your app
+
+```
+./X auth:basic:create     # Create a new basic auth token
+./X oauth:client:create   # Or create a new OAuth client (human login)
+```
+
+#### 3. Set-up file Storage and extended config
 
 1. Optionally: Further customise your configuration in `src/xAPI/Config/Config.yml`
 
@@ -89,9 +102,6 @@ Default file storage structure:
     ...
 ```
 
-#### Notes:
-
-* As an administrator you should first create a new user and authentication token for yourself and assign the *super* role to it.
 
 ## Documentation
 

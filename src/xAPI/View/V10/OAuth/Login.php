@@ -32,7 +32,6 @@ class Login extends View
     {
         $view = $this->getSlim()->view;
         $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
-        $view->parserOptions = ['debug' => true, 'cache' => dirname(__FILE__).'/.Cache'];
         $this->set('csrfToken', $_SESSION['csrfToken']);
         $this->set('name', $this->getSlim()->config('name'));
         $this->set('branding', $this->getSlim()->config('xAPI')['oauth']['branding']);
