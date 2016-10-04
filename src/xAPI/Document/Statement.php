@@ -144,6 +144,60 @@ class Statement extends Document implements JsonSerializable
         }
     }
 
+    public function convertExtensionKeysToUnicode()
+    {
+        if (isset($this->_data['statement']['context']['extensions'])) {
+            foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['context']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['result']['extensions'])) {
+            foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['result']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['object']['definition']['extensions'])) {
+            foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['object']['definition']['extensions'][$extensionKey]);
+            }
+        }
+    }
+
+    public function convertExtensionKeysFromUnicode()
+    {
+        if (isset($this->_data['statement']['context']['extensions'])) {
+            foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['context']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['result']['extensions'])) {
+            foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['result']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['object']['definition']['extensions'])) {
+            foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['object']['definition']['extensions'][$extensionKey]);
+            }
+        }
+    }
+
     public function extractActivities()
     {
         $activities = [];
@@ -217,6 +271,7 @@ class Statement extends Document implements JsonSerializable
 
     public function renderExact()
     {
+        $this->convertExtensionKeysFromUnicode();
         return $this->getStatement();
     }
 
@@ -232,6 +287,7 @@ class Statement extends Document implements JsonSerializable
 
     public function renderIds()
     {
+        $this->convertExtensionKeysFromUnicode();
         $statement = $this->getStatement();
 
         if ($statement['actor']['objectType'] === 'Group') {

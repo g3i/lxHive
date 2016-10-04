@@ -467,6 +467,7 @@ class Statement extends Service
                 $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
                 $statementDocument->setDefaultTimestamp();
                 $statementDocument->fixAttachmentLinks($attachmentBase);
+                $statementDocument->convertExtensionKeysToUnicode();
                 $statementDocument->setDefaultId();
                 if ($statementDocument->isReferencing()) {
                     // Copy values of referenced statement chain inside current statement for faster query-ing
@@ -516,6 +517,7 @@ class Statement extends Service
             $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
             $statementDocument->setDefaultTimestamp();
             $statementDocument->fixAttachmentLinks($attachmentBase);
+            $statementDocument->convertExtensionKeysToUnicode();
             $statementDocument->setDefaultId();
 
             if ($statementDocument->isReferencing()) {
