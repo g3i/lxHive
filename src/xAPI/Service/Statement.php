@@ -455,6 +455,21 @@ class Statement extends Service
         if ($this->areMultipleStatements($body)) {
             $statements = [];
             foreach ($body as $statement) {
+                if (isset($statement['id'])) {
+                    $cursor->where('statement.id', $statement['id']);
+                    $result = $cursor->findOne();
+                    
+                    // ID exists, check if different or conflict
+                    if ($result) {
+                        // Same - return 200
+                        if ($statement == $result->getStatement()) {
+                            $this->match = true;
+                        } else { // Mismatch - return 409 Conflict
+                            throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
+                        }
+                    }
+                }
+                
                 $statementDocument = $collection->createDocument();
                 // Overwrite authority - unless it's a super token and manual authority is set
                 if (!($this->getAccessToken()->isSuperToken() && isset($statement['authority'])) || !isset($statement['authority'])) {
@@ -504,10 +519,26 @@ class Statement extends Service
             // The only way to still use (fast) batch inserts would be to move the attachment of
             // statements to their respective log entries in a async queue!
         } else {
+            // Single statement
+            if (isset($body['id'])) {
+                $cursor->where('statement.id', $body['id']);
+                $result = $cursor->findOne();
+                
+                // ID exists, check if different or conflict
+                if ($result) {
+                    // Same - return 200
+                    if ($statement == $result->getStatement()) {
+                        $this->match = true;
+                    } else { // Mismatch - return 409 Conflict
+                        throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
+                    }
+                }
+            }
+
             $statementDocument = $collection->createDocument();
             // Overwrite authority - unless it's a super token and manual authority is set
-            if (!($this->getAccessToken()->isSuperToken() && isset($statement['authority'])) || !isset($statement['authority'])) {
-                $statement['authority'] = $this->getAccessToken()->generateAuthority();
+            if (!($this->getAccessToken()->isSuperToken() && isset($body['authority'])) || !isset($body['authority'])) {
+                $body['authority'] = $this->getAccessToken()->generateAuthority();
             }
             $statementDocument->setStatement($body);
             // Dates
@@ -638,10 +669,20 @@ class Statement extends Service
         $cursor->where('statement.id', $params->get('statementId'));
         $result = $cursor->findOne();
 
+        // Check statementId
+        if (isset($body['id'])) {
+            // Check for match
+            if ($body['id'] !== $params->get('statementId')) {
+                throw new \Exception('Statement ID query parameter doesn\'t match the given statement property', Resource::STATUS_BAD_REQUEST);
+            }
+        } else {
+            $body['id'] = $params->get('statementId');
+        }
+
         // ID exists, check if different or conflict
         if ($result) {
             // Same - return 204 No content
-            if ($body === $result) {
+            if ($body == $result->getStatement()) {
                 $this->match = true;
             } else { // Mismatch - return 409 Conflict
                 throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
@@ -649,18 +690,10 @@ class Statement extends Service
         } else { // Store new statement
             $statementDocument = $collection->createDocument();
             // Overwrite authority - unless it's a super token and manual authority is set
-            if (!($this->getAccessToken()->isSuperToken() && isset($statement['authority'])) || !isset($statement['authority'])) {
-                $statement['authority'] = $this->getAccessToken()->generateAuthority();
+            if (!($this->getAccessToken()->isSuperToken() && isset($body['authority'])) || !isset($body['authority'])) {
+                $body['authority'] = $this->getAccessToken()->generateAuthority();
             }
-            // Check statementId
-            if (isset($body['id'])) {
-                //Check for match
-                if ($body['id'] !== $params->get('statementId')) {
-                    throw new \Exception('Statement ID query parameter doesn\'t match the given statement property', Resource::STATUS_BAD_REQUEST);
-                }
-            } else {
-                $body['id'] = $params->get('statementId');
-            }
+        
             // Set the statement
             $statementDocument->setStatement($body);
             // Dates
