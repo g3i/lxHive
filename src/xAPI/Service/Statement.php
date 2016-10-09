@@ -644,6 +644,16 @@ class Statement extends Service
         $collection          = $this->getDocumentManager()->getCollection('statements');
         $cursor              = $collection->find();
 
+        // Check statementId exists
+        if (!$params->has('statementId')) {
+            throw new Exception('The statementId parameter is missing!', Resource::STATUS_BAD_REQUEST);
+        }
+
+        // Check statementId is acutally valid
+        if (!preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i', $params->get('statementId'))) {
+            throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
+        }
+
         // Single statement
         $cursor->where('statement.id', $params->get('statementId'));
         $result = $cursor->findOne();
