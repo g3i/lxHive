@@ -485,8 +485,12 @@ class Statement extends Service
                 $this->statements[] = $statementDocument;
                 if ($statementDocument->isVoiding()) {
                     $referencedStatement = $statementDocument->getReferencedStatement();
-                    $referencedStatement->setVoided(true);
-                    $referencedStatement->save();
+                    if (!$referencedStatement->isVoiding()) {
+                        $referencedStatement->setVoided(true);
+                        $referencedStatement->save();
+                    } else {
+                        throw new \Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
+                    }
                 }
                 if ($this->getAccessToken()->hasPermission('define')) {
                     $activities = $statementDocument->extractActivities();
@@ -536,8 +540,12 @@ class Statement extends Service
 
             if ($statementDocument->isVoiding()) {
                 $referencedStatement = $statementDocument->getReferencedStatement();
-                $referencedStatement->setVoided(true);
-                $referencedStatement->save();
+                if (!$referencedStatement->isVoiding()) {
+                    $referencedStatement->setVoided(true);
+                    $referencedStatement->save();
+                } else {
+                    throw new \Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
+                }
             }
 
             if ($this->getAccessToken()->hasPermission('define')) {
@@ -686,8 +694,12 @@ class Statement extends Service
 
             if ($statementDocument->isVoiding()) {
                 $referencedStatement = $statementDocument->getReferencedStatement();
-                $referencedStatement->setVoided(true);
-                $referencedStatement->save();
+                if (!$referencedStatement->isVoiding()) {
+                    $referencedStatement->setVoided(true);
+                    $referencedStatement->save();
+                } else {
+                    throw new \Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
+                }
             }
 
             if ($this->getAccessToken()->hasPermission('define')) {
