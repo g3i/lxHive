@@ -534,7 +534,7 @@ class Statement extends Service
                 // ID exists, check if different or conflict
                 if ($result) {
                     // Same - return 200
-                    if ($statement == $result->getStatement()) {
+                    if ($body == $result->getStatement()) {
                         $this->match = true;
                     } else { // Mismatch - return 409 Conflict
                         throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
