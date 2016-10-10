@@ -456,6 +456,7 @@ class Statement extends Service
             $statements = [];
             foreach ($body as $statement) {
                 if (isset($statement['id'])) {
+                    $cursor = $collection->find();
                     $cursor->where('statement.id', $statement['id']);
                     $result = $cursor->findOne();
                     
@@ -526,6 +527,7 @@ class Statement extends Service
         } else {
             // Single statement
             if (isset($body['id'])) {
+                $cursor = $collection->find();
                 $cursor->where('statement.id', $body['id']);
                 $result = $cursor->findOne();
                 
