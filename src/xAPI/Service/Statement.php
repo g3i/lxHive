@@ -687,7 +687,7 @@ class Statement extends Service
         }
 
         // Check statementId is acutally valid
-        if (!preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i', $params->get('statementId'))) {
+        if(!Uuid::isValid($params->get('statementId'))){
             throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
         }
 
