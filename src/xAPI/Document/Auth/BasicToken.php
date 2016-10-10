@@ -49,7 +49,7 @@ class BasicToken extends AbstractToken
     {
         $slim = Slim::getInstance();
         $url = $slim->url;
-        $host = $url->getHost()->__toString();
+        $host = $url->getBaseUrl();
         $authority = [
             'objectType' => 'Agent',
             'account'    => [
