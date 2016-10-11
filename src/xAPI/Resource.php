@@ -148,6 +148,9 @@ abstract class Resource
         $slim->response->headers->set('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through');
         $slim->response->headers->set('X-Experience-API-Version', $slim->config('xAPI')['latest_version']);
 
+        $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
+        $slim->response->headers->set('X-Experience-API-Consistent-Through', $date);
+
         if (!empty($allow)) {
             $slim->response()->header('Allow', strtoupper(implode(',', $allow)));
         }
