@@ -30,6 +30,7 @@ use API\Resource;
 use API\Util;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
+use Rhumsaa\Uuid\Uuid;
 
 class Statement extends Service
 {
@@ -115,6 +116,9 @@ class Statement extends Service
             $cursor->where('statement.id', $params->get('statementId'));
             $cursor->where('voided', false);
 
+            if(!Uuid::isValid($params->get('statementId'))){
+                throw new Exception('Not a valid uuid.', Resource::STATUS_NOT_FOUND);
+            }
             if ($cursor->count() === 0) {
                 throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
             }
@@ -155,7 +159,7 @@ class Statement extends Service
             } elseif (isset($agent['account'])) {
                 $uniqueIdentifier = 'account';
             }
-            if ($params->has('related_agents') && $params->get('related_agents') === 'true') { 
+            if ($params->has('related_agents') && $params->get('related_agents') === 'true') {
                 if ($uniqueIdentifier === 'account') {
                     $cursor->whereAnd(
                         $collection->expression()->whereOr(
@@ -459,7 +463,7 @@ class Statement extends Service
                     $cursor = $collection->find();
                     $cursor->where('statement.id', $statement['id']);
                     $result = $cursor->findOne();
-                    
+
                     // ID exists, check if different or conflict
                     if ($result) {
                         // Same - return 200
@@ -470,7 +474,7 @@ class Statement extends Service
                         }
                     }
                 }
-                
+
                 $statementDocument = $collection->createDocument();
                 // Overwrite authority - unless it's a super token and manual authority is set
                 if (!($this->getAccessToken()->isSuperToken() && isset($statement['authority'])) || !isset($statement['authority'])) {
@@ -530,7 +534,7 @@ class Statement extends Service
                 $cursor = $collection->find();
                 $cursor->where('statement.id', $body['id']);
                 $result = $cursor->findOne();
-                
+
                 // ID exists, check if different or conflict
                 if ($result) {
                     // Same - return 200
@@ -683,7 +687,7 @@ class Statement extends Service
         }
 
         // Check statementId is acutally valid
-        if (!preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i', $params->get('statementId'))) {
+        if(!Uuid::isValid($params->get('statementId'))){
             throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
         }
 
@@ -715,7 +719,7 @@ class Statement extends Service
             if (!($this->getAccessToken()->isSuperToken() && isset($body['authority'])) || !isset($body['authority'])) {
                 $body['authority'] = $this->getAccessToken()->generateAuthority();
             }
-        
+
             // Set the statement
             $statementDocument->setStatement($body);
             // Dates
