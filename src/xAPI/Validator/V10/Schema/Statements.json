@@ -433,7 +433,8 @@
             "required": ["mbox_sha1sum"],
             "properties": {
                 "mbox_sha1sum": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{40}$"
                 }
             },
             "patternProperties": {
