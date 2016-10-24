@@ -279,7 +279,7 @@
                 "voided": {
                     "type": "boolean"
                 },
-                "attachments": 
+                "attachments":
                 {
                     "type": "array",
                     "items": {"$ref": "Statements.json#/definitions/attachment"}
@@ -394,6 +394,7 @@
             "additionalProperties": false
         },
         "extensions": {
+            "type": "object",
             "patternProperties": {
                 "^[a-zA-Z][a-zA-Z+.-]*:": {
                     "type": ["string", "number", "object"]
