@@ -259,6 +259,9 @@
                 "timestamp": {
                     "type": "string"
                 },
+                "stored": {
+                    "type": "string"
+                },
                 "authority": {
                     "type": "object",
                     "oneOf": [
@@ -279,7 +282,7 @@
                 "voided": {
                     "type": "boolean"
                 },
-                "attachments": 
+                "attachments":
                 {
                     "type": "array",
                     "items": {"$ref": "Statements.json#/definitions/attachment"}
