@@ -489,6 +489,7 @@ class Statement extends Service
                 $statementDocument->fixAttachmentLinks($attachmentBase);
                 $statementDocument->convertExtensionKeysToUnicode();
                 $statementDocument->setDefaultId();
+                $statementDocument->legacyContextActivities();
                 if ($statementDocument->isReferencing()) {
                     // Copy values of referenced statement chain inside current statement for faster query-ing
                     // (space-time tradeoff)
@@ -560,6 +561,7 @@ class Statement extends Service
             $statementDocument->fixAttachmentLinks($attachmentBase);
             $statementDocument->convertExtensionKeysToUnicode();
             $statementDocument->setDefaultId();
+            $statementDocument->legacyContextActivities();
 
             if ($statementDocument->isReferencing()) {
                 // Copy values of referenced statement chain inside current statement for faster query-ing
@@ -728,6 +730,7 @@ class Statement extends Service
             $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
             $statementDocument->setDefaultTimestamp();
             $statementDocument->fixAttachmentLinks($attachmentBase);
+            $statementDocument->legacyContextActivities();
 
             if ($statementDocument->isReferencing()) {
                 // Copy values of referenced statement chain inside current statement for faster query-ing

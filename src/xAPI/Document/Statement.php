@@ -277,6 +277,27 @@ class Statement extends Document implements JsonSerializable
         return $activities;
     }
 
+    /**
+     * Mutate legacy statement.context.contextActivities
+     * wraps single activity object (per type) into an array
+     * @return void
+     */
+    public function legacyContextActivities()
+    {
+        if (!isset($this->_data['statement']['context'])) {
+            return;
+        }
+        if (!isset($this->_data['statement']['context']['contextActivities'])) {
+            return;
+        }
+        foreach($this->_data['statement']['context']['contextActivities'] as $type => $value){
+            // we are a bit rat-trapped because statement is an associative array, most efficient way to check if numeric array is here to check for required 'id' property
+            if(isset($value['id'])){
+                $this->_data['statement']['context']['contextActivities'][$type] = array($value);
+            }
+        }
+    }
+
     public function jsonSerialize()
     {
         return $this->getStatement();
