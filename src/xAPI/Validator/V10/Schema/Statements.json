@@ -29,7 +29,8 @@
                         "format": "uri"
                     },
                     "registration": {
-                        "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}, {"type": "string", "maxLength": 0}, {"type": "null"}]
+                        "type": "string",
+                        "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}]
                     },
                     "related_activities": {
                         "type": "boolean"
@@ -174,7 +175,8 @@
                     "type": "object",
                     "properties": {
                         "registration": {
-                            "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}, {"type": "string", "maxLength": 0}, {"type": "null"}]
+                            "type": "string",
+                            "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}]
                         },
                         "instructor": {
                             "type": "object",
@@ -279,7 +281,7 @@
                 "voided": {
                     "type": "boolean"
                 },
-                "attachments": 
+                "attachments":
                 {
                     "type": "array",
                     "items": {"$ref": "Statements.json#/definitions/attachment"}
@@ -431,7 +433,8 @@
             "required": ["mbox_sha1sum"],
             "properties": {
                 "mbox_sha1sum": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{40}$"
                 }
             },
             "patternProperties": {
