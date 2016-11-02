@@ -261,6 +261,9 @@
                 "timestamp": {
                     "type": "string"
                 },
+                "stored": {
+                    "type": "string"
+                },
                 "authority": {
                     "type": "object",
                     "oneOf": [
