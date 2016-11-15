@@ -51,6 +51,17 @@ class Statement extends Validator
     {
         $data = $request->get();
 
+        foreach ($data as $key => $value) {
+            $decodedValue = json_decode($value);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                $data[$key] = $decodedValue;
+            }  
+        }
+
+        if (!empty($data)) {
+            $data = (object) $data;
+        }
+
         $schema = $this->retrieveByFragment('getParameters');
         $this->getSchemaReferenceResolver()->resolve($schema);
         $this->getSchemaValidator()->check($data, $schema);
