@@ -6,10 +6,11 @@
         "oneOf" : [
             {
                 "type": "array",
-                "properties": {},
-                "additionalProperties": false
+                "maxItems": 0 
             },
             {
+                "type": "object",
+                "additionalProperties": false,
                 "not": {
                     "anyOf": [{"required": ["statementId", "voidedStatementId"]}]
                 },
@@ -65,8 +66,7 @@
                     }
                 }
             }
-        ],
-        "definitions": {"$ref": "Definitions.json"}
+        ]
     },
     "postBody": {
         "type": ["object", "array"],
@@ -511,11 +511,17 @@
                         },
                         "objectType": {
                             "enum": ["Agent"]
-                        }
-                    }
+                        },
+                        "mbox": {},
+                        "mbox_sha1sum": {},
+                        "account": {},
+                        "openid": {}
+                    },
+                    "additionalProperties": false
                 },
                 {
-                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}]
+                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}],
+                    "additionalProperties": false
                 },
                 {
                     "additionalProperties": false
@@ -524,17 +530,13 @@
         },
         "group": {
             "type": "object",
-            "allOf": [
-                {"$ref": "Statements.json#/definitions/groupBasics"},
-                {"oneOf": [
-                    { "$ref": "Statements.json#/definitions/anonymousgroup" },
-                    { "$ref": "Statements.json#/definitions/identifiedgroup" }
-                ]}
+            "oneOf": [
+                { "$ref": "Statements.json#/definitions/anonymousgroup" },
+                { "$ref": "Statements.json#/definitions/identifiedgroup" }
             ]
         },
-        "groupBasics": {
-            "type": "object",
-            "required": ["objectType"],
+        "anonymousgroup": {
+            "required": ["objectType", "member"],
             "properties": {
                 "name": {
                     "type": "string"
@@ -544,34 +546,41 @@
                 },
                 "member": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {"$ref": "Statements.json#/definitions/agent"}
                 }
-            }
-        },
-        "anonymousgroup": {
-            "required": ["member"],
-            "properties": {
-                "member": {
-                    "type": "string"
-                },
-                "name": {},
-                "objectType": {}
             },
             "additionalProperties": false
         },
         "identifiedgroup": {
+            "required": ["objectType"],
             "allOf": [
-                {"$ref": "Statements.json#/definitions/inversefunctional"},
-                {"properties": {
-                    "name": {},
-                    "objectType": {},
-                    "member": {},
-                    "mbox": {},
-                    "mbox_sha1sum": {},
-                    "account": {},
-                    "openid": {}
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "objectType": {
+                            "enum": ["Group"]
+                        },
+                        "member": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {"$ref": "Statements.json#/definitions/agent"}
+                        },
+                        "mbox": {},
+                        "mbox_sha1sum": {},
+                        "account": {},
+                        "openid": {}
                     },
-                "additionalProperties": false
+                    "additionalProperties": false
+                },
+                {
+                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}],
+                    "additionalProperties": false
+                },
+                {
+                    "additionalProperties": false
                 }
             ]
         },
