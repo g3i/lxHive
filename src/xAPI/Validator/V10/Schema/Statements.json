@@ -312,17 +312,25 @@
                     "enum": ["SubStatement"]
                 },
                 "object": {
-                    "not": {
-                        "properties": {
-                            "objectType": {
-                                "enum": ["SubStatement"]
-                            }
+                    "type": "object",
+                    "properties": {
+                        "objectType": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["Activity", "Agent", "Group", "StatementRef"]
+                                }
+                            ]
                         }
+                        
                     }
                 }
             },
             "patternProperties": {
-                "^(id|stored|authority|voided)$": {
+                "^(id|stored|authority|voided|version)$": {
                     "type": "null"
                 }
             }
