@@ -6,10 +6,11 @@
         "oneOf" : [
             {
                 "type": "array",
-                "properties": {},
-                "additionalProperties": false
+                "maxItems": 0 
             },
             {
+                "type": "object",
+                "additionalProperties": false,
                 "not": {
                     "anyOf": [{"required": ["statementId", "voidedStatementId"]}]
                 },
@@ -29,7 +30,8 @@
                         "format": "uri"
                     },
                     "registration": {
-                        "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}, {"type": "string", "maxLength": 0}, {"type": "null"}]
+                        "type": "string",
+                        "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}]
                     },
                     "related_activities": {
                         "type": "boolean"
@@ -64,8 +66,7 @@
                     }
                 }
             }
-        ],
-        "definitions": {"$ref": "Definitions.json"}
+        ]
     },
     "postBody": {
         "type": ["object", "array"],
@@ -174,7 +175,8 @@
                     "type": "object",
                     "properties": {
                         "registration": {
-                            "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}, {"type": "string", "maxLength": 0}, {"type": "null"}]
+                            "type": "string",
+                            "oneOf": [{"$ref": "Statements.json#/definitions/uuid"}]
                         },
                         "instructor": {
                             "type": "object",
@@ -259,6 +261,9 @@
                 "timestamp": {
                     "type": "string"
                 },
+                "stored": {
+                    "type": "string"
+                },
                 "authority": {
                     "type": "object",
                     "oneOf": [
@@ -279,7 +284,7 @@
                 "voided": {
                     "type": "boolean"
                 },
-                "attachments": 
+                "attachments":
                 {
                     "type": "array",
                     "items": {"$ref": "Statements.json#/definitions/attachment"}
@@ -307,17 +312,25 @@
                     "enum": ["SubStatement"]
                 },
                 "object": {
-                    "not": {
-                        "properties": {
-                            "objectType": {
-                                "enum": ["SubStatement"]
-                            }
+                    "type": "object",
+                    "properties": {
+                        "objectType": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["Activity", "Agent", "Group", "StatementRef"]
+                                }
+                            ]
                         }
+                        
                     }
                 }
             },
             "patternProperties": {
-                "^(id|stored|authority|voided)$": {
+                "^(id|stored|authority|voided|version)$": {
                     "type": "null"
                 }
             }
@@ -394,6 +407,7 @@
             "additionalProperties": false
         },
         "extensions": {
+            "type": "object",
             "patternProperties": {
                 "^[a-zA-Z][a-zA-Z+.-]*:": {
                     "type": ["string", "number", "object"]
@@ -431,7 +445,8 @@
             "required": ["mbox_sha1sum"],
             "properties": {
                 "mbox_sha1sum": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{40}$"
                 }
             },
             "patternProperties": {
@@ -504,11 +519,17 @@
                         },
                         "objectType": {
                             "enum": ["Agent"]
-                        }
-                    }
+                        },
+                        "mbox": {},
+                        "mbox_sha1sum": {},
+                        "account": {},
+                        "openid": {}
+                    },
+                    "additionalProperties": false
                 },
                 {
-                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}]
+                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}],
+                    "additionalProperties": false
                 },
                 {
                     "additionalProperties": false
@@ -517,17 +538,13 @@
         },
         "group": {
             "type": "object",
-            "allOf": [
-                {"$ref": "Statements.json#/definitions/groupBasics"},
-                {"oneOf": [
-                    { "$ref": "Statements.json#/definitions/anonymousgroup" },
-                    { "$ref": "Statements.json#/definitions/identifiedgroup" }
-                ]}
+            "oneOf": [
+                { "$ref": "Statements.json#/definitions/anonymousgroup" },
+                { "$ref": "Statements.json#/definitions/identifiedgroup" }
             ]
         },
-        "groupBasics": {
-            "type": "object",
-            "required": ["objectType"],
+        "anonymousgroup": {
+            "required": ["objectType", "member"],
             "properties": {
                 "name": {
                     "type": "string"
@@ -537,40 +554,47 @@
                 },
                 "member": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {"$ref": "Statements.json#/definitions/agent"}
                 }
-            }
-        },
-        "anonymousgroup": {
-            "required": ["member"],
-            "properties": {
-                "member": {
-                    "type": "string"
-                },
-                "name": {},
-                "objectType": {}
             },
             "additionalProperties": false
         },
         "identifiedgroup": {
+            "required": ["objectType"],
             "allOf": [
-                {"$ref": "Statements.json#/definitions/inversefunctional"},
-                {"properties": {
-                    "name": {},
-                    "objectType": {},
-                    "member": {},
-                    "mbox": {},
-                    "mbox_sha1sum": {},
-                    "account": {},
-                    "openid": {}
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "objectType": {
+                            "enum": ["Group"]
+                        },
+                        "member": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {"$ref": "Statements.json#/definitions/agent"}
+                        },
+                        "mbox": {},
+                        "mbox_sha1sum": {},
+                        "account": {},
+                        "openid": {}
                     },
-                "additionalProperties": false
+                    "additionalProperties": false
+                },
+                {
+                    "oneOf": [{"$ref": "Statements.json#/definitions/mbox"}, {"$ref": "Statements.json#/definitions/mbox_sha1sum"}, {"$ref": "Statements.json#/definitions/account"}, {"$ref": "Statements.json#/definitions/openid"}],
+                    "additionalProperties": false
+                },
+                {
+                    "additionalProperties": false
                 }
             ]
         },
         "uuid": {
             "type": "string",
-            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}"
+            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
         },
         "attachment": {
             "type": "object",

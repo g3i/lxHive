@@ -134,6 +134,9 @@ class Statement extends Document implements JsonSerializable
     public function fixAttachmentLinks($baseUrl)
     {
         if (isset($this->_data['statement']['attachments'])) {
+            if(!is_array($this->_data['statement']['attachments'])){
+                return;
+            }
             foreach ($this->_data['statement']['attachments'] as &$attachment) {
                 if (!isset($attachment['fileUrl'])) {
                     $url = Url::createFromUrl($baseUrl);
@@ -144,13 +147,85 @@ class Statement extends Document implements JsonSerializable
         }
     }
 
+    public function convertExtensionKeysToUnicode()
+    {
+        if (isset($this->_data['statement']['context']['extensions'])) {
+            if(!is_array($this->_data['statement']['context']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['context']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['result']['extensions'])) {
+            if(!is_array($this->_data['statement']['result']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['result']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['object']['definition']['extensions'])) {
+            if(!is_array($this->_data['statement']['object']['definition']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
+                $this->_data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['object']['definition']['extensions'][$extensionKey]);
+            }
+        }
+    }
+
+    public function convertExtensionKeysFromUnicode()
+    {
+        if (isset($this->_data['statement']['context']['extensions'])) {
+            if(!is_array($this->_data['statement']['context']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['context']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['result']['extensions'])) {
+            if(!is_array($this->_data['statement']['result']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['result']['extensions'][$extensionKey]);
+            }
+        }
+
+        if (isset($this->_data['statement']['object']['definition']['extensions'])) {
+            if(!is_array($this->_data['statement']['object']['definition']['extensions'])){
+                return;
+            }
+            foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+                $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
+                $this->_data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
+                unset($this->_data['statement']['object']['definition']['extensions'][$extensionKey]);
+            }
+        }
+    }
+
     public function extractActivities()
     {
         $activities = [];
         // Main activity
         if ((isset($this->_data['statement']['object']['objectType']) && $this->_data['statement']['object']['objectType'] === 'Activity') || !isset($this->_data['statement']['object']['objectType'])) {
             $activity = $this->_data['statement']['object'];
-            
+
             // Sort of a hack - PHP's copy-on-write needs to be executed, otherwise the MongoDB PHP driver
             // overwrites the contents of the variable being passed to the batchInsert call - regardless of
             // whether the variable has been passed by reference or not!
@@ -159,12 +234,12 @@ class Statement extends Document implements JsonSerializable
             // http://php.net/manual/en/mongocollection.batchinsert.php Should behave the same as insert, however, does not
             // https://jira.mongodb.org/browse/PHP-383
             // http://www.phpinternalsbook.com/zvals/memory_management.html#reference-counting-and-copy-on-write
-            // 
+            //
             // TODO: Report bug to Mongo bug tracker
-            // 
+            //
             $activity['DUMMY'] = 'DUMMY';
             unset($activity['DUMMY']);
-            
+
             $activities[] = $activity;
         }
 
@@ -202,6 +277,27 @@ class Statement extends Document implements JsonSerializable
         return $activities;
     }
 
+    /**
+     * Mutate legacy statement.context.contextActivities
+     * wraps single activity object (per type) into an array
+     * @return void
+     */
+    public function legacyContextActivities()
+    {
+        if (!isset($this->_data['statement']['context'])) {
+            return;
+        }
+        if (!isset($this->_data['statement']['context']['contextActivities'])) {
+            return;
+        }
+        foreach($this->_data['statement']['context']['contextActivities'] as $type => $value){
+            // we are a bit rat-trapped because statement is an associative array, most efficient way to check if numeric array is here to check for required 'id' property
+            if(isset($value['id'])){
+                $this->_data['statement']['context']['contextActivities'][$type] = array($value);
+            }
+        }
+    }
+
     public function jsonSerialize()
     {
         return $this->getStatement();
@@ -217,6 +313,7 @@ class Statement extends Document implements JsonSerializable
 
     public function renderExact()
     {
+        $this->convertExtensionKeysFromUnicode();
         return $this->getStatement();
     }
 
@@ -232,6 +329,7 @@ class Statement extends Document implements JsonSerializable
 
     public function renderIds()
     {
+        $this->convertExtensionKeysFromUnicode();
         $statement = $this->getStatement();
 
         if ($statement['actor']['objectType'] === 'Group') {
