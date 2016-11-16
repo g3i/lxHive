@@ -48,7 +48,6 @@ class Statements extends Resource
     {
         $this->setStatementService(new StatementService($this->getSlim()));
         $this->setStatementValidator(new StatementValidator());
-        $this->getStatementValidator()->setDefaultSchemaValidator();
     }
 
     /**
