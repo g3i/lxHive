@@ -3,13 +3,9 @@
     "description": "An open-source LRS from Brightcookie",
     "license": "GPL-3.0",
     "repositories": [
-        {   
+        {
             "type": "vcs",
             "url": "https://github.com/sraka1/Slim"
-        },
-        {   
-            "type": "vcs",
-            "url": "https://github.com/sraka1/json-schema"
         }
     ],
     "require": {
@@ -17,7 +13,7 @@
         "techsterx/slim-config-yaml": "dev-master",
         "flynsarmy/slim-monolog": "~1.0",
         "sokil/php-mongo": "~1.13",
-        "justinrainbow/json-schema": "dev-master",
+        "justinrainbow/json-schema": "~2.0",
         "league/url": "~3.3",
         "ramsey/uuid": "~2.8",
         "league/flysystem": "~0.5",
