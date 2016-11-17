@@ -65,8 +65,7 @@ abstract class Resource
      */
     public function __construct()
     {
-        $this->setSlim(Slim::getInstance());
-
+        $this->slim = Slim::getInstance();
         $this->init();
     }
 
@@ -122,10 +121,44 @@ abstract class Resource
      *
      * @param int    $code    Error code
      * @param string $message Error message
+     * @param mixed $data additional data
+     * @param mixed $data exception \Exception::stackTrace() array
      */
-    public static function error($code, $message = '')
+    public static function error($code, $message = '', $data = null, $trace = null)
     {
-        self::jsonResponse($code, ['error_message' => $message]);
+        $slim = \Slim\Slim::getInstance();
+        $message = (string) $message;
+        $mode = $slim->getMode();
+        $debug = $slim->config('_debug');
+
+        // with the current implementation exceptions are not logged, we do this here and wait for Slim 3' Errorhandler class
+        $error =  [
+            'code' => $code,
+            'details' => $data
+        ];
+
+        if($mode == 'development' && $debug){
+            $error['trace'] = $trace;
+        }
+
+        // @see app debug mode
+        switch (true) {
+            case $code >= 500:
+                $slim->log->critical($message.', '.json_encode($error));
+            break;
+            case $code >= 400:
+                $slim->log->warning($message.', '.json_encode($error));
+            break;
+            default:
+                $slim->log->info($message);
+        }
+
+        $response = [
+            'error_message' => $message,
+            'details' => ($code >= 500) ? $error : $data,
+        ];
+
+        self::jsonResponse($code, $response);
     }
 
     /**
@@ -212,19 +245,48 @@ abstract class Resource
     }
 
     /**
+     * Performs general validation of the request.
+     *
+     * @param string $jsonString
+     * @return object json
+     * @throws exception
+     */
+    public static function parseJson($jsonString, $scope = '')
+    {
+        $data = json_decode($jsonString);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            if($scope){
+                $scope = '['.$scope.'] ';
+            }
+            throw new \Exception($scope.'JSON error: '.json_last_error_msg(), self::STATUS_BAD_REQUEST);
+        }
+        return $data;
+    }
+
+    /**
+     * Parses request GET params, decodes json property values
+     *
+     * @param object query params (GET)
+     * @return object json
+     * @throws exception
+     */
+    public static function parseParams($params)
+    {
+        foreach ($params as $key => $value) {
+            $data = json_decode($value);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                $params[$key] = $data;
+            }
+        }
+        return $params;
+    }
+
+    /**
      * @return \Slim\Slim
      */
     public function getSlim()
     {
         return $this->slim;
-    }
-
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
     }
 
     /**

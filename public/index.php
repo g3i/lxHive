@@ -27,8 +27,6 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Slim\Slim;
 use BurningDiode\Slim\Config as Config;
-use Flynsarmy\SlimMonolog\Log as Logger;
-use Monolog\Handler\StreamHandler;
 use API\Resource;
 use League\Url\Url;
 use Slim\Helper\Set;
@@ -65,53 +63,73 @@ ini_set('mongo.native_long', 1);
 $app->configureMode('production', function () use ($app, $appRoot) {
     // Add config
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
-
-    // Debug mode
-    if ($app->debug) {
-        $app->log->setLevel(\Slim\Log::DEBUG);
-    }
-
-    // Set up logging
-    $logger = new Logger\MonologWriter([
-        'handlers' => [
-            new StreamHandler($appRoot.'/storage/logs/production.'.date('Y-m-d').'.log'),
-        ],
-    ]);
-
-    $app->config('log.writer', $logger);
 });
 
 // Only invoked if mode is "development"
 $app->configureMode('development', function () use ($app, $appRoot) {
     // Add config
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
-
-    // Debug mode
-    if ($app->debug) {
-        $app->log->setLevel(\Slim\Log::DEBUG);
-    }
-
-    // Set up logging
-    $logger = new Logger\MonologWriter([
-        'handlers' => [
-            new StreamHandler($appRoot.'/storage/logs/development.'.date('Y-m-d').'.log'),
-        ],
-    ]);
-
-    $app->config('log.writer', $logger);
 });
+
+// RESTful, disable slim's html PrettyException, and deal with legacy lxhive config
+$app->config('_debug', $app->config('debug'));
+$app->config('debug', false);
 
 if (PHP_SAPI !== 'cli') {
     $app->url = Url::createFromServer($_SERVER);
 }
 
+// Logger
+$app->configureMode($app->getMode(), function () use ($app, $appRoot) {
+
+    $config = $app->config('log_handlers');
+    $handlers = [];
+    $debug = $app->config('_debug');
+
+    if(null === $config){
+        $config = [];
+    }
+    $logger = new \Monolog\Logger('app');
+
+    $formatter = new \Monolog\Formatter\LineFormatter();
+
+    // Set up logging
+    if(in_array('FirePHPHandler', $config)){
+        $handler = new \Monolog\Handler\FirePHPHandler();
+        $logger->pushHandler($handler);
+    }
+
+    if(in_array('StreamHandler', $config)){
+        $handler = new \Monolog\Handler\StreamHandler($appRoot.'/storage/logs/production.'.date('Y-m-d').'.log');
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+    }
+
+    if(empty($handlers) || in_array('ErrorLogHandler', $config)){
+        $handler = new \Monolog\Handler\ErrorLogHandler();
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+    }
+
+    $logLevel = ($debug) ? \Slim\Log::DEBUG : \Slim\Log::ERROR;
+    $app->log->setLevel($logLevel);
+
+    \Monolog\ErrorHandler::register($logger);
+    $app->config('log.writer', $logger);
+
+});
+
 // Error handling
 $app->error(function (\Exception $e) {
+    $data = null;
     $code = $e->getCode();
     if ($code < 100) {
         $code = 500;
     }
-    Resource::error($code, $e->getMessage());
+    if(method_exists($e, 'getData')){
+        $data = $e->getData();
+    }
+    Resource::error($code, $e->getMessage(), $data, $e->getTrace());
 });
 
 // Database layer setup
@@ -229,6 +247,7 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
 });
 
 // Start with routing - dynamic for now
+
 // Get
 $app->get('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
