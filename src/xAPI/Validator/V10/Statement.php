@@ -26,29 +26,22 @@ namespace API\Validator\V10;
 
 use API\Validator;
 use API\Resource;
+use JsonSchema;
 
 class Statement extends Validator
 {
-    protected function applyJsonSchema($data, $fragment = '')
+    /**
+     * @var JsonSchema\Uri\UriResolver $refResolve stores instance (utilize refResolver cache);
+     */
+    private $refResolver = null;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
     {
-
-        $fragment = ($fragment) ? '#'.$fragment : '';
-        $schema = new \stdClass();
-
-        $schema->{'$ref'} =  'file://'.__DIR__.'/Schema/Statements.json'.$fragment;
-        $validator = new \JsonSchema\Validator();
-        $validator->check($data, $schema);
-
-        return $validator;
-    }
-
-    protected function throwErrors($message, $errors)
-    {
-        $message .= ' Violations: ';
-        foreach ($errors as $error) {
-            $message .= sprintf("[%s] %s\n", $error['property'], $error['message']);
-        }
-        throw new Exception($message, Resource::STATUS_BAD_REQUEST);
+        $this->refResolver = new JsonSchema\RefResolver(new JsonSchema\Uri\UriRetriever(), new JsonSchema\Uri\UriResolver());
+        parent:: __construct();
     }
 
     // Handles the validation of GET /statements
@@ -67,10 +60,7 @@ class Statement extends Validator
             $data = (object) $data;
         }
 
-        $schema = $this->applyJsonSchema($data, 'getParameters');
-        if (!$schema->isValid()) {
-            $this->throwErrors('GET parameters do not validate.', $schema->getErrors());
-        }
+        $this->validateSchema($data, 'getParameters');
     }
 
     // POST-ing a statement validation
@@ -80,10 +70,7 @@ class Statement extends Validator
         $data = $request->getBody();
         $data = json_decode($data);
 
-        $schema = $this->applyJsonSchema($data, 'postBody');
-        if (!$schema->isValid()) {
-            $this->throwErrors('Statements do not validate.', $schema->getErrors());
-        }
+        $this->validateSchema($data, 'postBody');
     }
 
     // PUT-ing one or more statements validation
@@ -92,17 +79,57 @@ class Statement extends Validator
         // Then do specific validation
         $data = $request->get();
 
-        $schema = $this->applyJsonSchema($data, 'putParameters');
-        if (!$schema->isValid()) {
-            $this->throwErrors('PUT parameters do not validate.', $schema->getErrors());
-        }
+        $schema = $this->validateSchema($data, 'putParameters');
 
         $data = $request->getBody();
         $data = json_decode($data);
 
-        $schema = $this->applyJsonSchema($data, 'putBody');
-        if (!$schema->isValid()) {
-            $this->throwErrors('Statements do not validate.', $schema->getErrors());
+        $this->validateSchema($data, 'putBody');
+    }
+
+    /**
+     * validate data with JsonSchema
+     *
+     * @param object $data
+     * @param string $fragment
+     *
+     * @throws Exception
+     */
+    protected function validateSchema($data, $fragment = '')
+    {
+        $fragment = ($fragment) ? '#'.$fragment : '';
+        $schema = new \stdClass();
+        $schema = $this->refResolver->resolve('file://'.__DIR__.'/Schema/Statements.json'.$fragment);
+
+        // Validate
+        $validator = new JsonSchema\Validator();
+        $validator->check($data, $schema);
+
+        if (!$validator->isValid()) {
+            $errors = $validator->getErrors();
+            foreach ($errors as $key => $error) {
+                if($error['property']){
+                    $errors[$key] = sprintf("[%s]: %s", $error['property'], $error['message']);
+                }else{
+                    $errors[$key] = sprintf($error['message']);
+                }
+
+            }
+            $this->throwErrors($errors, $fragment);
         }
+    }
+
+    /**
+     * throw validatior errors
+     *
+     * @param array $errors
+     * @param string $validator
+     *
+     * @throws Exception
+     */
+    protected function throwErrors(array $errors, $validator = 'Statement')
+    {
+        $msg = '{"validator":"'.$validator. '", "errors": '.json_encode($errors).'}';
+        throw new \Exception($msg, Resource::STATUS_BAD_REQUEST);
     }
 }

@@ -1,3 +1,4 @@
 # Development configuration overrides
 log.enable: true
+log_handlers: [ErrorLogHandler, FirePHPHandler]
 debug:      true
