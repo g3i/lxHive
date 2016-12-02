@@ -22,51 +22,45 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace API\Document;
 
-abstract class Service
+use Sokil\Mongo\Document;
+
+class Attachment extends Document
 {
-    /**
-     * @var \Slim\Slim
-     */
-    private $slim;
+    protected $_data = [
+        'sha2'            => null,
+        'content_type'    => null,
+        'mongo_timestamp' => null,
+    ];
 
-    /**
-     * Constructor.
-     *
-     * @param \Slim\Slim $slim Slim framework
-     */
-    public function __construct($slim)
+    public function setSha2($sha2)
     {
-        $this->setSlim($slim);
+        $this->_data['sha2'] = $sha2;
     }
 
-    /**
-     * @return \Sokil\Mongo\Client
-     */
-    public function getDocumentManager()
+    public function getSha2()
     {
-        return $this->getSlim()->mongo;
+        return $this->_data['sha2'];
     }
 
-    /**
-     * @return \Slim\Slim
-     */
-    public function getSlim()
+    public function setContentType($contentType)
     {
-        return $this->slim;
-    }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
+        $this->_data['content_type'] = $contentType;
     }
 
-    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    protected function getStorageAdapter()
+    public function getContentType()
     {
-        return $this->getSlim()->storageAdapter;
+        return $this->_data['content_type'];
+    }
+
+    public function setTimestamp($timestamp)
+    {
+        $this->_data['mongo_timestamp'] = $timestamp;
+    }
+
+    public function getTimestamp()
+    {
+        return $this->_data['mongo_timestamp'];
     }
 }

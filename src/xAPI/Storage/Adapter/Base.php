@@ -22,51 +22,58 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace API\Storage\Adapter;
 
-abstract class Service
+abstract class Base
 {
     /**
-     * @var \Slim\Slim
+     * @var \Slim\Slim - in future DI container
      */
-    private $slim;
+    private $container;
 
     /**
      * Constructor.
      *
-     * @param \Slim\Slim $slim Slim framework
+     * @param \Slim\Slim $slim Slim framework - in future DI container
      */
-    public function __construct($slim)
+    public function __construct($container)
     {
-        $this->setSlim($slim);
+        $this->setContainer($container);
     }
 
+    // TEMPORARY!
     /**
-     * @return \Sokil\Mongo\Client
-     */
-    public function getDocumentManager()
-    {
-        return $this->getSlim()->mongo;
-    }
-
-    /**
+     * Gets the value of slim.
+     *
      * @return \Slim\Slim
      */
     public function getSlim()
     {
-        return $this->slim;
-    }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
+        return $this->container;
     }
 
-    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    protected function getStorageAdapter()
+
+    /**
+     * Gets the value of container.
+     *
+     * @return \Slim\Slim - in future DI container
+     */
+    public function getContainer()
     {
-        return $this->getSlim()->storageAdapter;
+        return $this->container;
+    }
+
+    /**
+     * Sets the value of container.
+     *
+     * @param \Slim\Slim - in future DI container $container the container
+     *
+     * @return self
+     */
+    protected function setContainer($container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }

@@ -22,51 +22,39 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace API\Document\Auth;
 
-abstract class Service
+use Sokil\Mongo\Document;
+
+class OAuthClient extends Document implements \JsonSerializable
 {
-    /**
-     * @var \Slim\Slim
-     */
-    private $slim;
+    protected $_data = [
+        'clientId'    => null,
+        'secret'      => null,
+        'description' => null,
+        'name'        => null,
+        'redirectUri' => null,
+    ];
 
-    /**
-     * Constructor.
-     *
-     * @param \Slim\Slim $slim Slim framework
-     */
-    public function __construct($slim)
+    public function relations()
     {
-        $this->setSlim($slim);
+        return [
+            'oAuthTokens' => [self::RELATION_HAS_MANY, 'oAuthTokens', 'clientId'],
+        ];
     }
 
-    /**
-     * @return \Sokil\Mongo\Client
-     */
-    public function getDocumentManager()
+    public function jsonSerialize()
     {
-        return $this->getSlim()->mongo;
+        return $this->_data;
     }
 
-    /**
-     * @return \Slim\Slim
-     */
-    public function getSlim()
+    public function renderSummary()
     {
-        return $this->slim;
-    }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
-    }
+        $return = [
+            'name' => $this->_data['name'],
+            'description' =>  $this->_data['description']
+        ];
 
-    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    protected function getStorageAdapter()
-    {
-        return $this->getSlim()->storageAdapter;
+        return $return;
     }
 }

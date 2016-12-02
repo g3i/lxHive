@@ -143,6 +143,14 @@ $app->hook('slim.before', function () use ($app) {
 
         return $client;
     });
+
+    // Temporary database layer setup
+    $app->container->singleton('storageAdapter', function () use ($app) {
+        // Temporary hardcoded adapter
+        // TODO: Decide on adapter in use based on config!
+        $storageAdapter = new \API\Storage\Adapter\MongoLegacy($app);
+        return $storageAdapter;
+    });
 });
 
 // CORS compatibility layer (Internet Explorer)

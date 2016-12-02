@@ -22,51 +22,32 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace API\Document\Auth;
 
-abstract class Service
+interface TokenInterface
 {
     /**
-     * @var \Slim\Slim
-     */
-    private $slim;
-
-    /**
-     * Constructor.
+     * Does the user have a certain permission.
      *
-     * @param \Slim\Slim $slim Slim framework
+     * @param string $permissionName Name of the permission
+     *
+     * @return bool
      */
-    public function __construct($slim)
-    {
-        $this->setSlim($slim);
-    }
+    public function hasPermission($permissionName);
 
     /**
-     * @return \Sokil\Mongo\Client
+     * Throws an exception if the user doesn't possess the given permission.
+     *
+     * @param string $permissionName Name of permission
+     *
+     * @return void|Exception
      */
-    public function getDocumentManager()
-    {
-        return $this->getSlim()->mongo;
-    }
+    public function checkPermission($permissionName);
 
     /**
-     * @return \Slim\Slim
+     * Is this user valid? I.e. expired token etc.
+     *
+     * @return bool
      */
-    public function getSlim()
-    {
-        return $this->slim;
-    }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
-    }
-
-    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    protected function getStorageAdapter()
-    {
-        return $this->getSlim()->storageAdapter;
-    }
+    public function isValid();
 }
