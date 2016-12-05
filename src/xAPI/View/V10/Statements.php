@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,40 +30,35 @@ use API\View;
 
 class Statements extends View
 {
-    public function renderGet()
+    public function renderGet($statementResult)
     {
         $view = [];
 
-        $cursor = $this->service->getCursor();
-        $format = $this->service->getFormat();
-        $limit = $this->service->getLimit();
-        $descending = $this->service->getDescending();
-        $count = $this->service->getCount();
-
         $resultArray = [];
         $idArray     = [];
+        $format = $statementResult->getRequestedFormat();
 
         // This could be done better with pointers or a separate renderer or something... also, move valid format checking to Validator perhaps?
-        foreach ($cursor as $document) {
-            $idArray[] = $document->getId();
+        foreach ($statementResult->getStatementCursor() as $statementDocument) {
+            $idArray[] = $statementDocument->getId();
             if ($format === 'exact') {
-                $resultArray[] = $document->renderExact();
+                $resultArray[] = $statementDocument->renderExact();
             } elseif ($format === 'ids') {
-                $resultArray[] = $document->renderIds();
+                $resultArray[] = $statementDocument->renderIds();
             } elseif ($format === 'canonical') {
-                $resultArray[] = $document->renderCanonical();
+                $resultArray[] = $statementDocument->renderCanonical();
             }
         }
 
         $view['statements'] = $resultArray;
         $view['more']       = '';
-        $view['totalCount'] = $count;
+        $view['totalCount'] = $statementResult->getTotalCount();
 
         // TODO: Abstract this away somewhere...
-        if (count($idArray) === $limit) {
+        if ($statementResult->getHasMore()) {
             $latestId = end($idArray);
             $latestId = $latestId->__toString();
-            if ($descending) {
+            if ($statementResult->getSortDescending()) {
                 $this->getSlim()->url->getQuery()->modify(['until_id' => $latestId]);
             } else { //Ascending
                 $this->getSlim()->url->getQuery()->modify(['since_id' => $latestId]);
@@ -75,18 +70,18 @@ class Statements extends View
         return $view;
     }
 
-    public function renderGetSingle()
+    public function renderGetSingle($statementResult)
     {
-        $statement = $this->service->getCursor()->current()->renderExact();
+        $statement = $statementResult->getStatementCursor()->current()->renderExact();
 
         return $statement;
     }
 
-    public function renderPost()
+    public function renderPost($statementResult)
     {
         $response = [];
 
-        $statements = $this->service->getStatements();
+        $statements = $statementResult->getStatementCursor();
 
         foreach ($statements as $document) {
             $response[] = $document->renderMeta();

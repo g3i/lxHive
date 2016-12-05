@@ -1,12 +1,12 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* v0.9.1
-* supports xAPI specs <= 1.0.2
+* Current version: **v0.9.1**
+* Supports xAPI spec <= 1.0.2
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
 
-* now also available as [Saas edition](https://saas.lxhive.com/)
+For a hosted solution, see [lxHive SaaS](https://saas.lxhive.com/).
 
 ## <a name="introduction" />Introduction
 

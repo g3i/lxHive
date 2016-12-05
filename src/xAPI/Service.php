@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,5 +62,11 @@ abstract class Service
     public function setSlim($slim)
     {
         $this->slim = $slim;
+    }
+
+    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
+    protected function getStorageAdapter()
+    {
+        return $this->getSlim()->storageAdapter;
     }
 }

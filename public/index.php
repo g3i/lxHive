@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,6 +142,14 @@ $app->hook('slim.before', function () use ($app) {
         $client->useDatabase($app->config('database')['db_name']);
 
         return $client;
+    });
+
+    // Temporary database layer setup
+    $app->container->singleton('storageAdapter', function () use ($app) {
+        // Temporary hardcoded adapter
+        // TODO: Decide on adapter in use based on config!
+        $storageAdapter = new \API\Storage\Adapter\MongoLegacy($app);
+        return $storageAdapter;
     });
 });
 
