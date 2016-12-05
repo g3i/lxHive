@@ -48,9 +48,26 @@ Config\Yaml::getInstance()->addParameters(['app.root' => $appRoot]);
 // Default config
 try {
     Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.yml');
+
+    // Only invoked if mode is "production"
+    $app->configureMode('production', function () use ($app, $appRoot) {
+        // Add config
+        Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
+    });
+
+    // Only invoked if mode is "development"
+    $app->configureMode('development', function () use ($app, $appRoot) {
+        // Add config
+        Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
+    });
+
 } catch (\Exception $e) {
     if (PHP_SAPI === 'cli' && ((isset($argv[1]) && $argv[1] === 'setup:db') || (isset($argv[0]) && !isset($argv[1])))) {
-        // Database setup in progress, ignore exception
+        // Only invoked if mode is "development"
+        $app->configureMode('development', function () use ($app, $appRoot) {
+            // Add config
+            Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Templates/Config.development.yml');
+        });
     } else {
         throw new \Exception('You must run the setup:db command using the X CLI tool!');
     }
@@ -59,17 +76,7 @@ try {
 // Use Mongo's native long int
 ini_set('mongo.native_long', 1);
 
-// Only invoked if mode is "production"
-$app->configureMode('production', function () use ($app, $appRoot) {
-    // Add config
-    Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
-});
 
-// Only invoked if mode is "development"
-$app->configureMode('development', function () use ($app, $appRoot) {
-    // Add config
-    Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
-});
 
 // RESTful, disable slim's html PrettyException, and deal with legacy lxhive config
 $app->config('_debug', $app->config('debug'));
@@ -83,40 +90,48 @@ if (PHP_SAPI !== 'cli') {
 $app->configureMode($app->getMode(), function () use ($app, $appRoot) {
 
     $config = $app->config('log_handlers');
-    $handlers = [];
     $debug = $app->config('_debug');
 
+    $handlers = [];
+    $stream = $appRoot.'/storage/logs/production.'.date('Y-m-d').'.log';
+
     if(null === $config){
-        $config = [];
+        $config = ['ErrorLogHandler'];
     }
-    $logger = new \Monolog\Logger('app');
+
+    if(PHP_SAPI === 'cli'){
+        $config = ['StreamHandler', 'ErrorLogHandler'];
+        $stream = 'php://output';
+    }
 
     $formatter = new \Monolog\Formatter\LineFormatter();
 
     // Set up logging
     if(in_array('FirePHPHandler', $config)){
         $handler = new \Monolog\Handler\FirePHPHandler();
-        $logger->pushHandler($handler);
+        $handlers[] = $handler;
     }
 
     if(in_array('StreamHandler', $config)){
-        $handler = new \Monolog\Handler\StreamHandler($appRoot.'/storage/logs/production.'.date('Y-m-d').'.log');
+        $handler = new \Monolog\Handler\StreamHandler($stream);
         $handler->setFormatter($formatter);
-        $logger->pushHandler($handler);
+        $handlers[] = $handler;
     }
 
     if(empty($handlers) || in_array('ErrorLogHandler', $config)){
         $handler = new \Monolog\Handler\ErrorLogHandler();
         $handler->setFormatter($formatter);
-        $logger->pushHandler($handler);
+        $handlers[] = $handler;
     }
+
+    $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
+        'handlers' => $handlers,
+    ));
+
+    $app->config('log.writer', $logger);
 
     $logLevel = ($debug) ? \Slim\Log::DEBUG : \Slim\Log::ERROR;
     $app->log->setLevel($logLevel);
-
-    \Monolog\ErrorHandler::register($logger);
-    $app->config('log.writer', $logger);
-
 });
 
 // Error handling
@@ -256,6 +271,11 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
 
 // Start with routing - dynamic for now
 
+// ./X @TODO: dedicated identifier for ./X, so phpUnit client passes
+if (PHP_SAPI === 'cli') {
+    return;
+}
+
 // Get
 $app->get('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
@@ -265,6 +285,7 @@ $app->get('/:resource(/(:action)(/))', function ($resource, $subResource = null)
         $resource->get();
     }
 });
+
 // Post
 $app->post('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
@@ -274,6 +295,7 @@ $app->post('/:resource(/(:action)(/))', function ($resource, $subResource = null
         $resource->post();
     }
 });
+
 // Put
 $app->put('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
@@ -283,6 +305,7 @@ $app->put('/:resource(/(:action)(/))', function ($resource, $subResource = null)
         $resource->put();
     }
 });
+
 // Delete
 $app->delete('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
@@ -292,6 +315,7 @@ $app->delete('/:resource(/(:action)(/))', function ($resource, $subResource = nu
         $resource->delete();
     }
 });
+
 // Options
 $app->options('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
     $resource = Resource::load($app->version, $resource, $subResource);
@@ -301,8 +325,10 @@ $app->options('/:resource(/(:action)(/))', function ($resource, $subResource = n
         $resource->options();
     }
 });
+
 // Not found
 $app->notFound(function () {
     Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
 });
+
 $app->run();

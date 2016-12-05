@@ -33,6 +33,18 @@ use Sokil\Mongo\Client;
 
 class SetupDbCommand extends Command
 {
+    //@TODO: such data and the yaml methods need to be sourced out into Config and Admi API's
+    private $configDir;
+
+    /**
+     * Construct.
+     */
+    public function __construct()
+    {
+        $this->configDir = __DIR__.'/../Config';
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -45,8 +57,12 @@ class SetupDbCommand extends Command
     {
         $output->writeln('<info>Welcome to the setup of lxHive!</info>');
 
-        $helper = $this->getHelper('question');
+        if($this->checkYaml('Config.yml')){
+            $output->writeln('<error>A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.</error>');
+            return;
+        }
 
+        $helper = $this->getHelper('question');
         $question = new Question('Enter a name for this lxHive instance: ', 'Untitled');
         $name = $helper->ask($input, $output, $question);
 
@@ -68,16 +84,53 @@ class SetupDbCommand extends Command
         $question = new Question('Enter the name of your MongoDB database (default: "lxHive"): ', 'lxHive');
         $mongoDatabase = $helper->ask($input, $output, $question);
 
-        $currentConfig = Yaml::parse(file_get_contents(__DIR__.'/../Config/Config.template.yml'));
+        $mergeConfig = ['name' => $name, 'database' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]];
+        $this->installYaml('Config.yml', $mergeConfig);
 
-        $mergingArray = ['name' => $name, 'database' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]];
+        if(!$this->checkYaml('Config.production.yml')){
+            $this->installYaml('Config.production.yml');
+        }
+        if(!$this->checkYaml('Config.development.yml')){
+            $this->installYaml('Config.development.yml');
+        }
 
-        $newConfig = array_merge($currentConfig, $mergingArray);
-
-        $yamlData = Yaml::dump($newConfig);
-
-        file_put_contents(__DIR__.'/../Config/Config.yml', $yamlData);
-
+        $output->writeln('<info>Configuration saved!</info>');
         $output->writeln('<info>DB setup complete!</info>');
+    }
+
+    /**
+     * checks if a yaml config file exists already in /src/xAPI/Config/
+     * @param string $configYML yaml file
+     *
+     * @return boolean
+     */
+    public function checkYaml($configYML){
+        return file_exists($configYML = $this->configDir.'/'.$configYML);
+    }
+
+    /**
+     * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data
+     * @param string $yaml yaml file to be created from template
+     * @param array $mergeData associative array of config data to be merged in to the new config file
+     *
+     * @throws \Exception
+     */
+    public function installYaml($yml, array $mergeData = []){
+
+        $configYML = $this->configDir.'/'.$yml;
+        $templateYML = $this->configDir.'/Templates/'.$yml;
+
+        $template = file_get_contents($templateYML);
+        if(false === $template){
+            throw new \Exception('Error reading file `'.$templateYML.'` Make sure the file exists and is readable.');
+        }
+        $data = Yaml::parse($template, true);// exceptionOnInvalidType
+        if(!empty($mergeData)){
+            $data += $mergeData;
+        }
+        $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
+        if(false === file_put_contents($configYML, $ymlData)){
+            throw new \Exception('Error rwriting '. __DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
+        }
     }
 }

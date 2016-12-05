@@ -6,8 +6,6 @@
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
 
-For a hosted solution, see [lxHive SaaS](https://saas.lxhive.com/).
-
 ## <a name="introduction" />Introduction
 
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
