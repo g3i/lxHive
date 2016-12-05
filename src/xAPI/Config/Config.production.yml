@@ -1,4 +1,0 @@
-# Production configuration overrides
-log.enable: true
-log_handlers: [StreamHandler]
-debug:      false
