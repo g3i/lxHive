@@ -27,6 +27,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 use InvalidArgumentException;
 use API\Resource;
 use API\Storage\Query\StatementResult;
+use API\Storage\Query\StatementInterface;
 use API\Storage\Adapter\Base;
 
 class Statement extends Base implements StatementInterface
@@ -345,6 +346,7 @@ class Statement extends Base implements StatementInterface
 	private function storeStatement($statementObject)
     {
         $collection  = $this->getDocumentManager()->getCollection('statements');
+        // TODO: This should be in Activity storage manager!
         $activityCollection  = $this->getDocumentManager()->getCollection('activities');
 
         $attachmentBase = $this->getSlim()->url->getBaseUrl().$this->getSlim()->config('filesystem')['exposed_url'];
@@ -492,12 +494,4 @@ class Statement extends Base implements StatementInterface
     {
         return $this->getSlim()->auth;
     }
-
-    // TODO: Remove this and initialize DB manager from Slim config (if appropriate) - temporarily in so that stuff still works!
-    // Decide on DB adapter at Bootstrap level (currently still in index.php)
-    private function getDocumentManager()
-    {
-        return $this->getSlim()->mongo;
-    }
-
 }

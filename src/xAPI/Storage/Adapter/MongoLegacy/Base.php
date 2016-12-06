@@ -24,8 +24,12 @@
 
 namespace API\Storage\Adapter\MongoLegacy;
 
-class Base
+use API\Storage\Adapter\Base as StorageBase;
+use Sokil\Mongo\Client;
+
+class Base extends StorageBase
 {
+    protected $documentManager;
     /**
      * Constructor.
      *
@@ -35,8 +39,37 @@ class Base
     {
         parent::__construct($container);
 
-        // Set up the actual driver here!!!
-        // TEMPORARILY DISABLED WHILE WE STILL USE 'mongo' SINGLETON FROM BOOTSTRAP FILE (index.php)
+        $client = new Client($this->getSlim()->config('storage')['MongoLegacy']['host_uri']);
+        $client->map([
+            $this->getSlim()->config('storage')['MongoLegacy']['db_name'] => '\API\Storage\Adapter\MongoLegacy\Collection',
+        ]);
+        $client->useDatabase($this->getSlim()->config('storage')['MongoLegacy']['db_name']);
+
+        $this->setDocumentManager($client);
     }
 
+
+    /**
+     * Gets the value of documentManager.
+     *
+     * @return mixed
+     */
+    public function getDocumentManager()
+    {
+        return $this->documentManager;
+    }
+
+    /**
+     * Sets the value of documentManager.
+     *
+     * @param mixed $documentManager the document manager
+     *
+     * @return self
+     */
+    protected function setDocumentManager($documentManager)
+    {
+        $this->documentManager = $documentManager;
+
+        return $this;
+    }
 }

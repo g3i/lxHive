@@ -22,24 +22,25 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Service;
+namespace API\Storage\Adapter\MongoLegacy;
 
-use API\Service;
-use API\Util;
+use API\Storage\Query\LogInterface;
 
-class Log extends Service
+class Log extends Base implements LogInterface
 {
-    /**
-     * Creates a log entry from the given request
-     *
-     * @param Slim\Http\Request $request The request
-     *
-     * @return \API\Document\Log The log document
-     */
-    public function logRequest($request)
-    {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
+	public function logRequest($ip, $method, $endpoint, $timestamp)
+	{
+        $collection  = $this->getDocumentManager()->getCollection('logs');
+        $document = $collection->createDocument();
+
+        $document->setIp($ip);
+        $document->setMethod($method);
+        $document->setEndpoint($endpoint);
+        $document->setTimestamp(Util\Date::dateTimeToMongoDate($timestamp));
+
+        $document->save();
 
         return $document;
-    }
+	}
+
 }

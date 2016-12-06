@@ -22,24 +22,12 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Service;
+namespace API\Storage\Query;
 
-use API\Service;
-use API\Util;
+use InvalidArgumentException;
+use API\Resource;
 
-class Log extends Service
+interface LogInterface
 {
-    /**
-     * Creates a log entry from the given request
-     *
-     * @param Slim\Http\Request $request The request
-     *
-     * @return \API\Document\Log The log document
-     */
-    public function logRequest($request)
-    {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
-
-        return $document;
-    }
+	public function logRequest($ip, $method, $endpoint, $timestamp);
 }

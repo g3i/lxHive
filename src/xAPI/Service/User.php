@@ -34,6 +34,7 @@ use Birke\Rememberme;
 
 class User extends Service
 {
+    // Will be deprecated with UserResult class
     /**
      * Users.
      *
@@ -41,6 +42,7 @@ class User extends Service
      */
     protected $users;
 
+    // Will be deprecated with UserResult class
     /**
      * Cursor.
      *
@@ -48,6 +50,7 @@ class User extends Service
      */
     protected $cursor;
 
+    // Will be deprecated with UserResult class
     /**
      * Is this a single user fetch?
      *
@@ -92,13 +95,7 @@ class User extends Service
             throw new \Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
-
-        $cursor->where('email', $params->get('email'));
-        $cursor->where('passwordHash', sha1($params->get('password')));
-
-        $document = $cursor->current();
+        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password')));
 
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';
@@ -113,6 +110,7 @@ class User extends Service
         $_SESSION['userId'] = $document->getId();
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
 
+        // TODO: Remove this remember me helper/library
         // Set the Remember me cookie
         $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
         $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
@@ -155,11 +153,9 @@ class User extends Service
 
     public function findById($id)
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
+        $document = $this->getStorage()->getUserStorage()->findById($id);
 
-        $result = $collection->getDocument($id);
-
-        return $result;
+        return $document;
     }
 
     public function getLoggedIn()
@@ -172,21 +168,7 @@ class User extends Service
 
     public function addUser($email, $password, $permissions)
     {
-        $collection  = $this->getDocumentManager()->getCollection('users');
-
-        // Set up the User to be saved
-        $userDocument = $collection->createDocument();
-
-        $userDocument->setEmail($email);
-
-        $passwordHash = sha1($password);
-        $userDocument->setPasswordHash($passwordHash);
-
-        foreach ($permissions as $permission) {
-            $userDocument->addPermission($permission);
-        }
-
-        $userDocument->save();
+        $userDocument = $this->getStorage()->getUserStorage()->addUser($email, $password, $permissions);
 
         $this->single = true;
         $this->users = [$userDocument];
@@ -196,8 +178,7 @@ class User extends Service
 
     public function fetchAll()
     {
-        $collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
+        $cursor = $userDocument = $this->getStorage()->getUserStorage()->fetchAll();
 
         $this->cursor = $cursor;
 
@@ -206,8 +187,7 @@ class User extends Service
 
     public function fetchAvailablePermissions()
     {
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor      = $collection->find();
+        $cursor = $userDocument = $this->getStorage()->getUserStorage()->fetchAvailablePermissions();
 
         $this->cursor = $cursor;
 

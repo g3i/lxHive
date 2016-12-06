@@ -65,8 +65,8 @@ abstract class Service
     }
 
     // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    protected function getStorageAdapter()
+    protected function getStorage()
     {
-        return $this->getSlim()->storageAdapter;
+        return $this->getSlim()->storage;
     }
 }

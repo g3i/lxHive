@@ -45,7 +45,7 @@ class Statement extends Service
     {
         $parameters = new Set($request->get());
 
-        $statementResult = $this->getStorageAdapter()->getStatementsFiltered($parameters);
+        $statementResult = $this->getStorage()->getStatementStorage()->getStatementsFiltered($parameters);
 
         return $statementResult;
     }
@@ -84,8 +84,6 @@ class Statement extends Service
         if ($request->isMultipart()) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
 
-            $attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
-
             $partCount = $request->parts()->count();
 
             for ($i = 1; $i < $partCount; $i++) {
@@ -107,11 +105,7 @@ class Statement extends Service
                 $hash           = $part->headers('X-Experience-API-Hash');
                 $contentType    = $part->headers('Content-Type');
 
-                $attachmentDocument = $attachmentCollection->createDocument();
-                $attachmentDocument->setSha2($hash);
-                $attachmentDocument->setContentType($contentType);
-                $attachmentDocument->setTimestamp(new MongoDate());
-                $attachmentDocument->save();
+                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
@@ -119,10 +113,10 @@ class Statement extends Service
 
         // Multiple statements
         if ($this->areMultipleStatements($body)) {
-            $statementResult = $this->getStorageAdapter()->postStatements($body);
+            $statementResult = $this->getStorage()->getStatementStorage()->postStatements($body);
         } else {
             // Single statement
-            $statementResult = $this->getStorageAdapter()->postStatement($body);
+            $statementResult = $this->getStorage()->getStatementStorage()->postStatement($body);
         }
 
         return $statementResult;
@@ -158,12 +152,9 @@ class Statement extends Service
         }
 
         // TODO: Separate this into some sort of parser for multipart!
-        // TODO2: Add the attachment service to the adapters!
         // Save attachments - this could be in a queue perhaps...
         if ($request->isMultipart()) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
-
-            $attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
 
             $partCount = $request->parts()->count();
 
@@ -186,11 +177,7 @@ class Statement extends Service
                 $hash           = $part->headers('X-Experience-API-Hash');
                 $contentType    = $part->headers('Content-Type');
 
-                $attachmentDocument = $attachmentCollection->createDocument();
-                $attachmentDocument->setSha2($hash);
-                $attachmentDocument->setContentType($contentType);
-                $attachmentDocument->setTimestamp(new MongoDate());
-                $attachmentDocument->save();
+                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
@@ -199,7 +186,7 @@ class Statement extends Service
         // Single
         $parameters = new Set($request->get());
 
-        $statementResult = $this->getStorageAdapter()->putStatement($parameters, $body);
+        $statementResult = $this->getStorage()->getStatementStorage()->putStatement($parameters, $body);
 
         return $statementResult;
     }

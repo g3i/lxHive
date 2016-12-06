@@ -22,24 +22,23 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Service;
+namespace API\Storage\Adapter;
 
-use API\Service;
-use API\Util;
-
-class Log extends Service
+interface AdapterInterface
 {
-    /**
-     * Creates a log entry from the given request
-     *
-     * @param Slim\Http\Request $request The request
-     *
-     * @return \API\Document\Log The log document
-     */
-    public function logRequest($request)
-    {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
+    public function getStatementStorage();
 
-        return $document;
-    }
+    public function getAttachmentStorage();
+
+    public function getUserStorage();
+
+    public function getLogStorage();
+
+    public function getActivityStorage();
+
+    public function getActivityStateStorage();
+
+    public function getActivityProfileStorage();
+
+    public function getAgentProfileStorage();
 }

@@ -22,24 +22,18 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Service;
+namespace API\Storage\Query;
 
-use API\Service;
-use API\Util;
+use InvalidArgumentException;
+use API\Resource;
 
-class Log extends Service
+interface AgentProfileInterface
 {
-    /**
-     * Creates a log entry from the given request
-     *
-     * @param Slim\Http\Request $request The request
-     *
-     * @return \API\Document\Log The log document
-     */
-    public function logRequest($request)
-    {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
+	public function getAgentProfilesFiltered($parameters);
 
-        return $document;
-    }
+	public function postAgentProfile($parameters, $profileObject);
+
+	public function putAgentProfile($parameters, $profileObject);
+
+	public function deleteAgentProfile($parameters);
 }

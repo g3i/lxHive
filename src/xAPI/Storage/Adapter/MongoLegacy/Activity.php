@@ -22,24 +22,27 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Service;
+namespace API\Storage\Adapter\MongoLegacy;
 
-use API\Service;
-use API\Util;
+use API\Storage\Query\ActivityInterface;
 
-class Log extends Service
+class Activity extends Base implements ActivityInterface
 {
-    /**
-     * Creates a log entry from the given request
-     *
-     * @param Slim\Http\Request $request The request
-     *
-     * @return \API\Document\Log The log document
-     */
-    public function logRequest($request)
+    public function fetchActivityById($id)
     {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
+        $collection  = $this->getDocumentManager()->getCollection('activities');
+        $cursor      = $collection->find();
+
+        $cursor->where('id', $params->get('activityId'));
+
+        if ($cursor->count() === 0) {
+            throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
+        }
+
+        $document = $cursor->current();
 
         return $document;
     }
+        
+
 }

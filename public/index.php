@@ -30,7 +30,6 @@ use BurningDiode\Slim\Config as Config;
 use API\Resource;
 use League\Url\Url;
 use Slim\Helper\Set;
-use Sokil\Mongo\Client;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
@@ -134,21 +133,14 @@ $app->error(function (\Exception $e) {
 
 // Database layer setup
 $app->hook('slim.before', function () use ($app) {
-    $app->container->singleton('mongo', function () use ($app) {
-        $client = new Client($app->config('database')['host_uri']);
-        $client->map([
-            $app->config('database')['db_name'] => '\API\Collection',
-        ]);
-        $client->useDatabase($app->config('database')['db_name']);
-
-        return $client;
-    });
-
-    // Temporary database layer setup
-    $app->container->singleton('storageAdapter', function () use ($app) {
-        // Temporary hardcoded adapter
-        // TODO: Decide on adapter in use based on config!
-        $storageAdapter = new \API\Storage\Adapter\MongoLegacy($app);
+    // Temporary database layer setup - will be moved to bootstrap later
+    $app->container->singleton('storage', function () use ($app) {
+        $storageInUse = $app->config('storage')['in_use'];
+        $storageClass = '\\API\\Storage\\Adapter\\' . $storageInUse;
+        if (!class_exists($storageClass)) {
+            throw new \InvalidArgumentException('Storage type selected in config is invalid!');
+        }
+        $storageAdapter = new $storageClass($app);
         return $storageAdapter;
     });
 });
