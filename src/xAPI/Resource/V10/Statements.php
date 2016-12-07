@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2015 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,15 +65,15 @@ class Statements extends Resource
         $this->statementValidator->validateGetRequest($request);
 
         // Load the statements - this needs to change, drastically, as it's garbage
-        $statementResult = $this->statementService->statementGet($request);
+        $this->statementService->statementGet($request);
 
         // Render them
-        $view = new StatementView();
+        $view = new StatementView(['service' => $this->statementService]);
 
-        if ($statementResult->getSingleStatementRequest()) {
-            $view = $view->renderGetSingle($statementResult);
+        if ($this->statementService->getSingle()) {
+            $view = $view->renderGetSingle();
         } else {
-            $view = $view->renderGet($statementResult);
+            $view = $view->renderGet();
         }
 
         // Multipart responses are intentionally disabled for now
@@ -124,10 +124,10 @@ class Statements extends Resource
         $this->statementValidator->validatePostRequest($jsonRequest);
 
         // Save the statements
-        $statementResult = $this->statementService->statementPost($request);
+        $this->statementService->statementPost($request);
 
-        $view = new StatementView();
-        $view = $view->renderPost($statementResult);
+        $view = new StatementView(['service' => $this->statementService]);
+        $view = $view->renderPost();
 
         $this->setHeaders();
         Resource::jsonResponse(Resource::STATUS_OK, $view);
