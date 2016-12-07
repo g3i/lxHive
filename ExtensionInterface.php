@@ -22,14 +22,29 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy\Collection;
+namespace API;
 
-use Sokil\Mongo\Collection;
-
-class ActivityStates extends Collection
+interface ExtensionInterface
 {
-    public function getDocumentClassName(array $documentData = null)
-    {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\ActivityState';
-    }
+    /*
+        Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
+    */
+    public function getEventListeners();
+
+    /*
+        Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
+    */
+    public function getRoutes();
+
+    /*
+        Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
+    */
+    public function getHooks();
+
+    /*
+        Initial setup function
+        This method can be called an indefinite amount of times
+        It should check if installed already and only execute if not
+    */
+    public function install();
 }

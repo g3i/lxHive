@@ -1,6 +1,6 @@
 name: BrightCookie LRS
 mode: production
-database:
+storage:
     in_use: MongoLegacy
     MongoLegacy:
         host_uri: 'mongodb://127.0.0.1'

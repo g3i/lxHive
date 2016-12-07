@@ -132,7 +132,7 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $cursor = $this->getStorage()->getOAuthStorage()->fetchClients();
+        $cursor = $this->getStorage()->getOAuthStorage()->getClients();
 
         $this->setCursor($cursor);
 
@@ -141,7 +141,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addScope($name, $description)
     {
-        $scopeDocument = $this->getStorage()->getOAuthStorage()->fetchClients($name, $description);
+        $scopeDocument = $this->getStorage()->getOAuthStorage()->addScope($name, $description);
 
         $this->single = true;
         $this->scopes = [$scopeDocument];

@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Document\Auth;
+namespace API\Storage\Adapter\MongoLegacy\Document\Auth;
 
 use Sokil\Mongo\Document;
 use API\Resource;

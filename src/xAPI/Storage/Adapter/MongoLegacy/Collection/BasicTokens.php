@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Collection;
+namespace API\Storage\Adapter\MongoLegacy\Collection;
 
 use Sokil\Mongo\Collection;
 
@@ -30,6 +30,6 @@ class BasicTokens extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-        return '\\API\\Document\\Auth\\BasicToken';
+         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\BasicToken';
     }
 }

@@ -151,7 +151,7 @@ $app->hook('slim.before', function () use ($app) {
     // Temporary database layer setup - will be moved to bootstrap later
     $app->container->singleton('storage', function () use ($app) {
         $storageInUse = $app->config('storage')['in_use'];
-        $storageClass = '\\API\\Storage\\Adapter\\' . $storageInUse;
+        $storageClass = '\\API\\Storage\\Adapter\\' . $storageInUse . '\\' . $storageInUse;
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is invalid!');
         }

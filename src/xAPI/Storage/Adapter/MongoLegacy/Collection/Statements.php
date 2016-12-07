@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Collection;
+namespace API\Storage\Adapter\MongoLegacy\Collection;
 
 use Sokil\Mongo\Collection;
 
@@ -30,6 +30,6 @@ class Statements extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-        return '\\API\\Document\\Statement';
+         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Statement';
     }
 }
