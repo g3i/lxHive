@@ -65,7 +65,8 @@ abstract class Resource
      */
     public function __construct()
     {
-        $this->slim = Slim::getInstance();
+        $this->setSlim(Slim::getInstance());
+
         $this->init();
     }
 
@@ -245,48 +246,19 @@ abstract class Resource
     }
 
     /**
-     * Performs general validation of the request.
-     *
-     * @param string $jsonString
-     * @return object json
-     * @throws exception
-     */
-    public static function parseJson($jsonString, $scope = '')
-    {
-        $data = json_decode($jsonString);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            if($scope){
-                $scope = '['.$scope.'] ';
-            }
-            throw new \Exception($scope.'JSON error: '.json_last_error_msg(), self::STATUS_BAD_REQUEST);
-        }
-        return $data;
-    }
-
-    /**
-     * Parses request GET params, decodes json property values
-     *
-     * @param object query params (GET)
-     * @return object json
-     * @throws exception
-     */
-    public static function parseParams($params)
-    {
-        foreach ($params as $key => $value) {
-            $data = json_decode($value);
-            if (json_last_error() == JSON_ERROR_NONE) {
-                $params[$key] = $data;
-            }
-        }
-        return $params;
-    }
-
-    /**
      * @return \Slim\Slim
      */
     public function getSlim()
     {
         return $this->slim;
+    }
+
+    /**
+     * @param \Slim\Slim $slim
+     */
+    public function setSlim($slim)
+    {
+        $this->slim = $slim;
     }
 
     /**

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2015 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,87 @@
 
 namespace API;
 
+use JsonSchema;
+use API\Validator\Exception;
+
 abstract class Validator
 {
+    /**
+     * @var \JsonSchema\Validator
+     */
+    private $schemaValidator;
+
+    /**
+     * @var \JsonSchema\Uri\UriRetriever
+     */
+    private $retriever;
+
+    /**
+     * @var \JsonSchema\RefResolver
+     */
+    private $refResolver;
 
     /**
      * Constructor.
      */
     public function __construct()
     {
+        $this->setDefaultSchemaValidator();
+    }
+
+    /**
+     * @return \JsonSchema\Validator
+     */
+    public function getSchemaValidator()
+    {
+        return $this->schemaValidator;
+    }
+    /**
+     * @param \JsonSchema\Validator $schemaValidator
+     */
+    public function setSchemaValidator($schemaValidator)
+    {
+        $this->schemaValidator = $schemaValidator;
+    }
+
+    /**
+     * @return \JsonSchema\RefResolver
+     */
+    public function getSchemaReferenceResolver()
+    {
+        return $this->refResolver;
+    }
+    /**
+     * @param \JsonSchema\RefResolver $refResolver
+     */
+    public function setSchemaReferenceResolver($refResolver)
+    {
+        $this->refResolver = $refResolver;
+    }
+
+    /**
+     * @return \JsonSchema\Uri\UriRetriever
+     */
+    public function getSchemaRetriever()
+    {
+        return $this->retriever;
+    }
+    /**
+     * @param \JsonSchema\Uri\UriRetriever $uriRetriever
+     */
+    public function setSchemaRetriever($uriRetriever)
+    {
+        $this->retriever = $uriRetriever;
+    }
+
+    /**
+     * Sets the default schema validator.
+     */
+    public function setDefaultSchemaValidator()
+    {
+        $this->retriever = new JsonSchema\Uri\UriRetriever();
+        $this->refResolver = new JsonSchema\RefResolver($this->retriever);
+        $this->schemaValidator = new JsonSchema\Validator();
     }
 
     /**
