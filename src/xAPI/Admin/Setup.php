@@ -22,12 +22,33 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Admin;
 
-use InvalidArgumentException;
-use API\Resource;
-
-interface ActivityInterface
+class Setup
 {
-	public function fetchActivityById($id);
+    protected function configure()
+    {
+        $this
+            ->setName('auth:basic:list')
+            ->setDescription('List tokens')
+        ;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $accessTokenService = new AccessTokenService($this->getSlim());
+
+        $accessTokenService->fetchTokens();
+
+        $textArray = [];
+        foreach ($accessTokenService->getCursor() as $document) {
+            $textArray[] = $document->jsonSerialize();
+        }
+
+        $text = json_encode($textArray, JSON_PRETTY_PRINT);
+
+        $output->writeln('<info>Tokens successfully fetched!</info>');
+        $output->writeln('<info>Info:</info>');
+        $output->writeln($text);
+    }
 }

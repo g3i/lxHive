@@ -24,10 +24,35 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
-interface ActivityInterface
+class DeletionResult
 {
-	public function fetchActivityById($id);
+    /**
+     * Whether the deletion was successful or not
+     * @var bool
+     */
+    public $success;
+
+    /**
+     * Gets the Whether the deletion was successful or not.
+     *
+     * @return bool
+     */
+    public function getSuccess()
+    {
+        return $this->success;
+    }
+
+    /**
+     * Sets the Whether the deletion was successful or not.
+     *
+     * @param bool $success the success
+     *
+     * @return self
+     */
+    public function setSuccess($success)
+    {
+        $this->success = $success;
+
+        return $this;
+    }
 }

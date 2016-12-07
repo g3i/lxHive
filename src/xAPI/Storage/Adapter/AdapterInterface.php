@@ -41,4 +41,8 @@ interface AdapterInterface
     public function getActivityProfileStorage();
 
     public function getAgentProfileStorage();
+
+    public function getBasicAuthStorage();
+
+    public function getOAuthStorage();
 }

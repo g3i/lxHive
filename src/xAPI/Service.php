@@ -49,6 +49,7 @@ abstract class Service
         return $this->getSlim()->mongo;
     }
 
+    // In future this will be $container!
     /**
      * @return \Slim\Slim
      */

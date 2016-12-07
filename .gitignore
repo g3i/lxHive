@@ -20,3 +20,5 @@ htrouter.phar
 sftp-config.json
 .DS_Store
 dev/*
+
+phplint.sh

@@ -27,8 +27,9 @@ namespace API\Service\Auth;
 use API\Service;
 use API\Resource;
 use Slim\Helper\Set;
-use API\Document\User;
-use API\Document\Auth\OAuthClient;
+// TEMPORARY
+use API\Storage\Adapter\MongoLegacy\Document\User;
+use API\Storage\Adapter\MongoLegacy\Document\Auth\OAuthClient;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
@@ -86,29 +87,8 @@ class OAuth extends Service implements AuthInterface
 
     public function addToken($expiresAt, User $user, OAuthClient $client, array $scopes = [], $code = null)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->storeToken($expiresAt, $user, $client, $scopes, $code);
 
-        $accessTokenDocument = $collection->createDocument();
-
-        $expiresDate = new \DateTime();
-        $expiresDate->setTimestamp($expiresAt);
-        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
-        $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
-        $accessTokenDocument->addRelation('user', $user);
-        $accessTokenDocument->addRelation('client', $client);
-        $scopeIds = [];
-        foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->getId();
-        }
-        $accessTokenDocument->setScopeIds($scopeIds);
-
-        $accessTokenDocument->setToken(Util\OAuth::generateToken());
-        if (null !== $code) {
-            $accessTokenDocument->setCode($code);
-        }
-
-        $accessTokenDocument->save();
         $this->single = true;
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -117,23 +97,7 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
-
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
-
-        if ($accessTokenDocument === null) {
-            throw new \Exception('Invalid access token specified.', Resource::STATUS_FORBIDDEN);
-        }
-
-        $expiresAt = $accessTokenDocument->getExpiresAt();
-
-        if ($expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
-            }
-        }
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->fetchToken($accessToken);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -142,24 +106,14 @@ class OAuth extends Service implements AuthInterface
 
     public function deleteToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-
-        $expression = $collection->expression();
-        $expression->where('token', $accessToken);
-        $collection->deleteDocuments($expression);
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->deleteToken($accessToken);
 
         return $this;
     }
 
     public function expireToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
-
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
-        $accessTokenDocument->setExpired(true);
-        $accessTokenDocument->save();
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->expireToken($accessToken);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -168,24 +122,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addClient($name, $description, $redirectUri)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-
-        // Set up the Client to be saved
-        $clientDocument = $collection->createDocument();
-
-        $clientDocument->setName($name);
-
-        $clientDocument->setDescription($description);
-
-        $clientDocument->setRedirectUri($redirectUri);
-
-        $clientId = Util\OAuth::generateToken();
-        $clientDocument->setClientId($clientId);
-
-        $secret = Util\OAuth::generateToken();
-        $clientDocument->setSecret($secret);
-
-        $clientDocument->save();
+        $clientDocument = $this->getStorage()->getOAuthStorage()->addClient($name, $description, $redirectUri);
 
         $this->single = true;
         $this->client = [$clientDocument];
@@ -195,8 +132,7 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor = $collection->find();
+        $cursor = $this->getStorage()->getOAuthStorage()->fetchClients();
 
         $this->setCursor($cursor);
 
@@ -205,16 +141,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addScope($name, $description)
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
-
-        // Set up the Client to be saved
-        $scopeDocument = $collection->createDocument();
-
-        $scopeDocument->setName($name);
-
-        $scopeDocument->setDescription($description);
-
-        $scopeDocument->save();
+        $scopeDocument = $this->getStorage()->getOAuthStorage()->fetchClients($name, $description);
 
         $this->single = true;
         $this->scopes = [$scopeDocument];
@@ -247,11 +174,8 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor = $collection->find();
-
-        $cursor->where('clientId', $params->get('client_id'));
-        $clientDocument = $cursor->current();
+        // get client by id
+        $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
 
         if (null === $clientDocument) {
             throw new \Exception('Invalid client_id', Resource::STATUS_BAD_REQUEST);
@@ -261,13 +185,11 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
         $scopeDocuments = [];
         $scopes = explode(',', $params->get('scope'));
         foreach ($scopes as $scope) {
-            $cursor = $collection->find();
-            $cursor->where('name', $scope);
-            $scopeDocument = $cursor->current();
+            // get scope by name
+            $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
             if (null === $scopeDocument) {
                 throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
             }
@@ -298,19 +220,18 @@ class OAuth extends Service implements AuthInterface
         // TODO: Improve this, load stuff from config, add documented error codes, separate stuff into functions, etc.
         if ($postParams->get('action') === 'accept') {
             $expiresAt = time() + 3600;
-            $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-            $cursor = $collection->find();
-            $cursor->where('clientId', $params->get('client_id'));
-            $clientDocument = $cursor->current();
-            $collection = $this->getDocumentManager()->getCollection('users');
-            $userDocument = $collection->getDocument($_SESSION['userId']);
-            $collection = $this->getDocumentManager()->getCollection('authScopes');
+            // get client by id
+            $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
+
+
+            // getuserbyid --  $_SESSION['userId']
+            $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
+            
             $scopeDocuments = [];
             $scopes = explode(',', $params->get('scope'));
             foreach ($scopes as $scope) {
-                $cursor = $collection->find();
-                $cursor->where('name', $scope);
-                $scopeDocument = $cursor->current();
+                // getscopebyname
+                $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
                 if (null === $scopeDocument) {
                     throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
                 }
@@ -353,29 +274,8 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
-
-        $cursor->where('code', $params->get('code'));
-        $tokenDocument = $cursor->current();
-
-        if (null === $tokenDocument) {
-            throw new \Exception('Invalid code specified!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        $clientDocument = $tokenDocument->client;
-
-        if ($clientDocument->getClientId() !== $params->get('client_id') || $clientDocument->getSecret() !== $params->get('client_secret')) {
-            throw new \Exception('Invalid client_id/client_secret combination!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        if ($params->get('redirect_uri') !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        //Remove one-time code
-        $tokenDocument->setCode(false);
-        $tokenDocument->save();
+        // getTokenWithOneTimeCode($params)
+        $tokenDocument = $this->getStorage()->getOAuthStorage()->getTokenWithOneTimeCode($params);
 
         $this->accessTokens = [$tokenDocument];
         $this->single = true;

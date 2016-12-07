@@ -321,13 +321,13 @@ class Statement extends Base implements StatementInterface
         // Remaining includes the current page!
         $statementResult->setRemainingCount($cursor->count());
 
-        if ($this->getRemainingCount() > $limit) {
+        if ($statementResult->getRemainingCount() > $limit) {
             $statementResult->setHasMore(true);
         } else {
             $statementResult->setHasMore(false);
         }
 
-        $statementResult->setStatementCursor($cursor);
+        $statementResult->setCursor($cursor);
 
         return $statementResult;
     }

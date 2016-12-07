@@ -24,10 +24,17 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
-interface ActivityInterface
+interface BasicAuthInterface
 {
-	public function fetchActivityById($id);
+    public function storeToken($ip, $method, $endpoint, $timestamp);
+    
+	public function getToken($key, $secret);
+	    
+	public function deleteToken($clientId);
+	    
+	public function expireToken($clientId, $accessToken);
+	    
+	public function fetchTokens();
+
+	public function getScopeByName($name);
 }

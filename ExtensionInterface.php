@@ -22,12 +22,29 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API;
 
-use InvalidArgumentException;
-use API\Resource;
-
-interface ActivityInterface
+interface ExtensionInterface
 {
-	public function fetchActivityById($id);
+    /*
+        Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
+    */
+    public function getEventListeners();
+
+    /*
+        Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
+    */
+    public function getRoutes();
+
+    /*
+        Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
+    */
+    public function getHooks();
+
+    /*
+        Initial setup function
+        This method can be called an indefinite amount of times
+        It should check if installed already and only execute if not
+    */
+    public function install();
 }

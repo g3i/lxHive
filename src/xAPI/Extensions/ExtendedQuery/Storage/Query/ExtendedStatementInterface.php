@@ -24,10 +24,7 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
-interface ActivityInterface
+interface ExtendedStatementInterface
 {
-	public function fetchActivityById($id);
+    public function logRequest($ip, $method, $endpoint, $timestamp);
 }

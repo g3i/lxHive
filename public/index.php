@@ -158,6 +158,46 @@ $app->hook('slim.before', function () use ($app) {
         $storageAdapter = new $storageClass($app);
         return $storageAdapter;
     });
+
+    $app->container->singleton('eventDispatcher', function () use ($app) {
+        // Instantiate event dispatcher
+        $eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+
+        return $eventDispatcher;
+    });
+
+    // Load any extensions that may exist
+    $extensions = $app->config('extensions');
+
+    if ($extensions) {
+        foreach ($extensions as $extension) {
+            if ($extension['enabled'] === true) {
+                // Instantiate the extension class
+                $className = $extension['class_name'];
+                $extension = new $className($app);
+
+                // Load any xAPI event handlers added by the extension
+                $listeners = $extension->getEventListeners();
+                foreach ($listeners as $listener) {
+                    $app->eventDispatcher->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+                }
+                
+                // Load any routes added by extension
+                $routes = $extension->getRoutes();
+                foreach ($routes as $route) {
+                    $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
+                }
+
+                // Load any Slim hooks added by extension
+                $hooks = $extension->getHooks();
+                foreach ($hooks as $hook) {
+                    $app->hook($hook['hook'], [$extension, $hook['callable']]);
+                }
+
+                // TODO: Load any new data/content validators added by extension
+            }
+        }
+    }
 });
 
 // CORS compatibility layer (Internet Explorer)

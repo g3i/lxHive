@@ -22,12 +22,14 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Extensions\ExtendedQuery\Storage\Adapter\MongoLegacy;
 
-use InvalidArgumentException;
-use API\Resource;
+use Sokil\Mongo\Expression;
 
-interface ActivityInterface
+class MutableExpression extends Expression
 {
-	public function fetchActivityById($id);
+    public function fromArray($array)
+    {
+        $this->_expression = $array;
+    }
 }

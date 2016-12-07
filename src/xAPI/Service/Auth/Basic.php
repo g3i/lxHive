@@ -57,33 +57,7 @@ class Basic extends Service implements AuthInterface
 
     public function addToken($name, $description, $expiresAt, User $user, array $scopes = [])
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-
-        $accessTokenDocument = $collection->createDocument();
-
-        $accessTokenDocument->setName($name);
-        $accessTokenDocument->setDescription($description);
-        $accessTokenDocument->addRelation('user', $user);
-        $scopeIds = [];
-        foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->getId();
-        }
-        $accessTokenDocument->setScopeIds($scopeIds);
-
-        if (isset($expiresAt)) {
-            $expiresDate = new \DateTime();
-            $expiresDate->setTimestamp($expiresAt);
-            $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
-        }
-
-        //Generate token
-        $accessTokenDocument->setKey(\API\Util\OAuth::generateToken());
-        $accessTokenDocument->setSecret(\API\Util\OAuth::generateToken());
-
-        $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
-
-        $accessTokenDocument->save();
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes);
 
         $this->single = true;
         $this->setAccessTokens([$accessTokenDocument]);
@@ -101,24 +75,7 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchToken($key, $secret)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
-
-        $cursor->where('key', $key);
-        $cursor->where('secret', $secret);
-        $accessTokenDocument = $cursor->current();
-
-        if ($accessTokenDocument === null) {
-            throw new \Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
-        }
-
-        $expiresAt = $accessTokenDocument->getExpiresAt();
-
-        if ($expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
-            }
-        }
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->fetchToken($key, $secret);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -134,15 +91,7 @@ class Basic extends Service implements AuthInterface
      */
     public function deleteToken($clientId)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-
-        $expression = $collection->expression();
-
-        $expression->where('clientId', $clientId);
-
-        $collection->deleteDocuments($expression);
-
-        return $this;
+        $this->getStorage()->getBasicAuthStorage()->deleteToken($clientId);
     }
 
     /**
@@ -155,18 +104,11 @@ class Basic extends Service implements AuthInterface
      */
     public function expireToken($clientId, $accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
-
-        $cursor->where('token', $accessToken);
-        $cursor->where('clientId', $clientId);
-        $accessTokenDocument = $cursor->current();
-        $accessTokenDocument->setExpired(true);
-        $accessTokenDocument->save();
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->expireToken($clientId, $accessToken);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
-        return $document;
+        return $accessTokenDocument;
     }
 
     /**
@@ -176,26 +118,18 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchTokens()
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
+        $cursor = $this->getStorage()->getBasicAuthStorage()->fetchTokens();
 
         $this->setCursor($cursor);
 
         return $this;
     }
 
+    // REDUNDANT!
     public function getScopeByName($name)
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor = $collection->find();
-        $cursor->where('name', $name);
-        $scopeDocument = $cursor->current();
-
-        if (null === $scopeDocument) {
-            throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        return $scopeDocument;
+        $scope = $this->getStorage()->getBasicAuthStorage()->getScopeByName($name);
+        return $scope;
     }
 
     /**
@@ -275,9 +209,9 @@ class Basic extends Service implements AuthInterface
             $expiresAt = $expiresAt->getTimestamp();
         }
 
+        // This is ugly, remove this!
         $userService = new UserService($this->getSlim());
         $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
-        $user->save();
 
         $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 

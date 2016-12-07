@@ -91,6 +91,20 @@ class MongoLegacy implements AdapterInterface
         return $agentProfileStorage;
     }
 
+    public function getBasicAuthStorage()
+    {
+        $agentProfileStorage = new BasicAuth($this->getContainer());
+
+        return $agentProfileStorage;
+    }
+
+    public function getOAuthStorage()
+    {
+        $agentProfileStorage = new OAuth($this->getContainer());
+
+        return $agentProfileStorage;
+    }
+
     /**
      * Gets the value of container.
      *

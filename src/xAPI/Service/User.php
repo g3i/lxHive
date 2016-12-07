@@ -95,7 +95,7 @@ class User extends Service
             throw new \Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
         }
 
-        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password')));
+        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password'));
 
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';
