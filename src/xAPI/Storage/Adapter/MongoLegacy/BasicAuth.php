@@ -28,7 +28,7 @@ use API\Storage\Query\BasicAuthInterface;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {
-    public function storeToken($ip, $method, $endpoint, $timestamp)
+    public function storeToken($name, $description, $expiresAt, $user, $scopes)
     {
         $collection = $this->getDocumentManager()->getCollection('basicTokens');
 

@@ -26,7 +26,7 @@ namespace API\Storage\Query;
 
 interface BasicAuthInterface
 {
-    public function storeToken($ip, $method, $endpoint, $timestamp);
+    public function storeToken($name, $description, $expiresAt, $user, $scopes);
     
 	public function getToken($key, $secret);
 	    
