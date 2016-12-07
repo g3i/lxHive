@@ -4,7 +4,7 @@
 * v0.9.1
 * supports xAPI specs <= 1.0.2
 
-[![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/development.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
+[![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/master.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
 
 * now also available as [Saas edition](https://saas.lxhive.com/)
 
