@@ -25,8 +25,6 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
-use API\Util;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
 
@@ -116,7 +114,7 @@ class AgentProfile extends Service
         $params->set('headers', $request->headers());
 
         $agentProfileDocument = $this->getStorage()->getAgentProfileStorage()->putAgentProfile($params, $rawBody);
-        
+
         $this->single = true;
         $this->agentProfiles = [$agentProfileDocument];
 

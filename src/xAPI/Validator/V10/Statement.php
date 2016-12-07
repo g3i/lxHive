@@ -25,12 +25,9 @@
 namespace API\Validator\V10;
 
 use API\Validator;
-use API\Resource;
-use API\HttpException as Exception;
 
 class Statement extends Validator
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -39,6 +36,7 @@ class Statement extends Validator
     protected function validateBySchemaFragment($data, $fragment, $debug = false)
     {
         $fragment = ($fragment) ? '#'.$fragment : '';
+
         return $this->validateSchema($data, 'file://'.__DIR__.'/Schema/Statements.json'.$fragment, $debug);
     }
 

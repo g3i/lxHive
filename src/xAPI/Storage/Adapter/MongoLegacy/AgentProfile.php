@@ -30,8 +30,8 @@ class AgentProfile extends Base implements AgentProfileInterface
 {
     public function getAgentProfilesFiltered($parameters)
     {
-        $collection  = $this->getDocumentManager()->getCollection('agentProfiles');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
+        $cursor = $collection->find();
 
         // Single activity profile
         if ($parameters->has('profileId')) {
@@ -54,7 +54,7 @@ class AgentProfile extends Base implements AgentProfileInterface
                 throw new Exception('Agent profile does not exist.', Resource::STATUS_NOT_FOUND);
             }
 
-            $this->cursor   = $cursor;
+            $this->cursor = $cursor;
             $this->single = true;
 
             return $this;
@@ -87,13 +87,13 @@ class AgentProfile extends Base implements AgentProfileInterface
             $uniqueIdentifier = 'account';
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('agentProfiles');
+        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
 
         // Set up the body to be saved
         $agentProfileDocument = $collection->createDocument();
 
         // Check for existing state - then merge if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('profileId', $parameters->get('profileId'));
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -178,12 +178,12 @@ class AgentProfile extends Base implements AgentProfileInterface
             $uniqueIdentifier = 'account';
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('agentProfiles');
+        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
 
         $agentProfileDocument = $collection->createDocument();
 
         // Check for existing state - then replace if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('profileId', $parameters->get('profileId'));
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -237,8 +237,8 @@ class AgentProfile extends Base implements AgentProfileInterface
 
     public function deleteAgentProfile($parameters)
     {
-        $collection  = $this->getDocumentManager()->getCollection('agentProfiles');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
+        $cursor = $collection->find();
 
         $cursor->where('profileId', $parameters->get('profileId'));
         $agent = $parameters->get('agent');

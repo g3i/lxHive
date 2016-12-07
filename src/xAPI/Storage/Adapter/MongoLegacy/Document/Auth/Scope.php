@@ -29,7 +29,7 @@ use Sokil\Mongo\Document;
 class Scope extends Document implements \JsonSerializable
 {
     protected $_data = [
-        'name'    => null,
+        'name' => null,
         'description' => null,
     ];
 
@@ -38,7 +38,7 @@ class Scope extends Document implements \JsonSerializable
         return [
             'basicTokens' => [self::RELATION_MANY_MANY, 'basicTokens', 'scopeIds'],
             'oAuthTokens' => [self::RELATION_MANY_MANY, 'oAuthTokens', 'scopeIds'],
-            'users'       => [self::RELATION_MANY_MANY, 'users', 'permissionIds'],
+            'users' => [self::RELATION_MANY_MANY, 'users', 'permissionIds'],
         ];
     }
 

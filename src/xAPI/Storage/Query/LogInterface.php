@@ -24,10 +24,7 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface LogInterface
 {
-	public function logRequest($ip, $method, $endpoint, $timestamp);
+    public function logRequest($ip, $method, $endpoint, $timestamp);
 }

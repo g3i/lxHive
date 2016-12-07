@@ -24,13 +24,9 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface AttachmentInterface
 {
-	public function storeAttachment($hash, $contentType, $timestamp = null);
+    public function storeAttachment($hash, $contentType, $timestamp = null);
 
-	public function fetchMetadataBySha2($sha2);
-
+    public function fetchMetadataBySha2($sha2);
 }

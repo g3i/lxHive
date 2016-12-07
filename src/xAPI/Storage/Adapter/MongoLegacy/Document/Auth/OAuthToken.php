@@ -29,21 +29,21 @@ use Slim\Slim;
 class OAuthToken extends AbstractToken
 {
     protected $_data = [
-        'userId'           => null,
-        'clientId'         => null,
-        'token'            => null,
-        'expiresAt'        => null,
-        'createdAt'        => null,
-        'code'             => null,
+        'userId' => null,
+        'clientId' => null,
+        'token' => null,
+        'expiresAt' => null,
+        'createdAt' => null,
+        'code' => null,
     ];
 
     public function relations()
     {
         return [
-            'user'   => [self::RELATION_BELONGS, 'users', 'userId'],
+            'user' => [self::RELATION_BELONGS, 'users', 'userId'],
             'client' => [self::RELATION_BELONGS, 'oAuthClients', 'clientId'],
             'scopes' => [self::RELATION_MANY_MANY, 'authScopes', 'scopeIds', true],
-            'logs' => [self::RELATION_HAS_MANY, 'logs', 'oAuthTokenId']
+            'logs' => [self::RELATION_HAS_MANY, 'logs', 'oAuthTokenId'],
         ];
     }
 

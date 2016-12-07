@@ -38,51 +38,56 @@ class MongoLegacy implements AdapterInterface
     public function getStatementStorage()
     {
         $statementStorage = new Statement($this->getContainer());
+
         return $statementStorage;
     }
 
     public function getAttachmentStorage()
     {
         $attachmentStorage = new Attachment($this->getContainer());
+
         return $attachmentStorage;
     }
 
     public function getUserStorage()
     {
         $userStorage = new User($this->getContainer());
+
         return $userStorage;
     }
 
     public function getLogStorage()
     {
         $logStorage = new Log($this->getContainer());
+
         return $logStorage;
     }
 
     public function getActivityStorage()
     {
         $activityStorage = new Activity($this->getContainer());
+
         return $activityStorage;
     }
-
 
     public function getActivityStateStorage()
     {
         $activityStateStorage = new ActivityState($this->getContainer());
+
         return $activityStateStorage;
     }
-
 
     public function getActivityProfileStorage()
     {
         $activityProfileStorage = new ActivityProfile($this->getContainer());
+
         return $activityProfileStorage;
     }
-
 
     public function getAgentProfileStorage()
     {
         $agentProfileStorage = new AgentProfile($this->getContainer());
+
         return $agentProfileStorage;
     }
 

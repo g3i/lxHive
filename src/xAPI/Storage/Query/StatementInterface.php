@@ -24,29 +24,27 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface StatementInterface
 {
-	/**
-	 * @param  $parameters parameters as per xAPI spec
-	 * @return StatementResult object
-	 */
-	public function getStatementsFiltered($parameters);
+    /**
+     * @param  $parameters parameters as per xAPI spec
+     *
+     * @return StatementResult object
+     */
+    public function getStatementsFiltered($parameters);
 
-	public function getStatementById($statementId);
+    public function getStatementById($statementId);
 
-	/**
-	 * @param  $statementId
-	 * @return bool
-	 */
-	public function statmentWithIdExists($statementId);
+    /**
+     * @param  $statementId
+     *
+     * @return bool
+     */
+    public function statmentWithIdExists($statementId);
 
-	public function postStatement($statementObject);
+    public function postStatement($statementObject);
 
-	public function putStatement($statementObject);
+    public function putStatement($statementObject);
 
-	public function deleteStatement($parameters);
-
+    public function deleteStatement($parameters);
 }

@@ -52,7 +52,6 @@ abstract class Base
         return $this->container;
     }
 
-
     /**
      * Gets the value of container.
      *

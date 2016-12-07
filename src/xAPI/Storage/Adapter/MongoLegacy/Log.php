@@ -28,9 +28,9 @@ use API\Storage\Query\LogInterface;
 
 class Log extends Base implements LogInterface
 {
-	public function logRequest($ip, $method, $endpoint, $timestamp)
-	{
-        $collection  = $this->getDocumentManager()->getCollection('logs');
+    public function logRequest($ip, $method, $endpoint, $timestamp)
+    {
+        $collection = $this->getDocumentManager()->getCollection('logs');
         $document = $collection->createDocument();
 
         $document->setIp($ip);
@@ -41,6 +41,5 @@ class Log extends Base implements LogInterface
         $document->save();
 
         return $document;
-	}
-
+    }
 }

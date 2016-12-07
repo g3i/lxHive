@@ -24,16 +24,13 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface ActivityStateInterface
 {
-	public function getActivityStatesFiltered($parameters);
+    public function getActivityStatesFiltered($parameters);
 
-	public function postActivityState($parameters, $stateObject);
+    public function postActivityState($parameters, $stateObject);
 
-	public function putActivityState($parameters, $stateObject);
+    public function putActivityState($parameters, $stateObject);
 
-	public function deleteActivityState($parameters);
+    public function deleteActivityState($parameters);
 }

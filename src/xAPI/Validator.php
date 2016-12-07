@@ -29,7 +29,6 @@ use API\HttpException as Exception;
 
 abstract class Validator
 {
-
     private static $schemaStorage = null;
 
     protected $lastValidator = null;
@@ -40,7 +39,7 @@ abstract class Validator
      */
     public function __construct()
     {
-        if(!self::$schemaStorage){
+        if (!self::$schemaStorage) {
             self::$schemaStorage = new JsonSchema\SchemaStorage();
         }
     }
@@ -54,7 +53,7 @@ abstract class Validator
         $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage));
         $validator->check($data, $schema);
 
-        if($debug){
+        if ($debug) {
             return $this->debugSchema($data, $uri, $validator, $schema);
         }
 
@@ -62,7 +61,7 @@ abstract class Validator
     }
 
     /**
-     * validate data with JsonSchema
+     * validate data with JsonSchema.
      *
      * @param string $jsonFile existing and valid json file in xAPI\Validator\Schema
      * @param object $data
@@ -72,14 +71,14 @@ abstract class Validator
      */
     public function debugSchema($data, $uri, $validator, $schema)
     {
-        $debug = new \StdClass;
+        $debug = new \StdClass();
         $debug->hasErrors = count($validator->getErrors());
         $debug->errors = ($data) ? $validator->getErrors() : [];
         $debug->uri = $uri;
         $debug->schema = $schema;
         $debug->data = $data;
 
-        throw new Exception('DEBUG: ', ( ($validator->isValid()) ? 200 : 400 ), $debug);
+        throw new Exception('DEBUG: ', (($validator->isValid()) ? 200 : 400), $debug);
     }
 
     /**
@@ -95,9 +94,9 @@ abstract class Validator
     }
 
     /**
-     * throw validatior errors
+     * throw validatior errors.
      *
-     * @param array $errors
+     * @param array  $errors
      * @param string $validator
      *
      * @throws Exception
@@ -109,18 +108,19 @@ abstract class Validator
     }
 
     /**
-     * Processes and Rendes validator errors in an array
+     * Processes and Rendes validator errors in an array.
      *
      * @param JsonSchema\Validator $validator validator instance, note that you must have validated at this stage
      *
      * @throws array simplified errors
      */
-    protected function throwSchemaErrors($message, $validator){
+    protected function throwSchemaErrors($message, $validator)
+    {
         $errors = $validator->getErrors();
         foreach ($errors as $key => $error) {
-            if($error['property']){
-                $errors[$key] = sprintf("[%s]: %s", $error['property'], $error['message']);
-            }else{
+            if ($error['property']) {
+                $errors[$key] = sprintf('[%s]: %s', $error['property'], $error['message']);
+            } else {
                 $errors[$key] = sprintf($error['message']);
             }
         }

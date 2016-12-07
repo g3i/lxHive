@@ -24,16 +24,13 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface AgentProfileInterface
 {
-	public function getAgentProfilesFiltered($parameters);
+    public function getAgentProfilesFiltered($parameters);
 
-	public function postAgentProfile($parameters, $profileObject);
+    public function postAgentProfile($parameters, $profileObject);
 
-	public function putAgentProfile($parameters, $profileObject);
+    public function putAgentProfile($parameters, $profileObject);
 
-	public function deleteAgentProfile($parameters);
+    public function deleteAgentProfile($parameters);
 }

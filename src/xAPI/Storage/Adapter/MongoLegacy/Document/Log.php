@@ -29,23 +29,23 @@ use Sokil\Mongo\Document;
 class Log extends Document
 {
     protected $_data = [
-        'ip'                => null,
-        'method'            => null,
-        'endpoint'          => null,
-        'timestamp'         => null,
-        'basicTokenId'      => null,
-        'oAuthTokenId'      => null
+        'ip' => null,
+        'method' => null,
+        'endpoint' => null,
+        'timestamp' => null,
+        'basicTokenId' => null,
+        'oAuthTokenId' => null,
     ];
 
     public function relations()
     {
         return [
-            'basicToken'       => [self::RELATION_BELONGS, 'basicTokens', 'basicTokenId'],
-            'oAuthToken'       => [self::RELATION_BELONGS, 'oAuthTokens', 'oAuthTokenId'],
-            'statements'       => [self::RELATION_HAS_MANY, 'statements', 'logId'],
+            'basicToken' => [self::RELATION_BELONGS, 'basicTokens', 'basicTokenId'],
+            'oAuthToken' => [self::RELATION_BELONGS, 'oAuthTokens', 'oAuthTokenId'],
+            'statements' => [self::RELATION_HAS_MANY, 'statements', 'logId'],
             'activityProfiles' => [self::RELATION_HAS_MANY, 'activityProfiles', 'logId'],
-            'activityStates'   => [self::RELATION_HAS_MANY, 'activityStates', 'logId'],
-            'agentProfiles'    => [self::RELATION_HAS_MANY, 'agentProfiles', 'logId']
+            'activityStates' => [self::RELATION_HAS_MANY, 'activityStates', 'logId'],
+            'agentProfiles' => [self::RELATION_HAS_MANY, 'agentProfiles', 'logId'],
         ];
     }
 }

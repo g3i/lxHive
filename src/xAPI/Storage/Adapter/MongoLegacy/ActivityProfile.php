@@ -24,14 +24,12 @@
 
 namespace API\Storage\Query;
 
-use API\Storage\Query\ActivityProfileInterface;
-
 class ActivityProfile extends Base implements ActivityProfileInterface
 {
-	public function getActivityProfilesFiltered($parameters)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor      = $collection->find();
+    public function getActivityProfilesFiltered($parameters)
+    {
+        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
+        $cursor = $collection->find();
 
         // Single activity state
         if ($parameters->has('profileId')) {
@@ -42,7 +40,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
                 throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
             }
 
-            $this->cursor   = $cursor;
+            $this->cursor = $cursor;
             $this->single = true;
 
             return $this;
@@ -56,17 +54,17 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         }
 
         return $cursor;
-	}
+    }
 
-	public function postActivityProfile($parameters, $profileObject)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('activityProfiles');
+    public function postActivityProfile($parameters, $profileObject)
+    {
+        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
 
         // Set up the body to be saved
         $activityProfileDocument = $collection->createDocument();
 
         // Check for existing state - then merge if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('profileId', $parameters->get('profileId'));
         $cursor->where('activityId', $parameters->get('activityId'));
 
@@ -133,16 +131,16 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
-	}
+    }
 
-	public function putActivityProfile($parameters, $profileObject)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('activityProfiles');
+    public function putActivityProfile($parameters, $profileObject)
+    {
+        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
 
         $activityProfileDocument = $collection->createDocument();
 
         // Check for existing state - then replace if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('profileId', $parameters->get('profileId'));
         $cursor->where('activityId', $parameters->get('activityId'));
 
@@ -191,12 +189,12 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
-	}
+    }
 
-	public function deleteActivityProfile($parameters)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor      = $collection->find();
+    public function deleteActivityProfile($parameters)
+    {
+        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
+        $cursor = $collection->find();
 
         $cursor->where('profileId', $parameters->get('profileId'));
         $cursor->where('activityId', $parameters->get('activityId'));
@@ -231,7 +229,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
 
         $result->delete();
-	}
+    }
 
     // REMOVE THIS URGENTLY!
      /**

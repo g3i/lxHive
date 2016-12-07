@@ -29,31 +29,31 @@ use Rhumsaa\Uuid\Uuid;
 
 abstract class Resource
 {
-    const STATUS_OK                         = 200;
-    const STATUS_CREATED                    = 201;
-    const STATUS_ACCEPTED                   = 202;
-    const STATUS_NO_CONTENT                 = 204;
+    const STATUS_OK = 200;
+    const STATUS_CREATED = 201;
+    const STATUS_ACCEPTED = 202;
+    const STATUS_NO_CONTENT = 204;
 
-    const STATUS_MULTIPLE_CHOICES           = 300;
-    const STATUS_MOVED_PERMANENTLY          = 301;
-    const STATUS_FOUND                      = 302;
-    const STATUS_NOT_MODIFIED               = 304;
-    const STATUS_USE_PROXY                  = 305;
-    const STATUS_TEMPORARY_REDIRECT         = 307;
+    const STATUS_MULTIPLE_CHOICES = 300;
+    const STATUS_MOVED_PERMANENTLY = 301;
+    const STATUS_FOUND = 302;
+    const STATUS_NOT_MODIFIED = 304;
+    const STATUS_USE_PROXY = 305;
+    const STATUS_TEMPORARY_REDIRECT = 307;
 
-    const STATUS_BAD_REQUEST                = 400;
-    const STATUS_UNAUTHORIZED               = 401;
-    const STATUS_FORBIDDEN                  = 403;
-    const STATUS_NOT_FOUND                  = 404;
-    const STATUS_NOT_FOUND_MESSAGE          = 'Cannot find requested resource.';
-    const STATUS_METHOD_NOT_ALLOWED         = 405;
+    const STATUS_BAD_REQUEST = 400;
+    const STATUS_UNAUTHORIZED = 401;
+    const STATUS_FORBIDDEN = 403;
+    const STATUS_NOT_FOUND = 404;
+    const STATUS_NOT_FOUND_MESSAGE = 'Cannot find requested resource.';
+    const STATUS_METHOD_NOT_ALLOWED = 405;
     const STATUS_METHOD_NOT_ALLOWED_MESSAGE = 'Method %s is not allowed on this resource.';
-    const STATUS_NOT_ACCEPTED               = 406;
-    const STATUS_CONFLICT                   = 409;
-    const STATUS_PRECONDITION_FAILED        = 412;
+    const STATUS_NOT_ACCEPTED = 406;
+    const STATUS_CONFLICT = 409;
+    const STATUS_PRECONDITION_FAILED = 412;
 
-    const STATUS_INTERNAL_SERVER_ERROR      = 500;
-    const STATUS_NOT_IMPLEMENTED            = 501;
+    const STATUS_INTERNAL_SERVER_ERROR = 500;
+    const STATUS_NOT_IMPLEMENTED = 501;
 
     /**
      * @var \Slim\Slim
@@ -122,8 +122,8 @@ abstract class Resource
      *
      * @param int    $code    Error code
      * @param string $message Error message
-     * @param mixed $data additional data
-     * @param mixed $data exception \Exception::stackTrace() array
+     * @param mixed  $data    additional data
+     * @param mixed  $data    exception \Exception::stackTrace() array
      */
     public static function error($code, $message = '', $data = null, $trace = null)
     {
@@ -133,12 +133,12 @@ abstract class Resource
         $debug = $slim->config('_debug');
 
         // with the current implementation exceptions are not logged, we do this here and wait for Slim 3' Errorhandler class
-        $error =  [
+        $error = [
             'code' => $code,
-            'details' => $data
+            'details' => $data,
         ];
 
-        if($mode == 'development' && $debug){
+        if ($mode == 'development' && $debug) {
             $error['trace'] = $trace;
         }
 

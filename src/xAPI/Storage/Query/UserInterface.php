@@ -24,19 +24,15 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface UserInterface
 {
-	public function findByEmailAndPassword($username, $password);
+    public function findByEmailAndPassword($username, $password);
 
-	public function findById($id);
+    public function findById($id);
 
-	public function addUser($email, $password, $permissions);
+    public function addUser($email, $password, $permissions);
 
-	public function fetchAll();
+    public function fetchAll();
 
-	public function fetchAvailablePermissions();
-	
+    public function fetchAvailablePermissions();
 }

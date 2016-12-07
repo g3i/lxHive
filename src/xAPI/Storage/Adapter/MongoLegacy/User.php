@@ -24,16 +24,14 @@
 
 namespace API\Storage\Adapter\MongoLegacy;
 
-use InvalidArgumentException;
-use API\Resource;
 use API\Storage\Query\UserInterface;
 
 class User extends Base implements UserInterface
 {
-	public function findByEmailAndPassword($username, $password)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
+    public function findByEmailAndPassword($username, $password)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+        $cursor = $collection->find();
 
         $cursor->where('email', $params->get('email'));
         $cursor->where('passwordHash', sha1($params->get('password')));
@@ -41,20 +39,20 @@ class User extends Base implements UserInterface
         $document = $cursor->current();
 
         return $document;
-	}
+    }
 
-	public function findById($id)
-	{
-		$collection = $this->getDocumentManager()->getCollection('users');
+    public function findById($id)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
 
         $result = $collection->getDocument($id);
 
         return $result;
-	}
+    }
 
-	public function addUser($email, $password, $permissions)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('users');
+    public function addUser($email, $password, $permissions)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
 
         // Set up the User to be saved
         $userDocument = $collection->createDocument();
@@ -71,22 +69,21 @@ class User extends Base implements UserInterface
         $userDocument->save();
 
         return $userDocument;
-	}
+    }
 
-	public function fetchAll()
-	{
-		$collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
-
-        return $cursor;
-	}
-
-	public function fetchAvailablePermissions()
-	{
-		$collection  = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor      = $collection->find();
+    public function fetchAll()
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+        $cursor = $collection->find();
 
         return $cursor;
-	}
+    }
 
+    public function fetchAvailablePermissions()
+    {
+        $collection = $this->getDocumentManager()->getCollection('authScopes');
+        $cursor = $collection->find();
+
+        return $cursor;
+    }
 }

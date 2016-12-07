@@ -36,16 +36,16 @@ class Statement extends Document implements JsonSerializable
     protected $_data = [
         'statement' => [
             'authority' => null,
-            'id'        => null,
-            'actor'     => null,
-            'verb'      => null,
-            'object'    => null,
+            'id' => null,
+            'actor' => null,
+            'verb' => null,
+            'object' => null,
             'timestamp' => null,
-            'stored'    => null,
+            'stored' => null,
         ],
         'mongo_timestamp' => null,
-        'voided'          => false,
-        'logId'           => null
+        'voided' => false,
+        'logId' => null,
     ];
 
     public function setStatement($statement)
@@ -111,8 +111,7 @@ class Statement extends Document implements JsonSerializable
     public function isReferencing()
     {
         if (isset($this->_data['statement']['object']['objectType'])
-            && ($this->_data['statement']['object']['objectType'] === 'StatementRef'))
-        {
+            && ($this->_data['statement']['object']['objectType'] === 'StatementRef')) {
             return true;
         } else {
             return false;
@@ -129,14 +128,14 @@ class Statement extends Document implements JsonSerializable
     public function fixAttachmentLinks($baseUrl)
     {
         if (isset($this->_data['statement']['attachments'])) {
-            if(!is_array($this->_data['statement']['attachments'])){
+            if (!is_array($this->_data['statement']['attachments'])) {
                 return;
             }
             foreach ($this->_data['statement']['attachments'] as &$attachment) {
                 if (!isset($attachment['fileUrl'])) {
                     $url = Url::createFromUrl($baseUrl);
                     $url->getQuery()->modify(['sha2' => $attachment['sha2']]);
-                    $attachment['fileUrl'] =  $url->__toString();
+                    $attachment['fileUrl'] = $url->__toString();
                 }
             }
         }
@@ -145,7 +144,7 @@ class Statement extends Document implements JsonSerializable
     public function convertExtensionKeysToUnicode()
     {
         if (isset($this->_data['statement']['context']['extensions'])) {
-            if(!is_array($this->_data['statement']['context']['extensions'])){
+            if (!is_array($this->_data['statement']['context']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
@@ -156,7 +155,7 @@ class Statement extends Document implements JsonSerializable
         }
 
         if (isset($this->_data['statement']['result']['extensions'])) {
-            if(!is_array($this->_data['statement']['result']['extensions'])){
+            if (!is_array($this->_data['statement']['result']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
@@ -167,7 +166,7 @@ class Statement extends Document implements JsonSerializable
         }
 
         if (isset($this->_data['statement']['object']['definition']['extensions'])) {
-            if(!is_array($this->_data['statement']['object']['definition']['extensions'])){
+            if (!is_array($this->_data['statement']['object']['definition']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
@@ -181,7 +180,7 @@ class Statement extends Document implements JsonSerializable
     public function convertExtensionKeysFromUnicode()
     {
         if (isset($this->_data['statement']['context']['extensions'])) {
-            if(!is_array($this->_data['statement']['context']['extensions'])){
+            if (!is_array($this->_data['statement']['context']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
@@ -192,7 +191,7 @@ class Statement extends Document implements JsonSerializable
         }
 
         if (isset($this->_data['statement']['result']['extensions'])) {
-            if(!is_array($this->_data['statement']['result']['extensions'])){
+            if (!is_array($this->_data['statement']['result']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
@@ -203,7 +202,7 @@ class Statement extends Document implements JsonSerializable
         }
 
         if (isset($this->_data['statement']['object']['definition']['extensions'])) {
-            if(!is_array($this->_data['statement']['object']['definition']['extensions'])){
+            if (!is_array($this->_data['statement']['object']['definition']['extensions'])) {
                 return;
             }
             foreach ($this->_data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
@@ -275,8 +274,7 @@ class Statement extends Document implements JsonSerializable
 
     /**
      * Mutate legacy statement.context.contextActivities
-     * wraps single activity object (per type) into an array
-     * @return void
+     * wraps single activity object (per type) into an array.
      */
     public function legacyContextActivities()
     {
@@ -286,9 +284,9 @@ class Statement extends Document implements JsonSerializable
         if (!isset($this->_data['statement']['context']['contextActivities'])) {
             return;
         }
-        foreach($this->_data['statement']['context']['contextActivities'] as $type => $value){
+        foreach ($this->_data['statement']['context']['contextActivities'] as $type => $value) {
             // we are a bit rat-trapped because statement is an associative array, most efficient way to check if numeric array is here to check for required 'id' property
-            if(isset($value['id'])){
+            if (isset($value['id'])) {
                 $this->_data['statement']['context']['contextActivities'][$type] = array($value);
             }
         }
@@ -310,6 +308,7 @@ class Statement extends Document implements JsonSerializable
     public function renderExact()
     {
         $this->convertExtensionKeysFromUnicode();
+
         return $this->getStatement();
     }
 
@@ -368,7 +367,7 @@ class Statement extends Document implements JsonSerializable
 
         $object = [
             'objectType' => $object['objectType'],
-            $uniqueIdentifier => $object[$uniqueIdentifier]
+            $uniqueIdentifier => $object[$uniqueIdentifier],
         ];
 
         return $object;

@@ -86,7 +86,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addToken($expiresAt, User $user, OAuthClient $client, array $scopes = [], $code = null)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
 
         $accessTokenDocument = $collection->createDocument();
 
@@ -117,8 +117,8 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $cursor = $collection->find();
 
         $cursor->where('token', $accessToken);
         $accessTokenDocument = $cursor->current();
@@ -142,7 +142,7 @@ class OAuth extends Service implements AuthInterface
 
     public function deleteToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
 
         $expression = $collection->expression();
         $expression->where('token', $accessToken);
@@ -153,8 +153,8 @@ class OAuth extends Service implements AuthInterface
 
     public function expireToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $cursor = $collection->find();
 
         $cursor->where('token', $accessToken);
         $accessTokenDocument = $cursor->current();
@@ -168,7 +168,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addClient($name, $description, $redirectUri)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
+        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
 
         // Set up the Client to be saved
         $clientDocument = $collection->createDocument();
@@ -195,8 +195,8 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
+        $cursor = $collection->find();
 
         $this->setCursor($cursor);
 
@@ -205,7 +205,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addScope($name, $description)
     {
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
+        $collection = $this->getDocumentManager()->getCollection('authScopes');
 
         // Set up the Client to be saved
         $scopeDocument = $collection->createDocument();
@@ -247,8 +247,8 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
+        $cursor = $collection->find();
 
         $cursor->where('clientId', $params->get('client_id'));
         $clientDocument = $cursor->current();
@@ -261,11 +261,11 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
+        $collection = $this->getDocumentManager()->getCollection('authScopes');
         $scopeDocuments = [];
         $scopes = explode(',', $params->get('scope'));
         foreach ($scopes as $scope) {
-            $cursor      = $collection->find();
+            $cursor = $collection->find();
             $cursor->where('name', $scope);
             $scopeDocument = $cursor->current();
             if (null === $scopeDocument) {
@@ -298,17 +298,17 @@ class OAuth extends Service implements AuthInterface
         // TODO: Improve this, load stuff from config, add documented error codes, separate stuff into functions, etc.
         if ($postParams->get('action') === 'accept') {
             $expiresAt = time() + 3600;
-            $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-            $cursor      = $collection->find();
+            $collection = $this->getDocumentManager()->getCollection('oAuthClients');
+            $cursor = $collection->find();
             $cursor->where('clientId', $params->get('client_id'));
             $clientDocument = $cursor->current();
-            $collection  = $this->getDocumentManager()->getCollection('users');
+            $collection = $this->getDocumentManager()->getCollection('users');
             $userDocument = $collection->getDocument($_SESSION['userId']);
-            $collection  = $this->getDocumentManager()->getCollection('authScopes');
+            $collection = $this->getDocumentManager()->getCollection('authScopes');
             $scopeDocuments = [];
             $scopes = explode(',', $params->get('scope'));
             foreach ($scopes as $scope) {
-                $cursor      = $collection->find();
+                $cursor = $collection->find();
                 $cursor->where('name', $scope);
                 $scopeDocument = $cursor->current();
                 if (null === $scopeDocument) {
@@ -353,8 +353,8 @@ class OAuth extends Service implements AuthInterface
             throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
         }
 
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $cursor = $collection->find();
 
         $cursor->where('code', $params->get('code'));
         $tokenDocument = $cursor->current();

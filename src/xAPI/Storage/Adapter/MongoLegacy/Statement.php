@@ -24,7 +24,6 @@
 
 namespace API\Storage\Adapter\MongoLegacy;
 
-use InvalidArgumentException;
 use API\Resource;
 use API\Storage\Query\StatementResult;
 use API\Storage\Query\StatementInterface;
@@ -32,21 +31,22 @@ use API\Storage\Adapter\Base;
 
 class Statement extends Base implements StatementInterface
 {
-	/**
-	 * @param  $parameters parameters as per xAPI spec
-	 * @return StatementResult object
-	 */
-	public function getStatementsFiltered($parameters)
-	{
-		$collection  = $this->getDocumentManager()->getCollection('statements');
-        $cursor      = $collection->find();
+    /**
+     * @param  $parameters parameters as per xAPI spec
+     *
+     * @return StatementResult object
+     */
+    public function getStatementsFiltered($parameters)
+    {
+        $collection = $this->getDocumentManager()->getCollection('statements');
+        $cursor = $collection->find();
 
         // Single statement
         if ($parameters->has('statementId')) {
             $cursor->where('statement.id', $parameters->get('statementId'));
             $cursor->where('voided', false);
 
-            if(!Uuid::isValid($parameters->get('statementId'))){
+            if (!Uuid::isValid($parameters->get('statementId'))) {
                 throw new Exception('Not a valid uuid.', Resource::STATUS_NOT_FOUND);
             }
             if ($cursor->count() === 0) {
@@ -303,7 +303,7 @@ class Statement extends Base implements StatementInterface
         $cursor->sort(['_id' => -1]);
         if ($parameters->has('ascending')) {
             $asc = $parameters->get('ascending');
-            if(strtolower($asc) === 'true' || $asc === '1') {
+            if (strtolower($asc) === 'true' || $asc === '1') {
                 $cursor->sort(['_id' => 1]);
                 $statementResult->setSortDescending(false);
                 $statementResult->setSortAscending(true);
@@ -330,9 +330,9 @@ class Statement extends Base implements StatementInterface
         $statementResult->setStatementCursor($cursor);
 
         return $statementResult;
-	}
+    }
 
-	public function getStatementById($statementId)
+    public function getStatementById($statementId)
     {
         $requestedStatement = $this->getDocumentManager()->getCollection()->find()->where('statement.id', $statementId)->current();
 
@@ -343,11 +343,11 @@ class Statement extends Base implements StatementInterface
         return $requestedStatement;
     }
 
-	private function storeStatement($statementObject)
+    private function storeStatement($statementObject)
     {
-        $collection  = $this->getDocumentManager()->getCollection('statements');
+        $collection = $this->getDocumentManager()->getCollection('statements');
         // TODO: This should be in Activity storage manager!
-        $activityCollection  = $this->getDocumentManager()->getCollection('activities');
+        $activityCollection = $this->getDocumentManager()->getCollection('activities');
 
         $attachmentBase = $this->getSlim()->url->getBaseUrl().$this->getSlim()->config('filesystem')['exposed_url'];
 
@@ -434,6 +434,7 @@ class Statement extends Base implements StatementInterface
         $statementResult->setStatementCursor([$statementObject]);
         $statementResult->setCurrentCount(1);
         $statementResult->setHasMore(false);
+
         return $statementResult;
     }
 
@@ -447,10 +448,11 @@ class Statement extends Base implements StatementInterface
         $statementResult->setStatementCursor($statementDocuments);
         $statementResult->setCurrentCount(count($statementDocuments));
         $statementResult->setHasMore(false);
+
         return $statementResult;
     }
 
-	public function putStatement($parameters, $statementObject)
+    public function putStatement($parameters, $statementObject)
     {
         // Check statementId exists
         if (!$parameters->has('statementId')) {
@@ -458,7 +460,7 @@ class Statement extends Base implements StatementInterface
         }
 
         // Check statementId is acutally valid
-        if(!Uuid::isValid($parameters->get('statementId'))){
+        if (!Uuid::isValid($parameters->get('statementId'))) {
             throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
         }
 
@@ -477,10 +479,11 @@ class Statement extends Base implements StatementInterface
         $statementResult->setStatementCursor([$statementObject]);
         $statementResult->setCurrentCount(1);
         $statementResult->setHasMore(false);
+
         return $statementResult;
     }
 
-	public function deleteStatement($parameters)
+    public function deleteStatement($parameters)
     {
         throw \InvalidArgumentException('Statements cannot be deleted, only voided!', Resource::STATUS_INTERNAL_SERVER_ERROR);
     }

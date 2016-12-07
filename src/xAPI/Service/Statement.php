@@ -25,12 +25,8 @@
 namespace API\Service;
 
 use API\Service;
-use MongoDate;
 use API\Resource;
-use API\Util;
 use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
-use Rhumsaa\Uuid\Uuid;
 
 class Statement extends Service
 {
@@ -86,8 +82,8 @@ class Statement extends Service
 
             $partCount = $request->parts()->count();
 
-            for ($i = 1; $i < $partCount; $i++) {
-                $part           = $request->parts()->get($i);
+            for ($i = 1; $i < $partCount; ++$i) {
+                $part = $request->parts()->get($i);
 
                 $attachmentBody = $part->getBody();
 
@@ -102,8 +98,8 @@ class Statement extends Service
                     }
                 }
 
-                $hash           = $part->headers('X-Experience-API-Hash');
-                $contentType    = $part->headers('Content-Type');
+                $hash = $part->headers('X-Experience-API-Hash');
+                $contentType = $part->headers('Content-Type');
 
                 $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
@@ -158,8 +154,8 @@ class Statement extends Service
 
             $partCount = $request->parts()->count();
 
-            for ($i = 1; $i < $partCount; $i++) {
-                $part           = $request->parts()->get($i);
+            for ($i = 1; $i < $partCount; ++$i) {
+                $part = $request->parts()->get($i);
 
                 $attachmentBody = $part->getBody();
 
@@ -174,8 +170,8 @@ class Statement extends Service
                     }
                 }
 
-                $hash           = $part->headers('X-Experience-API-Hash');
-                $contentType    = $part->headers('Content-Type');
+                $hash = $part->headers('X-Experience-API-Hash');
+                $contentType = $part->headers('Content-Type');
 
                 $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
@@ -194,6 +190,6 @@ class Statement extends Service
     // Quickest solution for checking 1D vs 2D assoc arrays
     private function areMultipleStatements(&$array)
     {
-        return ($array === array_values($array));
+        return $array === array_values($array);
     }
 }

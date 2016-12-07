@@ -28,5 +28,4 @@ use Sokil\Mongo\Document;
 
 class PersistentSession extends Document implements \JsonSerializable
 {
-
 }

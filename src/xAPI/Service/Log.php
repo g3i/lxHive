@@ -25,12 +25,11 @@
 namespace API\Service;
 
 use API\Service;
-use API\Util;
 
 class Log extends Service
 {
     /**
-     * Creates a log entry from the given request
+     * Creates a log entry from the given request.
      *
      * @param Slim\Http\Request $request The request
      *

@@ -24,16 +24,13 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface ActivityProfileInterface
 {
-	public function getActivityProfilesFiltered($parameters);
+    public function getActivityProfilesFiltered($parameters);
 
-	public function postActivityProfile($parameters, $profileObject);
+    public function postActivityProfile($parameters, $profileObject);
 
-	public function putActivityProfile($parameters, $profileObject);
+    public function putActivityProfile($parameters, $profileObject);
 
-	public function deleteActivityProfile($parameters);
+    public function deleteActivityProfile($parameters);
 }

@@ -25,8 +25,6 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
-use API\Util;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
 

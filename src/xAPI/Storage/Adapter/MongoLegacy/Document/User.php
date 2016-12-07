@@ -31,8 +31,8 @@ use API\Document\Auth\Scope;
 class User extends Document implements \JsonSerializable
 {
     protected $_data = [
-        'email'            => null,
-        'passwordHash'     => null,
+        'email' => null,
+        'passwordHash' => null,
     ];
 
     public function relations()

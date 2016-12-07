@@ -48,7 +48,6 @@ class Base extends StorageBase
         $this->setDocumentManager($client);
     }
 
-
     /**
      * Gets the value of documentManager.
      *

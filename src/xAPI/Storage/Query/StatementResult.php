@@ -24,28 +24,25 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 class StatementResult
 {
-	public $statementCursor;
+    public $statementCursor;
 
-	public $totalCount;
+    public $totalCount;
 
-	public $remainingCount;
+    public $remainingCount;
 
-	public $requestedLimit;
+    public $requestedLimit;
 
-	public $requestedFormat;
+    public $requestedFormat;
 
-	public $sortDescending;
+    public $sortDescending;
 
-	public $sortAscending;
+    public $sortAscending;
 
-	public $singleStatementRequest;
+    public $singleStatementRequest;
 
-	public $hasMore;
+    public $hasMore;
 
     /**
      * Gets the value of statementCursor.

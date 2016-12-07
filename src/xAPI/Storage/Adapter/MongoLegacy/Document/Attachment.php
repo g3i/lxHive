@@ -29,8 +29,8 @@ use Sokil\Mongo\Document;
 class Attachment extends Document
 {
     protected $_data = [
-        'sha2'            => null,
-        'content_type'    => null,
+        'sha2' => null,
+        'content_type' => null,
         'mongo_timestamp' => null,
     ];
 

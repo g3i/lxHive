@@ -24,32 +24,30 @@
 
 namespace API\Storage\Adapter\MongoLegacy;
 
-use InvalidArgumentException;
-use API\Resource;
 use API\Storage\Query\AttachmentInterface;
 
 class Attachment extends Base implements AttachmentInterface
 {
-	public function storeAttachment($hash, $contentType, $timestamp = null)
-	{
-		$attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
+    public function storeAttachment($hash, $contentType, $timestamp = null)
+    {
+        $attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
 
-		$attachmentDocument = $attachmentCollection->createDocument();
+        $attachmentDocument = $attachmentCollection->createDocument();
         $attachmentDocument->setSha2($hash);
         $attachmentDocument->setContentType($contentType);
         if (null === $timestamp) {
-        	$timestamp = new MongoDate();
+            $timestamp = new MongoDate();
         }
         $attachmentDocument->setTimestamp($timestamp);
         $attachmentDocument->save();
 
         return $attachmentDocument;
-	}
+    }
 
-	public function fetchMetadataBySha2($sha2)
+    public function fetchMetadataBySha2($sha2)
     {
-        $collection  = $this->getDocumentManager()->getCollection('attachments');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('attachments');
+        $cursor = $collection->find();
 
         $cursor->where('sha2', $sha2);
 
@@ -57,5 +55,4 @@ class Attachment extends Base implements AttachmentInterface
 
         return $document;
     }
-
 }

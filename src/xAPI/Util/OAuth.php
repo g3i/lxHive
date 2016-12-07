@@ -30,7 +30,7 @@ class OAuth
     {
         // Generate a token
         $stripped = '';
-        $length   = 40;
+        $length = 40;
         do {
             $bytes = openssl_random_pseudo_bytes($length, $strong);
             if ($bytes === false || $strong === false) {

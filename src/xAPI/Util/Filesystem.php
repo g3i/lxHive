@@ -39,7 +39,7 @@ class Filesystem
             $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($config['local']['root_dir']));
         } elseif ($typeInUse === 's3') {
             $client = S3Client::factory(array(
-                'key'    => $config['s3']['key'],
+                'key' => $config['s3']['key'],
                 'secret' => $config['s3']['secret'],
             ));
             $filesystem = new Flysystem(new S3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));

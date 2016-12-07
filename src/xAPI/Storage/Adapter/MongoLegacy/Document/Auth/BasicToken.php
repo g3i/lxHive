@@ -29,11 +29,11 @@ use Slim\Slim;
 class BasicToken extends AbstractToken
 {
     protected $_data = [
-        'userId'           => null,
-        'key'              => null,
-        'secret'           => null,
-        'expiresAt'        => null,
-        'createdAt'        => null,
+        'userId' => null,
+        'key' => null,
+        'secret' => null,
+        'expiresAt' => null,
+        'createdAt' => null,
     ];
 
     public function relations()
@@ -41,7 +41,7 @@ class BasicToken extends AbstractToken
         return [
             'user' => [self::RELATION_BELONGS, 'users', 'userId'],
             'scopes' => [self::RELATION_MANY_MANY, 'authScopes', 'scopeIds', true],
-            'logs' => [self::RELATION_HAS_MANY, 'logs', 'basicTokenId']
+            'logs' => [self::RELATION_HAS_MANY, 'logs', 'basicTokenId'],
         ];
     }
 
@@ -52,9 +52,9 @@ class BasicToken extends AbstractToken
         $host = $url->getBaseUrl();
         $authority = [
             'objectType' => 'Agent',
-            'account'    => [
+            'account' => [
                 'homePage' => $host,
-                'name'     => $this->user->getEmail(),
+                'name' => $this->user->getEmail(),
             ],
         ];
 

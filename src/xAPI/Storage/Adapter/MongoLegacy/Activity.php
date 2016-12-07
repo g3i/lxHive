@@ -30,8 +30,8 @@ class Activity extends Base implements ActivityInterface
 {
     public function fetchActivityById($id)
     {
-        $collection  = $this->getDocumentManager()->getCollection('activities');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('activities');
+        $cursor = $collection->find();
 
         $cursor->where('id', $params->get('activityId'));
 
@@ -43,6 +43,4 @@ class Activity extends Base implements ActivityInterface
 
         return $document;
     }
-        
-
 }

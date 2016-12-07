@@ -35,7 +35,7 @@ class Statements extends View
         $view = [];
 
         $resultArray = [];
-        $idArray     = [];
+        $idArray = [];
         $format = $statementResult->getRequestedFormat();
 
         // This could be done better with pointers or a separate renderer or something... also, move valid format checking to Validator perhaps?
@@ -51,7 +51,7 @@ class Statements extends View
         }
 
         $view['statements'] = $resultArray;
-        $view['more']       = '';
+        $view['more'] = '';
         $view['totalCount'] = $statementResult->getTotalCount();
 
         // TODO: Abstract this away somewhere...

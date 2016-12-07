@@ -27,7 +27,7 @@ namespace API\Util\Rememberme;
 use Birke\Rememberme\Storage\StorageInterface;
 
 /**
- * Sokil/Mongo-Based Storage
+ * Sokil/Mongo-Based Storage.
  */
 class MongoStorage implements StorageInterface
 {
@@ -38,7 +38,7 @@ class MongoStorage implements StorageInterface
 
     /**
      * @param \Sokil\Mongo\Client $documentManager
-     * @param string $suffix
+     * @param string              $suffix
      */
     public function __construct(\Sokil\Mongo\Client $documentManager)
     {
@@ -46,9 +46,10 @@ class MongoStorage implements StorageInterface
     }
 
     /**
-     * @param mixed $credential
+     * @param mixed  $credential
      * @param string $token
      * @param string $persistentToken
+     *
      * @return int
      */
     public function findTriplet($credential, $token, $persistentToken)
@@ -57,8 +58,8 @@ class MongoStorage implements StorageInterface
         $persistentToken = sha1($persistentToken);
         $token = sha1($token);
 
-        $collection  = $this->getDocumentManager()->getCollection('persistentSessions');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('persistentSessions');
+        $cursor = $collection->find();
 
         $cursor->where('credential', $credential);
         $cursor->where('persistentToken', $persistentToken);
@@ -69,7 +70,7 @@ class MongoStorage implements StorageInterface
             return self::TRIPLET_NOT_FOUND;
         }
 
-        $documentToken = $document->getToken();;
+        $documentToken = $document->getToken();
 
         if ($documentToken == $token) {
             return self::TRIPLET_FOUND;
@@ -79,10 +80,11 @@ class MongoStorage implements StorageInterface
     }
 
     /**
-     * @param mixed $credential
+     * @param mixed  $credential
      * @param string $token
      * @param string $persistentToken
-     * @param int $expire
+     * @param int    $expire
+     *
      * @return $this
      */
     public function storeTriplet($credential, $token, $persistentToken, $expire = 0)
@@ -91,7 +93,7 @@ class MongoStorage implements StorageInterface
         $persistentToken = sha1($persistentToken);
         $token = sha1($token);
 
-        $collection  = $this->getDocumentManager()->getCollection('persistentSessions');
+        $collection = $this->getDocumentManager()->getCollection('persistentSessions');
 
         $sessionDocument = $collection->createDocument();
 
@@ -105,7 +107,7 @@ class MongoStorage implements StorageInterface
     }
 
     /**
-     * @param mixed $credential
+     * @param mixed  $credential
      * @param string $persistentToken
      */
     public function cleanTriplet($credential, $persistentToken)
@@ -125,7 +127,8 @@ class MongoStorage implements StorageInterface
     }
 
     /**
-     * Replace current token after successful authentication
+     * Replace current token after successful authentication.
+     *
      * @param $credential
      * @param $token
      * @param $persistentToken
@@ -142,7 +145,7 @@ class MongoStorage implements StorageInterface
      */
     public function cleanAllTriplets($credential)
     {
-        $collection  = $this->getDocumentManager()->getCollection('persistentSessions');
+        $collection = $this->getDocumentManager()->getCollection('persistentSessions');
 
         $expression = $collection->expression();
         $expression->where('credential', $credential);

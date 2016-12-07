@@ -33,14 +33,14 @@ class AccessToken extends View
         $accessTokenDocument = $this->service->getAccessTokens()[0];
 
         $view = [
-            'key'       => $accessTokenDocument->getKey(),
-            'secret'    => $accessTokenDocument->getSecret(),
+            'key' => $accessTokenDocument->getKey(),
+            'secret' => $accessTokenDocument->getSecret(),
             'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
             'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
-            'expired'   => $accessTokenDocument->isExpired(),
-            'scopes'    => array_values($accessTokenDocument->scopes),
-            'user'      => $accessTokenDocument->user->renderSummary(),
+            'expired' => $accessTokenDocument->isExpired(),
+            'scopes' => array_values($accessTokenDocument->scopes),
+            'user' => $accessTokenDocument->user->renderSummary(),
         ];
 
         return $view;

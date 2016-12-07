@@ -29,10 +29,10 @@ use Sokil\Mongo\Document;
 class OAuthClient extends Document implements \JsonSerializable
 {
     protected $_data = [
-        'clientId'    => null,
-        'secret'      => null,
+        'clientId' => null,
+        'secret' => null,
         'description' => null,
-        'name'        => null,
+        'name' => null,
         'redirectUri' => null,
     ];
 
@@ -52,7 +52,7 @@ class OAuthClient extends Document implements \JsonSerializable
     {
         $return = [
             'name' => $this->_data['name'],
-            'description' =>  $this->_data['description']
+            'description' => $this->_data['description'],
         ];
 
         return $return;

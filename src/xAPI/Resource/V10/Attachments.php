@@ -60,7 +60,7 @@ class Attachments extends Resource
         $encoding = $params->get('encoding');
         // Fetch attachment metadata and data
         $metadata = $this->attachmentService->fetchMetadataBySha2($sha2);
-        $data     = $this->attachmentService->fetchFileBySha2($sha2);
+        $data = $this->attachmentService->fetchFileBySha2($sha2);
         if ($encoding !== 'binary') {
             $data = base64_encode($data);
         }

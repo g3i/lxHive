@@ -30,8 +30,8 @@ class ActivityState extends Base implements ActivityStateInterface
 {
     public function getActivityStatesFiltered($parameters)
     {
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('activityStates');
+        $cursor = $collection->find();
 
         // Single activity state
         if ($parameters->has('stateId')) {
@@ -93,13 +93,13 @@ class ActivityState extends Base implements ActivityStateInterface
 
     public function postActivityState($parameters, $stateObject)
     {
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $collection = $this->getDocumentManager()->getCollection('activityStates');
 
         // Set up the body to be saved
         $activityStateDocument = $collection->createDocument();
 
         // Check for existing state - then merge if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('stateId', $parameters->get('stateId'));
         $cursor->where('activityId', $parameters->get('activityId'));
 
@@ -173,17 +173,16 @@ class ActivityState extends Base implements ActivityStateInterface
         $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         return $activityStateDocument;
-
     }
 
     public function putActivityState($parameters, $stateObject)
     {
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $collection = $this->getDocumentManager()->getCollection('activityStates');
 
         $activityStateDocument = $collection->createDocument();
 
         // Check for existing state - then replace if applicable
-        $cursor      = $collection->find();
+        $cursor = $collection->find();
         $cursor->where('stateId', $parameters->get('stateId'));
         $cursor->where('activityId', $parameters->get('activityId'));
 
@@ -243,7 +242,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
     public function deleteActivityState($parameters)
     {
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $collection = $this->getDocumentManager()->getCollection('activityStates');
 
         $expression = $collection->expression();
 
@@ -275,5 +274,4 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $collection->deleteDocuments($expression);
     }
-
 }

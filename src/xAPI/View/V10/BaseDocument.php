@@ -30,7 +30,7 @@ class BaseDocument extends View
 {
     public function renderGet()
     {
-        $idArray     = [];
+        $idArray = [];
 
         $cursor = $this->service->getCursor();
 

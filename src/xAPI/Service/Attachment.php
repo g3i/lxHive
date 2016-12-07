@@ -37,7 +37,7 @@ class Attachment extends Service
      */
     public function fetchMetadataBySha2($sha2)
     {
-        $document  = $this->getStorage()->getAttachmentStorage()->fetchMetadataBySha2($sha2);
+        $document = $this->getStorage()->getAttachmentStorage()->fetchMetadataBySha2($sha2);
 
         return $document;
     }

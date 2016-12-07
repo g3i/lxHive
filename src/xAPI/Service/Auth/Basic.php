@@ -57,7 +57,7 @@ class Basic extends Service implements AuthInterface
 
     public function addToken($name, $description, $expiresAt, User $user, array $scopes = [])
     {
-        $collection  = $this->getDocumentManager()->getCollection('basicTokens');
+        $collection = $this->getDocumentManager()->getCollection('basicTokens');
 
         $accessTokenDocument = $collection->createDocument();
 
@@ -101,8 +101,8 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchToken($key, $secret)
     {
-        $collection  = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('basicTokens');
+        $cursor = $collection->find();
 
         $cursor->where('key', $key);
         $cursor->where('secret', $secret);
@@ -134,7 +134,7 @@ class Basic extends Service implements AuthInterface
      */
     public function deleteToken($clientId)
     {
-        $collection  = $this->getDocumentManager()->getCollection('basicTokens');
+        $collection = $this->getDocumentManager()->getCollection('basicTokens');
 
         $expression = $collection->expression();
 
@@ -155,8 +155,8 @@ class Basic extends Service implements AuthInterface
      */
     public function expireToken($clientId, $accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('basicTokens');
+        $cursor = $collection->find();
 
         $cursor->where('token', $accessToken);
         $cursor->where('clientId', $clientId);
@@ -176,8 +176,8 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchTokens()
     {
-        $collection  = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('basicTokens');
+        $cursor = $collection->find();
 
         $this->setCursor($cursor);
 
@@ -186,8 +186,8 @@ class Basic extends Service implements AuthInterface
 
     public function getScopeByName($name)
     {
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('authScopes');
+        $cursor = $collection->find();
         $cursor->where('name', $name);
         $scopeDocument = $cursor->current();
 
@@ -239,15 +239,15 @@ class Basic extends Service implements AuthInterface
             'user' => [
                 'password' => 'password',
                 'permissions' => [
-                    'all'
-                ]
+                    'all',
+                ],
             ],
             'scopes' => [
-                'all'
+                'all',
             ],
-            'name' => 'Token for ' . $requestParams->get('user')['email'],
-            'description' => 'Token generated at ' . Util\Date::dateTimeToISO8601($currentDate),
-            'expiresAt' => null
+            'name' => 'Token for '.$requestParams->get('user')['email'],
+            'description' => 'Token generated at '.Util\Date::dateTimeToISO8601($currentDate),
+            'expiresAt' => null,
         ]);
 
         $params = new Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
@@ -268,7 +268,7 @@ class Basic extends Service implements AuthInterface
 
         if (is_numeric($params->get('expiresAt'))) {
             $expiresAt = $params->get('expiresAt');
-        } else if (null === $params->get('expiresAt')) {
+        } elseif (null === $params->get('expiresAt')) {
             $expiresAt = null;
         } else {
             $expiresAt = new \DateTime($params->get('expiresAt'));

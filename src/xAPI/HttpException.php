@@ -26,15 +26,14 @@ namespace API;
 
 class HttpException extends \Exception
 {
-
     private $statusCode;
     private $statusMessage;
     private $data = null;
 
     /**
-     * @param int $code
+     * @param int    $code
      * @param string $message
-     * @param array $headers additional headers
+     * @param array  $headers additional headers
      */
     public function __construct($message, $statusCode = 400, $data = null, \Exception $previous = null)
     {
@@ -51,5 +50,4 @@ class HttpException extends \Exception
     {
         return $this->data;
     }
-
 }

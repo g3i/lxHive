@@ -79,7 +79,7 @@ class Statements extends Resource
         // Multipart responses are intentionally disabled for now
         //if (null === $attachments) {
             $this->setHeaders();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
+        Resource::jsonResponse(Resource::STATUS_OK, $view);
         //} else {
         //    $this->setHeaders();
         //    Resource::multipartResponse(Resource::STATUS_OK, $view, $attachments);
@@ -210,13 +210,9 @@ class Statements extends Resource
     }
 
     /**
-     * Sets specific headers for this request
-     *
-     * @return void
+     * Sets specific headers for this request.
      */
-
     protected function setHeaders()
     {
     }
-
 }

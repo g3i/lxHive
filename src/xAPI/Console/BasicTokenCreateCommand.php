@@ -66,7 +66,7 @@ class BasicTokenCreateCommand extends Command
         } else {
             $name = $input->getOption('name');
         }
-        
+
         if (null === $input->getOption('description')) {
             $question = new Question('Please enter a description: ', '');
             $description = $helper->ask($input, $output, $question);
@@ -78,7 +78,7 @@ class BasicTokenCreateCommand extends Command
             $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
             $expiresAt = $helper->ask($input, $output, $question);
         } else {
-            $expiresAt = $input->getOption('expiration');;
+            $expiresAt = $input->getOption('expiration');
         }
 
         $userService = new UserService($this->getSlim());
@@ -106,7 +106,7 @@ class BasicTokenCreateCommand extends Command
         foreach ($userService->getCursor() as $scope) {
             $scopesDictionary[$scope->getName()] = $scope;
         }
-        
+
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
                 'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
@@ -142,7 +142,7 @@ class BasicTokenCreateCommand extends Command
             $token->save();
         }
 
-        $text  = json_encode($token, JSON_PRETTY_PRINT);
+        $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');
