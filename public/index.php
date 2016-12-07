@@ -304,9 +304,10 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
 // Start with routing - dynamic for now
 
 // ./X @TODO: dedicated identifier for ./X, so phpUnit client passes
-if (PHP_SAPI === 'cli') {
-    return;
-}
+// Note: commented out, until this identifier is added (otherwise X is unusable!)
+//if (PHP_SAPI === 'cli') {
+//    return;
+//}
 
 // Get
 $app->get('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
