@@ -11,6 +11,7 @@
     "require": {
         "slim/slim": "2.*",
         "techsterx/slim-config-yaml": "dev-master",
+        "flynsarmy/slim-monolog": "~1.0",
         "sokil/php-mongo": "~1.13",
         "justinrainbow/json-schema": "~4.0",
         "league/url": "~3.3",
