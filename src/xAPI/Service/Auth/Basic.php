@@ -28,7 +28,8 @@ use API\Service;
 use API\Resource;
 use Slim\Helper\Set;
 use Slim\Http\Request;
-use API\Document\User;
+// TEMPORARY
+use API\Storage\Adapter\MongoLegacy\Document\User;
 use API\Service\User as UserService;
 use API\Util;
 

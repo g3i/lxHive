@@ -26,7 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy\Document;
 
 use Sokil\Mongo\Document;
 use API\Resource;
-use API\Document\Auth\Scope;
+use API\Storage\Adapter\MongoLegacy\Document\Auth\Scope;
 
 class User extends Document implements \JsonSerializable
 {
