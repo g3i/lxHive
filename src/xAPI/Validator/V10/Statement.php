@@ -26,24 +26,20 @@ namespace API\Validator\V10;
 
 use API\Validator;
 use API\Resource;
-use API\Validator\Exception;
+use API\HttpException as Exception;
 
 class Statement extends Validator
 {
-    protected function retrieveByFragment($fragment)
-    {
-        $schema = $this->getSchemaRetriever()->retrieve('file://'.__DIR__.'/Schema/Statements.json#'.$fragment);
 
-        return $schema;
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    protected function throwErrors($message, $errors)
+    protected function validateBySchemaFragment($data, $fragment, $debug = false)
     {
-        $message .= ' Violations: ';
-        foreach ($errors as $error) {
-            $message .= sprintf("[%s] %s\n", $error['property'], $error['message']);
-        }
-        throw new Exception($message, Resource::STATUS_BAD_REQUEST);
+        $fragment = ($fragment) ? '#'.$fragment : '';
+        return $this->validateSchema($data, 'file://'.__DIR__.'/Schema/Statements.json'.$fragment, $debug);
     }
 
     // Handles the validation of GET /statements
@@ -55,19 +51,16 @@ class Statement extends Validator
             $decodedValue = json_decode($value);
             if (json_last_error() == JSON_ERROR_NONE) {
                 $data[$key] = $decodedValue;
-            }  
+            }
         }
 
         if (!empty($data)) {
             $data = (object) $data;
         }
 
-        $schema = $this->retrieveByFragment('getParameters');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('GET parameters do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'getParameters');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('GET parameters do not validate.', $validator);
         }
     }
 
@@ -78,12 +71,9 @@ class Statement extends Validator
         $data = $request->getBody();
         $data = json_decode($data);
 
-        $schema = $this->retrieveByFragment('postBody');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('Statements do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'postBody', true);
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('Statements do not validate.', $validator);
         }
     }
 
@@ -92,23 +82,17 @@ class Statement extends Validator
     {
         // Then do specific validation
         $data = $request->get();
-        $schema = $this->retrieveByFragment('putParameters');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('PUT parameters do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'putParameters');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('PUT parameters do not validate.', $validator);
         }
 
         $data = $request->getBody();
         $data = json_decode($data);
 
-        $schema = $this->retrieveByFragment('putBody');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('Statements do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'putBody');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('Statements do not validate.', $validator);
         }
     }
 }
