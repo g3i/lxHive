@@ -96,7 +96,7 @@ class BasicTokenCreateCommand extends Command
         } else {
             $email = $input->getOption('email');
             if (!isset($users[$email])) {
-                throw new Exception('Invalid e-mail provided! User does not exist!');
+                throw new \Exception('Invalid e-mail provided! User does not exist!');
             }
             $user = $users[$email];
         }

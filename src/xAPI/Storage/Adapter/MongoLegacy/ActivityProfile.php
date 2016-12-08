@@ -22,7 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Storage\Adapter\MongoLegacy;
+
+use API\Resource;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {

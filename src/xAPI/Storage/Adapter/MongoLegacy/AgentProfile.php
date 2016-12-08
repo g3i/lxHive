@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\AgentProfileInterface;
 use API\Util;
+use API\Resource;
 
 class AgentProfile extends Base implements AgentProfileInterface
 {

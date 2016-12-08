@@ -72,11 +72,6 @@ try {
     }
 }
 
-// Use Mongo's native long int
-ini_set('mongo.native_long', 1);
-
-
-
 // RESTful, disable slim's html PrettyException, and deal with legacy lxhive config
 $app->config('_debug', $app->config('debug'));
 $app->config('debug', false);

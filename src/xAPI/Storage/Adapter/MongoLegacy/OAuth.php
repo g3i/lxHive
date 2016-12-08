@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\OAuthInterface;
+use API\Resource;
 
 class OAuth extends Base implements OAuthInterface
 {

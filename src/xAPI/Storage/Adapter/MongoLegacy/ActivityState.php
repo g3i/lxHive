@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\ActivityStateInterface;
 use API\Util;
+use API\Resource;
 
 class ActivityState extends Base implements ActivityStateInterface
 {

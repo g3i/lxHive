@@ -26,5 +26,5 @@ namespace API\Storage\Query;
 
 interface ExtendedStatementInterface
 {
-    public function logRequest($ip, $method, $endpoint, $timestamp);
+    public function extendedQuery($parameters);
 }

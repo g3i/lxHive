@@ -27,6 +27,7 @@ namespace API\Extensions\ExtendedQuery\Storage\Adapter\MongoLegacy;
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
 use API\Storage\Adapter\MongoLegacy\Base;
 use API\Storage\Adapter\Query\StatementResult;
+use API\Resource;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {

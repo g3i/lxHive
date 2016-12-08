@@ -52,7 +52,7 @@ class ProjectedStatement extends View
         }
 
         foreach ($resultArray as $result) {
-            if (!is_array($result) && $result instanceof Traversable) {
+            if (!is_array($result) && $result instanceof \Traversable) {
                 $result = $result->toArray();
             }
             unset($result['_id']);

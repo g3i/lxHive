@@ -25,6 +25,7 @@
 namespace API\Service;
 
 use API\Service;
+use API\Util;
 
 class Log extends Service
 {
