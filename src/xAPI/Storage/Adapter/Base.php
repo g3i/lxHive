@@ -38,7 +38,7 @@ abstract class Base
      */
     public function __construct($container)
     {
-        $this->setContainer($container);
+        $this->container = $container;
     }
 
     // TEMPORARY!
@@ -60,19 +60,5 @@ abstract class Base
     public function getContainer()
     {
         return $this->container;
-    }
-
-    /**
-     * Sets the value of container.
-     *
-     * @param \Slim\Slim - in future DI container $container the container
-     *
-     * @return self
-     */
-    protected function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }

@@ -27,9 +27,6 @@ namespace API\Service\Auth;
 use API\Service;
 use API\Resource;
 use Slim\Helper\Set;
-// TEMPORARY
-use API\Storage\Adapter\MongoLegacy\Document\User;
-use API\Storage\Adapter\MongoLegacy\Document\Auth\OAuthClient;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
@@ -85,7 +82,7 @@ class OAuth extends Service implements AuthInterface
      */
     protected $redirectUri;
 
-    public function addToken($expiresAt, User $user, OAuthClient $client, array $scopes = [], $code = null)
+    public function addToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->storeToken($expiresAt, $user, $client, $scopes, $code);
 

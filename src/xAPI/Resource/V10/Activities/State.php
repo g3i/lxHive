@@ -40,7 +40,7 @@ class State extends Resource
      */
     public function init()
     {
-        $this->setActivityStateService(new ActivityStateService($this->getSlim()));
+        $this->activityStateService = new ActivityStateService($this->getSlim());
     }
 
     /**
@@ -140,19 +140,5 @@ class State extends Resource
     public function getActivityStateService()
     {
         return $this->activityStateService;
-    }
-
-    /**
-     * Sets the value of activityStateService.
-     *
-     * @param \API\Service\ActivityState $activityStateService the activity service
-     *
-     * @return self
-     */
-    public function setActivityStateService(\API\Service\ActivityState $activityStateService)
-    {
-        $this->activityStateService = $activityStateService;
-
-        return $this;
     }
 }

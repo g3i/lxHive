@@ -40,7 +40,7 @@ class Profile extends Resource
      */
     public function init()
     {
-        $this->setagentProfileService(new AgentProfileService($this->getSlim()));
+        $this->agentProfileService = new AgentProfileService($this->getSlim());
     }
 
     /**
@@ -140,19 +140,5 @@ class Profile extends Resource
     public function getAgentProfileService()
     {
         return $this->agentProfileService;
-    }
-
-    /**
-     * Sets the value of agentProfileService.
-     *
-     * @param \API\Service\AgentProfile $agentProfileService the agent service
-     *
-     * @return self
-     */
-    public function setAgentProfileService(\API\Service\AgentProfile $agentProfileService)
-    {
-        $this->agentProfileService = $agentProfileService;
-
-        return $this;
     }
 }

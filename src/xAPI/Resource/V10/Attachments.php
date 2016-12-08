@@ -40,7 +40,7 @@ class Attachments extends Resource
      */
     public function init()
     {
-        $this->setAttachmentService(new AttachmentService($this->getSlim()));
+        $this->attachmentService = new AttachmentService($this->getSlim());
     }
 
     public function get()
@@ -84,19 +84,5 @@ class Attachments extends Resource
     public function getAttachmentService()
     {
         return $this->attachmentService;
-    }
-
-    /**
-     * Sets the value of attachmentService.
-     *
-     * @param \API\Service\Attachment $attachmentService the attachment service
-     *
-     * @return self
-     */
-    public function setAttachmentService(\API\Service\Attachment $attachmentService)
-    {
-        $this->attachmentService = $attachmentService;
-
-        return $this;
     }
 }

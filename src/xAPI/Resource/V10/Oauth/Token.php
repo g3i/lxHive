@@ -40,7 +40,7 @@ class Token extends Resource
      */
     public function init()
     {
-        $this->setOAuthService(new OAuthService($this->getSlim()));
+        $this->oAuthService = new OAuthService($this->getSlim());
     }
 
     public function post()
@@ -73,19 +73,5 @@ class Token extends Resource
     public function getOAuthService()
     {
         return $this->oAuthService;
-    }
-
-    /**
-     * Sets the value of oAuthService.
-     *
-     * @param \API\Service\Auth\OAuth $oAuthService the o auth service
-     *
-     * @return self
-     */
-    public function setOAuthService(\API\Service\Auth\OAuth $oAuthService)
-    {
-        $this->oAuthService = $oAuthService;
-
-        return $this;
     }
 }

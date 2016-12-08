@@ -26,7 +26,6 @@ namespace API\Extensions\ExtendedQuery\Resource\V10;
 
 use API\Resource;
 use API\Extensions\ExtendedQuery\Service\Statement as ExtendedStatementService;
-//use API\Extensions\ExtendedQuery\Validator\V10\StatementQueryBuilder as QueryBuilderValidator;
 use API\Extensions\ExtendedQuery\View\V10\ProjectedStatement as ProjectedStatementView;
 
 class ExtendedQuery extends Resource
@@ -36,16 +35,9 @@ class ExtendedQuery extends Resource
      */
     private $extendedStatementService;
 
-    /**
-     * @var StatementQueryBuilderValidator
-     */
-    private $statementQueryBuilderValidator;
-
     public function init()
     {
-        $this->setExtendedStatementService(new ExtendedStatementService($this->getSlim()));
-        //$this->setStatementQueryBuilderValidator(new StatementQueryBuilderValidator());
-        //$this->getStatementQueryBuilderValidator()->setDefaultSchemaValidator();
+        $this->extendedStatementService = new ExtendedStatementService($this->getSlim());
     }
 
     /**
@@ -58,11 +50,6 @@ class ExtendedQuery extends Resource
         // Check authentication
         $this->getSlim()->auth->checkPermission('statements/querybuilder');
 
-        // Do the validation
-        //$this->getStatementQueryBuilderValidator()->validateRequest($request);
-        //$this->getStatementQueryBuilderValidator()->validateGetRequest($request);
-
-        // Load the statements - this needs to change, drastically, as it's garbage
         $this->getExtendedStatementService()->statementGet($request);
 
         // Render them
@@ -82,10 +69,6 @@ class ExtendedQuery extends Resource
 
         // Check authentication
         $this->getSlim()->auth->checkPermission('statements/querybuilder');
-
-        // Do the validation
-        //$this->getStatementQueryBuilderValidator()->validateRequest($request);
-        //$this->getStatementQueryBuilderValidator()->validateGetRequest($request);
 
         // Load the statements - this needs to change, drastically, as it's garbage
         $this->getExtendedStatementService()->statementPost($request);
@@ -114,42 +97,4 @@ class ExtendedQuery extends Resource
     {
         return $this->extendedStatementService;
     }
-
-    /**
-     * Sets the value of extendedStatementService.
-     *
-     * @param ExtendedStatementService $extendedStatementService the extended statement service
-     *
-     * @return self
-     */
-    private function setExtendedStatementService(ExtendedStatementService $extendedStatementService)
-    {
-        $this->extendedStatementService = $extendedStatementService;
-
-        return $this;
-    }
-
-    /**
-     * Gets the value of statementQueryBuilderValidator.
-     *
-     * @return StatementQueryBuilderValidator
-     */
-    //public function getStatementQueryBuilderValidator()
-    //{
-    //    return $this->statementQueryBuilderValidator;
-    //}
-
-    /**
-     * Sets the value of statementQueryBuilderValidator.
-     *
-     * @param StatementQueryBuilderValidator $statementQueryBuilderValidator the statement query builder validator
-     *
-     * @return self
-     */
-    //private function setStatementQueryBuilderValidator(StatementQueryBuilderValidator $statementQueryBuilderValidator)
-    //{
-    //    $this->statementQueryBuilderValidator = $statementQueryBuilderValidator;
-    //
-    //    return $this;
-    //}
 }

@@ -57,13 +57,6 @@ abstract class Service
     {
         return $this->slim;
     }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
-    }
 
     // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
     public function getStorage()

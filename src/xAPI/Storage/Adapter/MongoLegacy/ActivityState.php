@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\ActivityStateInterface;
+use API\Util;
 
 class ActivityState extends Base implements ActivityStateInterface
 {
@@ -39,18 +40,9 @@ class ActivityState extends Base implements ActivityStateInterface
             $cursor->where('activityId', $parameters->get('activityId'));
             $agent = $parameters->get('agent');
             $agent = json_decode($agent, true);
-            //Fetch the identifier - otherwise we'd have to order the JSON
-            if (isset($agent['mbox'])) {
-                $uniqueIdentifier = 'mbox';
-            } elseif (isset($agent['mbox_sha1sum'])) {
-                $uniqueIdentifier = 'mbox_sha1sum';
-            } elseif (isset($agent['openid'])) {
-                $uniqueIdentifier = 'openid';
-            } elseif (isset($agent['account'])) {
-                $uniqueIdentifier = 'account';
-            } else {
-                throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-            }
+            
+            $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+            
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             if ($parameters->has('registration')) {
@@ -65,18 +57,9 @@ class ActivityState extends Base implements ActivityStateInterface
         $cursor->where('activityId', $parameters->get('activityId'));
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
@@ -105,18 +88,9 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
@@ -188,18 +162,9 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
@@ -254,18 +219,9 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {

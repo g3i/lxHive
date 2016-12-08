@@ -46,8 +46,8 @@ class Statements extends Resource
      */
     public function init()
     {
-        $this->setStatementService(new StatementService($this->getSlim()));
-        $this->setStatementValidator(new StatementValidator());
+        $this->statementService = new StatementService($this->getSlim());
+        $this->statementValidator= new StatementValidator();
     }
 
     /**
@@ -149,27 +149,11 @@ class Statements extends Resource
     }
 
     /**
-     * @param \API\Service\Statement $statementService
-     */
-    public function setStatementService($statementService)
-    {
-        $this->statementService = $statementService;
-    }
-
-    /**
      * @return \API\Validator\Statement
      */
     public function getStatementValidator()
     {
         return $this->statementValidator;
-    }
-
-    /**
-     * @param \API\Validator\Statement $statementValidator
-     */
-    public function setStatementValidator($statementValidator)
-    {
-        $this->statementValidator = $statementValidator;
     }
 
     /**

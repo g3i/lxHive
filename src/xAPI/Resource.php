@@ -65,7 +65,7 @@ abstract class Resource
      */
     public function __construct()
     {
-        $this->setSlim(Slim::getInstance());
+        $this->slim = Slim::getInstance();
 
         $this->init();
     }
@@ -251,14 +251,6 @@ abstract class Resource
     public function getSlim()
     {
         return $this->slim;
-    }
-
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
     }
 
     /**

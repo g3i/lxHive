@@ -41,7 +41,7 @@ class Activities extends Resource
      */
     public function init()
     {
-        $this->setActivityService(new ActivityService($this->getSlim()));
+        $this->activityService = new ActivityService($this->getSlim());
     }
 
     // Boilerplate code until this is figured out...
@@ -76,19 +76,5 @@ class Activities extends Resource
     public function getActivityService()
     {
         return $this->activityService;
-    }
-
-    /**
-     * Sets the value of activityService.
-     *
-     * @param \API\Service\Activity $activityService the activity service
-     *
-     * @return self
-     */
-    public function setActivityService(\API\Service\Activity $activityService)
-    {
-        $this->activityService = $activityService;
-
-        return $this;
     }
 }

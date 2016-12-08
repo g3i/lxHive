@@ -48,8 +48,6 @@ class ProjectedStatement extends View
             } else { //Ascending
                 $this->getSlim()->url->getQuery()->modify(['since_id' => $latestId]);
             }
-            // Removed, since hack was also removed
-            //array_pop($resultArray);
             $view['more'] = $this->getSlim()->url->getRelativeUrl();
         }
 

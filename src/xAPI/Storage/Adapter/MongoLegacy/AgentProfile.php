@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\AgentProfileInterface;
+use API\Util;
 
 class AgentProfile extends Base implements AgentProfileInterface
 {
@@ -38,16 +39,9 @@ class AgentProfile extends Base implements AgentProfileInterface
             $cursor->where('profileId', $parameters->get('profileId'));
             $agent = $parameters->get('agent');
             $agent = json_decode($agent, true);
-            //Fetch the identifier - otherwise we'd have to order the JSON
-            if (isset($agent['mbox'])) {
-                $uniqueIdentifier = 'mbox';
-            } elseif (isset($agent['mbox_sha1sum'])) {
-                $uniqueIdentifier = 'mbox_sha1sum';
-            } elseif (isset($agent['openid'])) {
-                $uniqueIdentifier = 'openid';
-            } elseif (isset($agent['account'])) {
-                $uniqueIdentifier = 'account';
-            }
+            
+            $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+            
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             if ($cursor->count() === 0) {
@@ -76,16 +70,8 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
 
@@ -167,16 +153,8 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
 
@@ -243,16 +221,9 @@ class AgentProfile extends Base implements AgentProfileInterface
         $cursor->where('profileId', $parameters->get('profileId'));
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        }
+        
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         $result = $cursor->findOne();

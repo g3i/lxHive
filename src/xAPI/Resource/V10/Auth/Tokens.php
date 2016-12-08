@@ -40,7 +40,7 @@ class Tokens extends Resource
      */
     public function init()
     {
-        $this->setAccessTokenService(new BasicTokenService($this->getSlim()));
+        $this->accessTokenService = new BasicTokenService($this->getSlim());
     }
 
     public function get()
@@ -137,19 +137,5 @@ class Tokens extends Resource
     public function getAccessTokenService()
     {
         return $this->accessTokenService;
-    }
-
-    /**
-     * Sets the value of accessTokenService.
-     *
-     * @param \API\Service\AccessToken $accessTokenService the access token service
-     *
-     * @return self
-     */
-    public function setAccessTokenService(\API\Service\Auth\Basic $accessTokenService)
-    {
-        $this->accessTokenService = $accessTokenService;
-
-        return $this;
     }
 }

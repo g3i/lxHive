@@ -45,20 +45,12 @@ class Statement extends Service
      *
      * @return array An array of statement objects.
      */
-    protected function statementQuery($params)
+    protected function statementQuery($parameters)
     {
-        $storageInUse = $app->config('storage')['in_use'];
-        $storageClass = '\\API\\Storage\\Adapter\\' . $storageInUse;
-        if (!class_exists($storageClass)) {
-            throw new \InvalidArgumentException('Storage type selected in config is invalid!');
-        }
-        $storageAdapter = new $storageClass($app);
-        return $storageAdapter;
-
         $storageClass = $this->resolveStorageClass();
-        // In future getSlim will be getContainer!
+        // TODO: In future getSlim will be getContainer, replace when applicable!
         $extendedStatementStorage = new $storageClass($this->getSlim());
-        $statementResult = $extendedStatementStorage->extendedQuery($params);
+        $statementResult = $extendedStatementStorage->extendedQuery($parameters);
 
         return $statementResult;
     }

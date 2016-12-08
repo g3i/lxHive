@@ -49,11 +49,4 @@ abstract class View extends \Slim\Helper\Set
     {
         return $this->slim;
     }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
-    }
 }

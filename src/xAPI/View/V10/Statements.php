@@ -63,8 +63,6 @@ class Statements extends View
             } else { //Ascending
                 $this->getSlim()->url->getQuery()->modify(['since_id' => $latestId]);
             }
-            // Removed, since hack was removed!
-            //array_pop($view['statements']);
             $view['more'] = $this->getSlim()->url->getRelativeUrl();
         }
 

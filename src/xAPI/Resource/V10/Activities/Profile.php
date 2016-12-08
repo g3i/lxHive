@@ -40,7 +40,7 @@ class Profile extends Resource
      */
     public function init()
     {
-        $this->setActivityProfileService(new ActivityProfileService($this->getSlim()));
+        $this->activityProfileService = new ActivityProfileService($this->getSlim());
     }
 
     /**
@@ -140,19 +140,5 @@ class Profile extends Resource
     public function getActivityProfileService()
     {
         return $this->activityProfileService;
-    }
-
-    /**
-     * Sets the value of activityProfileService.
-     *
-     * @param \API\Service\ActivityProfile $activityProfileService the activity service
-     *
-     * @return self
-     */
-    public function setActivityProfileService(\API\Service\ActivityProfile $activityProfileService)
-    {
-        $this->activityProfileService = $activityProfileService;
-
-        return $this;
     }
 }

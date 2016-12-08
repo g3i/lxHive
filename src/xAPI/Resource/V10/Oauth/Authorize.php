@@ -47,8 +47,8 @@ class Authorize extends Resource
      */
     public function init()
     {
-        $this->setOAuthService(new OAuthService($this->getSlim()));
-        $this->setUserService(new UserService($this->getSlim()));
+        $this->oAuthService = new OAuthService($this->getSlim());
+        $this->userService = new UserService($this->getSlim(;
         OAuth::loadSession();
     }
 
@@ -114,20 +114,6 @@ class Authorize extends Resource
     }
 
     /**
-     * Sets the value of oAuthService.
-     *
-     * @param \API\Service\Auth\OAuth $oAuthService the o auth service
-     *
-     * @return self
-     */
-    public function setOAuthService(\API\Service\Auth\OAuth $oAuthService)
-    {
-        $this->oAuthService = $oAuthService;
-
-        return $this;
-    }
-
-    /**
      * Gets the value of userService.
      *
      * @return \API\Service\User
@@ -135,19 +121,5 @@ class Authorize extends Resource
     public function getUserService()
     {
         return $this->userService;
-    }
-
-    /**
-     * Sets the value of userService.
-     *
-     * @param \API\Service\User $userService the user service
-     *
-     * @return self
-     */
-    public function setUserService(\API\Service\User $userService)
-    {
-        $this->userService = $userService;
-
-        return $this;
     }
 }

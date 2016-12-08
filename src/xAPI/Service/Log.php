@@ -37,7 +37,12 @@ class Log extends Service
      */
     public function logRequest($request)
     {
-        $document = $this->getStorage()->getLogStorage()->logRequest($request->getIp(), $request->getMethod(), $request->getPathInfo(), $currentDate);
+        $ip = $request->getIp();
+        $method = $request->getMethod();
+        $path = $request->getPathInfo();
+        $currentDate = Util\Date::dateTimeExact();
+        $logStorage = $this->getStorage()->getLogStorage();
+        $document = $logStorage->logRequest($ip, $method, $path, $currentDate);
 
         return $document;
     }

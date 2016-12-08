@@ -42,7 +42,7 @@ class Command extends SymfonyCommand
     public function __construct()
     {
         parent::__construct();
-        $this->setSlim(Slim::getInstance());
+        $this->slim = Slim::getInstance();
 
         $this->init();
     }
@@ -60,13 +60,5 @@ class Command extends SymfonyCommand
     public function getSlim()
     {
         return $this->slim;
-    }
-
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
     }
 }

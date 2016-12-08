@@ -28,6 +28,7 @@ use API\Resource;
 use API\Storage\Query\StatementResult;
 use API\Storage\Query\StatementInterface;
 use API\Storage\Adapter\Base;
+use API\Util;
 
 class Statement extends Base implements StatementInterface
 {
@@ -36,7 +37,7 @@ class Statement extends Base implements StatementInterface
      *
      * @return StatementResult object
      */
-    public function getStatementsFiltered($parameters)
+    public function get($parameters)
     {
         $collection = $this->getDocumentManager()->getCollection('statements');
         $cursor = $collection->find();
@@ -54,7 +55,7 @@ class Statement extends Base implements StatementInterface
             }
 
             $statementResult = new StatementResult();
-            $statementResult->setStatementCursor($cursor);
+            $statementResult->setCursor($cursor);
             $statementResult->setCurrentCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
@@ -71,7 +72,7 @@ class Statement extends Base implements StatementInterface
             }
 
             $statementResult = new StatementResult();
-            $statementResult->setStatementCursor($cursor);
+            $statementResult->setCursor($cursor);
             $statementResult->setCurrentCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
@@ -88,16 +89,9 @@ class Statement extends Base implements StatementInterface
         if ($parameters->has('agent')) {
             $agent = $parameters->get('agent');
             $agent = json_decode($agent, true);
-            //Fetch the identifier - otherwise we'd have to order the JSON
-            if (isset($agent['mbox'])) {
-                $uniqueIdentifier = 'mbox';
-            } elseif (isset($agent['mbox_sha1sum'])) {
-                $uniqueIdentifier = 'mbox_sha1sum';
-            } elseif (isset($agent['openid'])) {
-                $uniqueIdentifier = 'openid';
-            } elseif (isset($agent['account'])) {
-                $uniqueIdentifier = 'account';
-            }
+
+            $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+            
             if ($parameters->has('related_agents') && $parameters->get('related_agents') === 'true') {
                 if ($uniqueIdentifier === 'account') {
                     $cursor->whereAnd(
@@ -332,7 +326,7 @@ class Statement extends Base implements StatementInterface
         return $statementResult;
     }
 
-    public function getStatementById($statementId)
+    public function getById($statementId)
     {
         $requestedStatement = $this->getDocumentManager()->getCollection()->find()->where('statement.id', $statementId)->current();
 
@@ -343,7 +337,7 @@ class Statement extends Base implements StatementInterface
         return $requestedStatement;
     }
 
-    private function storeStatement($statementObject)
+    private function insert($statementObject)
     {
         $collection = $this->getDocumentManager()->getCollection('statements');
         // TODO: This should be in Activity storage manager!
@@ -427,32 +421,32 @@ class Statement extends Base implements StatementInterface
         return $statementDocument;
     }
 
-    public function postStatement($statementObject)
+    public function insertOne($statementObject)
     {
-        $statementDocument = $this->storeStatement($statementObject);
+        $statementDocument = $this->insert($statementObject);
         $statementResult = new StatementResult();
-        $statementResult->setStatementCursor([$statementObject]);
+        $statementResult->setCursor([$statementObject]);
         $statementResult->setCurrentCount(1);
         $statementResult->setHasMore(false);
 
         return $statementResult;
     }
 
-    public function postStatements($statementObjects)
+    public function insertMultiple($statementObjects)
     {
         $statementDocuments = [];
         foreach ($statementObjects as $statementObject) {
-            $statementDocuments[] = $this->storeStatement($statementObject);
+            $statementDocuments[] = $this->insert($statementObject);
         }
         $statementResult = new StatementResult();
-        $statementResult->setStatementCursor($statementDocuments);
+        $statementResult->setCursor($statementDocuments);
         $statementResult->setCurrentCount(count($statementDocuments));
         $statementResult->setHasMore(false);
 
         return $statementResult;
     }
 
-    public function putStatement($parameters, $statementObject)
+    public function put($parameters, $statementObject)
     {
         // Check statementId exists
         if (!$parameters->has('statementId')) {
@@ -474,16 +468,16 @@ class Statement extends Base implements StatementInterface
             $body['id'] = $parameters->get('statementId');
         }
 
-        $statementDocument = $this->storeStatement($statementObject);
+        $statementDocument = $this->insert($statementObject);
         $statementResult = new StatementResult();
-        $statementResult->setStatementCursor([$statementObject]);
+        $statementResult->setCursor([$statementDocument]);
         $statementResult->setCurrentCount(1);
         $statementResult->setHasMore(false);
 
         return $statementResult;
     }
 
-    public function deleteStatement($parameters)
+    public function delete($parameters)
     {
         throw \InvalidArgumentException('Statements cannot be deleted, only voided!', Resource::STATUS_INTERNAL_SERVER_ERROR);
     }

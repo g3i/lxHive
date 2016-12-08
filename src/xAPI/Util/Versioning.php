@@ -38,28 +38,28 @@ class Versioning
      *
      * @var int
      **/
-    private $major = 0;
+    public $major = 0;
 
     /**
      * Minor version.
      *
      * @var int
      **/
-    private $minor = 0;
+    public $minor = 0;
 
     /**
      * Patch version.
      *
      * @var int
      **/
-    private $patch = 0;
+    public $patch = 0;
 
     /**
      * Original version String.
      *
      * @var string
      */
-    private $originalVersionString;
+    public $originalVersionString;
 
     /**
      * Parse a string into Versionable properties.

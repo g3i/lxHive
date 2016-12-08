@@ -28,8 +28,6 @@ use API\Service;
 use API\Resource;
 use Slim\Helper\Set;
 use Slim\Http\Request;
-// TEMPORARY
-use API\Storage\Adapter\MongoLegacy\Document\User;
 use API\Service\User as UserService;
 use API\Util;
 
@@ -56,7 +54,7 @@ class Basic extends Service implements AuthInterface
      */
     protected $single = false;
 
-    public function addToken($name, $description, $expiresAt, User $user, array $scopes = [])
+    public function addToken($name, $description, $expiresAt, $user, array $scopes = [])
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes);
 

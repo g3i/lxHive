@@ -13,17 +13,19 @@ class ExtendedQuery implements ExtensionInterface
         $this->setContainer($container);
     }
 
-	/*
-        Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
-    */
+	/**
+     * Returns any event listeners that need to be added for this extension
+     * @return array Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
+     */
     public function getEventListeners()
     {
     	return [];
     }
 
-    /*
-        Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
-    */
+    /**
+     * Returns any routes that need to be added for this extension
+     * @return array Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
+     */
     public function getRoutes()
     {
     	return [
@@ -33,20 +35,21 @@ class ExtendedQuery implements ExtensionInterface
         ];
     }
 
-    /*
-        Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
-    */
+    /**
+     * Returns any hooks that need to be added for this extension
+     * @return array Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
+     */
     public function getHooks()
     {
     	return [];
     }
 
-    /*
-        Installer
-    */
+    /**
+     * Called by extension initializer, does nothing
+     * @return null
+     */
     public function install()
     {
-        // Do nothing
     }
 
     protected function getResource()

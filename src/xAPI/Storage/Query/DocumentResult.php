@@ -27,15 +27,27 @@ namespace API\Storage\Query;
 class DocumentResult
 {
     /**
-     * The Cursor with the result set - must implement ArrayAccess or be an array (foreachable)
-     * @var ArrayAccess|array
+     * Cursor that contains the result set
+     * @var Traversable
      */
     public $cursor;
 
+    /**
+     * Number of total documents that match in entire query
+     * @var int
+     */
     public $totalCount;
 
+    /**
+     * Number of documents remaining in query where the current skip and limit values are at
+     * @var int
+     */
     public $remainingCount;
 
+    /**
+     * The number of documents requested in this query (the maximum that can be contained in $cursor)
+     * @var int
+     */
     public $requestedLimit;
 
     /**
@@ -44,6 +56,10 @@ class DocumentResult
      */
     public $isSingle;
 
+    /**
+     * Whether there are more results available, taking into account the number of results being limited
+     * @var [type]
+     */
     public $hasMore;
 
     /**
