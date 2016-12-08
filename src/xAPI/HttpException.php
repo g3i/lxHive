@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -26,14 +25,19 @@ namespace API;
 
 class HttpException extends \Exception
 {
-    private $statusCode;
-    private $statusMessage;
+
     private $data = null;
 
     /**
-     * @param int    $code
+     * Prepares a json response exception
+     * @see API/Resource::error()
+     *
      * @param string $message
-     * @param array  $headers additional headers
+     * @param int $statusCode valid httpd status code
+     * @param array|object|null $data extra data to be included in json response
+     * @param \Exception $previous
+     *
+     * @throws \Exception
      */
     public function __construct($message, $statusCode = 400, $data = null, \Exception $previous = null)
     {
@@ -42,9 +46,9 @@ class HttpException extends \Exception
     }
 
     /**
-     * Set response headers.
+     * Get data
      *
-     * @param array $headers Response headers
+     * @return mixed $data
      */
     public function getData()
     {

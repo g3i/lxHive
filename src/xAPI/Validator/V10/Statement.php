@@ -28,6 +28,7 @@ use API\Validator;
 
 class Statement extends Validator
 {
+
     public function __construct()
     {
         parent::__construct();
