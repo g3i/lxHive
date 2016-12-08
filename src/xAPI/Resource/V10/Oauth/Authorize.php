@@ -48,7 +48,7 @@ class Authorize extends Resource
     public function init()
     {
         $this->oAuthService = new OAuthService($this->getSlim());
-        $this->userService = new UserService($this->getSlim(;
+        $this->userService = new UserService($this->getSlim());
         OAuth::loadSession();
     }
 
