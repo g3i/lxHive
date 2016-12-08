@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\BasicAuthInterface;
 use API\Resource;
+use API\HttpException as Exception;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {

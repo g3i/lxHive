@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Resource;
+use API\HttpException as Exception;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {

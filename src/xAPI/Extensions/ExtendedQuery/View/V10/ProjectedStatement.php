@@ -32,7 +32,7 @@ class ProjectedStatement extends View
     {
         $view = [];
 
-        if (!is_array($statementResult) && $statementResult instanceof Traversable) {
+        if (!is_array($statementResult) && $statementResult instanceof \Traversable) {
             $resultArray = iterator_to_array($statementResult->getCursor());
         }
 

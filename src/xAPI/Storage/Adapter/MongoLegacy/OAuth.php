@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\OAuthInterface;
 use API\Resource;
+use API\HttpException as Exception;
 
 class OAuth extends Base implements OAuthInterface
 {

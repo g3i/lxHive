@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\ActivityInterface;
 use API\Resource;
+use API\HttpException as Exception;
 
 class Activity extends Base implements ActivityInterface
 {
