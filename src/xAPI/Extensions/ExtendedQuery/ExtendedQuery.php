@@ -2,7 +2,7 @@
 
 namespace API\Extensions\ExtendedQuery;
 
-use API\ExtensionInterface;
+use API\Extensions\ExtensionInterface;
 
 class ExtendedQuery implements ExtensionInterface
 {
