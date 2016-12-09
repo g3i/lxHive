@@ -31,14 +31,6 @@ class ActivityState extends Service
 {
     // Will be deprecated with ActivityStateResult class
     /**
-     * Activity states.
-     *
-     * @var array
-     */
-    protected $activityStates;
-
-    // Will be deprecated with ActivityStateResult class
-    /**
      * Cursor.
      *
      * @var cursor
@@ -83,7 +75,7 @@ class ActivityState extends Service
 
         $activityStateDocument = $this->getStorage()->getActivityStateStorage()->postActivityState($params, $rawBody);
 
-        $this->activityStates = [$activityStateDocument];
+        $this->cursor = [$activityStateDocument];
         $this->single = true;
 
         return $this;
@@ -105,7 +97,7 @@ class ActivityState extends Service
         $activityStateDocument = $this->getStorage()->getActivityStateStorage()->putActivityState($params, $rawBody);
 
         $this->single = true;
-        $this->activityStates = [$activityStateDocument];
+        $this->cursor = [$activityStateDocument];
 
         return $this;
     }

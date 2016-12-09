@@ -31,14 +31,6 @@ class ActivityProfile extends Service
 {
     // Will be deprecated with ActivityProfileResult class
     /**
-     * Activity profiles.
-     *
-     * @var array
-     */
-    protected $activityProfiles;
-
-    // Will be deprecated with ActivityProfileResult class
-    /**
      * Cursor.
      *
      * @var cursor
@@ -86,7 +78,7 @@ class ActivityProfile extends Service
         $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->postActivityProfile($params, $rawBody);
 
         $this->single = true;
-        $this->activityProfiles = [$activityProfileDocument];
+        $this->cursor = [$activityProfileDocument];
 
         return $this;
     }
@@ -109,7 +101,7 @@ class ActivityProfile extends Service
         $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->putActivityProfile($params, $rawBody);
 
         $this->single = true;
-        $this->activityProfiles = [$activityProfileDocument];
+        $this->cursor = [$activityProfileDocument];
 
         return $this;
     }
