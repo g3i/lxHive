@@ -30,6 +30,7 @@ use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Service\User as UserService;
 use API\Util;
+use API\HttpException as Exception;
 
 class Basic extends Service implements AuthInterface
 {
@@ -156,15 +157,11 @@ class Basic extends Service implements AuthInterface
             $body = json_decode($body, true);
         }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('Invalid JSON posted. Cannot continue!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->checkJsonDecodeErrors();
 
         $requestParams = new Set($body);
 
-        if ($requestParams->get('user')['email'] === null) {
-            throw new \Exception('Invalid request, user.email property not present!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateRequiredParams($requestParams);
 
         $currentDate = new \DateTime();
 
@@ -256,6 +253,20 @@ class Basic extends Service implements AuthInterface
         }
 
         return $token;
+    }
+
+    private function checkJsonDecodeErrors()
+    {
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateRequiredParams($requestParams)
+    {
+        if ($requestParams['user']['email'] === null) {
+            throw new Exception('Invalid request, user.email property not present!', Resource::STATUS_BAD_REQUEST);
+        }
     }
 
     /**

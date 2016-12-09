@@ -27,6 +27,7 @@ namespace API\Service;
 use API\Service;
 use API\Resource;
 use Slim\Helper\Set;
+use API\HttpException as Exception;
 
 class Statement extends Service
 {
@@ -60,10 +61,7 @@ class Statement extends Service
             $jsonRequest = $request;
         }
 
-        // TODO: Move header validation in json-schema as well
-        if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateJsonMediaType($jsonRequest);
 
         // Validation has been completed already - everyhing is assumed to be valid
         $body = $jsonRequest->getBody();
@@ -132,11 +130,7 @@ class Statement extends Service
             $jsonRequest = $request;
         }
 
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        // TODO: Move header validation in json-schema as well
-        if ($jsonRequest->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateJsonMediaType($jsonRequest);
 
         // Validation has been completed already - everyhing is assumed to be valid
         $body = $jsonRequest->getBody();
@@ -191,5 +185,13 @@ class Statement extends Service
     private function areMultipleStatements(&$array)
     {
         return $array === array_values($array);
+    }
+
+    private function validateJsonMediaType($jsonRequest)
+    {
+        // TODO: Move header validation in json-schema as well
+        if ($jsonRequest->getMediaType() !== 'application/json') {
+            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
+        }
     }
 }

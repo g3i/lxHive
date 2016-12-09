@@ -30,6 +30,7 @@ use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
+use API\HttpException as Exception;
 
 class OAuth extends Service implements AuthInterface
 {
@@ -160,36 +161,23 @@ class OAuth extends Service implements AuthInterface
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
 
-        //TODO: Use json-schema validator
-        foreach ($requiredParams as $requiredParam) {
-            if (!$params->has($requiredParam)) {
-                throw new \Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
-            }
-        }
+        $this->validateRequiredParams($params, $requiredParams);
 
-        if ($params->get('response_type') !== 'code') {
-            throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateResponseType($params['responseType']);
 
         // get client by id
         $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
 
-        if (null === $clientDocument) {
-            throw new \Exception('Invalid client_id', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateClientDocument($clientDocument);
 
-        if ($params->get('redirect_uri') !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateRedirectUri($params['redirect_uri'], $clientDocument);
 
         $scopeDocuments = [];
         $scopes = explode(',', $params->get('scope'));
         foreach ($scopes as $scope) {
             // get scope by name
             $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-            if (null === $scopeDocument) {
-                throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->validateScopeDocument($scopeDocument);
             $scopeDocuments[] = $scopeDocument;
         }
 
@@ -209,10 +197,8 @@ class OAuth extends Service implements AuthInterface
         $postParams = new Set($request->post());
         $params = new Set($request->get());
 
-        // CSRF protection
-        if (!$postParams->has('csrfToken') || !isset($_SESSION['csrfToken']) || ($postParams->get('csrfToken') !== $_SESSION['csrfToken'])) {
-            throw new \Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateCsrf($postParams);
+        $this->validateAction($postParams);
 
         // TODO: Improve this, load stuff from config, add documented error codes, separate stuff into functions, etc.
         if ($postParams->get('action') === 'accept') {
@@ -229,9 +215,7 @@ class OAuth extends Service implements AuthInterface
             foreach ($scopes as $scope) {
                 // getscopebyname
                 $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-                if (null === $scopeDocument) {
-                    throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-                }
+                $this->validateScopeDocument($scopeDocument);
                 $scopeDocuments[] = $scopeDocument;
             }
             $code = Util\OAuth::generateToken();
@@ -244,8 +228,6 @@ class OAuth extends Service implements AuthInterface
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['error' => 'User denied authorization!']);
             $this->redirectUri = $redirectUri;
-        } else {
-            throw new Exception('Invalid.', Resource::STATUS_BAD_REQUEST);
         }
     }
 
@@ -260,16 +242,8 @@ class OAuth extends Service implements AuthInterface
 
         $requiredParams = ['grant_type', 'client_id', 'client_secret', 'redirect_uri', 'code'];
 
-        //TODO: Use json-schema validator
-        foreach ($requiredParams as $requiredParam) {
-            if (!$params->has($requiredParam)) {
-                throw new \Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
-            }
-        }
-
-        if ($params->get('grant_type') !== 'authorization_code') {
-            throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateRequiredParams($params, $requiredParams);
+        $this->validateGrantType($params['grant_type']);
 
         // getTokenWithOneTimeCode($params)
         $tokenDocument = $this->getStorage()->getOAuthStorage()->getTokenWithOneTimeCode($params);
@@ -312,6 +286,66 @@ class OAuth extends Service implements AuthInterface
         }
 
         return $tokenDocument;
+    }
+
+    private function validateScopeDocument($scopeDocument)
+    {
+        if (null === $scopeDocument) {
+            throw new Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateCsrf($params)
+    {
+        // CSRF protection
+        if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
+            throw new Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateAction($params)
+    {
+        if ($params['action'] !== 'accept' && $params['action'] !== 'deny') {
+            throw new Exception('Invalid.', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateRequiredParams($params, $requiredParams)
+    {
+        //TODO: Use json-schema validator
+        foreach ($requiredParams as $requiredParam) {
+            if (!isset($params[$requiredParam])) {
+                throw new Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
+            }
+        }
+    }
+
+    private function validateResponseType($responseType)
+    {
+        if ($responseType !== 'code') {
+            throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateRedirectUri($redirectUri, $clientDocument)
+    {
+        if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
+            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateGrantType($grantType)
+    {
+        if ($grantType !== 'authorization_code') {
+            throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    public function validateClientDocument($clientDocument)
+    {
+        if (null === $clientDocument) {
+            throw new \Exception('Invalid client_id', Resource::STATUS_BAD_REQUEST);
+        }
     }
 
     /**

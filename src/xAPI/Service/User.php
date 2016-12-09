@@ -31,6 +31,7 @@ use API\Util\Rememberme\MongoStorage as RemembermeMongoStorage;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
 use Birke\Rememberme;
+use API\HttpException as Exception;
 
 class User extends Service
 {
@@ -67,17 +68,11 @@ class User extends Service
      */
     public function loginPost($request)
     {
+        // TODO: This will be fetched from Parser class in future!
         $params = new Set($request->post());
 
-        // CSRF protection
-        if (!$params->has('csrfToken') || !isset($_SESSION['csrfToken']) || ($params->get('csrfToken') !== $_SESSION['csrfToken'])) {
-            throw new \Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
-        }
-
-        // This could be in JSON schema as well :)
-        if (!$params->has('email') || !$params->has('password')) {
-            throw new \Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateCsrf($params);
+        $this->validateRequiredParameters($params);
 
         $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password'));
 
@@ -177,6 +172,23 @@ class User extends Service
 
         return $this;
     }
+
+    private function validateCsrf($params)
+    {
+        // CSRF protection
+        if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
+            throw new Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateRequiredParameters($params)
+    {
+        // This could be in JSON schema as well :)
+        if (!isset($params['email']) || !isset($params['password'])) {
+            throw new Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+            
 
     /**
      * Gets the Users.
