@@ -181,7 +181,7 @@ class Statement extends Service
         return $statementResult;
     }
 
-    // Quickest solution for checking 1D vs 2D assoc arrays
+    // Quickest solution for validateing 1D vs 2D assoc arrays
     private function areMultipleStatements(&$array)
     {
         return $array === array_values($array);

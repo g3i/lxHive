@@ -157,7 +157,7 @@ class Basic extends Service implements AuthInterface
             $body = json_decode($body, true);
         }
 
-        $this->checkJsonDecodeErrors();
+        $this->validateJsonDecodeErrors();
 
         $requestParams = new Set($body);
 
@@ -255,7 +255,7 @@ class Basic extends Service implements AuthInterface
         return $token;
     }
 
-    private function checkJsonDecodeErrors()
+    private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);

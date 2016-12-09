@@ -83,13 +83,13 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            $this->checkDocumentType($result, $contentType);
+            $this->validateDocumentType($result, $contentType);
 
             $decodedExisting = json_decode($result->getContent(), true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $decodedPosted = json_decode($profileObject, true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $activityProfileDocument = $result;
@@ -168,7 +168,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
         $cursorCount = $cursor->count();
 
-        $this->checkCursorCountValid($cursorCount);
+        $this->validateCursorCountValid($cursorCount);
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
@@ -206,7 +206,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         }
     }
 
-    private function checkDocumentType($document, $contentType)
+    private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
             throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
@@ -216,14 +216,14 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         }
     }
 
-    private function checkCursorCountValid($cursorCount)
+    private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
             throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
         }
     }
 
-    private function checkJsonDecodeErrors()
+    private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);

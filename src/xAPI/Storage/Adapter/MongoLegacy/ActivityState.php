@@ -53,7 +53,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
             $cursorCount = $cursor->count();
 
-            $this->checkCursorCountValid($cursorCount);
+            $this->validateCursorCountValid($cursorCount);
         }
 
         $cursor->where('activityId', $parameters->get('activityId'));
@@ -109,13 +109,13 @@ class ActivityState extends Base implements ActivityStateInterface
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            $this->checkDocumentType($result, $contentType);
+            $this->validateDocumentType($result, $contentType);
 
             $decodedExisting = json_decode($result->getContent(), true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $decodedPosted = json_decode($stateObject, true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $stateObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $activityStateDocument = $result;
@@ -225,21 +225,21 @@ class ActivityState extends Base implements ActivityStateInterface
         $collection->deleteDocuments($expression);
     }
 
-    private function checkCursorCountValid($cursorCount)
+    private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
             throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
         }
     }
 
-    private function checkJsonDecodeErrors()
+    private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
         }
     }
 
-    private function checkDocumentType($document, $contentType)
+    private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
             throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);

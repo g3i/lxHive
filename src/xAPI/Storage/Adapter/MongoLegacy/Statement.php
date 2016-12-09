@@ -347,9 +347,9 @@ class Statement extends Base implements StatementInterface
             $cursor->where('statement.id', $statementObject['id']);
             $result = $cursor->findOne();
 
-            // ID exists, check if different or conflict
+            // ID exists, validate if different or conflict
             if ($result) {
-                $this->checkStatementMatches($statementObject, $result);
+                $this->validateStatementMatches($statementObject, $result);
             }
         }
 
@@ -386,7 +386,7 @@ class Statement extends Base implements StatementInterface
             $referencedStatementId = $statementDocument->getReferencedStatementId();
             $referencedStatement = $this->getStatementById($referencedStatementId);
 
-            $this->checkVoidedStatementNotVoiding($referencedStatement);
+            $this->validateVoidedStatementNotVoiding($referencedStatement);
             $referencedStatement->setVoided(true);
             $referencedStatement->save();
         }
@@ -467,7 +467,7 @@ class Statement extends Base implements StatementInterface
     }
 
     /**
-     * Gets the Access token to check for permissions.
+     * Gets the Access token to validate for permissions.
      *
      * @return API\Document\Auth\AbstractToken
      */
@@ -476,7 +476,7 @@ class Statement extends Base implements StatementInterface
         return $this->getSlim()->auth;
     }
 
-    private function checkStatementMatches($statementOne, $statementTwo)
+    private function validateStatementMatches($statementOne, $statementTwo)
     {
         // Same - return 200
         if ($statementOne == $statementTwo) {
@@ -485,7 +485,7 @@ class Statement extends Base implements StatementInterface
         }
     }
 
-    private function checkVoidedStatementNotVoiding($referencedStatement)
+    private function validateVoidedStatementNotVoiding($referencedStatement)
     {
         if ($referencedStatement->isVoiding()) {
             throw new Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);

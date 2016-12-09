@@ -47,7 +47,7 @@ class AgentProfile extends Base implements AgentProfileInterface
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             $cursorCount = $cursor->count();
-            $this->checkCursorCountValid($cursorCount);
+            $this->validateCursorCountValid($cursorCount);
 
             $this->cursor = $cursor;
             $this->single = true;
@@ -98,13 +98,13 @@ class AgentProfile extends Base implements AgentProfileInterface
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            $this->checkDocumentType($result);
+            $this->validateDocumentType($result);
 
             $decodedExisting = json_decode($result->getContent(), true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $decodedPosted = json_decode($profileObject, true);
-            $this->checkJsonDecodeErrors();
+            $this->validateJsonDecodeErrors();
 
             $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $agentProfileDocument = $result;
@@ -230,7 +230,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         }
     }
 
-    private function checkDocumentType($document)
+    private function validateDocumentType($document)
     {
         if ($document->getContentType() !== 'application/json') {
             throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
@@ -240,14 +240,14 @@ class AgentProfile extends Base implements AgentProfileInterface
         }
     }
 
-    private function checkCursorCountValid($cursorCount)
+    private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
             throw new Exception('Agent profile does not exist.', Resource::STATUS_NOT_FOUND);
         }
     }
 
-    private function checkJsonDecodeErrors()
+    private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
