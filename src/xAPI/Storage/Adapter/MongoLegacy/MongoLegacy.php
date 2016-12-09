@@ -30,9 +30,82 @@ class MongoLegacy implements AdapterInterface
 {
     protected $container;
 
+    private $client;
+
     public function __construct($container)
     {
         $this->container = $container;
+        $client = new Client($this->getSlim()->config('storage')['MongoLegacy']['host_uri']);
+        $client->useDatabase($this->getSlim()->config('storage')['MongoLegacy']['db_name']);
+        $this->client = $client;
+    }
+
+    /**
+     * Inserts the document into the specified collection
+     * @param  API\Document\DocumentInterface $document The document to be inserted
+     * @param  string $collection Name of the collection to insert to
+     * @return DocumentResult The result of this query
+     */
+    public function insert($document, $collection)
+    {
+        $collectionObject = $this->getClient()->getCollection($collection);
+        $collectionObject->insert(['param' => 'value']);
+    }
+
+    /**
+     * Updates documents matching the filter
+     * @param  object|array $document The document to be inserted
+     * @param  array $query The query to update the documents
+     * @param  string $collection Name of collection
+     * @return DocumentResult The result of this query
+     */
+    public function update($modifications, $query, $collection)
+    {
+        $collectionObject = $this->getClient()->getCollection($collection);
+        $collection->update($query, $modifications);
+    }
+
+    /**
+     * Deletes documents
+     * @param  array $query The query that matches documents the need to be deleted
+     * @param  string $collection Name of collection
+     * @return DeletionResult Result of deletion
+     */
+    public function delete($query, $collection)
+    {
+        $collectionObject = $this->getClient()->getCollection($collection);
+        $collectionObject->deleteDocuments($query);
+    }
+
+    /**
+     * Fetches documents
+     * @param  array $query The query to fetch the documents by
+     * @param  string $collection Name of collection
+     * @return DocumentResult Result of fetch
+     */
+    public function get($query, $collection)
+    {
+        $collectionObject  = $this->getDocumentManager()->getCollection('statements');
+        $cursor      = $collectionObject->find();
+        $cursor->query($query);
+
+        return $cursor;
+    }
+
+    /**
+     * Fetches documents
+     * @param  array $query The query to fetch the first document by
+     * @param  string $collection Name of collection
+     * @return DocumentResult Result of fetch
+     */
+    public function getOne($query, $collection)
+    {
+        $collectionObject  = $this->getDocumentManager()->getCollection('statements');
+        $cursor      = $collectionObject->find();
+        $cursor->query($query);
+        $document = $cursor->findOne();
+
+        return $document;
     }
 
     public function getStatementStorage()
@@ -127,5 +200,15 @@ class MongoLegacy implements AdapterInterface
         $this->container = $container;
 
         return $this;
+    }
+
+    /**
+     * Gets the value of client.
+     *
+     * @return mixed
+     */
+    public function getClient()
+    {
+        return $this->client;
     }
 }
