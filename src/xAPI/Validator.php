@@ -29,13 +29,17 @@ use API\HttpException as Exception;
 
 abstract class Validator
 {
+    /**
+     * @var JsonSchema\SchemaStorage $schemaStorage a persistent SchemaStorage instance
+     * Note that a SchemaStorage instance has an internal cache which takes care of loading and caching files.
+     */
     private static $schemaStorage = null;
 
     protected $lastValidator = null;
     protected $lastSchema = null;
 
     /**
-     * Constructor.
+     * Constructor, creates and caches a  instance
      */
     public function __construct()
     {
@@ -45,7 +49,14 @@ abstract class Validator
     }
 
     /**
-     * @return \JsonSchema\Validator
+     * Validate data with JsonSchema
+     * We intentionally create a new Validator instance on each call
+     *
+     * @param object|array $data
+     * @param string $uri (with fragment)
+     * @param bool $debug
+     *
+     * @return JsonSchema\Validator
      */
     public function validateSchema($data, $uri, $debug = false)
     {
@@ -61,17 +72,18 @@ abstract class Validator
     }
 
     /**
-     * validate data with JsonSchema.
+     * Debug data, validated with JsonSchema
      *
-     * @param string $jsonFile existing and valid json file in xAPI\Validator\Schema
-     * @param object $data
-     * @param string $fragment
+     * @param object|array $data
+     * @param string $uri (with fragment)
+     * @param JsonSchema\Validator $validator
+     * @param object $schema
      *
-     * @throws Exception
+     * @throws HttpException
      */
     public function debugSchema($data, $uri, $validator, $schema)
     {
-        $debug = new \StdClass();
+        $debug = new \StdClass;
         $debug->hasErrors = count($validator->getErrors());
         $debug->errors = ($data) ? $validator->getErrors() : [];
         $debug->uri = $uri;
@@ -94,12 +106,12 @@ abstract class Validator
     }
 
     /**
-     * throw validatior errors.
+     * Throw errors
      *
-     * @param array  $errors
-     * @param string $validator
+     * @param string $message
+     * @param mixed $errors
      *
-     * @throws Exception
+     * @throws HttpException
      */
     protected function throwErrors($message, $errors)
     {
@@ -108,19 +120,20 @@ abstract class Validator
     }
 
     /**
-     * Processes and Rendes validator errors in an array.
+     * Processes and Rendes validator errors in an array
      *
+     * @param string $message
      * @param JsonSchema\Validator $validator validator instance, note that you must have validated at this stage
      *
-     * @throws array simplified errors
+     * @throws HttpException
      */
     protected function throwSchemaErrors($message, $validator)
     {
         $errors = $validator->getErrors();
         foreach ($errors as $key => $error) {
-            if ($error['property']) {
-                $errors[$key] = sprintf('[%s]: %s', $error['property'], $error['message']);
-            } else {
+            if($error['property']){
+                $errors[$key] = sprintf("[%s]: %s", $error['property'], $error['message']);
+            }else{
                 $errors[$key] = sprintf($error['message']);
             }
         }

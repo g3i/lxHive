@@ -106,6 +106,11 @@ $app->configureMode($app->getMode(), function () use ($app, $appRoot) {
         $handlers[] = $handler;
     }
 
+    if(in_array('ChromePHPHandler', $config)){
+        $handler = new \Monolog\Handler\ChromePHPHandler();
+        $handlers[] = $handler;
+    }
+
     if(in_array('StreamHandler', $config)){
         $handler = new \Monolog\Handler\StreamHandler($stream);
         $handler->setFormatter($formatter);
@@ -118,6 +123,7 @@ $app->configureMode($app->getMode(), function () use ($app, $appRoot) {
         $handlers[] = $handler;
     }
 
+    //@TODO third party dependency should be removed in slim3
     $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
         'handlers' => $handlers,
     ));
@@ -176,7 +182,7 @@ $app->hook('slim.before', function () use ($app) {
                 foreach ($listeners as $listener) {
                     $app->eventDispatcher->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
                 }
-                
+
                 // Load any routes added by extension
                 $routes = $extension->getRoutes();
                 foreach ($routes as $route) {
