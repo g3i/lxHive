@@ -57,10 +57,8 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 $ cd /<path_to_application_root>
 # View available commands
 $ ./X
-# Set up database
-$ ./X setup:db
-# Set up OAuth scopes
-$ ./X setup:oauth
+# Run the setup
+$ ./X setup
 # Create a new user
 $ ./X user:create
 
