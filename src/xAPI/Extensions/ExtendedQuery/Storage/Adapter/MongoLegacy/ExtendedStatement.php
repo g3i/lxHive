@@ -31,7 +31,7 @@ use API\Resource;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
-    public function extendedQuery($parameters)
+    public function extendedQuery(\Traversable $parameters)
     {
         $collection  = $this->getDocumentManager()->getCollection('statements');
         $cursor      = $collection->find();
@@ -41,7 +41,7 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
 
         // Merge in query
         $mutableExpression = new MutableExpression();
-        $query = $parameters->get('query');
+        $query = $parameters['query'];
         if (is_string($query)) {
             $query = json_decode($query, true);
         }
@@ -49,8 +49,8 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
         $cursor->query($mutableExpression);
 
         // Add projection
-        if ($parameters->has('projection')) {
-            $fields = $parameters->get('projection');
+        if (isset($parameters['projection'])) {
+            $fields = $parameters['projection'];
             if (is_string($fields)) {
                 $fields = json_decode($fields, true);
             }
@@ -70,17 +70,17 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
         $statementResult->setTotalCount($cursor->count());
 
         // Handle pagination
-        if ($parameters->has('since_id')) {
-            $id = new \MongoId($parameters->get('since_id'));
+        if (isset($parameters['since_id'])) {
+            $id = new \MongoId($parameters['since_id']);
             $cursor->whereGreaterOrEqual('_id', $id);
         }
 
-        if ($parameters->has('until_id')) {
-            $id = new \MongoId($parameters->get('until_id'));
+        if (isset($parameters['until_id'])) {
+            $id = new \MongoId($parameters['until_id']);
             $cursor->whereLessOrEqual('_id', $id);
         }
 
-        if ($parameters->has('ascending') && $parameters->get('ascending') === 'true') {
+        if (isset($parameters['ascending']) && $parameters['ascending'] === 'true') {
             $statementResult->setSortDescending(false);
             $statementResult->setSortAscending(true);
             $cursor->sort(['_id' => 1]);
@@ -92,8 +92,8 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $this->descending = true;
         }
 
-        if ($parameters->has('limit') && $parameters->get('limit') < $this->getSlim()->config('xAPI')['statement_get_limit'] && $parameters->get('limit') > 0) {
-            $limit = $parameters->get('limit');
+        if (isset($parameters['limit']) && $parameters['limit'] < $this->getSlim()->config('xAPI')['statement_get_limit'] && $parameters['limit'] > 0) {
+            $limit = $parameters['limit'];
         } else {
             $limit = $this->getSlim()->config('xAPI')['statement_get_limit'];
         }
