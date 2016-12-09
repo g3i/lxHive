@@ -36,22 +36,6 @@ class User extends Service
 {
     // Will be deprecated with UserResult class
     /**
-     * Users.
-     *
-     * @var array
-     */
-    protected $users;
-
-    // Will be deprecated with UserResult class
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    // Will be deprecated with UserResult class
-    /**
      * Is this a single user fetch?
      *
      * @var bool
@@ -104,7 +88,7 @@ class User extends Service
         }
 
         $this->single = true;
-        $this->users = [$document];
+        $this->cursor = [$document];
 
         // Set the session
         $_SESSION['userId'] = $document->getId();
@@ -171,7 +155,7 @@ class User extends Service
         $userDocument = $this->getStorage()->getUserStorage()->addUser($email, $password, $permissions);
 
         $this->single = true;
-        $this->users = [$userDocument];
+        $this->cursor = [$userDocument];
 
         return $userDocument;
     }
@@ -226,20 +210,6 @@ class User extends Service
     public function getCursor()
     {
         return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor(Cursor $cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
     }
 
     /**

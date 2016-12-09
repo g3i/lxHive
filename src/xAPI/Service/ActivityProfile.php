@@ -26,7 +26,6 @@ namespace API\Service;
 
 use API\Service;
 use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
 
 class ActivityProfile extends Service
 {
@@ -165,20 +164,6 @@ class ActivityProfile extends Service
     public function getCursor()
     {
         return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor(Cursor $cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
     }
 
     /**
