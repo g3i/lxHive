@@ -1,7 +1,6 @@
 <?php
 
 use Slim\Slim;
-use API\Service\Statement as StatementService;
 
 class StatementRefs extends \Sokil\Mongo\Migrator\AbstractMigration
 {

@@ -25,7 +25,6 @@
 namespace API\Resource\V10;
 
 use API\Resource;
-use Slim\Helper\Set;
 use API\Service\Activity as ActivityService;
 use API\View\V10\Activity as ActivityView;
 

@@ -24,9 +24,6 @@
 
 namespace API\Storage\Query;
 
-use InvalidArgumentException;
-use API\Resource;
-
 interface ActivityInterface
 {
 	public function fetchActivityById($id);

@@ -4,7 +4,6 @@ namespace API\Extensions\ExtendedQuery\Service;
 
 use API\Service;
 use API\Resource;
-use API\Extensions\ExtendedQuery\Util\MutableExpression;
 use Slim\Helper\Set;
 
 class Statement extends Service

@@ -25,7 +25,6 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\AttachmentInterface;
-use API\Resource;
 
 class Attachment extends Base implements AttachmentInterface
 {
