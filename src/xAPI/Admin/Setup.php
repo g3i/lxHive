@@ -76,20 +76,8 @@ class Setup extends Base
 
     public function testDbConnection($uri)
     {
-        $connectionSuccess = false;
-        while (!$connectionSuccess) {
-            $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
-            $mongoHostname = $helper->ask($input, $output, $question);
-
-            $client = new Client($mongoHostname);
-            try {
-                $mongoVersion = $client->getDbVersion();
-                $output->writeln('Connection successful, MongoDB version '.$mongoVersion.'.');
-                $connectionSuccess = true;
-            } catch (\MongoConnectionException $e) {
-                $output->writeln('Connection unsuccessful, please try again.');
-            }
-        }
+        $connectionTestResult = $this->getContainer()->getStorage()->testConnection($uri);
+        return $connectionTestResult;
     }
 
     public function initializeAuthScopes()

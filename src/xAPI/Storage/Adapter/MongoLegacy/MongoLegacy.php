@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Adapter\AdapterInterface;
+use Sokil\Mongo\Client;
 
 class MongoLegacy implements AdapterInterface
 {
@@ -106,6 +107,18 @@ class MongoLegacy implements AdapterInterface
         $document = $cursor->findOne();
 
         return $document;
+    }
+
+    public function testConnection($uri)
+    {
+        $client = new Client($uri);
+        try {
+            $mongoVersion = $client->getDbVersion();
+            $connectionSuccess = true;
+        } catch (\MongoConnectionException $e) {
+            $connectionSuccess = false;
+        }
+        return $connectionSuccess;
     }
 
     public function getStatementStorage()

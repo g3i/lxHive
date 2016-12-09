@@ -67,6 +67,8 @@ interface AdapterInterface
      */
     public function getOne($query, $collection);
 
+    public function testConnection($uri);
+
     public function getStatementStorage();
 
     public function getAttachmentStorage();
