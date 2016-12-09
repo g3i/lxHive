@@ -31,24 +31,23 @@ use API\HttpException as Exception;
 
 class AgentProfile extends Base implements AgentProfileInterface
 {
-    public function getAgentProfilesFiltered($parameters)
+    public function getAgentProfilesFiltered(\Traversable $parameters)
     {
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
         $cursor = $collection->find();
 
         // Single activity profile
         if ($parameters->has('profileId')) {
-            $cursor->where('profileId', $parameters->get('profileId'));
-            $agent = $parameters->get('agent');
+            $cursor->where('profileId', $parameters['profileId']);
+            $agent = $parameters['agent'];
             $agent = json_decode($agent, true);
             
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
             
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-            if ($cursor->count() === 0) {
-                throw new Exception('Agent profile does not exist.', Resource::STATUS_NOT_FOUND);
-            }
+            $cursorCount = $cursor->count();
+            $this->checkCursorCountValid($cursorCount);
 
             $this->cursor = $cursor;
             $this->single = true;
@@ -56,21 +55,21 @@ class AgentProfile extends Base implements AgentProfileInterface
             return $this;
         }
 
-        $agent = $parameters->get('agent');
+        $agent = $parameters['agent'];
         $agent = json_decode($agent);
         $cursor->where('agent', $agent);
 
         if ($parameters->has('since')) {
-            $since = Util\Date::dateStringToMongoDate($parameters->get('since'));
+            $since = Util\Date::dateStringToMongoDate($parameters['since']);
             $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
         return $cursor;
     }
 
-    public function postAgentProfile($parameters, $profileObject)
+    public function postAgentProfile(\Traversable $parameters, $profileObject)
     {
-        $agent = $parameters->get('agent');
+        $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
         
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
@@ -82,54 +81,30 @@ class AgentProfile extends Base implements AgentProfileInterface
 
         // Check for existing state - then merge if applicable
         $cursor = $collection->find();
-        $cursor->where('profileId', $parameters->get('profileId'));
+        $cursor->where('profileId', $parameters['profileId']);
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         $result = $cursor->findOne();
 
-        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
-        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
-        // if (!$parameters->get('headers')['If-Match'] && !$parameters->get('headers')['If-None-Match'] && $result) {
-        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        // }
-
-        // If-Match first
-        if ($parameters->get('headers')['If-Match'] && $result && ($this->trimHeader($parameters->get('headers')['If-Match']) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($parameters->get('headers')['If-None-Match']) {
-            if ($this->trimHeader($parameters->get('headers')['If-None-Match']) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($parameters->get('headers')['If-None-Match']) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // ID exists, merge body
-        $contentType = $parameters->get('headers')['Content-Type'];
+        $contentType = $parameters['headers']['Content-Type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
         }
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            if ($result->getContentType() !== 'application/json') {
-                throw new \Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            if ($contentType !== 'application/json') {
-                throw new \Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkDocumentType($result);
+
             $decodedExisting = json_decode($result->getContent(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $decodedPosted = json_decode($profileObject, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON posted. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $agentProfileDocument = $result;
@@ -140,7 +115,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $currentDate = Util\Date::dateTimeExact();
         $agentProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $agentProfileDocument->setAgent($agent);
-        $agentProfileDocument->setProfileId($parameters->get('profileId'));
+        $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
         $agentProfileDocument->save();
@@ -153,7 +128,7 @@ class AgentProfile extends Base implements AgentProfileInterface
 
     public function putAgentProfile($parameters, $profileObject)
     {
-        $agent = $parameters->get('agent');
+        $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
         
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
@@ -164,36 +139,22 @@ class AgentProfile extends Base implements AgentProfileInterface
 
         // Check for existing state - then replace if applicable
         $cursor = $collection->find();
-        $cursor->where('profileId', $parameters->get('profileId'));
+        $cursor->where('profileId', $parameters['profileId']);
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         $result = $cursor->findOne();
 
-        // Check If-Match and If-None-Match here
-        if (!$parameters->get('headers')['If-Match'] && !$parameters->get('headers')['If-Match'] && $result) {
-            throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        }
-
-        // If-Match first
-        if ($parameters->get('headers')['If-Match'] && $result && ($this->trimHeader($parameters->get('headers')['If-Match']) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($parameters->get('headers')['If-None-Match']) {
-            if ($this->trimHeader($parameters->get('headers')['If-None-Match']) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($parameters->get('headers')['If-None-Match']) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
+        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // ID exists, replace body
         if ($result) {
             $agentProfileDocument = $result;
         }
 
-        $contentType = $parameters->get('headers')['Content-Type'];
+        $contentType = $parameters['headers']['Content-Type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
         }
@@ -204,7 +165,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
 
         $agentProfileDocument->setAgent($agent);
-        $agentProfileDocument->setProfileId($parameters->get('profileId'));
+        $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
         $agentProfileDocument->save();
@@ -220,8 +181,8 @@ class AgentProfile extends Base implements AgentProfileInterface
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
         $cursor = $collection->find();
 
-        $cursor->where('profileId', $parameters->get('profileId'));
-        $agent = $parameters->get('agent');
+        $cursor->where('profileId', $parameters['profileId']);
+        $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
         
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
@@ -234,25 +195,9 @@ class AgentProfile extends Base implements AgentProfileInterface
             throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
         }
 
-        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
-        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
-        // if (!$parameters->get('headers')['If-Match'] && !$parameters->get('headers')['If-None-Match'] && $result) {
-        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        // }
-
-        // If-Match first
-        if ($parameters->get('headers')['If-Match'] && $result && ($this->trimHeader($parameters->get('headers')['If-Match']) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($parameters->get('headers')['If-None-Match']) {
-            if ($this->trimHeader($parameters->get('headers')['If-None-Match']) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($parameters->get('headers')['If-None-Match']) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // Add to log
         $this->getSlim()->requestLog->addRelation('agentProfiles', $result)->save();
@@ -260,7 +205,55 @@ class AgentProfile extends Base implements AgentProfileInterface
         $result->delete();
     }
 
-    // REMOVE THIS URGENTLY!
+    private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)
+    {
+        // If-Match first
+        if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
+            throw new Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
+        }
+
+        // Then If-None-Match
+        if ($ifNoneMatch) {
+            if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
+                throw new Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
+            } elseif ($result && $this->trimHeader($ifNoneMatch) === $result->getHash()) {
+                throw new Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
+            }
+        }
+    }
+
+    private function validateMatchHeaderExists($ifMatch, $ifNoneMatch, $result)
+    {
+        // Check If-Match and If-None-Match here
+        if (!$ifMatch && !$ifNoneMatch && $result) {
+            throw new Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
+        }
+    }
+
+    private function checkDocumentType($document)
+    {
+        if ($document->getContentType() !== 'application/json') {
+            throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+        if ($document !== 'application/json') {
+            throw new Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function checkCursorCountValid($cursorCount)
+    {
+        if ($cursorCount === 0) {
+            throw new Exception('Agent profile does not exist.', Resource::STATUS_NOT_FOUND);
+        }
+    }
+
+    private function checkJsonDecodeErrors()
+    {
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
      /**
      * Trims quotes from the header.
      *

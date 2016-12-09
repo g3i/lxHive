@@ -35,7 +35,7 @@ class Activity extends Base implements ActivityInterface
         $collection = $this->getDocumentManager()->getCollection('activities');
         $cursor = $collection->find();
 
-        $cursor->where('id', $params->get('activityId'));
+        $cursor->where('id', $id);
 
         if ($cursor->count() === 0) {
             throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);

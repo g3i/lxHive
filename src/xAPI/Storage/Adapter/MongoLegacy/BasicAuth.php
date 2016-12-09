@@ -72,17 +72,11 @@ class BasicAuth extends Base implements BasicAuthInterface
         $cursor->where('secret', $secret);
         $accessTokenDocument = $cursor->current();
 
-        if ($accessTokenDocument === null) {
-            throw new \Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
-        }
+        $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
-        if ($expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
-            }
-        }
+        $this->validateExpiresAt($expiresAt);   
     }
 
     public function deleteToken($clientId)
@@ -123,10 +117,31 @@ class BasicAuth extends Base implements BasicAuthInterface
         $cursor->where('name', $name);
         $scopeDocument = $cursor->current();
 
-        if (null === $scopeDocument) {
-            throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateScope($scopeDocument);
 
         return $scopeDocument;
+    }
+
+    private function validateScope($scope)
+    {
+        if (null === $scope) {
+            throw new Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateExpiresAt($expiresAt)
+    {
+        if ($expiresAt !== null) {
+            if ($expiresAt->sec <= time()) {
+                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
+            }
+        }
+    }
+
+    private function validateAccessTokenNotEmpty($accessToken)
+    {
+        if ($accessToken === null) {
+            throw new \Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
+        }
     }
 }

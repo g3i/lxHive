@@ -49,12 +49,9 @@ class Statement extends Base implements StatementInterface
             $cursor->where('statement.id', $parameters->get('statementId'));
             $cursor->where('voided', false);
 
-            if (!Uuid::isValid($parameters->get('statementId'))) {
-                throw new Exception('Not a valid uuid.', Resource::STATUS_NOT_FOUND);
-            }
-            if ($cursor->count() === 0) {
-                throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
-            }
+            $this->validateStatementId($parameters['statementId']);
+
+            $this->validateCursorNotEmpty($cursor);
 
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
@@ -69,9 +66,7 @@ class Statement extends Base implements StatementInterface
             $cursor->where('statement.id', $parameters->get('voidedStatementId'));
             $cursor->where('voided', true);
 
-            if ($cursor->count() === 0) {
-                throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
-            }
+            $this->validateCursorNotEmpty($cursor);
 
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
@@ -354,12 +349,7 @@ class Statement extends Base implements StatementInterface
 
             // ID exists, check if different or conflict
             if ($result) {
-                // Same - return 200
-                if ($statement == $result->getStatement()) {
-                    // Do nothing
-                } else { // Mismatch - return 409 Conflict
-                    throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
-                }
+                $this->checkStatementMatches($statementObject, $result);
             }
         }
 
@@ -396,12 +386,9 @@ class Statement extends Base implements StatementInterface
             $referencedStatementId = $statementDocument->getReferencedStatementId();
             $referencedStatement = $this->getStatementById($referencedStatementId);
 
-            if (!$referencedStatement->isVoiding()) {
-                $referencedStatement->setVoided(true);
-                $referencedStatement->save();
-            } else {
-                throw new \Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
-            }
+            $this->checkVoidedStatementNotVoiding($referencedStatement);
+            $referencedStatement->setVoided(true);
+            $referencedStatement->save();
         }
         if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
@@ -455,17 +442,12 @@ class Statement extends Base implements StatementInterface
             throw new Exception('The statementId parameter is missing!', Resource::STATUS_BAD_REQUEST);
         }
 
-        // Check statementId is acutally valid
-        if (!Uuid::isValid($parameters->get('statementId'))) {
-            throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateStatementId($parameters['statementId']);
 
         // Check statementId
         if (isset($statementObject['id'])) {
             // Check for match
-            if ($statementObject['id'] !== $parameters->get('statementId')) {
-                throw new \Exception('Statement ID query parameter doesn\'t match the given statement property', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->validateStatementIdMatch($statementObject['id'], $parameters['statementId']);
         } else {
             $body['id'] = $parameters->get('statementId');
         }
@@ -492,5 +474,43 @@ class Statement extends Base implements StatementInterface
     private function getAccessToken()
     {
         return $this->getSlim()->auth;
+    }
+
+    private function checkStatementMatches($statementOne, $statementTwo)
+    {
+        // Same - return 200
+        if ($statementOne == $statementTwo) {
+            // Mismatch - return 409 Conflict
+            throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
+        }
+    }
+
+    private function checkVoidedStatementNotVoiding($referencedStatement)
+    {
+        if ($referencedStatement->isVoiding()) {
+            throw new Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
+        }
+    }
+
+    private function validateStatementId($id)
+    {
+        // Check statementId is acutally valid
+        if (!Uuid::isValid($id)) {
+            throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateStatementIdMatch($statementIdOne, $statementIdTwo)
+    {
+        if ($statementIdOne !== $statementIdTwo) {
+            throw new Exception('Statement ID query parameter doesn\'t match the given statement property', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateCursorNotEmpty($cursor)
+    {
+        if ($cursor->count() === 0) {
+            throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
+        }
     }
 }

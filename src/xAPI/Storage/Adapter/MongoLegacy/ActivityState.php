@@ -31,13 +31,13 @@ use API\HttpException as Exception;
 
 class ActivityState extends Base implements ActivityStateInterface
 {
-    public function getActivityStatesFiltered($parameters)
+    public function getActivityStatesFiltered(\Traversable $parameters)
     {
         $collection = $this->getDocumentManager()->getCollection('activityStates');
         $cursor = $collection->find();
 
         // Single activity state
-        if ($parameters->has('stateId')) {
+        if (isset($parameters['stateId'])) {
             $cursor->where('stateId', $parameters->get('stateId'));
             $cursor->where('activityId', $parameters->get('activityId'));
             $agent = $parameters->get('agent');
@@ -47,13 +47,13 @@ class ActivityState extends Base implements ActivityStateInterface
             
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-            if ($parameters->has('registration')) {
+            if (isset($parameters['registration'])) {
                 $cursor->where('registration', $parameters->get('registration'));
             }
 
-            if ($cursor->count() === 0) {
-                throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
-            }
+            $cursorCount = $cursor->count();
+
+            $this->checkCursorCountValid($cursorCount);
         }
 
         $cursor->where('activityId', $parameters->get('activityId'));
@@ -109,21 +109,13 @@ class ActivityState extends Base implements ActivityStateInterface
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            if ($result->getContentType() !== 'application/json') {
-                throw new \Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            if ($contentType !== 'application/json') {
-                throw new \Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkDocumentType($result, $contentType);
+
             $decodedExisting = json_decode($result->getContent(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $decodedPosted = json_decode($stateObject, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON posted. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $stateObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $activityStateDocument = $result;
@@ -231,5 +223,29 @@ class ActivityState extends Base implements ActivityStateInterface
         }
 
         $collection->deleteDocuments($expression);
+    }
+
+    private function checkCursorCountValid($cursorCount)
+    {
+        if ($cursorCount === 0) {
+            throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
+        }
+    }
+
+    private function checkJsonDecodeErrors()
+    {
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function checkDocumentType($document, $contentType)
+    {
+        if ($document->getContentType() !== 'application/json') {
+            throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
+        if ($contentType !== 'application/json') {
+            throw new Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+        }
     }
 }

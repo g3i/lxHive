@@ -8,6 +8,10 @@ class ExtendedQuery implements ExtensionInterface
 {
     protected $container;
 
+    /**
+     * [__construct description]
+     * @param [type] $container [description]
+     */
     public function __construct($container)
     {
         $this->setContainer($container);

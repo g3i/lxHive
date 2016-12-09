@@ -29,15 +29,15 @@ use API\HttpException as Exception;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {
-    public function getActivityProfilesFiltered($parameters)
+    public function getActivityProfilesFiltered(\Traversable $parameters)
     {
         $collection = $this->getDocumentManager()->getCollection('activityProfiles');
         $cursor = $collection->find();
 
         // Single activity state
-        if ($parameters->has('profileId')) {
-            $cursor->where('profileId', $parameters->get('profileId'));
-            $cursor->where('activityId', $parameters->get('activityId'));
+        if (isset($parameters['profileId'])) {
+            $cursor->where('profileId', $parameters['profileId']);
+            $cursor->where('activityId', $parameters['activityId']);
 
             $cursorCount = $cursor->count();
             $this->validateCount($cursorCount);
@@ -48,10 +48,10 @@ class ActivityProfile extends Base implements ActivityProfileInterface
             return $this;
         }
 
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $cursor->where('activityId', $parameters['activityId']);
 
-        if ($parameters->has('since')) {
-            $since = Util\Date::dateStringToMongoDate($parameters->get('since'));
+        if (isset($parameters['since'])) {
+            $since = Util\Date::dateStringToMongoDate($parameters['since']);
             $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
@@ -67,33 +67,29 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
         // Check for existing state - then merge if applicable
         $cursor = $collection->find();
-        $cursor->where('profileId', $parameters->get('profileId'));
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $cursor->where('profileId', $parameters['profileId']);
+        $cursor->where('activityId', $parameters['activityId']);
 
         $result = $cursor->findOne();
 
-        $ifMatchHeader = $parameters->get('headers')['If-Match'];
-        $ifNoneMatchHeader = $parameters->get('headers')['If-None-Match'];
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
-        $contentType = $parameters->get('headers')['Content-Type'];
+        $contentType = $parameters['headers']['Content-Type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
         }
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            $this->checkDocumentType($result);
+            $this->checkDocumentType($result, $contentType);
 
             $decodedExisting = json_decode($result->getContent(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $decodedPosted = json_decode($profileObject, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception('Invalid JSON posted. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
+            $this->checkJsonDecodeErrors();
 
             $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
             $activityProfileDocument = $result;
@@ -103,8 +99,8 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         // Dates
         $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($parameters->get('activityId'));
-        $activityProfileDocument->setProfileId($parameters->get('profileId'));
+        $activityProfileDocument->setActivityId($parameters['activityId']);
+        $activityProfileDocument->setProfileId($parameters['profileId']);
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
         $activityProfileDocument->save();
@@ -123,13 +119,13 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
         // Check for existing state - then replace if applicable
         $cursor = $collection->find();
-        $cursor->where('profileId', $parameters->get('profileId'));
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $cursor->where('profileId', $parameters['profileId']);
+        $cursor->where('activityId', $parameters['activityId']);
 
         $result = $cursor->findOne();
 
-        $ifMatchHeader = $parameters->get('headers')['If-Match'];
-        $ifNoneMatchHeader = $parameters->get('headers')['If-None-Match'];
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
 
         $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
@@ -139,7 +135,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
             $activityProfileDocument = $result;
         }
 
-        $contentType = $parameters->get('headers')['Content-Type'];
+        $contentType = $parameters['headers']['Content-Type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
         }
@@ -148,8 +144,8 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         // Dates
         $currentDate = Util\Date::dateTimeExact();
         $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($parameters->get('activityId'));
-        $activityProfileDocument->setProfileId($parameters->get('profileId'));
+        $activityProfileDocument->setActivityId($parameters['activityId']);
+        $activityProfileDocument->setProfileId($parameters['profileId']);
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
         $activityProfileDocument->save();
@@ -165,21 +161,19 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $collection = $this->getDocumentManager()->getCollection('activityProfiles');
         $cursor = $collection->find();
 
-        $cursor->where('profileId', $parameters->get('profileId'));
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $cursor->where('profileId', $parameters['profileId']);
+        $cursor->where('activityId', $parameters['activityId']);
 
         $result = $cursor->findOne();
 
         $cursorCount = $cursor->count();
-        
-        if (!$result) {
-            throw new Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
-        }
 
-        $ifMatchHeader = $parameters->get('headers')['If-Match'];
-        $ifNoneMatchHeader = $parameters->get('headers')['If-None-Match'];
+        $this->checkCursorCountValid($cursorCount);
 
-        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
+        $ifMatchHeader = $parameters['headers']['If-Match'];
+        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+
+        $this->validateMatchHeaders($ifMatchH->geader, $ifNoneMatchHeader, $result);
 
         // Add to log
         $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
@@ -212,12 +206,12 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         }
     }
 
-    private function checkDocumentType($document)
+    private function checkDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
             throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
         }
-        if ($document !== 'application/json') {
+        if ($contentType !== 'application/json') {
             throw new Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
         }
     }
@@ -226,6 +220,13 @@ class ActivityProfile extends Base implements ActivityProfileInterface
     {
         if ($cursorCount === 0) {
             throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
+        }
+    }
+
+    private function checkJsonDecodeErrors()
+    {
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
         }
     }
 

@@ -67,17 +67,11 @@ class OAuth extends Base implements OAuthInterface
         $cursor->where('token', $accessToken);
         $accessTokenDocument = $cursor->current();
 
-        if ($accessTokenDocument === null) {
-            throw new \Exception('Invalid access token specified.', Resource::STATUS_FORBIDDEN);
-        }
+        $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
-        if ($expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
-            }
-        }
+        $this->validateExpiresAt($expiresAt);
 
         return $accessTokenDocument;
     }
@@ -176,26 +170,50 @@ class OAuth extends Base implements OAuthInterface
         $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
         $cursor = $collection->find();
 
-        $cursor->where('code', $params->get('code'));
+        $cursor->where('code', $params['code']);
         $tokenDocument = $cursor->current();
 
-        if (null === $tokenDocument) {
-            throw new \Exception('Invalid code specified!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateAccessTokenNotEmpty($tokenDocument);
 
         // TODO: This will be removed soon
         $clientDocument = $tokenDocument->client;
 
-        if ($clientDocument->getClientId() !== $params->get('client_id') || $clientDocument->getSecret() !== $params->get('client_secret')) {
-            throw new \Exception('Invalid client_id/client_secret combination!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateClientSecret($params, $clientDocument);
 
-        if ($params->get('redirect_uri') !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateRedirectUri($params, $clientDocument);
 
         //Remove one-time code
         $tokenDocument->setCode(false);
         $tokenDocument->save();
+    }
+
+    private function validateExpiresAt($expiresAt)
+    {
+        if ($expiresAt !== null) {
+            if ($expiresAt->sec <= time()) {
+                throw new Exception('Expired token.', Resource::STATUS_FORBIDDEN);
+            }
+        }
+    }
+
+    private function validateAccessTokenNotEmpty($accessToken)
+    {
+        if ($accessToken === null) {
+            throw new Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
+        }
+    }
+
+    private function validateClientSecret($params, $clientDocument)
+    {
+        if ($clientDocument->getClientId() !== $params['client_id'] || $clientDocument->getSecret() !== $params['client_secret']) {
+            throw new Exception('Invalid client_id/client_secret combination!', Resource::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateRedirectUri($params, $clientDocument)
+    {
+        if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
+            throw new Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
+        }
     }
 }
