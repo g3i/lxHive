@@ -32,17 +32,16 @@ use Slim\Slim;
 class Command extends SymfonyCommand
 {
     /**
-     * @var \Slim\Slim
+     * @var $container
      */
-    private $slim;
+    private $container;
 
     /**
      * Construct.
      */
-    public function __construct()
+    public function __construct($container)
     {
         parent::__construct();
-        $this->slim = Slim::getInstance();
 
         $this->init();
     }
@@ -57,8 +56,8 @@ class Command extends SymfonyCommand
     /**
      * @return \Slim\Slim
      */
-    public function getSlim()
+    public function getContainer()
     {
-        return $this->slim;
+        return $this->container;
     }
 }

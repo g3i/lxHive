@@ -24,17 +24,26 @@
 
 namespace API\Admin;
 
-class Setup extends Base
-{
-    private $configDir;
+abstract class Base
+{	
+	private $container; 
 
+	// Bootstrapped container
     public function __construct($container)
     {
-        parent::__construct($container);
-
-        $this->configDir = __DIR__.'/../Config';
+    	$this->container = $container;
     }
-    
+
+    /**
+     * Gets the value of container.
+     *
+     * @return mixed
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
     /**
      * checks if a yaml config file exists already in /src/xAPI/Config/.
      *
@@ -71,33 +80,6 @@ class Setup extends Base
         $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
         if (false === file_put_contents($configYML, $ymlData)) {
             throw new \Exception('Error rwriting '.__DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
-        }
-    }
-
-    public function testDbConnection($uri)
-    {
-        $connectionSuccess = false;
-        while (!$connectionSuccess) {
-            $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
-            $mongoHostname = $helper->ask($input, $output, $question);
-
-            $client = new Client($mongoHostname);
-            try {
-                $mongoVersion = $client->getDbVersion();
-                $output->writeln('Connection successful, MongoDB version '.$mongoVersion.'.');
-                $connectionSuccess = true;
-            } catch (\MongoConnectionException $e) {
-                $output->writeln('Connection unsuccessful, please try again.');
-            }
-        }
-    }
-
-    public function initializeAuthScopes()
-    {
-        $oAuthService = new OAuthService($this->getContainer());
-
-        foreach ($this->getContainer()->config('xAPI')['supported_auth_scopes'] as $authScope) {
-            $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }
 }

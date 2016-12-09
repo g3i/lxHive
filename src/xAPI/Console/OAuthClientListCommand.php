@@ -27,10 +27,25 @@ namespace API\Console;
 use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use API\Service\Auth\OAuth as OAuthService;
+use API\Admin\Auth;
 
 class OAuthClientListCommand extends Command
 {
+    /**
+     * Auth Admin class
+     * @var API\Admin\Auth
+     */
+    private $authAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->authAdmin = new Auth($container);
+    }
+
     protected function configure()
     {
         $this
@@ -41,19 +56,21 @@ class OAuthClientListCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getSlim());
-
-        $oAuthService->fetchClients();
-
-        $textArray = [];
-        foreach ($oAuthService->getCursor() as $document) {
-            $textArray[] = $document->jsonSerialize();
-        }
-
+        $textArray = $this->getAuthAdmin()->listOAuthClients();
         $text = json_encode($textArray, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Clients successfully fetched!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+    }
+
+    /**
+     * Gets the Auth Admin class.
+     *
+     * @return API\Admin\Auth
+     */
+    public function getAuthAdmin()
+    {
+        return $this->authAdmin;
     }
 }

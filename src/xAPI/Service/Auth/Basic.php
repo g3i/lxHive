@@ -55,9 +55,9 @@ class Basic extends Service implements AuthInterface
      */
     protected $single = false;
 
-    public function addToken($name, $description, $expiresAt, $user, array $scopes = [])
+    public function addToken($name, $description, $expiresAt, $user, array $scopes = [], $key = null, $secret = null)
     {
-        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes);
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes, $key, $secret);
 
         $this->single = true;
         $this->setAccessTokens([$accessTokenDocument]);

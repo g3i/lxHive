@@ -30,7 +30,7 @@ use API\HttpException as Exception;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {
-    public function storeToken($name, $description, $expiresAt, $user, $scopes)
+    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key, $secret)
     {
         $collection = $this->getDocumentManager()->getCollection('basicTokens');
 
@@ -51,9 +51,19 @@ class BasicAuth extends Base implements BasicAuthInterface
             $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
         }
 
-        //Generate token
-        $accessTokenDocument->setKey(\API\Util\OAuth::generateToken());
-        $accessTokenDocument->setSecret(\API\Util\OAuth::generateToken());
+        if (null !== $key) {
+            $accessTokenDocument->setKey($key);
+        } else {
+            //Generate token
+            $accessTokenDocument->setKey(\API\Util\OAuth::generateToken());
+        }
+
+        if (null !== $secret) {
+            $accessTokenDocument->setSecret($secret);
+        } else {
+            //Generate token
+            $accessTokenDocument->setSecret(\API\Util\OAuth::generateToken());
+        }
 
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));

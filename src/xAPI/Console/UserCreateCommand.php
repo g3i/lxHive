@@ -31,10 +31,25 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use API\Service\User as UserService;
+use API\Admin\User as UserAdministration;
 
 class UserCreateCommand extends Command
 {
+    /**
+     * User Admin class
+     * @var API\Admin\User
+     */
+    private $userAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->userAdmin = new UserAdministration($container);
+    }
+
     protected function configure()
     {
         $this
@@ -52,8 +67,6 @@ class UserCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $userService = new UserService($this->getSlim());
-
         $helper = $this->getHelper('question');
 
         if (null === $input->getOption('email')) {
@@ -70,11 +83,7 @@ class UserCreateCommand extends Command
             $password = $input->getOption('password');
         }
 
-        $userService->fetchAvailablePermissions();
-        $permissionsDictionary = [];
-        foreach ($userService->getCursor() as $permission) {
-            $permissionsDictionary[$permission->getName()] = $permission;
-        }
+        $permissionsDictionary = $this->getUserAdmin()->fetchAvailablePermissions();
 
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
@@ -94,7 +103,7 @@ class UserCreateCommand extends Command
             $selectedPermissions[] = $permissionsDictionary[$selectedPermissionName];
         }
 
-        $user = $userService->addUser($email, $password, $selectedPermissions);
+        $user = $this->getUserAdmin()->addUser($email, $password, $selectedPermissions);
         $text = json_encode($user, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>User successfully created!</info>');

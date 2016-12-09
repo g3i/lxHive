@@ -31,11 +31,33 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use API\Service\Auth\Basic as BasicAuthService;
-use API\Service\User as UserService;
+use API\Admin\Auth;
+use API\Admin\User;
 
 class BasicTokenCreateCommand extends Command
 {
+    /**
+     * Auth Admin class
+     * @var API\Admin\Auth
+     */
+    private $authAdmin;
+
+    /**
+     * User Admin class
+     * @var API\Admin\User
+     */
+    private $userAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->authAdmin = new Auth($container);
+        $this->userAdmin = new User($container);
+    }
+
     protected function configure()
     {
         $this
@@ -57,7 +79,7 @@ class BasicTokenCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $basicAuthService = new BasicAuthService($this->getSlim());
+        $basicAuthService = new BasicAuthService($this->getContainer());
 
         if (null === $input->getOption('name')) {
             $helper = $this->getHelper('question');
@@ -81,12 +103,7 @@ class BasicTokenCreateCommand extends Command
             $expiresAt = $input->getOption('expiration');
         }
 
-        $userService = new UserService($this->getSlim());
-        $userService->fetchAll();
-        $users = [];
-        foreach ($userService->getCursor() as $user) {
-            $users[$user->getEmail()] = $user;
-        }
+        $users = $this->getUserAdmin()->fetchAllUserEmails();
 
         if (null === $input->getOption('email')) {
             $question = new Question('Please enter enter the e-mail of the associated user: ', '');
@@ -101,11 +118,7 @@ class BasicTokenCreateCommand extends Command
             $user = $users[$email];
         }
 
-        $userService->fetchAvailablePermissions();
-        $scopesDictionary = [];
-        foreach ($userService->getCursor() as $scope) {
-            $scopesDictionary[$scope->getName()] = $scope;
-        }
+        $scopesDictionary = $this->getUserAdmin()->fetchAvailablePermissions();
 
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
@@ -130,22 +143,45 @@ class BasicTokenCreateCommand extends Command
             $selectedScopes[] = $scopesDictionary[$selectedScopeName];
         }
 
-        $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes);
-
         if (null !== $input->getOption('key')) {
-            $token->setKey($input->getOption('key'));
-            $token->save();
+            $key = $input->getOption('key');
+        } else {
+            $key = null;
         }
 
         if (null !== $input->getOption('secret')) {
-            $token->setSecret($input->getOption('secret'));
-            $token->save();
+            $secret = $input->getOption('secret');
+        } else {
+            $secret = null;
         }
 
+        $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+        
         $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
+
+    /**
+     * Gets the Auth Admin class.
+     *
+     * @return API\Admin\Auth
+     */
+    public function getAuthAdmin()
+    {
+        return $this->authAdmin;
+    }
+
+    /**
+     * Gets the User Admin class.
+     *
+     * @return API\Admin\User
+     */
+    public function getUserAdmin()
+    {
+        return $this->userAdmin;
+    }
+    
 }

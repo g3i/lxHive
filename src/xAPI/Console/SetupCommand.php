@@ -28,28 +28,30 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Yaml\Yaml;
-use Sokil\Mongo\Client;
+use API\Admin\Setup;
 
 class SetupDbCommand extends Command
 {
-    //@TODO: such data and the yaml methods need to be sourced out into Config and Admi API's
-    private $configDir;
+    /**
+     * Setup class
+     * @var API\Admin\Setup
+     */
+    private $setup;
 
     /**
      * Construct.
      */
-    public function __construct()
+    public function __construct($container)
     {
-        $this->configDir = __DIR__.'/../Config';
-        parent::__construct();
+        parent::__construct($container);
+        $this->setup = new Setup($container);
     }
 
     protected function configure()
     {
         $this
-            ->setName('setup:db')
-            ->setDescription('Sets up the MongoDB database')
+            ->setName('setup')
+            ->setDescription('Sets up lxHive')
         ;
     }
 
@@ -57,9 +59,8 @@ class SetupDbCommand extends Command
     {
         $output->writeln('<info>Welcome to the setup of lxHive!</info>');
 
-        if ($this->checkYaml('Config.yml')) {
+        if ($this->getSetup()->checkYaml('Config.yml')) {
             $output->writeln('<error>A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.</error>');
-
             return;
         }
 
@@ -72,12 +73,8 @@ class SetupDbCommand extends Command
             $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
             $mongoHostname = $helper->ask($input, $output, $question);
 
-            $client = new Client($mongoHostname);
-            try {
-                $mongoVersion = $client->getDbVersion();
-                $output->writeln('Connection successful, MongoDB version '.$mongoVersion.'.');
-                $connectionSuccess = true;
-            } catch (\MongoConnectionException $e) {
+            $connectionSuccess = $this->getSetup()->testDbConnection($mongoHostname);
+            if (!$connectionSuccess) {
                 $output->writeln('Connection unsuccessful, please try again.');
             }
         }
@@ -86,55 +83,32 @@ class SetupDbCommand extends Command
         $mongoDatabase = $helper->ask($input, $output, $question);
 
         $mergeConfig = ['name' => $name, 'database' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]];
-        $this->installYaml('Config.yml', $mergeConfig);
+        $this->getSetup()->installYaml('Config.yml', $mergeConfig);
 
-        if (!$this->checkYaml('Config.production.yml')) {
-            $this->installYaml('Config.production.yml');
+        if (!$this->getSetup()->checkYaml('Config.production.yml')) {
+            $this->getSetup()->installYaml('Config.production.yml');
         }
-        if (!$this->checkYaml('Config.development.yml')) {
-            $this->installYaml('Config.development.yml');
+        if (!$this->getSetup()->checkYaml('Config.development.yml')) {
+            $this->getSetup()->installYaml('Config.development.yml');
         }
+
+        $output->writeln('<info>Setting up default OAuth scopes...</info>');
+
+        $this->getSetup()->initializeAuthScopes();
+
+        $output->writeln('<info>OAuth scopes configured!</info>');
 
         $output->writeln('<info>Configuration saved!</info>');
         $output->writeln('<info>DB setup complete!</info>');
     }
 
     /**
-     * checks if a yaml config file exists already in /src/xAPI/Config/.
+     * Gets the value of setup.
      *
-     * @param string $configYML yaml file
-     *
-     * @return bool
+     * @return mixed
      */
-    public function checkYaml($configYML)
+    public function getSetup()
     {
-        return file_exists($configYML = $this->configDir.'/'.$configYML);
-    }
-
-    /**
-     * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
-     *
-     * @param string $yaml      yaml file to be created from template
-     * @param array  $mergeData associative array of config data to be merged in to the new config file
-     *
-     * @throws \Exception
-     */
-    public function installYaml($yml, array $mergeData = [])
-    {
-        $configYML = $this->configDir.'/'.$yml;
-        $templateYML = $this->configDir.'/Templates/'.$yml;
-
-        $template = file_get_contents($templateYML);
-        if (false === $template) {
-            throw new \Exception('Error reading file `'.$templateYML.'` Make sure the file exists and is readable.');
-        }
-        $data = Yaml::parse($template, true);// exceptionOnInvalidType
-        if (!empty($mergeData)) {
-            $data += $mergeData;
-        }
-        $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
-        if (false === file_put_contents($configYML, $ymlData)) {
-            throw new \Exception('Error rwriting '.__DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
-        }
+        return $this->setup;
     }
 }

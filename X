@@ -53,25 +53,31 @@ use API\Console\BasicTokenExpireCommand;
 use API\Console\OAuthClientCreateCommand;
 use API\Console\OAuthClientListCommand;
 use API\Console\AuthScopeCreateCommand;
-use API\Console\SetupDbCommand;
+use API\Console\SetupCommand;
 use API\Console\SetupOAuthCommand;
+// Sokil's Migrator will be removed after the MongoLegacy driver is removed
+// TODO: Find a good library that implements migrations (up, down, current status, etc.)
 use Sokil\Mongo\Migrator\Console\Command\Create as MigrationCreateCommand;
 use Sokil\Mongo\Migrator\Console\Command\Init as MigrationInitCommand;
 use Sokil\Mongo\Migrator\Console\Command\Migrate as MigrationMigrateCommand;
 use Sokil\Mongo\Migrator\Console\Command\Rollback as MigrationRollbackCommand;
 use Sokil\Mongo\Migrator\Console\Command\Status as MigrationStatusCommand;
+use Slim\Slim;
+
+// Future bootstrapper
+//$container = API\Bootstrap::bootStrapCli();
+$container = Slim::getInstance();
 
 $application = new Application();
-$application->add(new UserCreateCommand());
-$application->add(new BasicTokenListCommand());
-$application->add(new BasicTokenDeleteCommand());
-$application->add(new BasicTokenExpireCommand());
-$application->add(new BasicTokenCreateCommand());
-$application->add(new OAuthClientCreateCommand());
-$application->add(new OAuthClientListCommand());
-$application->add(new AuthScopeCreateCommand());
-$application->add(new SetupDbCommand());
-$application->add(new SetupOAuthCommand());
+$application->add(new UserCreateCommand($container));
+$application->add(new BasicTokenListCommand($container));
+$application->add(new BasicTokenDeleteCommand($container));
+$application->add(new BasicTokenExpireCommand($container));
+$application->add(new BasicTokenCreateCommand($container));
+$application->add(new OAuthClientCreateCommand($container));
+$application->add(new OAuthClientListCommand($container));
+$application->add(new AuthScopeCreateCommand($container));
+$application->add(new SetupCommand($container));
 $migrationCreateCommand = new MigrationCreateCommand();
 $migrationCreateCommand->setName('db:migration:create');
 $migrationInitCommand = new MigrationInitCommand();

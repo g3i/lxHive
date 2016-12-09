@@ -32,6 +32,21 @@ use API\Service\Auth\OAuth as OAuthService;
 
 class OAuthClientCreateCommand extends Command
 {
+    /**
+     * Auth Admin class
+     * @var API\Admin\Auth
+     */
+    private $authAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->authAdmin = new Auth($container);
+    }
+
     protected function configure()
     {
         $this
@@ -42,7 +57,7 @@ class OAuthClientCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getSlim());
+        $oAuthService = new OAuthService($this->getContainer());
 
         $helper = $this->getHelper('question');
 
@@ -55,11 +70,21 @@ class OAuthClientCreateCommand extends Command
         $question = new Question('Please enter a redirect URI: ');
         $redirectUri = $helper->ask($input, $output, $question);
 
-        $client = $oAuthService->addClient($name, $description, $redirectUri);
+        $client = $this->getAuthAdmin()->addOAuthClient($name, $description, $redirectUri);
         $text = json_encode($client, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>OAuth client successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+    }
+
+    /**
+     * Gets the Auth Admin class.
+     *
+     * @return API\Admin\Auth
+     */
+    public function getAuthAdmin()
+    {
+        return $this->authAdmin;
     }
 }
