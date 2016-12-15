@@ -36,8 +36,8 @@ class MongoLegacy implements AdapterInterface
     public function __construct($container)
     {
         $this->container = $container;
-        $client = new Client($this->getSlim()->config('storage')['MongoLegacy']['host_uri']);
-        $client->useDatabase($this->getSlim()->config('storage')['MongoLegacy']['db_name']);
+        $client = new Client($this->getContainer()->config('storage')['MongoLegacy']['host_uri']);
+        $client->useDatabase($this->getContainer()->config('storage')['MongoLegacy']['db_name']);
         $this->client = $client;
     }
 

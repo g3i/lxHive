@@ -284,7 +284,7 @@ class Statement extends Base implements StatementInterface
             $cursor->whereLessOrEqual('_id', $id);
         }
 
-        $statementResult->setRequestedFormat($this->getSlim()->config('xAPI')['default_statement_get_format']);
+        $statementResult->setRequestedFormat($this->getContainer()->config('xAPI')['default_statement_get_format']);
         if ($parameters->has('format')) {
             $statementResult->setRequestedFormat($parameters->get('format'));
         }
@@ -301,10 +301,10 @@ class Statement extends Base implements StatementInterface
             }
         }
 
-        if ($parameters->has('limit') && $parameters->get('limit') < $this->getSlim()->config('xAPI')['statement_get_limit'] && $parameters->get('limit') > 0) {
+        if ($parameters->has('limit') && $parameters->get('limit') < $this->getContainer()->config('xAPI')['statement_get_limit'] && $parameters->get('limit') > 0) {
             $limit = $parameters->get('limit');
         } else {
-            $limit = $this->getSlim()->config('xAPI')['statement_get_limit'];
+            $limit = $this->getContainer()->config('xAPI')['statement_get_limit'];
         }
 
         $cursor->limit($limit);
@@ -340,7 +340,7 @@ class Statement extends Base implements StatementInterface
         // TODO: This should be in Activity storage manager!
         $activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getSlim()->url->getBaseUrl().$this->getSlim()->config('filesystem')['exposed_url'];
+        $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()->config('filesystem')['exposed_url'];
 
         if (isset($statementObject['id'])) {
             $cursor = $collection->find();
@@ -400,7 +400,7 @@ class Statement extends Base implements StatementInterface
         $statementDocument->save();
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('statements', $statementDocument)->save();
+        $this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
 
         // $collection->insertMultiple($statements); // Batch operation is much faster ~600%
         // However, because we add every single statement to the access log, we can't use it
@@ -473,7 +473,7 @@ class Statement extends Base implements StatementInterface
      */
     private function getAccessToken()
     {
-        return $this->getSlim()->auth;
+        return $this->getContainer()->auth;
     }
 
     private function validateStatementMatches($statementOne, $statementTwo)

@@ -40,7 +40,7 @@ class State extends Resource
      */
     public function init()
     {
-        $this->activityStateService = new ActivityStateService($this->getSlim());
+        $this->activityStateService = new ActivityStateService($this->getContainer());
     }
 
     /**
@@ -48,16 +48,14 @@ class State extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->activityStateService->activityStateGet($request);
+        $this->activityStateService->activityStateGet();
 
         // Render them
         $view = new ActivityStateView(['service' => $this->activityStateService]);
@@ -73,17 +71,15 @@ class State extends Resource
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStatePut($request);
+        $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -91,17 +87,15 @@ class State extends Resource
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStatePost($request);
+        $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -109,17 +103,15 @@ class State extends Resource
 
     public function delete()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStateDelete($request);
+        $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -128,7 +120,7 @@ class State extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
         Resource::response(Resource::STATUS_OK);
     }
 

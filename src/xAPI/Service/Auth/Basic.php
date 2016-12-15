@@ -206,7 +206,7 @@ class Basic extends Service implements AuthInterface
         }
 
         // This is ugly, remove this!
-        $userService = new UserService($this->getSlim());
+        $userService = new UserService($this->getContainer());
         $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
 
         $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);

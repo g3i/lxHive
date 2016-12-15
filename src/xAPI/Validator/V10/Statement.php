@@ -28,12 +28,6 @@ use API\Validator;
 
 class Statement extends Validator
 {
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     protected function validateBySchemaFragment($data, $fragment, $debug = false)
     {
         $fragment = ($fragment) ? '#'.$fragment : '';
@@ -42,9 +36,9 @@ class Statement extends Validator
     }
 
     // Handles the validation of GET /statements
-    public function validateGetRequest($request)
+    public function validateGetRequest()
     {
-        $data = $request->get();
+        $data = $this->getContainer()['parser']->getData()->getParameters();
 
         foreach ($data as $key => $value) {
             $decodedValue = json_decode($value);
@@ -66,9 +60,7 @@ class Statement extends Validator
     // POST-ing a statement validation
     public function validatePostRequest($request)
     {
-        // Then do specific validation
-        $data = $request->getBody();
-        $data = json_decode($data);
+        $data = $this->getContainer()['parser']->getData()->getPayload();
 
         $validator = $this->validateBySchemaFragment($data, 'postBody', true);
         if (!$validator->isValid()) {

@@ -46,8 +46,8 @@ class Statements extends Resource
      */
     public function init()
     {
-        $this->statementService = new StatementService($this->getSlim());
-        $this->statementValidator= new StatementValidator();
+        $this->statementService = new StatementService($this->getContainer());
+        $this->statementValidator= new StatementValidator($this->getContainer());
     }
 
     /**
@@ -55,17 +55,15 @@ class Statements extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/read');
+        $this->getContainer()->auth->checkPermission('statements/read');
 
         // Do the validation
-        $this->statementValidator->validateRequest($request);
-        $this->statementValidator->validateGetRequest($request);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validateGetRequest();
 
-        // Load the statements - this needs to change, drastically, as it's garbage
-        $this->statementService->statementGet($request);
+        // Load the statements
+        $this->statementService->statementGet();
 
         // Render them
         $view = new StatementView(['service' => $this->statementService]);
@@ -76,67 +74,47 @@ class Statements extends Resource
             $view = $view->renderGet();
         }
 
-        // Multipart responses are intentionally disabled for now
-        //if (null === $attachments) {
-            $this->setHeaders();
         Resource::jsonResponse(Resource::STATUS_OK, $view);
-        //} else {
-        //    $this->setHeaders();
-        //    Resource::multipartResponse(Resource::STATUS_OK, $view, $attachments);
-        //}
     }
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/write');
+        $this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation
-        $this->statementValidator->validateRequest($request);
-        $this->statementValidator->validatePutRequest($request);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePutRequest();
 
         // Save the statements
-        $this->statementService->statementPut($request);
+        $this->statementService->statementPut();
 
-        //Always an empty response, unless there was an Exception
-        $this->setHeaders();
+        // Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/write');
+        $this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation and multipart splitting
-        $this->statementValidator->validateRequest($request);
-
-        if ($request->isMultipart()) {
-            $jsonRequest = $this->extractJsonRequestFromMultipart($request);
-        } else {
-            $jsonRequest = $request;
-        }
-
-        $this->statementValidator->validatePostRequest($jsonRequest);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePostRequest();
 
         // Save the statements
-        $this->statementService->statementPost($request);
+        $this->statementService->statementPost();
 
         $view = new StatementView(['service' => $this->statementService]);
         $view = $view->renderPost();
 
-        $this->setHeaders();
         Resource::jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
         Resource::response(Resource::STATUS_OK);
     }
 
@@ -191,12 +169,5 @@ class Statements extends Resource
         array_shift($requests);
 
         return $requests;
-    }
-
-    /**
-     * Sets specific headers for this request.
-     */
-    protected function setHeaders()
-    {
     }
 }

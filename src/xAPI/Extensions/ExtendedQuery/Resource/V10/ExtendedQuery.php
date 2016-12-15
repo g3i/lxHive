@@ -37,7 +37,7 @@ class ExtendedQuery extends Resource
 
     public function init()
     {
-        $this->extendedStatementService = new ExtendedStatementService($this->getSlim());
+        $this->extendedStatementService = new ExtendedStatementService($this->getContainer());
     }
 
     /**
@@ -45,10 +45,10 @@ class ExtendedQuery extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
+        $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/querybuilder');
+        $this->getContainer()->auth->checkPermission('statements/querybuilder');
 
         $this->getExtendedStatementService()->statementGet($request);
 
@@ -65,10 +65,10 @@ class ExtendedQuery extends Resource
      */
     public function post()
     {
-        $request = $this->getSlim()->request();
+        $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/querybuilder');
+        $this->getContainer()->auth->checkPermission('statements/querybuilder');
 
         // Load the statements - this needs to change, drastically, as it's garbage
         $this->getExtendedStatementService()->statementPost($request);
@@ -84,7 +84,7 @@ class ExtendedQuery extends Resource
     public function options()
     {
         // Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'HEAD, GET, POST, OPTIONS');
+        $this->getContainer()->response->headers->set('Allow', 'HEAD, GET, POST, OPTIONS');
         Resource::response(Resource::STATUS_OK);
     }
 

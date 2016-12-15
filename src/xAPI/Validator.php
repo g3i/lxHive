@@ -38,11 +38,15 @@ abstract class Validator
     protected $lastValidator = null;
     protected $lastSchema = null;
 
+    protected $container;
+
     /**
      * Constructor, creates and caches a  instance
      */
-    public function __construct()
+    public function __construct($container)
     {
+        $this->container = $container;
+
         if (!self::$schemaStorage) {
             self::$schemaStorage = new JsonSchema\SchemaStorage();
         }
@@ -61,7 +65,7 @@ abstract class Validator
     public function validateSchema($data, $uri, $debug = false)
     {
         $schema = self::$schemaStorage->getSchema($uri);
-        $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage));
+        $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage, null, Constraint::CHECK_MODE_TYPE_CAST));
         $validator->check($data, $schema);
 
         if ($debug) {
@@ -138,5 +142,29 @@ abstract class Validator
             }
         }
         throw new Exception($message, Resource::STATUS_BAD_REQUEST, $errors);
+    }
+
+    /**
+     * Gets the value of container.
+     *
+     * @return mixed
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * Sets the value of container.
+     *
+     * @param mixed $container the container
+     *
+     * @return self
+     */
+    protected function setContainer($container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }

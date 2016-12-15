@@ -248,6 +248,14 @@ abstract class Resource
     /**
      * @return \Slim\Slim
      */
+    public function getContainer()
+    {
+        return $this->slim;
+    }
+
+    /**
+     * @return \Slim\Slim
+     */
     public function getSlim()
     {
         return $this->slim;

@@ -92,10 +92,10 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $this->descending = true;
         }
 
-        if (isset($parameters['limit']) && $parameters['limit'] < $this->getSlim()->config('xAPI')['statement_get_limit'] && $parameters['limit'] > 0) {
+        if (isset($parameters['limit']) && $parameters['limit'] < $this->getContainer()->config('xAPI')['statement_get_limit'] && $parameters['limit'] > 0) {
             $limit = $parameters['limit'];
         } else {
-            $limit = $this->getSlim()->config('xAPI')['statement_get_limit'];
+            $limit = $this->getContainer()->config('xAPI')['statement_get_limit'];
         }
 
         $cursor->limit($limit);

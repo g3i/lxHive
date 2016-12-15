@@ -32,7 +32,7 @@ class About extends Resource
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = $this->getSlim()->config('xAPI')['supported_versions'];
+        $versions = $this->getContainer()->config('xAPI')['supported_versions'];
 
         $view = new AboutView(['versions' => $versions]);
         $view = $view->render();
@@ -43,7 +43,7 @@ class About extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
+        $this->getContainer()->response->headers->set('Allow', 'GET');
         Resource::response(Resource::STATUS_OK);
     }
 }

@@ -49,4 +49,12 @@ abstract class View extends \Slim\Helper\Set
     {
         return $this->slim;
     }
+
+    /**
+     * @return \Slim\Slim
+     */
+    public function getContainer()
+    {
+        return $this->slim;
+    }
 }

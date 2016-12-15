@@ -34,6 +34,7 @@ use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
 use Slim\Views\Twig;
+use API\Parser\SlimRequest as SlimRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 
@@ -141,7 +142,7 @@ $app->error(function (\Exception $e) {
     if ($code < 100) {
         $code = 500;
     }
-    if(method_exists($e, 'getData')){
+    if (method_exists($e, 'getData')){
         $data = $e->getData();
     }
     Resource::error($code, $e->getMessage(), $data, $e->getTrace());
@@ -248,6 +249,12 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
         }
     });
 
+    // Parser
+    $app->container->singleton('parser', function () use ($app) {
+        $parser = new SlimRequestParser($app->request);
+        return $parser;
+    });
+
     // Request logging
     $app->container->singleton('requestLog', function () use ($app) {
         $logService = new LogService($app);
@@ -303,6 +310,7 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
 });
 
 // Start with routing - dynamic for now
+// TODO: Change to static routes with Slim3 - huge performance boost!
 
 // ./X @TODO: dedicated identifier for ./X, so phpUnit client passes
 // Note: commented out, until this identifier is added (otherwise X is unusable!)

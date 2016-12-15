@@ -39,11 +39,11 @@ class Base extends StorageBase
     {
         parent::__construct($container);
 
-        $client = new Client($this->getSlim()->config('storage')['MongoLegacy']['host_uri']);
+        $client = new Client($this->getContainer()->config('storage')['MongoLegacy']['host_uri']);
         $client->map([
-            $this->getSlim()->config('storage')['MongoLegacy']['db_name'] => '\API\Storage\Adapter\MongoLegacy\Collection',
+            $this->getContainer()->config('storage')['MongoLegacy']['db_name'] => '\API\Storage\Adapter\MongoLegacy\Collection',
         ]);
-        $client->useDatabase($this->getSlim()->config('storage')['MongoLegacy']['db_name']);
+        $client->useDatabase($this->getContainer()->config('storage')['MongoLegacy']['db_name']);
 
         $this->setDocumentManager($client);
     }

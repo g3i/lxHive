@@ -121,7 +121,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
+        $this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         return $agentProfileDocument;
     }
@@ -171,7 +171,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
+        $this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         return $agentProfileDocument;
     }
@@ -200,7 +200,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('agentProfiles', $result)->save();
+        $this->getContainer()->requestLog->addRelation('agentProfiles', $result)->save();
 
         $result->delete();
     }

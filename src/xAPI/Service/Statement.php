@@ -38,9 +38,9 @@ class Statement extends Service
      *
      * @return array An array of statement objects.
      */
-    public function statementGet($request)
+    public function statementGet()
     {
-        $parameters = new Set($request->get());
+        $parameters = $this->getContainer()->parser->getData()->getParameters();
 
         $statementResult = $this->getStorage()->getStatementStorage()->getStatementsFiltered($parameters);
 
@@ -52,41 +52,18 @@ class Statement extends Service
      *
      * @return array An array of statement documents or a single statement document.
      */
-    public function statementPost($request)
+    public function statementPost()
     {
-        // Check for multipart request
-        if ($request->isMultipart()) {
-            $jsonRequest = $request->parts()->get(0);
-        } else {
-            $jsonRequest = $request;
-        }
+        $this->validateJsonMediaType($this->getContainer()->parser->getData());
 
-        $this->validateJsonMediaType($jsonRequest);
+        if (count($this->getContainer()->parser->getParts()) > 0) {
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()->config('filesystem'));
 
-        // Validation has been completed already - everyhing is assumed to be valid
-        $body = $jsonRequest->getBody();
-        $body = json_decode($body, true);
-
-        // Some clients escape the JSON - handle them
-        if (is_string($body)) {
-            $body = json_decode($body, true);
-        }
-
-        // TODO: Separate this into some sort of parser for multipart!
-        // TODO2: Add the attachment service to the adapters!
-        // Save attachments - this could be in a queue perhaps...
-        if ($request->isMultipart()) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
-
-            $partCount = $request->parts()->count();
-
-            for ($i = 1; $i < $partCount; ++$i) {
-                $part = $request->parts()->get($i);
-
-                $attachmentBody = $part->getBody();
+            foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
+                $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
-                $contentEncoding = $part->headers('Content-Transfer-Encoding');
+                $contentEncoding = $attachment->getHeaders()['Content-Transfer-Encoding'];
 
                 if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
                     try {
@@ -96,14 +73,16 @@ class Statement extends Service
                     }
                 }
 
-                $hash = $part->headers('X-Experience-API-Hash');
-                $contentType = $part->headers('Content-Type');
+                $hash = $attachment->getHeaders()['X-Experience-API-Hash'];
+                $contentType = $part->getHeaders()['Content-Type'];
 
                 $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
         }
+
+        $body = $this->getContainer()->parser->getData()->getPayload();
 
         // Multiple statements
         if ($this->areMultipleStatements($body)) {
@@ -121,40 +100,18 @@ class Statement extends Service
      *
      * @return
      */
-    public function statementPut($request)
+    public function statementPut()
     {
-        // Check for multipart request
-        if ($request->isMultipart()) {
-            $jsonRequest = $request->parts()->get(0);
-        } else {
-            $jsonRequest = $request;
-        }
+        $this->validateJsonMediaType($this->getContainer()->parser->getData());
 
-        $this->validateJsonMediaType($jsonRequest);
+        if (count($this->getContainer()->parser->getParts()) > 0) {
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()->config('filesystem'));
 
-        // Validation has been completed already - everyhing is assumed to be valid
-        $body = $jsonRequest->getBody();
-        $body = json_decode($body, true);
-
-        // Some clients escape the JSON - handle them
-        if (is_string($body)) {
-            $body = json_decode($body, true);
-        }
-
-        // TODO: Separate this into some sort of parser for multipart!
-        // Save attachments - this could be in a queue perhaps...
-        if ($request->isMultipart()) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
-
-            $partCount = $request->parts()->count();
-
-            for ($i = 1; $i < $partCount; ++$i) {
-                $part = $request->parts()->get($i);
-
-                $attachmentBody = $part->getBody();
+            foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
+                $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
-                $contentEncoding = $part->headers('Content-Transfer-Encoding');
+                $contentEncoding = $attachment->getHeaders()['Content-Transfer-Encoding'];
 
                 if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
                     try {
@@ -164,8 +121,8 @@ class Statement extends Service
                     }
                 }
 
-                $hash = $part->headers('X-Experience-API-Hash');
-                $contentType = $part->headers('Content-Type');
+                $hash = $attachment->getHeaders()['X-Experience-API-Hash'];
+                $contentType = $part->getHeaders()['Content-Type'];
 
                 $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 
@@ -174,7 +131,8 @@ class Statement extends Service
         }
 
         // Single
-        $parameters = new Set($request->get());
+        $parameters = $this->getContainer()->parser->getData()->getParameters();
+        $body = $this->getContainer()->parser->getData()->getPayload();
 
         $statementResult = $this->getStorage()->getStatementStorage()->putStatement($parameters, $body);
 

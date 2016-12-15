@@ -51,7 +51,7 @@ class Attachment extends Service
      */
     public function fetchFileBySha2($sha2)
     {
-        $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
+        $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()->config('filesystem'));
         $contents = $fsAdapter->read($sha2);
 
         return $contents;

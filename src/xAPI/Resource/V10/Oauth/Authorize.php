@@ -47,48 +47,44 @@ class Authorize extends Resource
      */
     public function init()
     {
-        $this->oAuthService = new OAuthService($this->getSlim());
-        $this->userService = new UserService($this->getSlim());
+        $this->oAuthService = new OAuthService($this->getContainer());
+        $this->userService = new UserService($this->getContainer());
         OAuth::loadSession();
     }
 
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         if ($this->userService->loggedIn()) {
-            $this->oAuthService->authorizeGet($request);
+            $this->oAuthService->authorizeGet();
             // Authorization is always requested
             $view = new OAuthAuthorizeView(['service' => $this->oAuthService, 'userService' => $this->userService]);
             $view = $view->renderGet();
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             // Redirect to login
-            $redirectUrl = $this->getSlim()->url;
+            $redirectUrl = $this->getContainer()->url;
             $redirectUrl->getPath()->remove('authorize');
             $redirectUrl->getPath()->append('login');
-            $this->getSlim()->response->headers->set('Location', $redirectUrl);
+            $this->getContainer()->response->headers->set('Location', $redirectUrl);
             Resource::response(Resource::STATUS_FOUND);
         }
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         if ($this->userService->loggedIn()) {
             // Authorization is always requested
-            $this->oAuthService->authorizePost($request);
+            $this->oAuthService->authorizePost();
             $redirectUri = $this->oAuthService->getRedirectUri();
-            $this->getSlim()->response->headers->set('Location', $redirectUri);
+            $this->getContainer()->response->headers->set('Location', $redirectUri);
             Resource::response(Resource::STATUS_FOUND);
         } else {
             // Unauthorized
@@ -99,7 +95,7 @@ class Authorize extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
         Resource::response(Resource::STATUS_OK);
     }
 

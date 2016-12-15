@@ -48,7 +48,7 @@ class Statement extends Service
     {
         $storageClass = $this->resolveStorageClass();
         // TODO: In future getSlim will be getContainer, replace when applicable!
-        $extendedStatementStorage = new $storageClass($this->getSlim());
+        $extendedStatementStorage = new $storageClass($this->getContainer());
         $statementResult = $extendedStatementStorage->extendedQuery($parameters);
 
         return $statementResult;

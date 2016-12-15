@@ -106,7 +106,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+        $this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
     }
@@ -151,7 +151,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->save();
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+        $this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
     }
@@ -176,7 +176,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $this->validateMatchHeaders($ifMatchH->geader, $ifNoneMatchHeader, $result);
 
         // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
+        $this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
 
         $result->delete();
     }

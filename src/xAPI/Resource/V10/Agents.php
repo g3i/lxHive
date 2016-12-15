@@ -32,10 +32,10 @@ class Agents extends Resource
 {
     public function get()
     {
-        $request = $this->getSlim()->request();
+        $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // TODO: Validation.
 
@@ -54,7 +54,7 @@ class Agents extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
+        $this->getContainer()->response->headers->set('Allow', 'GET');
         Resource::response(Resource::STATUS_OK);
     }
 }

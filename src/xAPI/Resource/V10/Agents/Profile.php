@@ -40,7 +40,7 @@ class Profile extends Resource
      */
     public function init()
     {
-        $this->agentProfileService = new AgentProfileService($this->getSlim());
+        $this->agentProfileService = new AgentProfileService($this->getContainer());
     }
 
     /**
@@ -48,16 +48,14 @@ class Profile extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->agentProfileService->agentProfileGet($request);
+        $this->agentProfileService->agentProfileGet();
 
         // Render them
         $view = new AgentProfileView(['service' => $this->agentProfileService]);
@@ -73,17 +71,15 @@ class Profile extends Resource
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfilePut($request);
+        $this->agentProfileService->agentProfilePut();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -91,17 +87,15 @@ class Profile extends Resource
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfilePost($request);
+        $this->agentProfileService->agentProfilePost();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -109,17 +103,15 @@ class Profile extends Resource
 
     public function delete()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfileDelete($request);
+        $this->agentProfileService->agentProfileDelete();
 
         //Always an empty response, unless there was an Exception
         Resource::response(Resource::STATUS_NO_CONTENT);
@@ -128,7 +120,7 @@ class Profile extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
         Resource::response(Resource::STATUS_OK);
     }
 

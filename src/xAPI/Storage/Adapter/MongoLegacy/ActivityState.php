@@ -138,7 +138,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
         // TODO: Abstract this away somehow!
         // Add to log
-        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
+        $this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         return $activityStateDocument;
     }
@@ -194,7 +194,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
         // TODO: Abstract this away somehow!
         // Add to log
-        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
+        $this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         return $activityStateDocument;
     }

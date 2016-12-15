@@ -22,54 +22,53 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace API\Parser;
 
-abstract class Service
+use Psr\Http\Message\RequestInterface;
+
+class PsrRequest implements ParserInterface
 {
-    /**
-     * @var \Slim\Slim
-     */
-    private $slim;
+	// TODO: This class is for PSR-7 requests, this is being prepared for Slim3 switch!
+	protected $parameters;
+
+	protected $parts;
+
+	protected $payload; 
+
+	public function __construct(RequestInterface $request)
+	{
+		$this->parseRequest($request);
+	}
+
+	private function parseRequest()
+	{
+
+	}
 
     /**
-     * Constructor.
-     *
-     * @param \Slim\Slim $slim Slim framework
+     * Get the main part
+     * @return ParserResult an object or array, given the payload
      */
-    public function __construct($slim)
+    public function getData()
     {
-        $this->setSlim($slim);
+
     }
 
     /**
-     * @return \Sokil\Mongo\Client
+     * Get the additional parts
+     * @return \Traversable<ParserResult> an array of the parts
      */
-    public function getDocumentManager()
+    public function getAttachments()
     {
-        return $this->getContainer()->mongo;
+
     }
 
-    // In future this will be $container!
     /**
-     * @return \Slim\Slim
+     * Get the parts of the request
+     * @return \Traversable<ParserResult> an array of the parts
      */
-    public function getSlim()
+    public function getParts()
     {
-        return $this->slim;
-    }
 
-     // In future this will be $container!
-    /**
-     * @return \Slim\Slim
-     */
-    public function getContainer()
-    {
-        return $this->slim;
-    }
-
-    // Temporary solution while still on Slim 2 - DI injection will be used and whole Slim Pimple containers will be injected everywhere with Slim 3
-    public function getStorage()
-    {
-        return $this->getContainer()->storage;
     }
 }

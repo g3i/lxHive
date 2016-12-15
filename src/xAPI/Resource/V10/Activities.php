@@ -40,18 +40,16 @@ class Activities extends Resource
      */
     public function init()
     {
-        $this->activityService = new ActivityService($this->getSlim());
+        $this->activityService = new ActivityService($this->getContainer());
     }
 
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
-        $this->activityService->activityGet($request);
+        $this->activityService->activityGet();
 
         // Render them
         $view = new ActivityView(['service' => $this->activityService]);
@@ -63,7 +61,7 @@ class Activities extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
+        $this->getContainer()->response->headers->set('Allow', 'GET');
         Resource::response(Resource::STATUS_OK);
     }
 

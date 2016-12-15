@@ -40,15 +40,15 @@ class Attachments extends Resource
      */
     public function init()
     {
-        $this->attachmentService = new AttachmentService($this->getSlim());
+        $this->attachmentService = new AttachmentService($this->getContainer());
     }
 
     public function get()
     {
-        $request = $this->getSlim()->request();
+        $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('attachments');
+        $this->getContainer()->auth->checkPermission('attachments');
 
         $params = new Set($request->get());
         if (!$params->has('sha2')) {
@@ -64,7 +64,7 @@ class Attachments extends Resource
         if ($encoding !== 'binary') {
             $data = base64_encode($data);
         }
-        $this->getSlim()->response->headers->set('Content-Type', $metadata->getContentType());
+        $this->getContainer()->response->headers->set('Content-Type', $metadata->getContentType());
 
         Resource::response(Resource::STATUS_OK, $data);
     }
@@ -72,7 +72,7 @@ class Attachments extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
+        $this->getContainer()->response->headers->set('Allow', 'GET');
         Resource::response(Resource::STATUS_OK);
     }
 

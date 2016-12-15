@@ -40,18 +40,16 @@ class Token extends Resource
      */
     public function init()
     {
-        $this->oAuthService = new OAuthService($this->getSlim());
+        $this->oAuthService = new OAuthService($this->getContainer());
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->oAuthService->accessTokenPost($request);
+        $this->oAuthService->accessTokenPost();
         // Authorization is always requested
         $view = new AccessTokenView(['service' => $this->oAuthService]);
         $view = $view->renderGet();
@@ -61,7 +59,7 @@ class Token extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST');
+        $this->getContainer()->response->headers->set('Allow', 'POST');
         Resource::response(Resource::STATUS_OK);
     }
 

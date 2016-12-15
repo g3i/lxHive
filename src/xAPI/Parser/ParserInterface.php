@@ -22,33 +22,25 @@
  * file that was distributed with this source code.
  */
 
-namespace API\View\V10;
+namespace API\Parser;
 
-use API\View;
-
-class BaseDocument extends View
+interface ParserInterface
 {
-    public function renderGet()
-    {
-        $idArray = [];
+    /**
+     * Get the main part
+     * @return ParserResult an object or array, given the payload
+     */
+    public function getData();
 
-        $cursor = $this->service->getCursor();
+    /**
+     * Get the additional parts
+     * @return \Traversable<ParserResult> an array of the parts
+     */
+    public function getAttachments();  
 
-        foreach ($cursor as $document) {
-            $idArray[] = $document->getIdentifier();
-        }
-
-        return $idArray;
-    }
-
-    public function renderGetSingle()
-    {
-        $document = $this->service->getCursor()->current();
-        $content = $document->getContent();
-
-        $this->getContainer()->response->headers->set('ETag', '"'.$document->getHash().'"'); //Quotes required - RFC2616 3.11
-        $this->getContainer()->response->headers->set('Content-Type', $document->getContentType());
-
-        return $content;
-    }
+    /**
+     * Get the parts of the request
+     * @return \Traversable<ParserResult> an array of the parts
+     */
+    public function getParts();   
 }
