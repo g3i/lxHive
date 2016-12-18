@@ -41,9 +41,9 @@ class AgentProfile extends Base implements AgentProfileInterface
             $cursor->where('profileId', $parameters['profileId']);
             $agent = $parameters['agent'];
             $agent = json_decode($agent, true);
-            
+
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-            
+
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             $cursorCount = $cursor->count();
@@ -71,7 +71,7 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
@@ -130,7 +130,7 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $collection = $this->getDocumentManager()->getCollection('agentProfiles');
@@ -184,7 +184,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $cursor->where('profileId', $parameters['profileId']);
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
@@ -254,7 +254,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         }
     }
 
-     /**
+    /**
      * Trims quotes from the header.
      *
      * @param string $headerString Header

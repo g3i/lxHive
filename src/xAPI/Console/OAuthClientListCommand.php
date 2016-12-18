@@ -32,7 +32,8 @@ use API\Admin\Auth;
 class OAuthClientListCommand extends Command
 {
     /**
-     * Auth Admin class
+     * Auth Admin class.
+     *
      * @var API\Admin\Auth
      */
     private $authAdmin;

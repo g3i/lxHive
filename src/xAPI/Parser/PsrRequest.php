@@ -28,47 +28,46 @@ use Psr\Http\Message\RequestInterface;
 
 class PsrRequest implements ParserInterface
 {
-	// TODO: This class is for PSR-7 requests, this is being prepared for Slim3 switch!
-	protected $parameters;
+    // TODO: This class is for PSR-7 requests, this is being prepared for Slim3 switch!
+    protected $parameters;
 
-	protected $parts;
+    protected $parts;
 
-	protected $payload; 
+    protected $payload;
 
-	public function __construct(RequestInterface $request)
-	{
-		$this->parseRequest($request);
-	}
+    public function __construct(RequestInterface $request)
+    {
+        $this->parseRequest($request);
+    }
 
-	private function parseRequest()
-	{
-
-	}
+    private function parseRequest()
+    {
+    }
 
     /**
-     * Get the main part
+     * Get the main part.
+     *
      * @return ParserResult an object or array, given the payload
      */
     public function getData()
     {
-
     }
 
     /**
-     * Get the additional parts
+     * Get the additional parts.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
     public function getAttachments()
     {
-
     }
 
     /**
-     * Get the parts of the request
+     * Get the parts of the request.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
     public function getParts()
     {
-
     }
 }

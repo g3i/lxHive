@@ -33,7 +33,8 @@ use API\Service\Auth\OAuth as OAuthService;
 class OAuthClientCreateCommand extends Command
 {
     /**
-     * Auth Admin class
+     * Auth Admin class.
+     *
      * @var API\Admin\Auth
      */
     private $authAdmin;

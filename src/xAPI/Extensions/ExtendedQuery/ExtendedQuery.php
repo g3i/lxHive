@@ -9,7 +9,8 @@ class ExtendedQuery implements ExtensionInterface
     protected $container;
 
     /**
-     * [__construct description]
+     * [__construct description].
+     *
      * @param [type] $container [description]
      */
     public function __construct($container)
@@ -17,40 +18,42 @@ class ExtendedQuery implements ExtensionInterface
         $this->setContainer($container);
     }
 
-	/**
-     * Returns any event listeners that need to be added for this extension
+    /**
+     * Returns any event listeners that need to be added for this extension.
+     *
      * @return array Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
      */
     public function getEventListeners()
     {
-    	return [];
+        return [];
     }
 
     /**
-     * Returns any routes that need to be added for this extension
+     * Returns any routes that need to be added for this extension.
+     *
      * @return array Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
      */
     public function getRoutes()
     {
-    	return [
+        return [
             ['pattern' => '/plus/statements/find', 'callable' => 'handleGetRoute', 'methods' => ['GET', 'HEAD']],
             ['pattern' => '/plus/statements/find', 'callable' => 'handlePostRoute', 'methods' => ['POST']],
-            ['pattern' => '/plus/statements/find', 'callable' => 'handleOptionsRoute', 'methods' => ['OPTIONS']]
+            ['pattern' => '/plus/statements/find', 'callable' => 'handleOptionsRoute', 'methods' => ['OPTIONS']],
         ];
     }
 
     /**
-     * Returns any hooks that need to be added for this extension
+     * Returns any hooks that need to be added for this extension.
+     *
      * @return array Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
      */
     public function getHooks()
     {
-    	return [];
+        return [];
     }
 
     /**
-     * Called by extension initializer, does nothing
-     * @return null
+     * Called by extension initializer, does nothing.
      */
     public function install()
     {
@@ -59,26 +62,30 @@ class ExtendedQuery implements ExtensionInterface
     protected function getResource()
     {
         $versionString = $this->getContainer()->version->generateClassNamespace();
-        $resourceName = __NAMESPACE__.'\\Resource\\' . $versionString . '\\ExtendedQuery';
+        $resourceName = __NAMESPACE__.'\\Resource\\'.$versionString.'\\ExtendedQuery';
         $resource = new $resourceName();
+
         return $resource;
     }
 
     public function handleGetRoute()
     {
-    	$response = $this->getResource()->get();
-    	return $response;
+        $response = $this->getResource()->get();
+
+        return $response;
     }
 
     public function handlePostRoute()
     {
         $response = $this->getResource()->post();
+
         return $response;
     }
 
     public function handleOptionsRoute()
     {
         $response = $this->getResource()->options();
+
         return $response;
     }
 

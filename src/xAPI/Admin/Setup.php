@@ -34,7 +34,7 @@ class Setup extends Base
 
         $this->configDir = __DIR__.'/../Config';
     }
-    
+
     /**
      * checks if a yaml config file exists already in /src/xAPI/Config/.
      *
@@ -77,6 +77,7 @@ class Setup extends Base
     public function testDbConnection($uri)
     {
         $connectionTestResult = $this->getContainer()->getStorage()->testConnection($uri);
+
         return $connectionTestResult;
     }
 

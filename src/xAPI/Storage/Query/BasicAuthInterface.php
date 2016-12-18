@@ -27,14 +27,14 @@ namespace API\Storage\Query;
 interface BasicAuthInterface
 {
     public function storeToken($name, $description, $expiresAt, $user, $scopes);
-    
-	public function getToken($key, $secret);
-	    
-	public function deleteToken($clientId);
-	    
-	public function expireToken($clientId, $accessToken);
-	    
-	public function fetchTokens();
 
-	public function getScopeByName($name);
+    public function getToken($key, $secret);
+
+    public function deleteToken($clientId);
+
+    public function expireToken($clientId, $accessToken);
+
+    public function fetchTokens();
+
+    public function getScopeByName($name);
 }

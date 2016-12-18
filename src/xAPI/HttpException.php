@@ -25,17 +25,17 @@ namespace API;
 
 class HttpException extends \Exception
 {
-
     private $data = null;
 
     /**
-     * Prepares a json response exception
+     * Prepares a json response exception.
+     *
      * @see API/Resource::error()
      *
-     * @param string $message
-     * @param int $statusCode valid httpd status code
-     * @param array|object|null $data extra data to be included in json response
-     * @param \Exception $previous
+     * @param string            $message
+     * @param int               $statusCode valid httpd status code
+     * @param array|object|null $data       extra data to be included in json response
+     * @param \Exception        $previous
      *
      * @throws \Exception
      */
@@ -46,7 +46,7 @@ class HttpException extends \Exception
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return mixed $data
      */

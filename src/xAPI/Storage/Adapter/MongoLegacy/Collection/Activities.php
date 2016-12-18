@@ -30,6 +30,6 @@ class Activities extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Activity';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Activity';
     }
 }

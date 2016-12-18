@@ -27,20 +27,23 @@ namespace API\Parser;
 interface ParserInterface
 {
     /**
-     * Get the main part
+     * Get the main part.
+     *
      * @return ParserResult an object or array, given the payload
      */
     public function getData();
 
     /**
-     * Get the additional parts
+     * Get the additional parts.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
-    public function getAttachments();  
+    public function getAttachments();
 
     /**
-     * Get the parts of the request
+     * Get the parts of the request.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
-    public function getParts();   
+    public function getParts();
 }

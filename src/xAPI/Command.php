@@ -25,14 +25,13 @@
 namespace API;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Slim\Slim;
 
 // TODO - Derive Resource.php and Command.php from the same parent base class!!!
 
 class Command extends SymfonyCommand
 {
     /**
-     * @var $container
+     * @var
      */
     private $container;
 

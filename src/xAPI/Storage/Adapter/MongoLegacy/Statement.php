@@ -88,7 +88,7 @@ class Statement extends Base implements StatementInterface
             $agent = json_decode($agent, true);
 
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-            
+
             if ($parameters->has('related_agents') && $parameters->get('related_agents') === 'true') {
                 if ($uniqueIdentifier === 'account') {
                     $cursor->whereAnd(

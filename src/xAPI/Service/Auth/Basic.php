@@ -129,6 +129,7 @@ class Basic extends Service implements AuthInterface
     public function getScopeByName($name)
     {
         $scope = $this->getStorage()->getBasicAuthStorage()->getScopeByName($name);
+
         return $scope;
     }
 

@@ -42,9 +42,9 @@ class ActivityState extends Base implements ActivityStateInterface
             $cursor->where('activityId', $parameters->get('activityId'));
             $agent = $parameters->get('agent');
             $agent = json_decode($agent, true);
-            
+
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-            
+
             $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             if (isset($parameters['registration'])) {
@@ -59,7 +59,7 @@ class ActivityState extends Base implements ActivityStateInterface
         $cursor->where('activityId', $parameters->get('activityId'));
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
@@ -90,7 +90,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
@@ -156,7 +156,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
@@ -213,7 +213,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
-        
+
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);

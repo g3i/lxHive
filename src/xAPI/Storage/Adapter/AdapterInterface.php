@@ -27,42 +27,52 @@ namespace API\Storage\Adapter;
 interface AdapterInterface
 {
     /**
-     * Inserts the document into the specified collection
-     * @param  API\Document\DocumentInterface $document The document to be inserted
-     * @param  string $collection Name of the collection to insert to
+     * Inserts the document into the specified collection.
+     *
+     * @param API\Document\DocumentInterface $document   The document to be inserted
+     * @param string                         $collection Name of the collection to insert to
+     *
      * @return DocumentResult The result of this query
      */
     public function insert($document, $collection);
 
     /**
-     * Updates documents matching the filter
-     * @param  object|array $document The document to be inserted
-     * @param  array $query The query to update the documents
-     * @param  string $collection Name of collection
+     * Updates documents matching the filter.
+     *
+     * @param object|array $document   The document to be inserted
+     * @param array        $query      The query to update the documents
+     * @param string       $collection Name of collection
+     *
      * @return DocumentResult The result of this query
      */
     public function update($modifications, $query, $collection);
 
     /**
-     * Deletes documents
-     * @param  array $query The query that matches documents the need to be deleted
-     * @param  string $collection Name of collection
+     * Deletes documents.
+     *
+     * @param array  $query      The query that matches documents the need to be deleted
+     * @param string $collection Name of collection
+     *
      * @return DeletionResult Result of deletion
      */
     public function delete($query, $collection);
 
     /**
-     * Fetches documents
-     * @param  array $query The query to fetch the documents by
-     * @param  string $collection Name of collection
+     * Fetches documents.
+     *
+     * @param array  $query      The query to fetch the documents by
+     * @param string $collection Name of collection
+     *
      * @return DocumentResult Result of fetch
      */
-    public function get($query, $collection); 
+    public function get($query, $collection);
 
     /**
-     * Fetches documents
-     * @param  array $query The query to fetch the first document by
-     * @param  string $collection Name of collection
+     * Fetches documents.
+     *
+     * @param array  $query      The query to fetch the first document by
+     * @param string $collection Name of collection
+     *
      * @return DocumentResult Result of fetch
      */
     public function getOne($query, $collection);

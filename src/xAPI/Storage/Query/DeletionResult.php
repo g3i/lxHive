@@ -27,7 +27,8 @@ namespace API\Storage\Query;
 class DeletionResult
 {
     /**
-     * Whether the deletion was successful or not
+     * Whether the deletion was successful or not.
+     *
      * @var bool
      */
     public $success;

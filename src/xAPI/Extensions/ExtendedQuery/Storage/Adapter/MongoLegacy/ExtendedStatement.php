@@ -33,8 +33,8 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
     public function extendedQuery(\Traversable $parameters)
     {
-        $collection  = $this->getDocumentManager()->getCollection('statements');
-        $cursor      = $collection->find();
+        $collection = $this->getDocumentManager()->getCollection('statements');
+        $cursor = $collection->find();
 
         // New StatementResult for non-single statement queries
         $statementResult = new StatementResult();
@@ -99,7 +99,7 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
         }
 
         $cursor->limit($limit);
-        
+
         // Remaining includes the current page!
         $statementResult->setRemainingCount($cursor->count());
 
@@ -112,5 +112,4 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
 
         return $statementResult;
     }
-
 }

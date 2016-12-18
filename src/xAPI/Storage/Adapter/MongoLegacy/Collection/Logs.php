@@ -30,6 +30,6 @@ class Logs extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Log';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Log';
     }
 }

@@ -230,7 +230,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         }
     }
 
-     /**
+    /**
      * Trims quotes from the header.
      *
      * @param string $headerString Header

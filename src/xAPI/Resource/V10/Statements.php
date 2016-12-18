@@ -47,7 +47,7 @@ class Statements extends Resource
     public function init()
     {
         $this->statementService = new StatementService($this->getContainer());
-        $this->statementValidator= new StatementValidator($this->getContainer());
+        $this->statementValidator = new StatementValidator($this->getContainer());
     }
 
     /**

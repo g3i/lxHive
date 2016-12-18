@@ -12,6 +12,7 @@ class Statement extends Service
     {
         $params = new Set($request->get());
         $response = $this->statementQuery($params);
+
         return $response;
     }
 
@@ -19,7 +20,7 @@ class Statement extends Service
     {
         // TODO: Move header validation in a json-schema
         if ($request->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);    
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
 
         // Validation has been completed already - everyhing is assumed to be valid
@@ -34,6 +35,7 @@ class Statement extends Service
         $params = new Set($body);
         $params->replace($request->get());
         $response = $this->statementQuery($params);
+
         return $response;
     }
 
@@ -57,10 +59,11 @@ class Statement extends Service
     protected function resolveStorageClass()
     {
         $storageInUse = $app->config('storage')['in_use'];
-        $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\' . $storageInUse . '\\ExtendedStatement';
+        $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\'.$storageInUse.'\\ExtendedStatement';
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is incompatible with ExtendedQuery extension!');
         }
+
         return $storageClass;
     }
 }

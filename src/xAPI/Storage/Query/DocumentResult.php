@@ -27,37 +27,43 @@ namespace API\Storage\Query;
 class DocumentResult
 {
     /**
-     * Cursor that contains the result set
+     * Cursor that contains the result set.
+     *
      * @var Traversable
      */
     public $cursor;
 
     /**
-     * Number of total documents that match in entire query
+     * Number of total documents that match in entire query.
+     *
      * @var int
      */
     public $totalCount;
 
     /**
-     * Number of documents remaining in query where the current skip and limit values are at
+     * Number of documents remaining in query where the current skip and limit values are at.
+     *
      * @var int
      */
     public $remainingCount;
 
     /**
-     * The number of documents requested in this query (the maximum that can be contained in $cursor)
+     * The number of documents requested in this query (the maximum that can be contained in $cursor).
+     *
      * @var int
      */
     public $requestedLimit;
 
     /**
-     * Whether this Result set definitely contains only one element
+     * Whether this Result set definitely contains only one element.
+     *
      * @var bool
      */
     public $isSingle;
 
     /**
-     * Whether there are more results available, taking into account the number of results being limited
+     * Whether there are more results available, taking into account the number of results being limited.
+     *
      * @var [type]
      */
     public $hasMore;

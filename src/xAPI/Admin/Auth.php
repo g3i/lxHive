@@ -47,6 +47,7 @@ class Auth extends Base
     {
         $oAuthService = new OAuthService($this->getContainer());
         $client = $oAuthService->addClient($name, $description, $redirectUri);
+
         return $client;
     }
 
@@ -96,8 +97,8 @@ class Auth extends Base
         $oAuthService = new OAuthService($this->getContainer());
 
         $scope = $oAuthService->addScope($name, $description);
-        
-        return $scope;   
+
+        return $scope;
     }
 
     public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret)
@@ -105,6 +106,7 @@ class Auth extends Base
         $basicAuthService = new BasicAuthService($this->getContainer());
 
         $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+
         return $token;
     }
 }

@@ -30,10 +30,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use API\Admin\Setup;
 
-class SetupDbCommand extends Command
+class SetupCommand extends Command
 {
     /**
-     * Setup class
+     * Setup class.
+     *
      * @var API\Admin\Setup
      */
     private $setup;
@@ -61,6 +62,7 @@ class SetupDbCommand extends Command
 
         if ($this->getSetup()->checkYaml('Config.yml')) {
             $output->writeln('<error>A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.</error>');
+
             return;
         }
 

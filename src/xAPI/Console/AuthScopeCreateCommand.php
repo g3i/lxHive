@@ -33,7 +33,8 @@ use API\Admin\Auth;
 class AuthScopeCreateCommand extends Command
 {
     /**
-     * Auth Admin class
+     * Auth Admin class.
+     *
      * @var API\Admin\Auth
      */
     private $authAdmin;
@@ -57,7 +58,6 @@ class AuthScopeCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        
         $helper = $this->getHelper('question');
 
         $question = new Question('Please enter a name (scope identifier): ', 'untitled');

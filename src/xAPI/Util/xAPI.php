@@ -38,6 +38,7 @@ class xAPI
         } elseif (isset($object['account'])) {
             $uniqueIdentifier = 'account';
         }
+
         return $uniqueIdentifier;
     }
 }

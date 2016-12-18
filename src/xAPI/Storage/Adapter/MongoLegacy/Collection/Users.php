@@ -30,6 +30,6 @@ class Users extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\User';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\User';
     }
 }

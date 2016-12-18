@@ -30,6 +30,6 @@ class AgentProfiles extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\AgentProfile';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\AgentProfile';
     }
 }

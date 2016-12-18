@@ -30,6 +30,6 @@ class PersistentSessions extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\PersistentSession';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\PersistentSession';
     }
 }

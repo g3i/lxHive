@@ -30,6 +30,6 @@ class AuthScopes extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\Scope';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\Scope';
     }
 }

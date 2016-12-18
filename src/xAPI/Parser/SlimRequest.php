@@ -25,82 +25,85 @@
 namespace API\Parser;
 
 use Slim\Http\Request;
-use Slim\Helper\Set;
 
 class SlimRequest implements ParserInterface
 {
-	protected $parts;
+    protected $parts;
 
-	public function __construct(Request $request)
-	{
-		$this->parseRequest($request);
-	}
+    public function __construct(Request $request)
+    {
+        $this->parseRequest($request);
+    }
 
-	private function parseRequest($request)
-	{
-		if ($request->isMultipart()) {
+    private function parseRequest($request)
+    {
+        if ($request->isMultipart()) {
             $this->parts = [];
-	        $parts = $request->parts()->all();
-	        foreach ($parts as $part) {
-	        	$this->parts[] = $this->parseSingleRequest($part);
-	        }
+            $parts = $request->parts()->all();
+            foreach ($parts as $part) {
+                $this->parts[] = $this->parseSingleRequest($part);
+            }
         } else {
             $this->parts = [$this->parseSingleRequest($request)];
         }
-	}
+    }
 
-	private function parseSingleRequest($request)
-	{
-		$parserResult = new ParserResult();
-		
-		$parameters = $request->get()->all();
-		$parserResult->setParameters($parameters);
+    private function parseSingleRequest($request)
+    {
+        $parserResult = new ParserResult();
 
-		$headers = $request->headers();
-		$parserResult->setHeaders($headers);
+        $parameters = $request->get()->all();
+        $parserResult->setParameters($parameters);
+
+        $headers = $request->headers();
+        $parserResult->setHeaders($headers);
 
         $body = $request->getBody();
         $parserResult->setRawPayload($body);
 
-		if ($request->getMediaType() === 'application/json') {
-	        $body = json_decode($body, true);
+        if ($request->getMediaType() === 'application/json') {
+            $body = json_decode($body, true);
 
-	        // Some clients escape the JSON twice - handle them
-	        if (is_string($body)) {
-	            $body = json_decode($body, true);
-	        }
+            // Some clients escape the JSON twice - handle them
+            if (is_string($body)) {
+                $body = json_decode($body, true);
+            }
         }
         $parserResult->setPayload($body);
 
-		return $parserResult;
-	}
+        return $parserResult;
+    }
 
     /**
-     * Get the main part
+     * Get the main part.
+     *
      * @return ParserResult an object or array, given the payload
      */
     public function getData()
     {
-    	return $this->parts[0];
+        return $this->parts[0];
     }
 
     /**
-     * Get the additional parts
+     * Get the additional parts.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
     public function getAttachments()
     {
-    	$parts = $this->parts;
-    	array_shift($parts);
-    	return $parts;
+        $parts = $this->parts;
+        array_shift($parts);
+
+        return $parts;
     }
 
     /**
-     * Get the parts of the request
+     * Get the parts of the request.
+     *
      * @return \Traversable<ParserResult> an array of the parts
      */
     public function getParts()
     {
-    	return $this->parts;
+        return $this->parts;
     }
 }

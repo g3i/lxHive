@@ -26,5 +26,5 @@ namespace API\Storage\Query;
 
 interface ActivityInterface
 {
-	public function fetchActivityById($id);
+    public function fetchActivityById($id);
 }

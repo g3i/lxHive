@@ -27,23 +27,22 @@ namespace API\Storage\Query;
 interface OAuthInterface
 {
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null);
-    
-	public function getToken($accessToken);
-	    
-	public function deleteToken($accessToken);
-	    
-	public function expireToken($accessToken);
-	    
-	public function storeClient($name, $description, $redirectUri);
-	    
-	public function getClients();
-	    
-	public function getClientById($id);
-	    
-	public function addScope($name, $description);
-	    
-	public function getScopeByName($name);
-	    
-	public function getTokenWithOneTimeCode($params);
-    
+
+    public function getToken($accessToken);
+
+    public function deleteToken($accessToken);
+
+    public function expireToken($accessToken);
+
+    public function storeClient($name, $description, $redirectUri);
+
+    public function getClients();
+
+    public function getClientById($id);
+
+    public function addScope($name, $description);
+
+    public function getScopeByName($name);
+
+    public function getTokenWithOneTimeCode($params);
 }

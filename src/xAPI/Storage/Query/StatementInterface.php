@@ -27,15 +27,19 @@ namespace API\Storage\Query;
 interface StatementInterface
 {
     /**
-     * Get statements using filters
-     * @param  array|ArrayAccess $parameters xAPI parameters that determine the statements to be returned
+     * Get statements using filters.
+     *
+     * @param array|ArrayAccess $parameters xAPI parameters that determine the statements to be returned
+     *
      * @return StatementResult The StatementResult object pertaining to this query
      */
     public function get($parameters);
 
     /**
-     * Get statement by ID
-     * @param  string $statementId The Statement id
+     * Get statement by ID.
+     *
+     * @param string $statementId The Statement id
+     *
      * @return StatementResult The StatementResult object pertaining to this query
      */
     public function getById($statementId);

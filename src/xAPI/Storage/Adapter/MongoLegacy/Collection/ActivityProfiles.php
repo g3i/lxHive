@@ -30,6 +30,6 @@ class ActivityProfiles extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\ActivityProfile';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\ActivityProfile';
     }
 }

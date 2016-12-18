@@ -37,13 +37,15 @@ use API\Admin\User;
 class BasicTokenCreateCommand extends Command
 {
     /**
-     * Auth Admin class
+     * Auth Admin class.
+     *
      * @var API\Admin\Auth
      */
     private $authAdmin;
 
     /**
-     * User Admin class
+     * User Admin class.
+     *
      * @var API\Admin\User
      */
     private $userAdmin;
@@ -156,7 +158,7 @@ class BasicTokenCreateCommand extends Command
         }
 
         $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
-        
+
         $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
@@ -183,5 +185,4 @@ class BasicTokenCreateCommand extends Command
     {
         return $this->userAdmin;
     }
-    
 }

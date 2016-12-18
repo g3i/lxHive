@@ -206,10 +206,9 @@ class OAuth extends Service implements AuthInterface
             // get client by id
             $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
 
-
             // getuserbyid --  $_SESSION['userId']
             $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
-            
+
             $scopeDocuments = [];
             $scopes = explode(',', $params->get('scope'));
             foreach ($scopes as $scope) {

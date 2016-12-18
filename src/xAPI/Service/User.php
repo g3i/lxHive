@@ -94,7 +94,6 @@ class User extends Service
         $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
         $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
 
-
         if ($params->has('rememberMe')) {
             $rememberMe->createCookie($document->getId());
         } else {
@@ -108,11 +107,11 @@ class User extends Service
     {
         $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
         $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
-        
+
         if (isset($_SESSION['userId']) && isset($_SESSION['expiresAt']) && $_SESSION['expiresAt'] > time()) {
             $_SESSION['expiresAt'] = time() + 3600; //Renew session on every activity
             return true;
-        } else if (!empty($_COOKIE[$rememberMe->getCookieName()]) && $rememberMe->cookieIsValid()) { // Remember me cookie
+        } elseif (!empty($_COOKIE[$rememberMe->getCookieName()]) && $rememberMe->cookieIsValid()) { // Remember me cookie
             $loginresult = $rememberMe->login();
             if ($loginresult) {
                 // Load user into session and return true
@@ -188,7 +187,6 @@ class User extends Service
             throw new Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
         }
     }
-            
 
     /**
      * Gets the Users.

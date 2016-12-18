@@ -25,13 +25,13 @@
 namespace API\Admin;
 
 abstract class Base
-{	
-	private $container; 
+{
+    private $container;
 
-	// Bootstrapped container
+    // Bootstrapped container
     public function __construct($container)
     {
-    	$this->container = $container;
+        $this->container = $container;
     }
 
     /**

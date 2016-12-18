@@ -60,7 +60,6 @@ try {
         // Add config
         Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
     });
-
 } catch (\Exception $e) {
     if (PHP_SAPI === 'cli' && ((isset($argv[1]) && $argv[1] === 'setup:db') || (isset($argv[0]) && !isset($argv[1])))) {
         // Only invoked if mode is "development"
@@ -90,11 +89,11 @@ $app->configureMode($app->getMode(), function () use ($app, $appRoot) {
     $handlers = [];
     $stream = $appRoot.'/storage/logs/production.'.date('Y-m-d').'.log';
 
-    if(null === $config){
+    if (null === $config) {
         $config = ['ErrorLogHandler'];
     }
 
-    if(PHP_SAPI === 'cli'){
+    if (PHP_SAPI === 'cli') {
         $config = ['StreamHandler', 'ErrorLogHandler'];
         $stream = 'php://output';
     }
@@ -102,23 +101,23 @@ $app->configureMode($app->getMode(), function () use ($app, $appRoot) {
     $formatter = new \Monolog\Formatter\LineFormatter();
 
     // Set up logging
-    if(in_array('FirePHPHandler', $config)){
+    if (in_array('FirePHPHandler', $config)) {
         $handler = new \Monolog\Handler\FirePHPHandler();
         $handlers[] = $handler;
     }
 
-    if(in_array('ChromePHPHandler', $config)){
+    if (in_array('ChromePHPHandler', $config)) {
         $handler = new \Monolog\Handler\ChromePHPHandler();
         $handlers[] = $handler;
     }
 
-    if(in_array('StreamHandler', $config)){
+    if (in_array('StreamHandler', $config)) {
         $handler = new \Monolog\Handler\StreamHandler($stream);
         $handler->setFormatter($formatter);
         $handlers[] = $handler;
     }
 
-    if(empty($handlers) || in_array('ErrorLogHandler', $config)){
+    if (empty($handlers) || in_array('ErrorLogHandler', $config)) {
         $handler = new \Monolog\Handler\ErrorLogHandler();
         $handler->setFormatter($formatter);
         $handlers[] = $handler;
@@ -142,7 +141,7 @@ $app->error(function (\Exception $e) {
     if ($code < 100) {
         $code = 500;
     }
-    if (method_exists($e, 'getData')){
+    if (method_exists($e, 'getData')) {
         $data = $e->getData();
     }
     Resource::error($code, $e->getMessage(), $data, $e->getTrace());
@@ -153,11 +152,12 @@ $app->hook('slim.before', function () use ($app) {
     // Temporary database layer setup - will be moved to bootstrap later
     $app->container->singleton('storage', function () use ($app) {
         $storageInUse = $app->config('storage')['in_use'];
-        $storageClass = '\\API\\Storage\\Adapter\\' . $storageInUse . '\\' . $storageInUse;
+        $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is invalid!');
         }
         $storageAdapter = new $storageClass($app);
+
         return $storageAdapter;
     });
 
@@ -252,6 +252,7 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
     // Parser
     $app->container->singleton('parser', function () use ($app) {
         $parser = new SlimRequestParser($app->request);
+
         return $parser;
     });
 

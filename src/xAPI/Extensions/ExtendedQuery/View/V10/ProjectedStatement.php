@@ -37,7 +37,7 @@ class ProjectedStatement extends View
         }
 
         $view['statements'] = [];
-        $view['more']       = '';
+        $view['more'] = '';
         $view['totalCount'] = $count;
 
         if ($statementResult->getHasMore()) {

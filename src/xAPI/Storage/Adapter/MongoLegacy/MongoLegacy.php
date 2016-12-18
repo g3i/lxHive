@@ -42,9 +42,11 @@ class MongoLegacy implements AdapterInterface
     }
 
     /**
-     * Inserts the document into the specified collection
-     * @param  API\Document\DocumentInterface $document The document to be inserted
-     * @param  string $collection Name of the collection to insert to
+     * Inserts the document into the specified collection.
+     *
+     * @param API\Document\DocumentInterface $document   The document to be inserted
+     * @param string                         $collection Name of the collection to insert to
+     *
      * @return DocumentResult The result of this query
      */
     public function insert($document, $collection)
@@ -54,10 +56,12 @@ class MongoLegacy implements AdapterInterface
     }
 
     /**
-     * Updates documents matching the filter
-     * @param  object|array $document The document to be inserted
-     * @param  array $query The query to update the documents
-     * @param  string $collection Name of collection
+     * Updates documents matching the filter.
+     *
+     * @param object|array $document   The document to be inserted
+     * @param array        $query      The query to update the documents
+     * @param string       $collection Name of collection
+     *
      * @return DocumentResult The result of this query
      */
     public function update($modifications, $query, $collection)
@@ -67,9 +71,11 @@ class MongoLegacy implements AdapterInterface
     }
 
     /**
-     * Deletes documents
-     * @param  array $query The query that matches documents the need to be deleted
-     * @param  string $collection Name of collection
+     * Deletes documents.
+     *
+     * @param array  $query      The query that matches documents the need to be deleted
+     * @param string $collection Name of collection
+     *
      * @return DeletionResult Result of deletion
      */
     public function delete($query, $collection)
@@ -79,30 +85,34 @@ class MongoLegacy implements AdapterInterface
     }
 
     /**
-     * Fetches documents
-     * @param  array $query The query to fetch the documents by
-     * @param  string $collection Name of collection
+     * Fetches documents.
+     *
+     * @param array  $query      The query to fetch the documents by
+     * @param string $collection Name of collection
+     *
      * @return DocumentResult Result of fetch
      */
     public function get($query, $collection)
     {
-        $collectionObject  = $this->getDocumentManager()->getCollection('statements');
-        $cursor      = $collectionObject->find();
+        $collectionObject = $this->getDocumentManager()->getCollection('statements');
+        $cursor = $collectionObject->find();
         $cursor->query($query);
 
         return $cursor;
     }
 
     /**
-     * Fetches documents
-     * @param  array $query The query to fetch the first document by
-     * @param  string $collection Name of collection
+     * Fetches documents.
+     *
+     * @param array  $query      The query to fetch the first document by
+     * @param string $collection Name of collection
+     *
      * @return DocumentResult Result of fetch
      */
     public function getOne($query, $collection)
     {
-        $collectionObject  = $this->getDocumentManager()->getCollection('statements');
-        $cursor      = $collectionObject->find();
+        $collectionObject = $this->getDocumentManager()->getCollection('statements');
+        $cursor = $collectionObject->find();
         $cursor->query($query);
         $document = $cursor->findOne();
 
@@ -118,6 +128,7 @@ class MongoLegacy implements AdapterInterface
         } catch (\MongoConnectionException $e) {
             $connectionSuccess = false;
         }
+
         return $connectionSuccess;
     }
 

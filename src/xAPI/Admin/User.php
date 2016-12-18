@@ -30,30 +30,33 @@ class User extends Base
 {
     public function fetchAvailablePermissions()
     {
-    	$userService = new UserService($this->getContainer());
+        $userService = new UserService($this->getContainer());
         $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
         foreach ($userService->getCursor() as $permission) {
             $permissionsDictionary[$permission->getName()] = $permission;
         }
+
         return $permissionsDictionary;
     }
 
     public function addUser($email, $password, $selectedPermissions)
-	{
-		$userService = new UserService($this->getContainer());
-		$user = $userService->addUser($email, $password, $selectedPermissions);
-   		return $user;
-	}
+    {
+        $userService = new UserService($this->getContainer());
+        $user = $userService->addUser($email, $password, $selectedPermissions);
 
-	public function fetchAllUserEmails()
-	{
-		$userService = new UserService($this->getContainer());
+        return $user;
+    }
+
+    public function fetchAllUserEmails()
+    {
+        $userService = new UserService($this->getContainer());
         $userService->fetchAll();
         $users = [];
         foreach ($userService->getCursor() as $user) {
             $users[$user->getEmail()] = $user;
         }
+
         return $users;
-	}
+    }
 }

@@ -86,7 +86,7 @@ class BasicAuth extends Base implements BasicAuthInterface
 
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
-        $this->validateExpiresAt($expiresAt);   
+        $this->validateExpiresAt($expiresAt);
     }
 
     public function deleteToken($clientId)

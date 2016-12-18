@@ -36,7 +36,8 @@ use API\Admin\User as UserAdministration;
 class UserCreateCommand extends Command
 {
     /**
-     * User Admin class
+     * User Admin class.
+     *
      * @var API\Admin\User
      */
     private $userAdmin;

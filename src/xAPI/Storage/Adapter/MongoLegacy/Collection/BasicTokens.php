@@ -30,6 +30,6 @@ class BasicTokens extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\BasicToken';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Auth\\BasicToken';
     }
 }

@@ -27,20 +27,22 @@ namespace API\Extensions;
 interface ExtensionInterface
 {
     /**
-     * Returns any event listeners that need to be added for this extension
+     * Returns any event listeners that need to be added for this extension.
+     *
      * @return array Format: [['event' => 'statement.get', 'callable' => function(), 'priority' => 1 (optional)], [], ...]
      */
     public function getEventListeners();
 
     /**
-     * Returns any routes that need to be added for this extension
+     * Returns any routes that need to be added for this extension.
+     *
      * @return array Format: [['pattern' => '/plus/superstatements', 'callable' => function(), 'methods' => ['GET', 'HEAD']], [], ...]
      */
     public function getRoutes();
 
-
     /**
-     * Returns any hooks that need to be added for this extension
+     * Returns any hooks that need to be added for this extension.
+     *
      * @return array Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
      */
     public function getHooks();

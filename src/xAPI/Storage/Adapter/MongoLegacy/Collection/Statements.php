@@ -30,6 +30,6 @@ class Statements extends Collection
 {
     public function getDocumentClassName(array $documentData = null)
     {
-         return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Statement';
+        return '\\API\\Storage\\Adapter\\MongoLegacy\\Document\\Statement';
     }
 }
