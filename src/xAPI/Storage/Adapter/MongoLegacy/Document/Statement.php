@@ -26,7 +26,7 @@ namespace API\Storage\Adapter\MongoLegacy\Document;
 
 use Sokil\Mongo\Document;
 use JsonSerializable;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use League\Url\Url;
 use API\Resource;
 

@@ -9,16 +9,12 @@
         }
     ],
     "require": {
-        "slim/slim": "2.*",
-        "techsterx/slim-config-yaml": "dev-master",
-        "flynsarmy/slim-monolog": "~1.0",
-        "sokil/php-mongo": "~1.13",
+        "slim/slim": "3.*",
         "justinrainbow/json-schema": "~4.0",
         "league/url": "~3.3",
-        "ramsey/uuid": "~2.8",
+        "ramsey/uuid": "3.*",
         "league/flysystem": "~0.5",
         "symfony/console": "*",
-        "slim/views": "~0.1",
         "twig/twig": "~1.18",
         "symfony/yaml": "~2.6",
         "birke/rememberme": "~1.0",

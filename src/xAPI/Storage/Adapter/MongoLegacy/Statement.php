@@ -29,7 +29,7 @@ use API\Storage\Query\StatementResult;
 use API\Storage\Query\StatementInterface;
 use API\Storage\Adapter\Base;
 use API\Util;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 use API\HttpException as Exception;
 
 class Statement extends Base implements StatementInterface

@@ -25,7 +25,7 @@
 namespace API;
 
 use Slim\Slim;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Uuid;
 
 abstract class Resource
 {
