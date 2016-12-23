@@ -40,13 +40,6 @@ interface ExtensionInterface
      */
     public function getRoutes();
 
-    /**
-     * Returns any hooks that need to be added for this extension.
-     *
-     * @return array Format: [['hook' => 'slim.before.router', 'callable' => function()], [], ...]
-     */
-    public function getHooks();
-
     /*
         Initial setup function
         This method can be called an indefinite amount of times

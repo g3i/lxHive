@@ -36,6 +36,7 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
+use Slim\Container;
 
 class Bootstrap
 {
@@ -48,174 +49,118 @@ class Bootstrap
 
     public function initWebContainer()
     {
+        // Get file paths of project and config
+        $appRoot = __DIR__.'/../';
         $yamlParser = new YamlParser();
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local(__DIR__.'/../'));
+        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
 
         // 0. Use settings from Config.yml
-        $settings = $yamlParser->parse($filesystem->read('app/config/Config.yml'));
+        $settings = $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.yml'));
 
         // 1. Load more settings based on mode
-        $settings = array_merge($settings, $yamlParser->parse($filesystem->read('app/config/Config.' . $settings['mode'] . '.yml')));
+        $settings = array_merge($settings, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $settings['mode'] . '.yml')));
 
-    }
-}
-
-// Default config
-try {
-    Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.yml');
-
-    // Only invoked if mode is "production"
-    $app->configureMode('production', function () use ($app, $appRoot) {
-        // Add config
-        Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.production.yml');
-    });
-
-    // Only invoked if mode is "development"
-    $app->configureMode('development', function () use ($app, $appRoot) {
-        // Add config
-        Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Config.development.yml');
-    });
-} catch (\Exception $e) {
-    if (PHP_SAPI === 'cli' && ((isset($argv[1]) && $argv[1] === 'setup:db') || (isset($argv[0]) && !isset($argv[1])))) {
-        // Only invoked if mode is "development"
-        $app->configureMode('development', function () use ($app, $appRoot) {
-            // Add config
-            Config\Yaml::getInstance()->addFile($appRoot.'/src/xAPI/Config/Templates/Config.development.yml');
-        });
-    } else {
-        throw new \Exception('You must run the setup:db command using the X CLI tool!');
-    }
-}
-
-// RESTful, disable slim's html PrettyException, and deal with legacy lxhive config
-$app->config('_debug', $app->config('debug'));
-$app->config('debug', false);
-
-if (PHP_SAPI !== 'cli') {
-    $app->url = Url::createFromServer($_SERVER);
-}
-
-// Logger
-$app->configureMode($app->getMode(), function () use ($app, $appRoot) {
-
-    $config = $app->config('log_handlers');
-    $debug = $app->config('_debug');
-
-    $handlers = [];
-    $stream = $appRoot.'/storage/logs/production.'.date('Y-m-d').'.log';
-
-    if (null === $config) {
-        $config = ['ErrorLogHandler'];
-    }
-
-    if (PHP_SAPI === 'cli') {
-        $config = ['StreamHandler', 'ErrorLogHandler'];
-        $stream = 'php://output';
-    }
-
-    $formatter = new \Monolog\Formatter\LineFormatter();
-
-    // Set up logging
-    if (in_array('FirePHPHandler', $config)) {
-        $handler = new \Monolog\Handler\FirePHPHandler();
-        $handlers[] = $handler;
-    }
-
-    if (in_array('ChromePHPHandler', $config)) {
-        $handler = new \Monolog\Handler\ChromePHPHandler();
-        $handlers[] = $handler;
-    }
-
-    if (in_array('StreamHandler', $config)) {
-        $handler = new \Monolog\Handler\StreamHandler($stream);
-        $handler->setFormatter($formatter);
-        $handlers[] = $handler;
-    }
-
-    if (empty($handlers) || in_array('ErrorLogHandler', $config)) {
-        $handler = new \Monolog\Handler\ErrorLogHandler();
-        $handler->setFormatter($formatter);
-        $handlers[] = $handler;
-    }
-
-    //@TODO third party dependency should be removed in slim3
-    $logger = new \Flynsarmy\SlimMonolog\Log\MonologWriter(array(
-        'handlers' => $handlers,
-    ));
-
-    $app->config('log.writer', $logger);
-
-    $logLevel = ($debug) ? \Slim\Log::DEBUG : \Slim\Log::ERROR;
-    $app->log->setLevel($logLevel);
-});
-
-// Error handling
-$app->error(function (\Exception $e) {
-    $data = null;
-    $code = $e->getCode();
-    if ($code < 100) {
-        $code = 500;
-    }
-    if (method_exists($e, 'getData')) {
-        $data = $e->getData();
-    }
-    Resource::error($code, $e->getMessage(), $data, $e->getTrace());
-});
-
-// Database layer setup
-$app->hook('slim.before', function () use ($app) {
-    // Temporary database layer setup - will be moved to bootstrap later
-    $app->container->singleton('storage', function () use ($app) {
-        $storageInUse = $app->config('storage')['in_use'];
-        $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
-        if (!class_exists($storageClass)) {
-            throw new \InvalidArgumentException('Storage type selected in config is invalid!');
+        // 2. Insert settings into container
+        if ($diContainer === null) {
+            $diContainer = new \Slim\Container(['settings' => $settings]);
+        } else {
+            $diContainer['settings'] = $settings;
         }
-        $storageAdapter = new $storageClass($app);
 
-        return $storageAdapter;
-    });
+        // 3. Insert URL object
+        // TODO: Remove this soon
+        $diContainer['url'] = Url::createFromServer($_SERVER);
 
-    $app->container->singleton('eventDispatcher', function () use ($app) {
-        // Instantiate event dispatcher
-        $eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+        $handlerConfig = $diContainer['settings']['log']['handlers'];
+        $stream = $appRoot.'/storage/logs/' . $settings['mode'] . '.' . date('Y-m-d') . '.log';
+        
+        if (null === $handlerConfig) {
+            $handlerConfig = ['ErrorLogHandler'];
+        }
 
-        return $eventDispatcher;
-    });
+        $formatter = new \Monolog\Formatter\LineFormatter();
 
-    // Load any extensions that may exist
-    $extensions = $app->config('extensions');
+        // Set up logging
+        if (in_array('FirePHPHandler', $handlerConfig)) {
+            $handler = new \Monolog\Handler\FirePHPHandler();
+            $logger->pushHandler($handler);
+        }
 
-    if ($extensions) {
-        foreach ($extensions as $extension) {
-            if ($extension['enabled'] === true) {
-                // Instantiate the extension class
-                $className = $extension['class_name'];
-                $extension = new $className($app);
+        if (in_array('ChromePHPHandler', $handlerConfig)) {
+            $handler = new \Monolog\Handler\ChromePHPHandler();
+            $logger->pushHandler($handler);
+        }
 
-                // Load any xAPI event handlers added by the extension
-                $listeners = $extension->getEventListeners();
-                foreach ($listeners as $listener) {
-                    $app->eventDispatcher->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+        if (in_array('StreamHandler', $handlerConfig)) {
+            $handler = new \Monolog\Handler\StreamHandler($stream);
+            $handler->setFormatter($formatter);
+            $logger->pushHandler($handler);
+        }
+
+        if (in_array('ErrorLogHandler', $handlerConfig)) {
+            $handler = new \Monolog\Handler\ErrorLogHandler();
+            $handler->setFormatter($formatter);
+            $logger->pushHandler($handler);
+        }
+
+        $diContainer['logger'] = $logger;
+
+        $diContainer['errorHandler'] = function ($c) {
+            return function ($request, $response, $exception) use ($c) {
+                $data = null;
+                $code = $exception->getCode();
+                if ($code < 100) {
+                    $code = 500;
                 }
-
-                // Load any routes added by extension
-                $routes = $extension->getRoutes();
-                foreach ($routes as $route) {
-                    $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
+                if (method_exists($exception, 'getData')) {
+                    $data = $exception->getData();
                 }
+                return Resource::error($code, $e->getMessage(), $data, $e->getTrace());
+                //return $c['response']->withStatus($code)
+                //                     ->withHeader('Content-Type', 'application/json')
+                //                     ->write(json_encode([$e->getMessage(), $data]));
+            };
+        };
 
-                // Load any Slim hooks added by extension
-                $hooks = $extension->getHooks();
-                foreach ($hooks as $hook) {
-                    $app->hook($hook['hook'], [$extension, $hook['callable']]);
+        // Temporary database layer setup - will be moved to bootstrap later
+        $diContainer['storage'] = function ($c) {
+            $storageInUse = $c['settings']['storage']['in_use'];
+            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
+            if (!class_exists($storageClass)) {
+                throw new \InvalidArgumentException('Storage type selected in config is invalid!');
+            }
+            $storageAdapter = new $storageClass($c);
+
+            return $storageAdapter;
+        };
+
+        $diContainer['eventDispatcher'] = new Symfony\Component\EventDispatcher\EventDispatcher();
+
+        // Load any extensions that may exist
+        $extensions = $diContainer['settings']['extensions'];
+
+        if ($extensions) {
+            foreach ($extensions as $extension) {
+                if ($extension['enabled'] === true) {
+                    // Instantiate the extension class
+                    $className = $extension['class_name'];
+                    $extension = new $className($app);
+
+                    // Load any xAPI event handlers added by the extension
+                    $listeners = $extension->getEventListeners();
+                    foreach ($listeners as $listener) {
+                        $diContainer['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+                    }
+
+                    // Load any routes added by extension
+                    $routes = $extension->getRoutes();
+                    foreach ($routes as $route) {
+                        $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
+                    }
                 }
-
-                // TODO: Load any new data/content validators added by extension
             }
         }
-    }
-});
+}
 
 // CORS compatibility layer (Internet Explorer)
 $app->hook('slim.before.router', function () use ($app) {

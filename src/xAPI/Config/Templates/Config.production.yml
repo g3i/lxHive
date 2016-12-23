@@ -1,4 +1,6 @@
 # Production configuration overrides
-log.enable: true
-log_handlers: [StreamHandler]
-debug:      false
+log:
+  enabled: true
+  handlers: [StreamHandler]
+  name: Production
+debug: false

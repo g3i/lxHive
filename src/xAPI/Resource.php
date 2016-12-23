@@ -125,33 +125,24 @@ abstract class Resource
      * @param mixed  $data    additional data
      * @param mixed  $data    exception \Exception::stackTrace() array
      */
-    public static function error($code, $message = '', $data = null, $trace = null)
+    public static function error($container, $code, $message = '', $data = null, $trace = null)
     {
-        $slim = \Slim\Slim::getInstance();
         $message = (string) $message;
-        $mode = $slim->getMode();
-        $debug = $slim->config('_debug');
 
-        // with the current implementation exceptions are not logged, we do this here and wait for Slim 3' Errorhandler class
         $error = [
             'code' => $code,
             'details' => $data,
         ];
 
-        if ($mode == 'development' && $debug) {
-            $error['trace'] = $trace;
-        }
+        $error['trace'] = $trace;
 
-        // @see app debug mode
-        switch (true) {
-            case $code >= 500:
-                $slim->log->critical($message.', '.json_encode($error));
-            break;
-            case $code >= 400:
-                $slim->log->warning($message.', '.json_encode($error));
-            break;
-            default:
-                $slim->log->info($message);
+        if ($code >= 500) {
+            $container['logger']->critical($message.', '.json_encode($error));
+        }
+        else if ($code >= 400) {
+            $container['logger']->warning($message.', '.json_encode($error));
+        } else {
+            $container['logger']->info($message); 
         }
 
         $response = [
@@ -167,47 +158,44 @@ abstract class Resource
      * @param array $data   The data
      * @param array $allow  Allowed methods
      */
-    public static function response($status = 200, $data = null, $allow = [])
+    public static function response($container, $status = 200, $data = null, $allow = [])
     {
-        /*
-         * @var \Slim\Slim
-         */
-        $slim = \Slim\Slim::getInstance();
-
-        $slim->status($status);
-        $slim->response->headers->set('Access-Control-Allow-Origin', '*');
-        $slim->response->headers->set('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE');
-        $slim->response->headers->set('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match');
-        $slim->response->headers->set('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true');
-        $slim->response->headers->set('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through');
-        $slim->response->headers->set('X-Experience-API-Version', $slim->config('xAPI')['latest_version']);
-
         $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
-        $slim->response->headers->set('X-Experience-API-Consistent-Through', $date);
+        
+        $response = $container['response'];
+        $response = $response->withStatus($status)
+                             ->withHeader('Access-Control-Allow-Origin', '*')
+                             ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
+                             ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
+                             ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
+                             ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
+                             ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
+                             ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
-            $slim->response()->header('Allow', strtoupper(implode(',', $allow)));
+            $response = $response->withHeader('Allow', strtoupper(implode(',', $allow)));
         }
 
-        $slim->response()->setBody($data);
+        $response = $response->write($data);
 
-        return false;
+        $container['response'] = $response;
     }
 
-    public static function jsonResponse($status = 200, $data = [], $allow = [])
+    public static function jsonResponse($container, $status = 200, $data = [], $allow = [])
     {
-        $slim = \Slim\Slim::getInstance();
-        $slim->response->headers->set('Content-Type', 'application/json');
+        $response = $container['response'];
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $container['response'] = $response;
         $data = json_encode($data);
-        self::response($status, $data, $allow);
+        self::response($container, $status, $data, $allow);
     }
 
-    public static function multipartResponse($status = 200, $parts = [], $allow = [])
+    public static function multipartResponse($container, $status = 200, $parts = [], $allow = [])
     {
-        $slim = \Slim\Slim::getInstance();
+        $response = $container['response'];
         $boundary = Uuid::uuid4()->toString();
-        $slim->headers->set('Content-Type', "multipart/mixed; boundary=\"{$boundary}\"");
-        $slim->headers->set('Transfer-Encoding', 'chunked');
+        $response = $response->withHeader('Content-Type', "multipart/mixed; boundary=\"{$boundary}\"")
+                             ->withHeader('Transfer-Encoding', 'chunked');
 
         $content = '';
         foreach ($parts as $part) {
@@ -220,7 +208,9 @@ abstract class Resource
         // Finally send all the content.
         $content = strlen($content)."\r\n".$content;
 
-        self::response($status, $content, $allow);
+        $container['response'] = $response;
+
+        self::response($container, $status, $content, $allow);
     }
 
     /**
