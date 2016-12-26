@@ -27,9 +27,11 @@ require __DIR__.'/../vendor/autoload.php';
 
 use API\Bootstrap;
 use Slim\App;
+use API\Resource;
 
 $bootstrapper = new Bootstrap();
+
 $diContainer = $bootstrapper->initWebContainer();
 
-$app = new App($diContainer);
+$app = $bootstrapper->bootWebAppWithContainer($diContainer);
 $app->run();

@@ -42,7 +42,7 @@ class Bootstrap
 {
     private $id;
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
     }
@@ -61,17 +61,17 @@ class Bootstrap
         $settings = array_merge($settings, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $settings['mode'] . '.yml')));
 
         // 2. Insert settings into container
-        if ($diContainer === null) {
-            $diContainer = new \Slim\Container(['settings' => $settings]);
+        if ($container === null) {
+            $container = new \Slim\Container(['settings' => $settings]);
         } else {
-            $diContainer['settings'] = $settings;
+            $container['settings'] = $settings;
         }
 
         // 3. Insert URL object
         // TODO: Remove this soon
-        $diContainer['url'] = Url::createFromServer($_SERVER);
+        $container['url'] = Url::createFromServer($_SERVER);
 
-        $handlerConfig = $diContainer['settings']['log']['handlers'];
+        $handlerConfig = $container['settings']['log']['handlers'];
         $stream = $appRoot.'/storage/logs/' . $settings['mode'] . '.' . date('Y-m-d') . '.log';
         
         if (null === $handlerConfig) {
@@ -103,9 +103,9 @@ class Bootstrap
             $logger->pushHandler($handler);
         }
 
-        $diContainer['logger'] = $logger;
+        $container['logger'] = $logger;
 
-        $diContainer['errorHandler'] = function ($c) {
+        $container['errorHandler'] = function ($c) {
             return function ($request, $response, $exception) use ($c) {
                 $data = null;
                 $code = $exception->getCode();
@@ -115,29 +115,29 @@ class Bootstrap
                 if (method_exists($exception, 'getData')) {
                     $data = $exception->getData();
                 }
-                return Resource::error($code, $e->getMessage(), $data, $e->getTrace());
+                return Resource::error($c, $code, $e->getMessage(), $data, $e->getTrace());
                 //return $c['response']->withStatus($code)
                 //                     ->withHeader('Content-Type', 'application/json')
                 //                     ->write(json_encode([$e->getMessage(), $data]));
             };
         };
 
-        // Temporary database layer setup - will be moved to bootstrap later
-        $diContainer['storage'] = function ($c) {
-            $storageInUse = $c['settings']['storage']['in_use'];
+        // Storage setup
+        $container['storage'] = function ($container) {
+            $storageInUse = $container['settings']['storage']['in_use'];
             $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new \InvalidArgumentException('Storage type selected in config is invalid!');
             }
-            $storageAdapter = new $storageClass($c);
+            $storageAdapter = new $storageClass($container);
 
             return $storageAdapter;
         };
 
-        $diContainer['eventDispatcher'] = new Symfony\Component\EventDispatcher\EventDispatcher();
+        $container['eventDispatcher'] = new Symfony\Component\EventDispatcher\EventDispatcher();
 
         // Load any extensions that may exist
-        $extensions = $diContainer['settings']['extensions'];
+        $extensions = $container['settings']['extensions'];
 
         if ($extensions) {
             foreach ($extensions as $extension) {
@@ -149,7 +149,7 @@ class Bootstrap
                     // Load any xAPI event handlers added by the extension
                     $listeners = $extension->getEventListeners();
                     foreach ($listeners as $listener) {
-                        $diContainer['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+                        $container['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
                     }
 
                     // Load any routes added by extension
@@ -160,32 +160,81 @@ class Bootstrap
                 }
             }
         }
-}
 
-// CORS compatibility layer (Internet Explorer)
-$app->hook('slim.before.router', function () use ($app) {
-    if ($app->request->isPost() && $app->request->get('method')) {
-        $method = $app->request->get('method');
-        $app->environment()['REQUEST_METHOD'] = strtoupper($method);
-        mb_parse_str($app->request->getBody(), $postData);
-        $parameters = new Set($postData);
-        if ($parameters->has('content')) {
-            $content = $parameters->get('content');
-            $app->environment()['slim.input'] = $content;
-            $parameters->remove('content');
-        } else {
-            // Content is the only valid body parameter...everything else are either headers or query parameters
-            $app->environment()['slim.input'] = '';
-        }
-        $app->request->headers->replace($parameters->all());
-        $app->environment()['slim.request.query_hash'] = $parameters->all();
+        // Parser
+        $container['parser'] = function ($container) {
+            $parser = new PsrRequestParser($container['request']);
+
+            return $parser;
+        };
+
+        // Request logging
+        $container['parser'] = function ($container) {
+            $logService = new LogService($container);
+            $logDocument = $logService->logRequest($container['request']);
+
+            return $logDocument;
+        };
+
+        // Auth - token
+        $container['auth'] = function ($container) {
+            if (!$container['request']->isOptions() && !($container['request']->getPathInfo() === '/about')) {
+                $basicAuthService = new BasicAuthService($container);
+                $oAuthService = new OAuthService($container);
+
+                $token = null;
+
+                try {
+                    $token = $oAuthService->extractToken($container['request']);
+                    $container['requestLog']->addRelation('oAuthToken', $token)->save();
+                } catch (AuthFailureException $e) {
+                    // Ignore
+                }
+
+                try {
+                    $token = $basicAuthService->extractToken($container['request']);
+                    $app->requestLog->addRelation('basicToken', $token)->save();
+                } catch (AuthFailureException $e) {
+                    // Ignore
+                }
+
+                if (null === $token) {
+                    throw new \Exception('Credentials invalid!', Resource::STATUS_UNAUTHORIZED);
+                }
+
+                return $token;
+            }
+        };
     }
-});
 
-// Parse version
-$app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
-    // Version
-    $app->container->singleton('version', function () use ($app) {
+    public function bootWebAppWithContainer($container)
+    {
+        $app = new App($container);
+
+        // CORS compatibility layer (Internet Explorer)
+        /*$app->hook('slim.before.router', function () use ($app) {
+            if ($app->request->isPost() && $app->request->get('method')) {
+                $method = $app->request->get('method');
+                $app->environment()['REQUEST_METHOD'] = strtoupper($method);
+                mb_parse_str($app->request->getBody(), $postData);
+                $parameters = new Set($postData);
+                if ($parameters->has('content')) {
+                    $content = $parameters->get('content');
+                    $app->environment()['slim.input'] = $content;
+                    $parameters->remove('content');
+                } else {
+                    // Content is the only valid body parameter...everything else are either headers or query parameters
+                    $app->environment()['slim.input'] = '';
+                }
+                $app->request->headers->replace($parameters->all());
+                $app->environment()['slim.request.query_hash'] = $parameters->all();
+            }
+        });
+
+        // Parse version
+        $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
+        // Version
+        $app->container->singleton('version', function () use ($app) {
         if ($app->request->isOptions() || $app->request->getPathInfo() === '/about' || strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
             $versionString = $app->config('xAPI')['latest_version'];
         } else {
@@ -207,131 +256,83 @@ $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
 
             return $version;
         }
-    });
-
-    // Parser
-    $app->container->singleton('parser', function () use ($app) {
-        $parser = new PsrRequestParser($app->request);
-
-        return $parser;
-    });
-
-    // Request logging
-    $app->container->singleton('requestLog', function () use ($app) {
-        $logService = new LogService($app);
-        $logDocument = $logService->logRequest($app->request);
-
-        return $logDocument;
-    });
-
-    // Auth - token
-    $app->container->singleton('auth', function () use ($app) {
-        if (!$app->request->isOptions() && !($app->request->getPathInfo() === '/about')) {
-            $basicAuthService = new BasicAuthService($app);
-            $oAuthService = new OAuthService($app);
-
-            $token = null;
-
-            try {
-                $token = $oAuthService->extractToken($app->request);
-                $app->requestLog->addRelation('oAuthToken', $token)->save();
-            } catch (AuthFailureException $e) {
-                // Ignore
-            }
-
-            try {
-                $token = $basicAuthService->extractToken($app->request);
-                $app->requestLog->addRelation('basicToken', $token)->save();
-            } catch (AuthFailureException $e) {
-                // Ignore
-            }
-
-            if (null === $token) {
-                throw new \Exception('Credentials invalid!', Resource::STATUS_UNAUTHORIZED);
-            }
-
-            return $token;
-        }
-    });
-
-    // Load Twig only if this is a request where we actually need it!
-    if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
+        });
+        // Load Twig only if this is a request where we actually need it!
+        if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
         $twigContainer = new Twig();
         $app->container->singleton('view', function () use ($twigContainer) {
             return $twigContainer;
         });
         $app->view->parserOptions['cache'] = $appRoot.'/storage/.Cache';
-    }
+        }
 
-    // Content type check
-    if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
+        // Content type check
+        if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
         // Bad Content-Type
         throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);
+        }*/
+
+        $app->get('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
+            $resource = $args['resource'];
+            if (isset($args['action'])) {
+                $subResource = $args['action'];
+            } else {
+                $subResource = null;
+            }
+            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            return $resource->get();
+        });
+
+        // Post
+        $app->post('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
+            $resource = $args['resource'];
+            if (isset($args['action'])) {
+                $subResource = $args['action'];
+            } else {
+                $subResource = null;
+            }
+            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            return $resource->post();
+        });
+
+        // Put
+        $app->put('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
+            $resource = $args['resource'];
+            if (isset($args['action'])) {
+                $subResource = $args['action'];
+            } else {
+                $subResource = null;
+            }
+            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            return $resource->put();
+        });
+
+        // Delete
+        $app->delete('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
+            $resource = $args['resource'];
+            if (isset($args['action'])) {
+                $subResource = $args['action'];
+            } else {
+                $subResource = null;
+            }
+            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            return $resource->delete();
+        });
+
+        // Options
+        $app->options('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
+            $resource = $args['resource'];
+            if (isset($args['action'])) {
+                $subResource = $args['action'];
+            } else {
+                $subResource = null;
+            }
+            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            return $resource->options();
+        });
+
+        return $app;
     }
-});
-
-// Start with routing - dynamic for now
-// TODO: Change to static routes with Slim3 - huge performance boost!
-
-// ./X @TODO: dedicated identifier for ./X, so phpUnit client passes
-// Note: commented out, until this identifier is added (otherwise X is unusable!)
-//if (PHP_SAPI === 'cli') {
-//    return;
-//}
-
-// Get
-$app->get('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
-    $resource = Resource::load($app->version, $resource, $subResource);
-    if ($resource === null) {
-        Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
-    } else {
-        $resource->get();
-    }
-});
-
-// Post
-$app->post('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
-    $resource = Resource::load($app->version, $resource, $subResource);
-    if ($resource === null) {
-        Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
-    } else {
-        $resource->post();
-    }
-});
-
-// Put
-$app->put('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
-    $resource = Resource::load($app->version, $resource, $subResource);
-    if ($resource === null) {
-        Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
-    } else {
-        $resource->put();
-    }
-});
-
-// Delete
-$app->delete('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
-    $resource = Resource::load($app->version, $resource, $subResource);
-    if ($resource === null) {
-        Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
-    } else {
-        $resource->delete();
-    }
-});
-
-// Options
-$app->options('/:resource(/(:action)(/))', function ($resource, $subResource = null) use ($app) {
-    $resource = Resource::load($app->version, $resource, $subResource);
-    if ($resource === null) {
-        Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
-    } else {
-        $resource->options();
-    }
-});
-
-// Not found
-$app->notFound(function () {
-    Resource::error(Resource::STATUS_NOT_FOUND, 'Cannot find requested resource.');
 
     /**
      * Gets the value of id.
@@ -342,6 +343,4 @@ $app->notFound(function () {
     {
         return $this->id;
     }
-});
-
-$app->run();
+}

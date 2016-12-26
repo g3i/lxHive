@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2015 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,38 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace SmsConnector;
 
-abstract class Service
+trait BaseTrait
 {
     /**
-     * Construct.
+     * @var \Slim\Container
      */
-    public function __construct($container)
+    private $diContainer;
+
+    /**
+     * @var \Storage\AdapterInterface
+     */
+    private $storage;
+
+    /**
+     * @var \Monolog\Monolog
+     */
+    private $log;
+
+    /**
+     * Sets the value of diContainer.
+     *
+     * @param \Slim\Container $diContainer the di container
+     *
+     * @return self
+     */
+    public function setDiContainer(\Slim\Container $diContainer)
     {
-        $this->setDiContainer($container);
+        $this->diContainer = $diContainer;
+        $this->storage = $diContainer['storage'];
+        $this->log = $diContainer['log'];
+
+        return $this;
     }
 }

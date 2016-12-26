@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2015 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,37 +24,44 @@
 
 namespace API;
 
-use Slim\Slim;
+use API\Util\Set;
 
-abstract class View extends \Slim\Helper\Set
+abstract class View extends Set
 {
-    /**
-     * @var \Slim\Slim
-     */
-    private $slim;
+    use BaseTrait;
+
+    private $items;
+
+    private $response;
 
     /**
      * Construct.
      */
-    public function __construct($items = [])
+    public function __construct($response, $container, $items = [])
     {
         parent::__construct($items);
-        $this->setSlim(Slim::getInstance());
+        $this->setResponse($response);
+        $this->setDiContainer($container);
+        $this->items = $items;
     }
 
     /**
-     * @return \Slim\Slim
+     * Gets the value of items.
+     *
+     * @return mixed
      */
-    public function getSlim()
+    public function getItems()
     {
-        return $this->slim;
+        return $this->items;
     }
 
     /**
-     * @return \Slim\Slim
+     * Gets the value of response.
+     *
+     * @return mixed
      */
-    public function getContainer()
+    public function getResponse()
     {
-        return $this->slim;
+        return $this->response;
     }
 }

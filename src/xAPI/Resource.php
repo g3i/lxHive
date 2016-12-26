@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,16 @@
  * file that was distributed with this source code.
  */
 
-namespace API;
+namespace SmsConnector;
 
-use Slim\Slim;
-use Ramsey\Uuid\Uuid;
+use SmsConnector\Resource\Error as Error;
+use SmsConnector\View\Error as ErrorView;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class Resource
 {
+    use BaseTrait;
+
     const STATUS_OK = 200;
     const STATUS_CREATED = 201;
     const STATUS_ACCEPTED = 202;
@@ -51,21 +54,30 @@ abstract class Resource
     const STATUS_NOT_ACCEPTED = 406;
     const STATUS_CONFLICT = 409;
     const STATUS_PRECONDITION_FAILED = 412;
+    const STATUS_TOO_MANY_REQUESTS = 429;
+    const STATUS_BANDIWDTH_LIMIT_EXCEEDED = 509;
 
     const STATUS_INTERNAL_SERVER_ERROR = 500;
     const STATUS_NOT_IMPLEMENTED = 501;
 
     /**
-     * @var \Slim\Slim
+     * Request.
      */
-    private $slim;
+    public $request;
+
+    /**
+     * Response.
+     */
+    public $response;
 
     /**
      * Construct.
      */
-    public function __construct()
+    public function __construct($container, $request, $response)
     {
-        $this->slim = Slim::getInstance();
+        $this->setDiContainer($container);
+        $this->setRequest($request);
+        $this->setResponse($response);
 
         $this->init();
     }
@@ -82,7 +94,7 @@ abstract class Resource
      */
     public function get()
     {
-        $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'GET'));
+        return $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'GET'));
     }
 
     /**
@@ -90,7 +102,7 @@ abstract class Resource
      */
     public function post()
     {
-        $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'POST'));
+        return $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'POST'));
     }
 
     /**
@@ -98,7 +110,7 @@ abstract class Resource
      */
     public function put()
     {
-        $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'PUT'));
+        return $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'PUT'));
     }
 
     /**
@@ -106,7 +118,7 @@ abstract class Resource
      */
     public function delete()
     {
-        $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'DELETE'));
+        return $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'DELETE'));
     }
 
     /**
@@ -114,43 +126,7 @@ abstract class Resource
      */
     public function options()
     {
-        $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'OPTIONS'));
-    }
-
-    /**
-     * Error handler.
-     *
-     * @param int    $code    Error code
-     * @param string $message Error message
-     * @param mixed  $data    additional data
-     * @param mixed  $data    exception \Exception::stackTrace() array
-     */
-    public static function error($container, $code, $message = '', $data = null, $trace = null)
-    {
-        $message = (string) $message;
-
-        $error = [
-            'code' => $code,
-            'details' => $data,
-        ];
-
-        $error['trace'] = $trace;
-
-        if ($code >= 500) {
-            $container['logger']->critical($message.', '.json_encode($error));
-        }
-        else if ($code >= 400) {
-            $container['logger']->warning($message.', '.json_encode($error));
-        } else {
-            $container['logger']->info($message); 
-        }
-
-        $response = [
-            'error_message' => $message,
-            'details' => ($code >= 500) ? $error : $data,
-        ];
-
-        self::jsonResponse($code, $response);
+        return $this->error(self::STATUS_METHOD_NOT_ALLOWED, sprintf(self::STATUS_METHOD_NOT_ALLOWED_MESSAGE, 'OPTIONS'));
     }
 
     /**
@@ -158,104 +134,133 @@ abstract class Resource
      * @param array $data   The data
      * @param array $allow  Allowed methods
      */
-    public static function response($container, $status = 200, $data = null, $allow = [])
+    public function response($status = 200, $data = null, $allow = [])
     {
-        $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
-        
-        $response = $container['response'];
-        $response = $response->withStatus($status)
-                             ->withHeader('Access-Control-Allow-Origin', '*')
-                             ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
-                             ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
-                             ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
-                             ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
-                             ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
-                             ->withHeader('X-Experience-API-Consistent-Through', $date);
+        if ($data instanceof ResponseInterface) {
+            $this->response = $data;
+        } else {
+            $body = $this->response->getBody();
+            $body->write($data);
+        }
+
+        $this->response = $this->response->withStatus($status)
+                                         ->withHeader('Access-Control-Allow-Origin', '*')
+                                         ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
+                                         ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
+                                         ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
+                                         ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
+                                         ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
+                                         ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
-            $response = $response->withHeader('Allow', strtoupper(implode(',', $allow)));
+            $this->response = $this->response->withHeader('Allow', strtoupper(implode(',', $allow)));
         }
 
-        $response = $response->write($data);
-
-        $container['response'] = $response;
+        return $this->response;
     }
 
-    public static function jsonResponse($container, $status = 200, $data = [], $allow = [])
+    public function jsonResponse($status = 200, $data = [], $allow = [])
     {
-        $response = $container['response'];
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $container['response'] = $response;
-        $data = json_encode($data);
-        self::response($container, $status, $data, $allow);
-    }
-
-    public static function multipartResponse($container, $status = 200, $parts = [], $allow = [])
-    {
-        $response = $container['response'];
-        $boundary = Uuid::uuid4()->toString();
-        $response = $response->withHeader('Content-Type', "multipart/mixed; boundary=\"{$boundary}\"")
-                             ->withHeader('Transfer-Encoding', 'chunked');
-
-        $content = '';
-        foreach ($parts as $part) {
-            $content .= "--{$boundary}\r\n";
-            $content .= "{$part->headers}\r\n";
-            $content .= $part->getContent();
-            $content .= "\r\n";
+        if ($data instanceof ResponseInterface) {
+            $this->response = $data;
+        } else {
+            $this->response = $this->response->withJson($data, $status);
         }
-        $content .= "--{$boundary}--";
-        // Finally send all the content.
-        $content = strlen($content)."\r\n".$content;
 
-        $container['response'] = $response;
-
-        self::response($container, $status, $content, $allow);
+        return $this->response($status, $data, $allow);
     }
 
     /**
-     * @param $version The xAPI version requested
+     * Error handler.
+     *
+     * @param int    $code    Error code
+     * @param string $message Error message
+     */
+    public function error($code, $message = '')
+    {
+        $view = new ErrorView($this->getResponse(), $this->getDiContainer(), ['code' => $code, 'message' => $message]);
+        $view = $view->render();
+
+        return $this->response($code, $view);
+    }
+
+    /**
      * @param $resource The main resource
      * @param $subResource An optional subresource
      *
      * @return mixed
      */
-    public static function load($version, $resource, $subResource)
+    public static function load($resource, $subResource, $container, $request, $response)
     {
-        $versionNamespace = $version->generateClassNamespace();
         if (null !== $subResource) {
-            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
+            $class = __NAMESPACE__.'\\Resource\\'.ucfirst($resource).'\\'.ucfirst($subResource);
         } else {
-            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource);
+            $class = __NAMESPACE__.'\\Resource\\'.ucfirst($resource);
         }
         if (!class_exists($class)) {
-            return;
+            $errorResource = new Error($container, $request, $response);
+            $errorResource->error(self::STATUS_NOT_FOUND, 'Cannot find requested resource.');
+
+            return $errorResource;
         }
 
-        return new $class();
+        return new $class($container, $request, $response);
     }
 
     /**
-     * @return \Slim\Slim
+     * The DI container
+     * @return Container the DI Container
      */
     public function getContainer()
     {
-        return $this->slim;
+        return $this->diContainer;
     }
 
     /**
-     * @return \Slim\Slim
+     * Gets the Request.
+     *
+     * @return mixed
      */
-    public function getSlim()
+    public function getRequest()
     {
-        return $this->slim;
+        return $this->request;
     }
 
     /**
-     * @return \Sokil\Mongo\Client
+     * Sets the Request.
+     *
+     * @param mixed $request the request
+     *
+     * @return self
      */
-    public function getDocumentManager()
+    public function setRequest($request)
     {
-        return $this->slim->mongo;
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Gets the Response.
+     *
+     * @return mixed
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * Sets the Response.
+     *
+     * @param mixed $response the response
+     *
+     * @return self
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+
+        return $this;
     }
 }
