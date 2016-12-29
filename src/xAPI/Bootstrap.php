@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 use Slim\Container;
+use Slim\App;
 
 class Bootstrap
 {
@@ -47,7 +48,7 @@ class Bootstrap
         $this->id = $id;
     }
 
-    public function initWebContainer()
+    public function initWebContainer($container = null)
     {
         // Get file paths of project and config
         $appRoot = __DIR__.'/../';
@@ -78,6 +79,8 @@ class Bootstrap
             $handlerConfig = ['ErrorLogHandler'];
         }
 
+        $logger = new Logger('web');
+
         $formatter = new \Monolog\Formatter\LineFormatter();
 
         // Set up logging
@@ -105,8 +108,8 @@ class Bootstrap
 
         $container['logger'] = $logger;
 
-        $container['errorHandler'] = function ($c) {
-            return function ($request, $response, $exception) use ($c) {
+        $container['errorHandler'] = function ($container) {
+            return function ($request, $response, $exception) use ($container) {
                 $data = null;
                 $code = $exception->getCode();
                 if ($code < 100) {
@@ -115,7 +118,10 @@ class Bootstrap
                 if (method_exists($exception, 'getData')) {
                     $data = $exception->getData();
                 }
-                return Resource::error($c, $code, $e->getMessage(), $data, $e->getTrace());
+                $errorResource = new Error($container, $request, $response);
+                $error = $errorResource->error($code, $exception->getMessage());
+
+                return $error;
                 //return $c['response']->withStatus($code)
                 //                     ->withHeader('Content-Type', 'application/json')
                 //                     ->write(json_encode([$e->getMessage(), $data]));
@@ -134,7 +140,7 @@ class Bootstrap
             return $storageAdapter;
         };
 
-        $container['eventDispatcher'] = new Symfony\Component\EventDispatcher\EventDispatcher();
+        $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
 
         // Load any extensions that may exist
         $extensions = $container['settings']['extensions'];
@@ -169,7 +175,7 @@ class Bootstrap
         };
 
         // Request logging
-        $container['parser'] = function ($container) {
+        $container['requestLog'] = function ($container) {
             $logService = new LogService($container);
             $logDocument = $logService->logRequest($container['request']);
 
@@ -178,7 +184,7 @@ class Bootstrap
 
         // Auth - token
         $container['auth'] = function ($container) {
-            if (!$container['request']->isOptions() && !($container['request']->getPathInfo() === '/about')) {
+            if (!$container['request']->isOptions() && !($container['request']->getUri()->getPath() === '/about')) {
                 $basicAuthService = new BasicAuthService($container);
                 $oAuthService = new OAuthService($container);
 
@@ -193,7 +199,7 @@ class Bootstrap
 
                 try {
                     $token = $basicAuthService->extractToken($container['request']);
-                    $app->requestLog->addRelation('basicToken', $token)->save();
+                    $container['requestLog']->addRelation('basicToken', $token)->save();
                 } catch (AuthFailureException $e) {
                     // Ignore
                 }
@@ -205,6 +211,45 @@ class Bootstrap
                 return $token;
             }
         };
+
+        // Merge in specific Web settings
+        $container['view'] = function ($c) {
+            $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
+                'debug' => 'true',
+                'cache' => dirname(__FILE__).'/View/V10/OAuth/Templates',
+            ]);
+            $twigDebug = new \Twig_Extension_Debug();
+            $view->addExtension($twigDebug);
+
+            return $view;
+        };
+
+        // Version
+        $container['version'] = function ($c) {
+            if ($container['request']->isOptions() || strpos(strtolower($container['request']->getRequestTarget()), '/about') === 0 || strpos(strtolower($container['request']->getRequestTarget()), '/oauth') === 0) {
+                $versionString = $container['settings']['xAPI']['latest_version'];
+            } else {
+                $versionString = $container['request']->getHeaderLine('X-Experience-API-Version');
+            }
+
+            if (!$versionString) {
+                throw new \Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
+            } else {
+                try {
+                    $version = Versioning::fromString($versionString);
+                } catch (\InvalidArgumentException $e) {
+                    throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
+                }
+
+                if (!in_array($versionString, $app->config('xAPI')['supported_versions'])) {
+                    throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
+                }
+
+                return $version;
+            }
+        };
+
+        return $container;
     }
 
     public function bootWebAppWithContainer($container)
@@ -233,30 +278,7 @@ class Bootstrap
 
         // Parse version
         $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
-        // Version
-        $app->container->singleton('version', function () use ($app) {
-        if ($app->request->isOptions() || $app->request->getPathInfo() === '/about' || strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
-            $versionString = $app->config('xAPI')['latest_version'];
-        } else {
-            $versionString = $app->request->headers('X-Experience-API-Version');
-        }
-
-        if ($versionString === null) {
-            throw new \Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
-        } else {
-            try {
-                $version = Versioning::fromString($versionString);
-            } catch (\InvalidArgumentException $e) {
-                throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
-            }
-
-            if (!in_array($versionString, $app->config('xAPI')['supported_versions'])) {
-                throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
-            }
-
-            return $version;
-        }
-        });
+        
         // Load Twig only if this is a request where we actually need it!
         if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
         $twigContainer = new Twig();
@@ -279,7 +301,7 @@ class Bootstrap
             } else {
                 $subResource = null;
             }
-            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
             return $resource->get();
         });
 
@@ -291,7 +313,7 @@ class Bootstrap
             } else {
                 $subResource = null;
             }
-            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
             return $resource->post();
         });
 
@@ -303,7 +325,7 @@ class Bootstrap
             } else {
                 $subResource = null;
             }
-            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
             return $resource->put();
         });
 
@@ -315,7 +337,7 @@ class Bootstrap
             } else {
                 $subResource = null;
             }
-            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
             return $resource->delete();
         });
 
@@ -327,7 +349,7 @@ class Bootstrap
             } else {
                 $subResource = null;
             }
-            $resource = Resource::load($resource, $subResource, $container, $request, $response);
+            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
             return $resource->options();
         });
 

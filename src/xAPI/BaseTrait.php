@@ -52,8 +52,48 @@ trait BaseTrait
     {
         $this->diContainer = $diContainer;
         $this->storage = $diContainer['storage'];
-        $this->log = $diContainer['log'];
+        $this->log = $diContainer['logger'];
 
         return $this;
+    }
+
+    /**
+     * Gets the value of diContainer.
+     *
+     * @return \Slim\Container
+     */
+    public function getDiContainer()
+    {
+        return $this->diContainer;
+    }
+
+        /**
+     * Gets the value of diContainer.
+     *
+     * @return \Slim\Container
+     */
+    public function getContainer()
+    {
+        return $this->diContainer;
+    }
+
+    /**
+     * Gets the value of storage.
+     *
+     * @return \Storage\AdapterInterface
+     */
+    public function getStorage()
+    {
+        return $this->storage;
+    }
+
+    /**
+     * Gets the value of log.
+     *
+     * @return \Monolog\Monolog
+     */
+    public function getLog()
+    {
+        return $this->log;
     }
 }

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()->parser->getData()->getParameters();
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
 
         $statementResult = $this->getStorage()->getStatementStorage()->getStatementsFiltered($parameters);
 

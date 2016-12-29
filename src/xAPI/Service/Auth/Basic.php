@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ use Slim\Http\Request;
 use API\Service\User as UserService;
 use API\Util;
 use API\HttpException as Exception;
+use API\Service\Auth\Exception as AuthFailureException;
 
 class Basic extends Service implements AuthInterface
 {
@@ -75,7 +76,7 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchToken($key, $secret)
     {
-        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->fetchToken($key, $secret);
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->getToken($key, $secret);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -118,7 +119,7 @@ class Basic extends Service implements AuthInterface
      */
     public function fetchTokens()
     {
-        $cursor = $this->getStorage()->getBasicAuthStorage()->fetchTokens();
+        $cursor = $this->getStorage()->getBasicAuthStorage()->getTokens();
 
         $this->setCursor($cursor);
 
@@ -229,27 +230,22 @@ class Basic extends Service implements AuthInterface
 
     public function extractToken(Request $request)
     {
-        $headers = $request->headers();
-        $rawHeaders = $request->rawHeaders();
-        if (isset($rawHeaders['Authorization'])) {
-            $header = $rawHeaders['Authorization'];
-        } elseif (isset($headers['Authorization'])) {
-            $header = $headers['Authorization'];
-        } else {
-            throw new Exception('Authorization header required.');
+        $header = $request->getHeaderLine('Authorization');
+        if (!$header) {
+            throw new AuthFailureException('Authorization header required.');
         }
 
         if (preg_match('/Basic\s+(.*)$/i', $header, $matches)) {
             list($authUser, $authPass) = explode(':', base64_decode($matches[1]));
         } else {
-            throw new Exception('Authorization header invalid.');
+            throw new AuthFailureException('Authorization header invalid.');
         }
 
         if (isset($authUser) && isset($authPass)) {
             try {
                 $token = $this->fetchToken($authUser, $authPass);
             } catch (\Exception $e) {
-                throw new Exception('Authorization header invalid.');
+                throw new AuthFailureException('Authorization header invalid.');
             }
         }
 

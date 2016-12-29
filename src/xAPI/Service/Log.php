@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +38,12 @@ class Log extends Service
      */
     public function logRequest($request)
     {
-        $ip = $request->getIp();
+        $ip = $request->getServerParam('REMOTE_ADDR');
         $method = $request->getMethod();
-        $path = $request->getPathInfo();
+        $target = $request->getRequestTarget();
         $currentDate = Util\Date::dateTimeExact();
         $logStorage = $this->getStorage()->getLogStorage();
-        $document = $logStorage->logRequest($ip, $method, $path, $currentDate);
+        $document = $logStorage->logRequest($ip, $method, $target, $currentDate);
 
         return $document;
     }

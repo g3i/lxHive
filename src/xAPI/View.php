@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,5 +63,33 @@ abstract class View extends Set
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Sets the value of items.
+     *
+     * @param mixed $items the items
+     *
+     * @return self
+     */
+    private function setItems($items)
+    {
+        $this->items = $items;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of response.
+     *
+     * @param mixed $response the response
+     *
+     * @return self
+     */
+    private function setResponse($response)
+    {
+        $this->response = $response;
+
+        return $this;
     }
 }

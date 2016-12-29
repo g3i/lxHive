@@ -15,11 +15,11 @@
         "ramsey/uuid": "3.*",
         "league/flysystem": "~0.5",
         "symfony/console": "*",
-        "twig/twig": "~1.18",
         "symfony/yaml": "~2.6",
         "birke/rememberme": "~1.0",
         "sokil/php-mongo-migrator": "~0.2",
-        "monolog/monolog": "^1.21"
+        "monolog/monolog": "^1.21",
+        "slim/twig-view": "^2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*"

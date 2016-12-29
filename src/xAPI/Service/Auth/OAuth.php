@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
 use API\HttpException as Exception;
+use API\Service\Auth\Exception as AuthFailureException;
 
 class OAuth extends Service implements AuthInterface
 {
@@ -255,33 +256,28 @@ class OAuth extends Service implements AuthInterface
 
     public function extractToken(Request $request)
     {
-        $tokenHeader = $request->headers('Authorization', false);
-        $rawTokenHeader = $request->rawHeaders('Authorization', false);
-
+        $tokenHeader = $request->getHeaderLine('Authorization');
+        
         if ($tokenHeader && preg_match('/Bearer\s*([^\s]+)/', $tokenHeader, $matches)) {
-            $tokenHeader = $matches[1];
-        } elseif ($rawTokenHeader && preg_match('/Bearer\s*([^\s]+)/', $rawTokenHeader, $matches)) {
             $tokenHeader = $matches[1];
         } else {
             $tokenHeader = false;
         }
-        $tokenRequest = $request->post('access_token', false);
-        $tokenQuery = $request->get('access_token', false);
+        $tokenParam = $request->getParam('access_token', false);
         // At least one (and only one) of client credentials method required.
-        if (!$tokenHeader && !$tokenRequest && !$tokenQuery) {
-            throw new Exception('The request is missing a required parameter.', Resource::STATUS_BAD_REQUEST);
-        } elseif (($tokenHeader && $tokenRequest) || ($tokenRequest && $tokenQuery) || ($tokenQuery && $tokenHeader)) {
-            throw new Exception('The request includes multiple credentials.', Resource::STATUS_BAD_REQUEST);
+        if (!$tokenHeader && !$tokenParam) {
+            throw new AuthFailureException('The request is missing a required parameter.', Resource::STATUS_BAD_REQUEST);
+        } elseif ($tokenHeader && $tokenParam) {
+            throw new AuthFailureException('The request includes multiple credentials.', Resource::STATUS_BAD_REQUEST);
         }
 
         $accessToken = $tokenHeader
-            ?: $tokenRequest
-            ?: $tokenQuery;
+            ?: $tokenParam;
 
         try {
             $tokenDocument = $this->fetchToken($accessToken);
         } catch (\Exception $e) {
-            throw new Exception('Access token invalid.');
+            throw new AuthFailureException('Access token invalid.');
         }
 
         return $tokenDocument;

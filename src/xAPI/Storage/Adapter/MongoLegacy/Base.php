@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,11 +39,11 @@ class Base extends StorageBase
     {
         parent::__construct($container);
 
-        $client = new Client($this->getContainer()->config('storage')['MongoLegacy']['host_uri']);
+        $client = new Client($this->getContainer()['settings']['storage']['MongoLegacy']['host_uri']);
         $client->map([
-            $this->getContainer()->config('storage')['MongoLegacy']['db_name'] => '\API\Storage\Adapter\MongoLegacy\Collection',
+            $this->getContainer()['settings']['storage']['MongoLegacy']['db_name'] => '\API\Storage\Adapter\MongoLegacy\Collection',
         ]);
-        $client->useDatabase($this->getContainer()->config('storage')['MongoLegacy']['db_name']);
+        $client->useDatabase($this->getContainer()['settings']['storage']['MongoLegacy']['db_name']);
 
         $this->setDocumentManager($client);
     }

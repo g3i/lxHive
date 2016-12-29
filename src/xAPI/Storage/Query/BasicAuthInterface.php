@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ namespace API\Storage\Query;
 
 interface BasicAuthInterface
 {
-    public function storeToken($name, $description, $expiresAt, $user, $scopes);
+    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null);
 
     public function getToken($key, $secret);
 
@@ -34,7 +34,7 @@ interface BasicAuthInterface
 
     public function expireToken($clientId, $accessToken);
 
-    public function fetchTokens();
+    public function getTokens();
 
     public function getScopeByName($name);
 }

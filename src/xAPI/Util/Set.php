@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Util;
+namespace API\Util;
 
 class Set implements \ArrayAccess, \Countable, \IteratorAggregate
 {
@@ -39,6 +39,20 @@ class Set implements \ArrayAccess, \Countable, \IteratorAggregate
     public function __construct($items = array())
     {
         $this->replace($items);
+    }
+
+    /**
+     * Normalize data key
+     *
+     * Used to transform data key into the necessary
+     * key format for this set.
+     *
+     * @param  string $key The data key
+     * @return mixed       The transformed/normalized data key
+     */
+    protected function normalizeKey($key)
+    {
+        return $key;
     }
 
     /**

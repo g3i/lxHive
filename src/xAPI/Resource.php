@@ -22,10 +22,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SmsConnector;
+namespace API;
 
-use SmsConnector\Resource\Error as Error;
-use SmsConnector\View\Error as ErrorView;
+use API\Resource\Error as Error;
+use API\View\Error as ErrorView;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class Resource
@@ -143,6 +143,8 @@ abstract class Resource
             $body->write($data);
         }
 
+        $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
+
         $this->response = $this->response->withStatus($status)
                                          ->withHeader('Access-Control-Allow-Origin', '*')
                                          ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
@@ -167,7 +169,20 @@ abstract class Resource
             $this->response = $this->response->withJson($data, $status);
         }
 
-        return $this->response($status, $data, $allow);
+        $this->response = $this->response->withStatus($status)
+                                         ->withHeader('Access-Control-Allow-Origin', '*')
+                                         ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
+                                         ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
+                                         ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
+                                         ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
+                                         ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
+                                         ->withHeader('X-Experience-API-Consistent-Through', $date);
+
+        if (!empty($allow)) {
+            $this->response = $this->response->withHeader('Allow', strtoupper(implode(',', $allow)));
+        }
+
+        return $this->response;
     }
 
     /**
@@ -181,7 +196,7 @@ abstract class Resource
         $view = new ErrorView($this->getResponse(), $this->getDiContainer(), ['code' => $code, 'message' => $message]);
         $view = $view->render();
 
-        return $this->response($code, $view);
+        return $this->jsonResponse(['code' => $code, 'message' => $message]);
     }
 
     /**
@@ -190,13 +205,15 @@ abstract class Resource
      *
      * @return mixed
      */
-    public static function load($resource, $subResource, $container, $request, $response)
+    public static function load($version, $resource, $subResource, $container, $request, $response)
     {
+        $versionNamespace = $version->generateClassNamespace();
         if (null !== $subResource) {
-            $class = __NAMESPACE__.'\\Resource\\'.ucfirst($resource).'\\'.ucfirst($subResource);
+            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
         } else {
-            $class = __NAMESPACE__.'\\Resource\\'.ucfirst($resource);
+            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource);
         }
+
         if (!class_exists($class)) {
             $errorResource = new Error($container, $request, $response);
             $errorResource->error(self::STATUS_NOT_FOUND, 'Cannot find requested resource.');
@@ -205,15 +222,6 @@ abstract class Resource
         }
 
         return new $class($container, $request, $response);
-    }
-
-    /**
-     * The DI container
-     * @return Container the DI Container
-     */
-    public function getContainer()
-    {
-        return $this->diContainer;
     }
 
     /**

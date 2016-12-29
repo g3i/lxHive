@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ use API\HttpException as Exception;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {
-    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key, $secret)
+    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
         $collection = $this->getDocumentManager()->getCollection('basicTokens');
 
@@ -87,6 +87,8 @@ class BasicAuth extends Base implements BasicAuthInterface
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
         $this->validateExpiresAt($expiresAt);
+
+        return $accessTokenDocument;
     }
 
     public function deleteToken($clientId)
@@ -114,10 +116,12 @@ class BasicAuth extends Base implements BasicAuthInterface
         return $accessTokenDocument;
     }
 
-    public function fetchTokens()
+    public function getTokens()
     {
         $collection = $this->getDocumentManager()->getCollection('basicTokens');
         $cursor = $collection->find();
+
+        return $cursor;
     }
 
     public function getScopeByName($name)
