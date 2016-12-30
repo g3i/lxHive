@@ -26,9 +26,8 @@ namespace API\Parser;
 
 use Psr\Http\Message\RequestInterface;
 
-class PsrRequest implements ParserInterface
+class PsrRequest
 {
-    // TODO: This class is for PSR-7 requests, this is being prepared for Slim3 switch!
     protected $parameters;
 
     protected $parts;
@@ -40,8 +39,110 @@ class PsrRequest implements ParserInterface
         $this->parseRequest($request);
     }
 
-    private function parseRequest()
+    private function parseRequest($request)
     {
+
+        if ($this->isMultipart($request)) {
+            $this->parts = $this->parseMultipartRequest($request);
+        } else {
+            $this->parts = [$this->parseSingleRequest($request)];
+        }
+    }
+
+    private function isMultipart($request)
+    {
+        return (strpos($request->getMediaType(), 'multipart/') === 0);
+    }
+
+    private function parseMultipartRequest($request)
+    {
+        if (false === stripos($request->getContentType(), ';')) {
+            throw new \LogicException('Content-Type does not contain a \';\'');
+        }
+        
+        $boundary = $request->getMediaTypeParams()['boundary'];
+        
+        // Split bodies by the boundary
+        $bodies = explode('--' . $boundary, (string)$this->getBody());
+        
+        // RFC says, to ignore preamble and epilogue.
+        $preamble = array_shift($bodies);
+        $epilogue = array_pop($bodies);
+        $requestParts = [];
+        foreach ($bodies as $body) {
+            $isHeader = true;
+            $headers = [];
+            $content = [];
+            $data = explode('\n', $body);
+            foreach ($data as $i => $line) {
+                if (0 == $i) {
+                    // Skip the first line
+                    array_shift($data);
+                    continue;
+                }
+                if ('' == trim($line)) {
+                    // Header-body separator
+                    $isHeader = false;
+                    array_shift($data);
+                    continue;
+                }
+                if ($isHeader) {
+                    list($header, $value) = explode(':', $line);
+                    if ($header) {
+                        $headers[$header] = trim($value);
+                    }
+                    array_shift($data);
+                } else {
+                    $content = implode('\n', $data);
+                    break;
+                }
+            }
+            if (!isset($headers['Content-Type'])) {
+                $headers['Content-Type'] = 'text/plain';
+            }
+
+            $parserResult = new ParserResult();
+
+            $parameters = $request->getQueryParams();
+            $parserResult->setParameters($parameters);
+
+            $parserResult->setHeaders($headers);
+
+            $parserResult->setRawPayload($content);
+
+            if (strpos($headers['Content-Type'], 'application/json') === 0) {
+                $content = json_decode($content, true);
+
+                // Some clients escape the JSON twice - handle them
+                if (is_string($content)) {
+                    $content = json_decode($content, true);
+                }
+            }
+            $parserResult->setPayload($content);
+
+            // Create request from mock
+            $requestParts[] = $parserResult;
+        }
+        return $requestParts;
+    }
+
+    private function parseSingleRequest($request)
+    {
+        $parserResult = new ParserResult();
+
+        $parameters = $request->getQueryParams();
+        $parserResult->setParameters($parameters);
+
+        $headers = $request->getHeaders();
+        $parserResult->setHeaders($headers);
+
+        $body = $request->getBody();
+        $parserResult->setRawPayload($body);
+
+        $parsedBody = $request->getParsedBody();
+        $parserResult->setPayload($parsedBody);
+
+        return $parserResult;
     }
 
     /**
@@ -51,6 +152,7 @@ class PsrRequest implements ParserInterface
      */
     public function getData()
     {
+        return $this->parts[0];
     }
 
     /**
@@ -60,6 +162,10 @@ class PsrRequest implements ParserInterface
      */
     public function getAttachments()
     {
+        $parts = $this->parts;
+        array_shift($parts);
+
+        return $parts;
     }
 
     /**
@@ -69,5 +175,6 @@ class PsrRequest implements ParserInterface
      */
     public function getParts()
     {
+        return $this->parts;
     }
 }
