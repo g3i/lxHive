@@ -33,8 +33,7 @@ class About extends Resource
     public function get()
     {
         $versions = $this->getContainer()['settings']['xAPI']['supported_versions'];
-
-        $view = new AboutView(['versions' => $versions]);
+        $view = new AboutView($this->getResponse(), $this->getDiContainer(), ['versions' => $versions]);
         $view = $view->render();
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);
@@ -44,6 +43,6 @@ class About extends Resource
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 }

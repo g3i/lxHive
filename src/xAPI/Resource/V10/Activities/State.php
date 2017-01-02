@@ -65,7 +65,7 @@ class State extends Resource
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             $view = $view->renderGet();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
+            return $this->jsonResponse(Resource::STATUS_OK, $view);
         }
     }
 
@@ -82,7 +82,7 @@ class State extends Resource
         $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
@@ -98,7 +98,7 @@ class State extends Resource
         $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function delete()
@@ -114,14 +114,14 @@ class State extends Resource
         $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

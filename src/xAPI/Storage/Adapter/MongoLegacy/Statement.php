@@ -27,7 +27,6 @@ namespace API\Storage\Adapter\MongoLegacy;
 use API\Resource;
 use API\Storage\Query\StatementResult;
 use API\Storage\Query\StatementInterface;
-use API\Storage\Adapter\Base;
 use API\Util;
 use Ramsey\Uuid\Uuid;
 use API\HttpException as Exception;
@@ -44,6 +43,8 @@ class Statement extends Base implements StatementInterface
         $collection = $this->getDocumentManager()->getCollection('statements');
         $cursor = $collection->find();
 
+        $parameters = new Util\Set($parameters);
+
         // Single statement
         if ($parameters->has('statementId')) {
             $cursor->where('statement.id', $parameters->get('statementId'));
@@ -55,7 +56,7 @@ class Statement extends Base implements StatementInterface
 
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
-            $statementResult->setCurrentCount(1);
+            $statementResult->setRemainingCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
 
@@ -70,7 +71,7 @@ class Statement extends Base implements StatementInterface
 
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
-            $statementResult->setCurrentCount(1);
+            $statementResult->setRemainingCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
 
@@ -284,7 +285,7 @@ class Statement extends Base implements StatementInterface
             $cursor->whereLessOrEqual('_id', $id);
         }
 
-        $statementResult->setRequestedFormat($this->getContainer()->config('xAPI')['default_statement_get_format']);
+        $statementResult->setRequestedFormat($this->getContainer()['settings']['xAPI']['default_statement_get_format']);
         if ($parameters->has('format')) {
             $statementResult->setRequestedFormat($parameters->get('format'));
         }
@@ -301,10 +302,10 @@ class Statement extends Base implements StatementInterface
             }
         }
 
-        if ($parameters->has('limit') && $parameters->get('limit') < $this->getContainer()->config('xAPI')['statement_get_limit'] && $parameters->get('limit') > 0) {
+        if ($parameters->has('limit') && $parameters->get('limit') < $this->getContainer()['settings']['xAPI']['statement_get_limit'] && $parameters->get('limit') > 0) {
             $limit = $parameters->get('limit');
         } else {
-            $limit = $this->getContainer()->config('xAPI')['statement_get_limit'];
+            $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
         }
 
         $cursor->limit($limit);
@@ -334,13 +335,13 @@ class Statement extends Base implements StatementInterface
         return $requestedStatement;
     }
 
-    private function insert($statementObject)
+    public function insert($statementObject)
     {
         $collection = $this->getDocumentManager()->getCollection('statements');
         // TODO: This should be in Activity storage manager!
         $activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()->config('filesystem')['exposed_url'];
+        $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
 
         if (isset($statementObject['id'])) {
             $cursor = $collection->find();
@@ -415,7 +416,7 @@ class Statement extends Base implements StatementInterface
         $statementDocument = $this->insert($statementObject);
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementObject]);
-        $statementResult->setCurrentCount(1);
+        $statementResult->setRemainingCount(1);
         $statementResult->setHasMore(false);
 
         return $statementResult;
@@ -429,7 +430,7 @@ class Statement extends Base implements StatementInterface
         }
         $statementResult = new StatementResult();
         $statementResult->setCursor($statementDocuments);
-        $statementResult->setCurrentCount(count($statementDocuments));
+        $statementResult->setRemainingCount(count($statementDocuments));
         $statementResult->setHasMore(false);
 
         return $statementResult;
@@ -455,7 +456,7 @@ class Statement extends Base implements StatementInterface
         $statementDocument = $this->insert($statementObject);
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementDocument]);
-        $statementResult->setCurrentCount(1);
+        $statementResult->setRemainingCount(1);
         $statementResult->setHasMore(false);
 
         return $statementResult;

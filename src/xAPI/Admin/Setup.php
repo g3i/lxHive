@@ -85,7 +85,7 @@ class Setup extends Base
     {
         $oAuthService = new OAuthService($this->getContainer());
 
-        foreach ($this->getContainer()->config('xAPI')['supported_auth_scopes'] as $authScope) {
+        foreach ($this->getContainer()['settings']['xAPI']['supported_auth_scopes'] as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }

@@ -41,7 +41,7 @@ class Statement extends Service
     {
         $parameters = $this->getContainer()['parser']->getData()->getParameters();
 
-        $statementResult = $this->getStorage()->getStatementStorage()->getStatementsFiltered($parameters);
+        $statementResult = $this->getStorage()->getStatementStorage()->get($parameters);
 
         return $statementResult;
     }
@@ -55,8 +55,8 @@ class Statement extends Service
     {
         $this->validateJsonMediaType($this->getContainer()->parser->getData());
 
-        if (count($this->getContainer()->parser->getParts()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()->config('filesystem'));
+        if (count($this->getContainer()->parser->getAttachments()) > 0) {
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
             foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
@@ -103,8 +103,8 @@ class Statement extends Service
     {
         $this->validateJsonMediaType($this->getContainer()->parser->getData());
 
-        if (count($this->getContainer()->parser->getParts()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()->config('filesystem'));
+        if (count($this->getContainer()->parser->getAttachments()) > 0) {
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
             foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
@@ -147,7 +147,7 @@ class Statement extends Service
     private function validateJsonMediaType($jsonRequest)
     {
         // TODO: Move header validation in json-schema as well
-        if ($jsonRequest->getMediaType() !== 'application/json') {
+        if (strpos($jsonRequest->getHeaders()['Content-Type'], 'application/json') !== 0) {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
     }

@@ -33,8 +33,8 @@ class Login extends View
         $view = $this->getContainer()->view;
         $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
         $this->set('csrfToken', $_SESSION['csrfToken']);
-        $this->set('name', $this->getContainer()->config('name'));
-        $this->set('branding', $this->getContainer()->config('xAPI')['oauth']['branding']);
+        $this->set('name', $this->getContainer()['settings']['name'));
+        $this->set('branding', $this->getContainer()['settings']['xAPI']['oauth']['branding']);
         $output = $view->render('login.twig', $this->all());
 
         // Set Content-Type to html

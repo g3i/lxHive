@@ -96,7 +96,7 @@ class Authorize extends Resource
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

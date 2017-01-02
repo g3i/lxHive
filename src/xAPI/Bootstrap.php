@@ -51,7 +51,7 @@ class Bootstrap
     public function initWebContainer($container = null)
     {
         // Get file paths of project and config
-        $appRoot = __DIR__.'/../';
+        $appRoot = realpath(__DIR__.'/../../');
         $yamlParser = new YamlParser();
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
 
@@ -225,8 +225,8 @@ class Bootstrap
         };
 
         // Version
-        $container['version'] = function ($c) {
-            if ($container['request']->isOptions() || strpos(strtolower($container['request']->getRequestTarget()), '/about') === 0 || strpos(strtolower($container['request']->getRequestTarget()), '/oauth') === 0) {
+        $container['version'] = function ($container) {
+            if ($container['request']->isOptions() || $container['request']->getUri()->getPath() === '/about' || $container['request']->getUri()->getPath() === '/oauth') {
                 $versionString = $container['settings']['xAPI']['latest_version'];
             } else {
                 $versionString = $container['request']->getHeaderLine('X-Experience-API-Version');
@@ -241,7 +241,7 @@ class Bootstrap
                     throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
                 }
 
-                if (!in_array($versionString, $app->config('xAPI')['supported_versions'])) {
+                if (!in_array($versionString, $container['settings']['xAPI']['supported_versions'])) {
                     throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
                 }
 

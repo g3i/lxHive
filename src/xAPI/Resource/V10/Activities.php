@@ -55,14 +55,14 @@ class Activities extends Resource
         $view = new ActivityView(['service' => $this->activityService]);
 
         $view = $view->renderGetSingle();
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

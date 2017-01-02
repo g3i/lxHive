@@ -47,9 +47,10 @@ class BasicToken extends AbstractToken
 
     public function generateAuthority()
     {
-        $slim = Slim::getInstance();
-        $url = $slim->url;
-        $host = $url->getBaseUrl();
+        //$slim = Slim::getInstance();
+        //$url = $slim->url;
+        //$host = $url->getBaseUrl();
+        $host = 'fake.com';
         $authority = [
             'objectType' => 'Agent',
             'account' => [

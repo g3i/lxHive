@@ -48,13 +48,13 @@ class Agents extends Resource
         $view = new AgentView(['agent' => $agent]);
         $view = $view->renderGet();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 }

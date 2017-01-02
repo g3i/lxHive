@@ -63,18 +63,18 @@ class Statements extends Resource
         $this->statementValidator->validateGetRequest();
 
         // Load the statements
-        $this->statementService->statementGet();
+        $statementResult = $this->statementService->statementGet();
 
         // Render them
-        $view = new StatementView(['service' => $this->statementService]);
+        $view = new StatementView($this->getResponse(), $this->getDiContainer());
 
-        if ($this->statementService->getSingle()) {
-            $view = $view->renderGetSingle();
+        if ($statementResult->getIsSingle()) {
+            $view = $view->renderGetSingle($statementResult);
         } else {
-            $view = $view->renderGet();
+            $view = $view->renderGet($statementResult);
         }
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function put()
@@ -90,7 +90,7 @@ class Statements extends Resource
         $this->statementService->statementPut();
 
         // Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
@@ -103,19 +103,19 @@ class Statements extends Resource
         $this->statementValidator->validatePostRequest();
 
         // Save the statements
-        $this->statementService->statementPost();
+        $statementResult = $this->statementService->statementPost();
 
-        $view = new StatementView(['service' => $this->statementService]);
-        $view = $view->renderPost();
+        $view = new StatementView($this->getResponse(), $this->getDiContainer());
+        $view = $view->renderPost($statementResult);
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

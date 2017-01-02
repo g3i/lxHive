@@ -39,7 +39,7 @@ class Statements extends View
         $format = $statementResult->getRequestedFormat();
 
         // This could be done better with pointers or a separate renderer or something... also, move valid format checking to Validator perhaps?
-        foreach ($statementResult->getStatementCursor() as $statementDocument) {
+        foreach ($statementResult->getCursor() as $statementDocument) {
             $idArray[] = $statementDocument->getId();
             if ($format === 'exact') {
                 $resultArray[] = $statementDocument->renderExact();
@@ -71,7 +71,7 @@ class Statements extends View
 
     public function renderGetSingle($statementResult)
     {
-        $statement = $statementResult->getStatementCursor()->current()->renderExact();
+        $statement = $statementResult->getCursor()->current()->renderExact();
 
         return $statement;
     }
@@ -80,7 +80,7 @@ class Statements extends View
     {
         $response = [];
 
-        $statements = $statementResult->getStatementCursor();
+        $statements = $statementResult->getCursor();
 
         foreach ($statements as $document) {
             $response[] = $document->renderMeta();

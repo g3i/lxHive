@@ -53,14 +53,14 @@ class Token extends Resource
         // Authorization is always requested
         $view = new AccessTokenView(['service' => $this->oAuthService]);
         $view = $view->renderGet();
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'POST');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

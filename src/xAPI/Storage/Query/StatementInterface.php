@@ -49,11 +49,11 @@ interface StatementInterface
      *
      * @return bool
      */
-    public function statmentWithIdExists($statementId);
+    public function statementWithIdExists($statementId);
 
     public function post($statementObject);
 
-    public function put($statementObject);
+    public function put($parameters, $statementObject);
 
     public function delete($parameters);
 }

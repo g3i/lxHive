@@ -73,7 +73,7 @@ class Attachments extends Resource
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

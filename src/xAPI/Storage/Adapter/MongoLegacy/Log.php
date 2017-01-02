@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\LogInterface;
+use API\Util;
 
 class Log extends Base implements LogInterface
 {

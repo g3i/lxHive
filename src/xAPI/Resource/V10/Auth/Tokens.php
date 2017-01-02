@@ -59,7 +59,7 @@ class Tokens extends Resource
 
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function post()
@@ -78,7 +78,7 @@ class Tokens extends Resource
 
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function put()
@@ -97,7 +97,7 @@ class Tokens extends Resource
 
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function delete()
@@ -111,14 +111,14 @@ class Tokens extends Resource
 
         $this->accessTokenService->accessTokenDelete();
 
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
         $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**

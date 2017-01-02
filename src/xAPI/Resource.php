@@ -151,7 +151,7 @@ abstract class Resource
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
                                          ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
-                                         ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
+                                         ->withHeader('X-Experience-API-Version', $this->getContainer()['settings']['xAPI']['latest_version'])
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
@@ -169,13 +169,15 @@ abstract class Resource
             $this->response = $this->response->withJson($data, $status);
         }
 
+        $date = \API\Util\Date::dateTimeToISO8601(\API\Util\Date::dateTimeExact());
+
         $this->response = $this->response->withStatus($status)
                                          ->withHeader('Access-Control-Allow-Origin', '*')
                                          ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
                                          ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
-                                         ->withHeader('X-Experience-API-Version', $slim->config('xAPI')['latest_version'])
+                                         ->withHeader('X-Experience-API-Version', $this->getContainer()['settings']['xAPI']['latest_version'])
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
@@ -193,10 +195,7 @@ abstract class Resource
      */
     public function error($code, $message = '')
     {
-        $view = new ErrorView($this->getResponse(), $this->getDiContainer(), ['code' => $code, 'message' => $message]);
-        $view = $view->render();
-
-        return $this->jsonResponse(['code' => $code, 'message' => $message]);
+        return $this->jsonResponse($code, ['code' => $code, 'message' => $message]);
     }
 
     /**
@@ -216,7 +215,7 @@ abstract class Resource
 
         if (!class_exists($class)) {
             $errorResource = new Error($container, $request, $response);
-            $errorResource->error(self::STATUS_NOT_FOUND, 'Cannot find requested resource.');
+            $errorResource = $errorResource->error(self::STATUS_NOT_FOUND, 'Cannot find requested resource.');
 
             return $errorResource;
         }
