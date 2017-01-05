@@ -22,32 +22,25 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter;
+namespace API\Storage\Adapter\MongoLegacy;
 
-abstract class Base
+use API\Storage\Query\LogInterface;
+use API\Util;
+
+class Log extends Base implements LogInterface
 {
-    /**
-     * @var PSR-11 Container
-     */
-    private $container;
-
-    /**
-     * Constructor.
-     *
-     * @param PSR-11 Container
-     */
-    public function __construct($container)
+    public function logRequest($ip, $method, $endpoint, $timestamp)
     {
-        $this->container = $container;
-    }
+        $collection = $this->getDocumentManager()->getCollection('logs');
+        $document = $collection->createDocument();
 
-    /**
-     * Gets the value of container.
-     *
-     * @return \Slim\Slim - in future DI container
-     */
-    public function getContainer()
-    {
-        return $this->container;
+        $document->setIp($ip);
+        $document->setMethod($method);
+        $document->setEndpoint($endpoint);
+        $document->setTimestamp(Util\Date::dateTimeToMongoDate($timestamp));
+
+        $document->save();
+
+        return $document;
     }
 }

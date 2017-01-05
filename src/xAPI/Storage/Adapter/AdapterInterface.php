@@ -34,6 +34,16 @@ interface AdapterInterface
      *
      * @return DocumentResult The result of this query
      */
+    public function insertMultiple($documents, $collection);
+
+    /**
+     * Inserts the document into the specified collection.
+     *
+     * @param API\Document\DocumentInterface $document   The document to be inserted
+     * @param string                         $collection Name of the collection to insert to
+     *
+     * @return DocumentResult The result of this query
+     */
     public function insert($document, $collection);
 
     /**
@@ -45,7 +55,7 @@ interface AdapterInterface
      *
      * @return DocumentResult The result of this query
      */
-    public function update($modifications, $query, $collection);
+    public function update($newDocument, $filter, $collection);
 
     /**
      * Deletes documents.

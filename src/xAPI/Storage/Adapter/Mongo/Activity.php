@@ -22,32 +22,27 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter;
+namespace API\Storage\Adapter\MongoLegacy;
 
-abstract class Base
+use API\Storage\Query\ActivityInterface;
+use API\Resource;
+use API\HttpException as Exception;
+
+class Activity extends Base implements ActivityInterface
 {
-    /**
-     * @var PSR-11 Container
-     */
-    private $container;
-
-    /**
-     * Constructor.
-     *
-     * @param PSR-11 Container
-     */
-    public function __construct($container)
+    public function fetchActivityById($id)
     {
-        $this->container = $container;
-    }
+        $collection = $this->getDocumentManager()->getCollection('activities');
+        $cursor = $collection->find();
 
-    /**
-     * Gets the value of container.
-     *
-     * @return \Slim\Slim - in future DI container
-     */
-    public function getContainer()
-    {
-        return $this->container;
+        $cursor->where('id', $id);
+
+        if ($cursor->count() === 0) {
+            throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
+        }
+
+        $document = $cursor->current();
+
+        return $document;
     }
 }
