@@ -44,11 +44,11 @@ class ProjectedStatement extends View
             $latestId = end($resultArray)->getId();
             $latestId = $latestId->__toString();
             if ($descending) {
-                $this->getContainer()->url->getQuery()->modify(['until_id' => $latestId]);
+                $this->getContainer()->getUrl()->getQuery()->modify(['until_id' => $latestId]);
             } else { //Ascending
-                $this->getContainer()->url->getQuery()->modify(['since_id' => $latestId]);
+                $this->getContainer()->getUrl()->getQuery()->modify(['since_id' => $latestId]);
             }
-            $view['more'] = $this->getContainer()->url->getRelativeUrl();
+            $view['more'] = $this->getContainer()->getUrl()->getRelativeUrl();
         }
 
         foreach ($resultArray as $result) {

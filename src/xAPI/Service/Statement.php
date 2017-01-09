@@ -53,12 +53,12 @@ class Statement extends Service
      */
     public function statementPost()
     {
-        $this->validateJsonMediaType($this->getContainer()->parser->getData());
+        $this->validateJsonMediaType($this->getContainer()->getParser()->getData());
 
-        if (count($this->getContainer()->parser->getAttachments()) > 0) {
+        if (count($this->getContainer()->getParser()->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
-            foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
+            foreach ($this->getContainer()->getParser()->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -81,7 +81,7 @@ class Statement extends Service
             }
         }
 
-        $body = $this->getContainer()->parser->getData()->getPayload();
+        $body = $this->getContainer()->getParser()->getData()->getPayload();
 
         // Multiple statements
         if ($this->areMultipleStatements($body)) {
@@ -101,12 +101,12 @@ class Statement extends Service
      */
     public function statementPut()
     {
-        $this->validateJsonMediaType($this->getContainer()->parser->getData());
+        $this->validateJsonMediaType($this->getContainer()->getParser()->getData());
 
-        if (count($this->getContainer()->parser->getAttachments()) > 0) {
+        if (count($this->getContainer()->getParser()->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
-            foreach ($this->getContainer()->parser->getAttachments() as $attachment) {
+            foreach ($this->getContainer()->getParser()->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -130,8 +130,8 @@ class Statement extends Service
         }
 
         // Single
-        $parameters = $this->getContainer()->parser->getData()->getParameters();
-        $body = $this->getContainer()->parser->getData()->getPayload();
+        $parameters = $this->getContainer()->getParser()->getData()->getParameters();
+        $body = $this->getContainer()->getParser()->getData()->getPayload();
 
         $statementResult = $this->getStorage()->getStatementStorage()->putStatement($parameters, $body);
 

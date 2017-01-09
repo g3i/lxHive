@@ -66,7 +66,7 @@ class Authorize extends Resource
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             // Redirect to login
-            $redirectUrl = $this->getContainer()->url;
+            $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('authorize');
             $redirectUrl->getPath()->append('login');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);

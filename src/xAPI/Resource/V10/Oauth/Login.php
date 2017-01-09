@@ -69,7 +69,7 @@ class Login extends Resource
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             // Redirect to authorization
-            $redirectUrl = $this->getContainer()->url;
+            $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);
@@ -86,7 +86,7 @@ class Login extends Resource
         // Authorization is always requested
         try {
             $this->userService->loginPost();
-            $redirectUrl = $this->getContainer()->url;
+            $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);

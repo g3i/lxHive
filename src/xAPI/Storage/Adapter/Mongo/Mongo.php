@@ -50,7 +50,7 @@ class Mongo implements AdapterInterface
      *
      * @return DocumentResult The result of this query
      */
-    public function insert($collection, $document)
+    public function insertOne($collection, $document)
     {
         $bulk = new MongoDB\Driver\BulkWrite();
         $bulk->insert($document);
@@ -89,6 +89,9 @@ class Mongo implements AdapterInterface
      */
     public function update($collection, $filter, $newDocument)
     {
+        if ($filter instanceof ExpressionInterface) {
+            $filter = $filter->toArray();
+        }
         $collectionObject = $this->getClient()->getCollection($collection);
         $collection->update($filter, $newDocument);
 
@@ -109,6 +112,9 @@ class Mongo implements AdapterInterface
      */
     public function delete($collection, $filter)
     {
+        if ($filter instanceof ExpressionInterface) {
+            $filter = $filter->toArray();
+        }
         $bulk = new MongoDB\Driver\BulkWrite();
         $bulk->delete($filter);
 
@@ -119,17 +125,26 @@ class Mongo implements AdapterInterface
     /**
      * Fetches documents.
      *
-     * @param array  $filter      The filter to fetch the documents by
+     * @param array|Expression  $filter      The filter to fetch the documents by
      * @param string $collection Name of collection
      *
      * @return DocumentResult Result of fetch
      */
-    public function get($collection, $filter, $options)
+    public function find($collection, $filter, $options)
     {
+        if ($filter instanceof ExpressionInterface) {
+            $filter = $filter->toArray();
+        }
         $query = new MongoDB\Driver\Query($filter, $options);
         $cursor = $mongo->executeQuery($this->databaseName . '.' . $collection, $query);
         
         return $cursor;
+    }
+
+    public function createExpression()
+    {
+        $expression = new Expression();
+        return $expression;
     }
 
     public static function testConnection($uri)
@@ -149,72 +164,72 @@ class Mongo implements AdapterInterface
     }
 
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
-    public function getStatementStorage()
+    public static function getStatementStorage($container)
     {
-        $statementStorage = new Statement($this->getContainer());
+        $statementStorage = new Statement($container());
 
         return $statementStorage;
     }
 
     public function getAttachmentStorage()
     {
-        $attachmentStorage = new Attachment($this->getContainer());
+        $attachmentStorage = new Attachment($container);
 
         return $attachmentStorage;
     }
 
     public function getUserStorage()
     {
-        $userStorage = new User($this->getContainer());
+        $userStorage = new User($container);
 
         return $userStorage;
     }
 
     public function getLogStorage()
     {
-        $logStorage = new Log($this->getContainer());
+        $logStorage = new Log($container);
 
         return $logStorage;
     }
 
     public function getActivityStorage()
     {
-        $activityStorage = new Activity($this->getContainer());
+        $activityStorage = new Activity($container);
 
         return $activityStorage;
     }
 
     public function getActivityStateStorage()
     {
-        $activityStateStorage = new ActivityState($this->getContainer());
+        $activityStateStorage = new ActivityState($container);
 
         return $activityStateStorage;
     }
 
     public function getActivityProfileStorage()
     {
-        $activityProfileStorage = new ActivityProfile($this->getContainer());
+        $activityProfileStorage = new ActivityProfile($container);
 
         return $activityProfileStorage;
     }
 
     public function getAgentProfileStorage()
     {
-        $agentProfileStorage = new AgentProfile($this->getContainer());
+        $agentProfileStorage = new AgentProfile($container);
 
         return $agentProfileStorage;
     }
 
     public function getBasicAuthStorage()
     {
-        $agentProfileStorage = new BasicAuth($this->getContainer());
+        $agentProfileStorage = new BasicAuth($container);
 
         return $agentProfileStorage;
     }
 
     public function getOAuthStorage()
     {
-        $agentProfileStorage = new OAuth($this->getContainer());
+        $agentProfileStorage = new OAuth();
 
         return $agentProfileStorage;
     }

@@ -50,7 +50,7 @@ class OAuthToken extends AbstractToken
     public function generateAuthority()
     {
         $slim = Slim::getInstance();
-        $url = $slim->url;
+        $url = $slim->getUrl();
         $host = $url->getBaseUrl();
         $authority = [
             'objectType' => 'Group',

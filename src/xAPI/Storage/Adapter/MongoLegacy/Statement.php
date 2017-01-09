@@ -341,7 +341,7 @@ class Statement extends Base implements StatementInterface
         // TODO: This should be in Activity storage manager!
         $activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
+        $attachmentBase = $this->getContainer()->getUrl()->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
 
         if (isset($statementObject['id'])) {
             $cursor = $collection->find();

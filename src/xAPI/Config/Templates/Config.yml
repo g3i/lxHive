@@ -1,7 +1,10 @@
 name: BrightCookie LRS
 mode: production
 storage:
-    in_use: MongoLegacy
+    in_use: Mongo
+    Mongo:
+        host_uri: 'mongodb://127.0.0.1'
+        db_name: lxHive
     MongoLegacy:
         host_uri: 'mongodb://127.0.0.1'
         db_name: lxHive
