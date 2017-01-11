@@ -41,7 +41,7 @@ abstract class Base implements DocumentInterface
      *
      * @return void
      */
-    public function __construct($data, $documentState, $version)
+    public function __construct($data = [], $documentState = null, $version = null)
     {
         $this->data = $data;
         $this->state = $documentState;
@@ -78,6 +78,48 @@ abstract class Base implements DocumentInterface
         return $this->version;
     }
 
+        /**
+     * Sets the value of data.
+     *
+     * @param mixed $data the data
+     *
+     * @return self
+     */
+    protected function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of state.
+     *
+     * @param mixed $state the state
+     *
+     * @return self
+     */
+    protected function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of version.
+     *
+     * @param mixed $version the version
+     *
+     * @return self
+     */
+    protected function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
     // TODO: If needed, add dot notation getters and setters
     public function get($key)
     {
@@ -110,5 +152,15 @@ abstract class Base implements DocumentInterface
         }
 
         throw new Exception('Document has no method "' . $name . '"');
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getData();
+    }
+
+    public function toArray()
+    {
+        return $this->getData();
     }
 }

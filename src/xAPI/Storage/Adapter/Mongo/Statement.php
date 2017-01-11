@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Resource;
 use API\Storage\Query\StatementResult;
@@ -44,6 +44,7 @@ class Statement extends Base implements StatementInterface
         $collection = 'statements';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
+        $queryOptions = [];
 
         $parameters = new Util\Set($parameters);
 
@@ -271,26 +272,26 @@ class Statement extends Base implements StatementInterface
         // Date based filters
         if ($parameters->has('since')) {
             $since = Util\Date::dateStringToMongoDate($parameters->get('since'));
-            $cursor->whereGreaterOrEqual('mongo_timestamp', $since);
+            $expression->whereGreaterOrEqual('mongo_timestamp', $since);
         }
 
         if ($parameters->has('until')) {
             $until = Util\Date::dateStringToMongoDate($parameters->get('until'));
-            $cursor->whereLessOrEqual('mongo_timestamp', $until);
+            $expression->whereLessOrEqual('mongo_timestamp', $until);
         }
 
         // Count before paginating
-        $statementResult->setTotalCount($cursor->count());
+        $statementResult->setTotalCount($storage->count($collection, $expression, $queryOptions));
 
         // Handle pagination
         if ($parameters->has('since_id')) {
-            $id = new \MongoId($parameters->get('since_id'));
-            $cursor->whereGreaterOrEqual('_id', $id);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('since_id'));
+            $expression->whereGreaterOrEqual('_id', $id);
         }
 
         if ($parameters->has('until_id')) {
-            $id = new \MongoId($parameters->get('until_id'));
-            $cursor->whereLessOrEqual('_id', $id);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('until_id'));
+            $expression->whereLessOrEqual('_id', $id);
         }
 
         $statementResult->setRequestedFormat($this->getContainer()['settings']['xAPI']['default_statement_get_format']);
@@ -300,11 +301,11 @@ class Statement extends Base implements StatementInterface
 
         $statementResult->setSortDescending(true);
         $statementResult->setSortAscending(false);
-        //$cursor->sort(['_id' => -1]);
+        $queryOptions = ['sort' => ['_id' => -1]];
         if ($parameters->has('ascending')) {
             $asc = $parameters->get('ascending');
             if (strtolower($asc) === 'true' || $asc === '1') {
-                //$cursor->sort(['_id' => 1]);
+                $queryOptions = ['sort' => ['_id' => 1]];
                 $statementResult->setSortDescending(false);
                 $statementResult->setSortAscending(true);
             }
@@ -316,10 +317,12 @@ class Statement extends Base implements StatementInterface
             $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
         }
 
-        //$cursor->limit($limit);
+        $queryOptions = ['limit' => $limit];
+        
+        $cursor = $storage->find($collection, $expression, $queryOptions);
 
         // Remaining includes the current page!
-        $statementResult->setRemainingCount($cursor->count());
+        $statementResult->setRemainingCount($storage->count($collection, $expression, $queryOptions));
 
         if ($statementResult->getRemainingCount() > $limit) {
             $statementResult->setHasMore(true);
@@ -343,11 +346,18 @@ class Statement extends Base implements StatementInterface
         return $requestedStatement;
     }
 
+    public function statementWithIdExists($statementId)
+    {
+        return false;
+    }
+
     public function insert($statementObject)
     {
-        $collection = $this->getDocumentManager()->getCollection('statements');
+        $collection = 'statements';
+        $storage = $this->getContainer()['storage'];
+        
         // TODO: This should be in Activity storage manager!
-        $activityCollection = $this->getDocumentManager()->getCollection('activities');
+        //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
         $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
 
@@ -362,11 +372,12 @@ class Statement extends Base implements StatementInterface
             }
         }
 
-        $statementDocument = $collection->createDocument();
+        $statementDocument = new \API\Document\Statement();
+        // Uncomment this!
         // Overwrite authority - unless it's a super token and manual authority is set
-        if (!($this->getAccessToken()->isSuperToken() && isset($statementObject['authority'])) || !isset($statementObject['authority'])) {
-            $statementObject['authority'] = $this->getAccessToken()->generateAuthority();
-        }
+        //if (!($this->getAccessToken()->isSuperToken() && isset($statementObject['authority'])) || !isset($statementObject['authority'])) {
+        //    $statementObject['authority'] = $this->getAccessToken()->generateAuthority();
+        //}
         $statementDocument->setStatement($statementObject);
         // Dates
         $currentDate = Util\Date::dateTimeExact();
@@ -399,18 +410,19 @@ class Statement extends Base implements StatementInterface
             $referencedStatement->setVoided(true);
             $referencedStatement->save();
         }
-        if ($this->getAccessToken()->hasPermission('define')) {
+        /*if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
                 $activityCollection->insertMultiple($activities);
             }
-        }
+        }*/
         // Save statement
-        $statementDocument->save();
+        $storage->insertOne($collection, $statementDocument);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
 
+        // TODO: Batch insertion of log upserts!!! - possible with new driver :)
         // $collection->insertMultiple($statements); // Batch operation is much faster ~600%
         // However, because we add every single statement to the access log, we can't use it
         // The only way to still use (fast) batch inserts would be to move the attachment of
@@ -446,12 +458,14 @@ class Statement extends Base implements StatementInterface
 
     public function put($parameters, $statementObject)
     {
+        $parameters = new Util\Set($parameters);
+
         // Check statementId exists
         if (!$parameters->has('statementId')) {
             throw new Exception('The statementId parameter is missing!', Resource::STATUS_BAD_REQUEST);
         }
 
-        $this->validateStatementId($parameters['statementId']);
+        //$this->validateStatementId($parameters['statementId']);
 
         // Check statementId
         if (isset($statementObject['id'])) {

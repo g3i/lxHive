@@ -28,9 +28,10 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use API\Admin\Setup;
 
-class SetupCommand extends Command
+class SetupCommand extends SymfonyCommand
 {
     /**
      * Setup class.
@@ -42,10 +43,10 @@ class SetupCommand extends Command
     /**
      * Construct.
      */
-    public function __construct($container)
+    public function __construct()
     {
-        parent::__construct($container);
-        $this->setup = new Setup($container);
+        parent::__construct();
+        $this->setup = new Setup();
     }
 
     protected function configure()

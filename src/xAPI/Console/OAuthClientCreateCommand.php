@@ -29,6 +29,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use API\Service\Auth\OAuth as OAuthService;
+use API\Admin\Auth;
 
 class OAuthClientCreateCommand extends Command
 {

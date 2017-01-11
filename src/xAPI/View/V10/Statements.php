@@ -26,7 +26,7 @@ namespace API\View\V10;
 
 use API\View;
 
-//use API\Document\Statement as StatementDocument; Re-do later
+use API\Document\Statement as StatementDocument;
 
 class Statements extends View
 {
@@ -40,6 +40,7 @@ class Statements extends View
 
         // This could be done better with pointers or a separate renderer or something... also, move valid format checking to Validator perhaps?
         foreach ($statementResult->getCursor() as $statementDocument) {
+            $statementDocument = new StatementDocument($statementDocument);
             $idArray[] = $statementDocument->getId();
             if ($format === 'exact') {
                 $resultArray[] = $statementDocument->renderExact();

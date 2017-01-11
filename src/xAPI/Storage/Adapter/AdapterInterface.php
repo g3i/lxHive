@@ -44,7 +44,7 @@ interface AdapterInterface
      *
      * @return DocumentResult The result of this query
      */
-    public function insert($document, $collection);
+    public function insertOne($document, $collection);
 
     /**
      * Updates documents matching the filter.
@@ -75,7 +75,7 @@ interface AdapterInterface
      *
      * @return DocumentResult Result of fetch
      */
-    public function get($query, $collection);
+    public function find($query, $collection, $options = []);
 
     /**
      * Fetches documents.
@@ -85,9 +85,9 @@ interface AdapterInterface
      *
      * @return DocumentResult Result of fetch
      */
-    public function getOne($query, $collection);
+    public function findOne($query, $collection, $options = []);
 
-    public function testConnection($uri);
+    public static function testConnection($uri);
 
     public function getStatementStorage();
 

@@ -134,7 +134,16 @@ class PsrRequest
         $parserResult->setParameters($parameters);
 
         $headers = $request->getHeaders();
-        $parserResult->setHeaders($headers);
+        $parsedHeaders = [];
+        // TODO: I hate this, there must be a better way!
+        foreach ($headers as $key => $value) {
+            $key = strtr(strtolower($key), '_', '-');
+            if (strpos($key, 'http-') === 0) {
+                $key = substr($key, 5);
+            }
+            $parsedHeaders[$key] = $value;
+        }
+        $parserResult->setHeaders($parsedHeaders);
 
         $body = $request->getBody();
         $parserResult->setRawPayload($body);

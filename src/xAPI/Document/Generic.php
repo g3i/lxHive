@@ -20,26 +20,31 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * Projected Usage
+ *
+ *  POST/PUT:
+ *  $document = new \API\Document\Statement($parsedJson, 'UNTRUSTED', '1.0.3');
+ *  $statement = $document->validate()->normalize()->document(); // validated and normalized stdClass, ready for storage, changes the state with each chain ['UNTRUSTED->VALIDTED->READY]
+ *
+ *  REST response
+ *  $document = new \API\Document\Statement($mongoDocument, 'TRUSTED', '1.0.3');
+ *  $document->validate()->normalize(); //deals with minor incositencies, will in future also remove meta properties
+ *  $json = json_encode($document);
+ *
+ *  $document will have convenience methods and reveal the convenience methods of subproperties
+ *  $document->isReferencing();
+ *  $document->actor->isAgent();
+ *  $document->object->isSubStatement();
+ *
+ *  etc..
  */
 
 namespace API\Document;
 
-interface DocumentInterface extends \JsonSerializable
+use API\Validator;
+
+class Generic extends Base implements DocumentInterface
 {
-    /**
-     * Constructor
-     *
-     * @param array $document The xAPI document to handle
-     * @param string $documentState EUNUM string of i/o state of the document (i.e 'TRUSTED', 'UNTRUSTED', etc..)
-     * @param string $version xAPI version
-     */
-    public function __construct($data = [], $documentState = null, $version = null);
 
-    public function getData();
-
-    public function getState();
-    
-    public function getVersion();
-
-    public function toArray();
 }

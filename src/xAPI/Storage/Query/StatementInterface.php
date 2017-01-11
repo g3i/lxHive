@@ -51,7 +51,7 @@ interface StatementInterface
      */
     public function statementWithIdExists($statementId);
 
-    public function post($statementObject);
+    public function insert($statementObject);
 
     public function put($parameters, $statementObject);
 

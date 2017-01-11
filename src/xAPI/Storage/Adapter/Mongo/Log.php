@@ -22,24 +22,25 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\LogInterface;
 use API\Util;
+use API\Storage\Adapter\Base;
 
 class Log extends Base implements LogInterface
 {
     public function logRequest($ip, $method, $endpoint, $timestamp)
     {
-        $collection = $this->getDocumentManager()->getCollection('logs');
-        $document = $collection->createDocument();
+        $storage = $this->getContainer()['storage'];
+        $document = new \API\Document\Generic();
 
         $document->setIp($ip);
         $document->setMethod($method);
         $document->setEndpoint($endpoint);
         $document->setTimestamp(Util\Date::dateTimeToMongoDate($timestamp));
 
-        $document->save();
+        $storage->insertOne('logs', $document);
 
         return $document;
     }

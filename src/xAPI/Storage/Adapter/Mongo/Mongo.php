@@ -25,6 +25,7 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Adapter\AdapterInterface;
+use MongoDB\Driver\Command;
 
 class Mongo implements AdapterInterface
 {
@@ -37,7 +38,7 @@ class Mongo implements AdapterInterface
     public function __construct($container)
     {
         $this->container = $container;
-        $client = new MongoDB\Driver\Manager($this->getContainer()['settings']['storage']['Mongo']['host_uri']);
+        $client = new \MongoDB\Driver\Manager($this->getContainer()['settings']['storage']['Mongo']['host_uri']);
         $this->databaseName = $this->getContainer()['settings']['storage']['Mongo']['db_name'];
         $this->client = $client;
     }
@@ -52,8 +53,8 @@ class Mongo implements AdapterInterface
      */
     public function insertOne($collection, $document)
     {
-        $bulk = new MongoDB\Driver\BulkWrite();
-        $bulk->insert($document);
+        $bulk = new \MongoDB\Driver\BulkWrite();
+        $bulk->insert($document->toArray());
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
         return $result;
@@ -69,7 +70,7 @@ class Mongo implements AdapterInterface
      */
     public function insertMultiple($collection, $documents)
     {
-        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk = new \MongoDB\Driver\BulkWrite();
         foreach ($documents as $document) {
             $bulk->insert($document);
         }
@@ -92,10 +93,8 @@ class Mongo implements AdapterInterface
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();
         }
-        $collectionObject = $this->getClient()->getCollection($collection);
-        $collection->update($filter, $newDocument);
 
-        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk = new \MongoDB\Driver\BulkWrite();
         $bulk->update($document);
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
@@ -115,7 +114,7 @@ class Mongo implements AdapterInterface
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();
         }
-        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk = new \MongoDB\Driver\BulkWrite();
         $bulk->delete($filter);
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
@@ -130,15 +129,62 @@ class Mongo implements AdapterInterface
      *
      * @return DocumentResult Result of fetch
      */
-    public function find($collection, $filter, $options)
+    public function find($collection, $filter, $options = [])
     {
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();
         }
-        $query = new MongoDB\Driver\Query($filter, $options);
-        $cursor = $mongo->executeQuery($this->databaseName . '.' . $collection, $query);
-        
+        $query = new \MongoDB\Driver\Query($filter, $options);
+        $cursor = $this->getClient()->executeQuery($this->databaseName . '.' . $collection, $query);
+        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+
         return $cursor;
+    }
+
+    /**
+     * Fetches documents.
+     *
+     * @param array|Expression  $filter      The filter to fetch the documents by
+     * @param string $collection Name of collection
+     *
+     * @return DocumentResult Result of fetch
+     */
+    public function findOne($collection, $filter, $options = [])
+    {
+        if ($filter instanceof ExpressionInterface) {
+            $filter = $filter->toArray();
+        }
+        $options = ['limit' => 1] + $options;
+        $query = new \MongoDB\Driver\Query($filter, $options);
+        $cursor = $this->getClient()->executeQuery($this->databaseName . '.' . $collection, $query);
+        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+        $document = current($cursor->toArray());
+        return ($document === false) ? null : $document;
+    }
+
+    public function count($collection, $filter = [], $options = [])
+    {
+        $command = ['count' => $collection];
+        if (!empty($filter)) {
+            $command['query'] = $filter;
+        }
+
+        foreach (['hint', 'limit', 'maxTimeMS', 'skip'] as $option) {
+            if (isset($options[$option])) {
+                $command[$option] = $options[$option];
+            }
+        }
+
+        $command =  new Command($command);
+
+        $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
+        $result = current($cursor->toArray());
+        
+        // Older server versions may return a float
+        if (!isset($result->n) || ! (is_integer($result->n) || is_float($result->n))) {
+            throw new Exception('Count command did not return a numeric "n" value');
+        }
+        return (integer) $result->n;
     }
 
     public function createExpression()
@@ -149,10 +195,11 @@ class Mongo implements AdapterInterface
 
     public static function testConnection($uri)
     {
-        $client = new MongoDB\Driver\Manager($uri);
-        $buildInfoCommand = new MongoDB\Driver\Command(['buildinfo' => 1]);
+        $client = new \MongoDB\Driver\Manager($uri);
+        $buildInfoCommand = new \MongoDB\Driver\Command(['buildinfo' => 1]);
         $result = $client->executeCommand('admin', $buildInfoCommand);
-        
+        $result->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+
         if ($result) {
             $result = $result->toArray()[0];
             $result = $result['version'];
@@ -164,72 +211,72 @@ class Mongo implements AdapterInterface
     }
 
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
-    public static function getStatementStorage($container)
+    public function getStatementStorage()
     {
-        $statementStorage = new Statement($container());
+        $statementStorage = new Statement($this->getContainer());
 
         return $statementStorage;
     }
 
     public function getAttachmentStorage()
     {
-        $attachmentStorage = new Attachment($container);
+        $attachmentStorage = new Attachment($this->getContainer());
 
         return $attachmentStorage;
     }
 
     public function getUserStorage()
     {
-        $userStorage = new User($container);
+        $userStorage = new User($this->getContainer());
 
         return $userStorage;
     }
 
     public function getLogStorage()
     {
-        $logStorage = new Log($container);
+        $logStorage = new Log($this->getContainer());
 
         return $logStorage;
     }
 
     public function getActivityStorage()
     {
-        $activityStorage = new Activity($container);
+        $activityStorage = new Activity($this->getContainer());
 
         return $activityStorage;
     }
 
     public function getActivityStateStorage()
     {
-        $activityStateStorage = new ActivityState($container);
+        $activityStateStorage = new ActivityState($this->getContainer());
 
         return $activityStateStorage;
     }
 
     public function getActivityProfileStorage()
     {
-        $activityProfileStorage = new ActivityProfile($container);
+        $activityProfileStorage = new ActivityProfile($this->getContainer());
 
         return $activityProfileStorage;
     }
 
     public function getAgentProfileStorage()
     {
-        $agentProfileStorage = new AgentProfile($container);
+        $agentProfileStorage = new AgentProfile($this->getContainer());
 
         return $agentProfileStorage;
     }
 
     public function getBasicAuthStorage()
     {
-        $agentProfileStorage = new BasicAuth($container);
+        $agentProfileStorage = new BasicAuth($this->getContainer());
 
         return $agentProfileStorage;
     }
 
     public function getOAuthStorage()
     {
-        $agentProfileStorage = new OAuth();
+        $agentProfileStorage = new OAuth($this->getContainer());
 
         return $agentProfileStorage;
     }

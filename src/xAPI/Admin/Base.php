@@ -43,43 +43,4 @@ abstract class Base
     {
         return $this->container;
     }
-
-    /**
-     * checks if a yaml config file exists already in /src/xAPI/Config/.
-     *
-     * @param string $configYML yaml file
-     *
-     * @return bool
-     */
-    public function checkYaml($configYML)
-    {
-        return file_exists($configYML = $this->configDir.'/'.$configYML);
-    }
-
-    /**
-     * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
-     *
-     * @param string $yaml      yaml file to be created from template
-     * @param array  $mergeData associative array of config data to be merged in to the new config file
-     *
-     * @throws \Exception
-     */
-    public function installYaml($yml, array $mergeData = [])
-    {
-        $configYML = $this->configDir.'/'.$yml;
-        $templateYML = $this->configDir.'/Templates/'.$yml;
-
-        $template = file_get_contents($templateYML);
-        if (false === $template) {
-            throw new \Exception('Error reading file `'.$templateYML.'` Make sure the file exists and is readable.');
-        }
-        $data = Yaml::parse($template, true);// exceptionOnInvalidType
-        if (!empty($mergeData)) {
-            $data += $mergeData;
-        }
-        $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
-        if (false === file_put_contents($configYML, $ymlData)) {
-            throw new \Exception('Error rwriting '.__DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
-        }
-    }
 }

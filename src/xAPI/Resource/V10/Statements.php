@@ -56,11 +56,11 @@ class Statements extends Resource
     public function get()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('statements/read');
+        //$this->getContainer()->auth->checkPermission('statements/read');
 
         // Do the validation
-        $this->statementValidator->validateRequest();
-        $this->statementValidator->validateGetRequest();
+        //$this->statementValidator->validateRequest();
+        //$this->statementValidator->validateGetRequest();
 
         // Load the statements
         $statementResult = $this->statementService->statementGet();
@@ -80,11 +80,11 @@ class Statements extends Resource
     public function put()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('statements/write');
+        //$this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation
-        $this->statementValidator->validateRequest();
-        $this->statementValidator->validatePutRequest();
+        //$this->statementValidator->validateRequest();
+        //$this->statementValidator->validatePutRequest();
 
         // Save the statements
         $this->statementService->statementPut();
@@ -96,11 +96,11 @@ class Statements extends Resource
     public function post()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('statements/write');
+        //$this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation and multipart splitting
-        $this->statementValidator->validateRequest();
-        $this->statementValidator->validatePostRequest();
+        //$this->statementValidator->validateRequest();
+        //$this->statementValidator->validatePostRequest();
 
         // Save the statements
         $statementResult = $this->statementService->statementPost();

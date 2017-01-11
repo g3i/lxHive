@@ -22,11 +22,12 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\BasicAuthInterface;
 use API\Resource;
 use API\HttpException as Exception;
+use API\Storage\Adapter\Base;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {
@@ -75,16 +76,17 @@ class BasicAuth extends Base implements BasicAuthInterface
 
     public function getToken($key, $secret)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
+        $collection = 'basicTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
-        $cursor->where('key', $key);
-        $cursor->where('secret', $secret);
-        $accessTokenDocument = $cursor->current();
+        $expression->where('key', $key);
+        $expression->where('secret', $secret);
+        $accessTokenDocument = $storage->findOne($collection, $expression);
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
-        $expiresAt = $accessTokenDocument->getExpiresAt();
+        $expiresAt = $accessTokenDocument['expiresAt'];
 
         $this->validateExpiresAt($expiresAt);
 

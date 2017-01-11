@@ -31,13 +31,7 @@ namespace API\Storage\Adapter\Mongo;
 use FieldType;
 use Exception;
 
-/**
- * This class represents all expressions used to query document from collection
- *
- * @link http://docs.mongodb.org/manual/reference/operator/query/
- * @author Dmytro Sokil <dmytro.sokil@gmail.com>
- */
-class Expression implements ArrayableInterface
+class Expression
 {
     protected $expression = [];
 

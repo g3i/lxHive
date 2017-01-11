@@ -25,7 +25,6 @@
 namespace API\Util;
 
 use DateTime;
-use MongoDate;
 
 class Date
 {
@@ -44,11 +43,21 @@ class Date
         return $mongoDate;
     }
 
+    public static function dateTimeToMongoDateLegacy($dateTime)
+    {
+        $seconds = $dateTime->getTimestamp();
+        $microseconds = $dateTime->format('u');
+        $mongoDate = new \MongoDate($seconds, $microseconds);
+
+        return $mongoDate;
+    }
+
     public static function dateTimeToMongoDate($dateTime)
     {
         $seconds = $dateTime->getTimestamp();
         $microseconds = $dateTime->format('u');
-        $mongoDate = new MongoDate($seconds, $microseconds);
+        $milliSecondTotal = $seconds*1000+(int)($microseconds/1000);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime($milliSecondTotal);
 
         return $mongoDate;
     }

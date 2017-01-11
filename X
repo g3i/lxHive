@@ -42,8 +42,8 @@ if (!file_exists($workingDirectory . '/vendor/autoload.php')) {
 }
 
 require_once $workingDirectory . '/vendor/autoload.php';
-require_once $workingDirectory . '/public/index.php';
 
+use API\Bootstrap;
 use Symfony\Component\Console\Application;
 use API\Console\UserCreateCommand;
 use API\Console\BasicTokenCreateCommand;
@@ -62,11 +62,19 @@ use Sokil\Mongo\Migrator\Console\Command\Init as MigrationInitCommand;
 use Sokil\Mongo\Migrator\Console\Command\Migrate as MigrationMigrateCommand;
 use Sokil\Mongo\Migrator\Console\Command\Rollback as MigrationRollbackCommand;
 use Sokil\Mongo\Migrator\Console\Command\Status as MigrationStatusCommand;
-use Slim\Slim;
 
-// Future bootstrapper
-//$container = API\Bootstrap::bootStrapCli();
-$container = Slim::getInstance();
+// Bootstrapper
+$bootstrapper = new Bootstrap();
+
+// If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
+try {
+	$container = $bootstrapper->initCliContainer();
+} catch (League\Flysystem\FileNotFoundException $e) {
+	$application = new Application();
+	$application->add(new SetupCommand());
+	$application->run();
+}
+
 
 $application = new Application();
 $application->add(new UserCreateCommand($container));

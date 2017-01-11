@@ -38,6 +38,7 @@ use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 use Slim\Container;
 use Slim\App;
+use API\Resource\Error;
 
 class Bootstrap
 {
@@ -48,7 +49,7 @@ class Bootstrap
         $this->id = $id;
     }
 
-    public function initWebContainer($container = null)
+    protected function initGenericContainer($container = null)
     {
         // Get file paths of project and config
         $appRoot = realpath(__DIR__.'/../../');
@@ -68,12 +69,32 @@ class Bootstrap
             $container['settings'] = $settings;
         }
 
-        // 3. Insert URL object
-        // TODO: Remove this soon
+        // 3. Storage setup
+        $container['storage'] = function ($container) {
+            $storageInUse = $container['settings']['storage']['in_use'];
+            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
+            if (!class_exists($storageClass)) {
+                throw new \InvalidArgumentException('Storage type selected in config is invalid!');
+            }
+            $storageAdapter = new $storageClass($container);
+
+            return $storageAdapter;
+        };
+
+        return $container;
+    }
+
+    public function initWebContainer($container = null)
+    {
+        $appRoot = realpath(__DIR__.'/../../');
+        $container = $this->initGenericContainer($container);
+
+        // 4. Insert URL object
+        // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
         $handlerConfig = $container['settings']['log']['handlers'];
-        $stream = $appRoot.'/storage/logs/' . $settings['mode'] . '.' . date('Y-m-d') . '.log';
+        $stream = $appRoot.'/storage/logs/' . $container['settings']['mode'] . '.' . date('Y-m-d') . '.log';
         
         if (null === $handlerConfig) {
             $handlerConfig = ['ErrorLogHandler'];
@@ -128,18 +149,6 @@ class Bootstrap
             };
         };
 
-        // Storage setup
-        $container['storage'] = function ($container) {
-            $storageInUse = $container['settings']['storage']['in_use'];
-            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
-            if (!class_exists($storageClass)) {
-                throw new \InvalidArgumentException('Storage type selected in config is invalid!');
-            }
-            $storageAdapter = new $storageClass($container);
-
-            return $storageAdapter;
-        };
-
         $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
 
         // Load any extensions that may exist
@@ -192,14 +201,14 @@ class Bootstrap
 
                 try {
                     $token = $oAuthService->extractToken($container['request']);
-                    $container['requestLog']->addRelation('oAuthToken', $token)->save();
+                    //$container['requestLog']->addRelation('oAuthToken', $token)->save();
                 } catch (AuthFailureException $e) {
                     // Ignore
                 }
 
                 try {
                     $token = $basicAuthService->extractToken($container['request']);
-                    $container['requestLog']->addRelation('basicToken', $token)->save();
+                    //$container['requestLog']->addRelation('basicToken', $token)->save();
                 } catch (AuthFailureException $e) {
                     // Ignore
                 }
@@ -248,6 +257,23 @@ class Bootstrap
                 return $version;
             }
         };
+
+        return $container;
+    }
+
+    public function initCliContainer($container = null)
+    {
+        $container = $this->initGenericContainer($container);
+
+        $logger = new Logger('cli');
+
+        $formatter = new \Monolog\Formatter\LineFormatter();
+
+        $handler = new \Monolog\Handler\StreamHandler('php://stdout');
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+
+        $container['logger'] = $logger;
 
         return $container;
     }

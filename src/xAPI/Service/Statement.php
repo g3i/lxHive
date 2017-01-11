@@ -53,12 +53,12 @@ class Statement extends Service
      */
     public function statementPost()
     {
-        $this->validateJsonMediaType($this->getContainer()->getParser()->getData());
+        $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
-        if (count($this->getContainer()->getParser()->getAttachments()) > 0) {
+        if (count($this->getContainer()['parser']->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
-            foreach ($this->getContainer()->getParser()->getAttachments() as $attachment) {
+            foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -81,14 +81,14 @@ class Statement extends Service
             }
         }
 
-        $body = $this->getContainer()->getParser()->getData()->getPayload();
+        $body = $this->getContainer()['parser']->getData()->getPayload();
 
         // Multiple statements
         if ($this->areMultipleStatements($body)) {
-            $statementResult = $this->getStorage()->getStatementStorage()->postStatements($body);
+            $statementResult = $this->getStorage()->getStatementStorage()->insertMultiple($body);
         } else {
             // Single statement
-            $statementResult = $this->getStorage()->getStatementStorage()->postStatement($body);
+            $statementResult = $this->getStorage()->getStatementStorage()->insertOne($body);
         }
 
         return $statementResult;
@@ -101,12 +101,12 @@ class Statement extends Service
      */
     public function statementPut()
     {
-        $this->validateJsonMediaType($this->getContainer()->getParser()->getData());
+        $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
-        if (count($this->getContainer()->getParser()->getAttachments()) > 0) {
+        if (count($this->getContainer()['parser']->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
 
-            foreach ($this->getContainer()->getParser()->getAttachments() as $attachment) {
+            foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -116,7 +116,7 @@ class Statement extends Service
                     try {
                         $attachmentBody = iconv('UTF-8', 'ISO-8859-1//IGNORE', $attachmentBody);
                     } catch (\Exception $e) {
-                        //Use raw file on failed conversion (do nothing!)
+                        // Use raw file on failed conversion (do nothing!)
                     }
                 }
 
@@ -130,10 +130,10 @@ class Statement extends Service
         }
 
         // Single
-        $parameters = $this->getContainer()->getParser()->getData()->getParameters();
-        $body = $this->getContainer()->getParser()->getData()->getPayload();
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $body = $this->getContainer()['parser']->getData()->getPayload();
 
-        $statementResult = $this->getStorage()->getStatementStorage()->putStatement($parameters, $body);
+        $statementResult = $this->getStorage()->getStatementStorage()->put($parameters, $body);
 
         return $statementResult;
     }
@@ -147,7 +147,7 @@ class Statement extends Service
     private function validateJsonMediaType($jsonRequest)
     {
         // TODO: Move header validation in json-schema as well
-        if (strpos($jsonRequest->getHeaders()['Content-Type'], 'application/json') !== 0) {
+        if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
         }
     }

@@ -24,14 +24,18 @@
 
 namespace API\Admin;
 
-class Setup extends Base
+use Symfony\Component\Yaml\Yaml;
+use API\Bootstrap;
+use API\Service\Auth\OAuth as OAuthService;
+
+class Setup
 {
     private $configDir;
 
-    public function __construct($container)
-    {
-        parent::__construct($container);
+    private $yamlData;
 
+    public function __construct()
+    {
         $this->configDir = __DIR__.'/../Config';
     }
 
@@ -68,6 +72,7 @@ class Setup extends Base
         if (!empty($mergeData)) {
             $data += $mergeData;
         }
+        $this->yamlData = $data;
         $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
         if (false === file_put_contents($configYML, $ymlData)) {
             throw new \Exception('Error rwriting '.__DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
@@ -76,16 +81,22 @@ class Setup extends Base
 
     public function testDbConnection($uri)
     {
-        $connectionTestResult = $this->getContainer()->getStorage()->testConnection($uri);
+        // TODO: Make this variable - i.e. user can provide own value in command
+        // Usable if we will ever have multiple storage adapters
+        $preferredStorageType = 'Mongo';
+        $storageClass = '\\API\\Storage\\Adapter\\' . $preferredStorageType . '\\' . $preferredStorageType;
+        $connectionTestResult = $storageClass::testConnection($uri);
 
         return $connectionTestResult;
     }
 
     public function initializeAuthScopes()
     {
-        $oAuthService = new OAuthService($this->getContainer());
+        $bootstrapper = new Bootstrap();
+        $container = $bootstrapper->initCliContainer();
+        $oAuthService = new OAuthService($container);
 
-        foreach ($this->getContainer()['settings']['xAPI']['supported_auth_scopes'] as $authScope) {
+        foreach ($container['settings']['xAPI']['supported_auth_scopes'] as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }

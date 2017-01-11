@@ -81,8 +81,6 @@ class BasicTokenCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $basicAuthService = new BasicAuthService($this->getContainer());
-
         if (null === $input->getOption('name')) {
             $helper = $this->getHelper('question');
             $question = new Question('Please enter a name: ', 'untitled');
