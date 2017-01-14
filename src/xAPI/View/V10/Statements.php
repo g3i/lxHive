@@ -60,11 +60,11 @@ class Statements extends View
             $latestId = end($idArray);
             $latestId = $latestId->__toString();
             if ($statementResult->getSortDescending()) {
-                $this->getContainer()->getUrl()->getQuery()->modify(['until_id' => $latestId]);
+                $this->getContainer()['url']->getQuery()->modify(['until_id' => $latestId]);
             } else { //Ascending
-                $this->getContainer()->getUrl()->getQuery()->modify(['since_id' => $latestId]);
+                $this->getContainer()['url']->getQuery()->modify(['since_id' => $latestId]);
             }
-            $view['more'] = $this->getContainer()->getUrl()->getRelativeUrl();
+            $view['more'] = $this->getContainer()['url']->getRelativeUrl();
         }
 
         return $view;
@@ -72,9 +72,11 @@ class Statements extends View
 
     public function renderGetSingle($statementResult)
     {
-        $statement = $statementResult->getCursor()->current()->renderExact();
+        $statement = current($statementResult->getCursor());
+        $statementDocument = new StatementDocument($statement);
+        $view = $statementDocument->renderExact();
 
-        return $statement;
+        return $view;
     }
 
     public function renderPost($statementResult)

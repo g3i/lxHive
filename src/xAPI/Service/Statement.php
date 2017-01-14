@@ -62,7 +62,7 @@ class Statement extends Service
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
-                $contentEncoding = $attachment->getHeaders()['Content-Transfer-Encoding'];
+                $contentEncoding = isset($attachment->getHeaders()['content-transfer-encoding']) ? $attachment->getHeaders()['content-transfer-encoding'] : null;
 
                 if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
                     try {
@@ -72,8 +72,8 @@ class Statement extends Service
                     }
                 }
 
-                $hash = $attachment->getHeaders()['X-Experience-API-Hash'];
-                $contentType = $part->getHeaders()['Content-Type'];
+                $hash = $attachment->getHeaders()['x-experience-api-hash'][0];
+                $contentType = $attachment->getHeaders()['content-type'][0];
 
                 $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
 

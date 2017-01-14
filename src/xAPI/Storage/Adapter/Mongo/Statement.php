@@ -55,13 +55,14 @@ class Statement extends Base implements StatementInterface
 
             $this->validateStatementId($parameters['statementId']);
 
-            $cursor = $storage->find($collection, $expression, $options);
+            $cursor = $storage->find($collection, $expression);
 
-            $this->validateCursorNotEmpty($cursor);
-
+            $cursor = $this->validateCursorNotEmpty($cursor);
+            
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
             $statementResult->setRemainingCount(1);
+            $statementResult->setTotalCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
 
@@ -72,13 +73,16 @@ class Statement extends Base implements StatementInterface
             $expression->where('statement.id', $parameters->get('voidedStatementId'));
             $expression->where('voided', true);
 
-            $cursor = $storage->find($collection, $expression, $options);
+            $this->validateStatementId($parameters['voidedStatementId']);
 
-            $this->validateCursorNotEmpty($cursor);
+            $cursor = $storage->find($collection, $expression);
+
+            $cursor = $this->validateCursorNotEmpty($cursor);
 
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
             $statementResult->setRemainingCount(1);
+            $statementResult->setTotalCount(1);
             $statementResult->setHasMore(false);
             $statementResult->setSingleStatementRequest(true);
 
@@ -286,12 +290,12 @@ class Statement extends Base implements StatementInterface
         // Handle pagination
         if ($parameters->has('since_id')) {
             $id = new \MongoDB\BSON\ObjectID($parameters->get('since_id'));
-            $expression->whereGreaterOrEqual('_id', $id);
+            $expression->whereGreater('_id', $id);
         }
 
         if ($parameters->has('until_id')) {
             $id = new \MongoDB\BSON\ObjectID($parameters->get('until_id'));
-            $expression->whereLessOrEqual('_id', $id);
+            $expression->whereLess('_id', $id);
         }
 
         $statementResult->setRequestedFormat($this->getContainer()['settings']['xAPI']['default_statement_get_format']);
@@ -301,11 +305,11 @@ class Statement extends Base implements StatementInterface
 
         $statementResult->setSortDescending(true);
         $statementResult->setSortAscending(false);
-        $queryOptions = ['sort' => ['_id' => -1]];
+        $queryOptions['sort'] = ['_id' => -1];
         if ($parameters->has('ascending')) {
             $asc = $parameters->get('ascending');
             if (strtolower($asc) === 'true' || $asc === '1') {
-                $queryOptions = ['sort' => ['_id' => 1]];
+                $queryOptions['sort'] = ['_id' => 1];
                 $statementResult->setSortDescending(false);
                 $statementResult->setSortAscending(true);
             }
@@ -317,10 +321,6 @@ class Statement extends Base implements StatementInterface
             $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
         }
 
-        $queryOptions = ['limit' => $limit];
-        
-        $cursor = $storage->find($collection, $expression, $queryOptions);
-
         // Remaining includes the current page!
         $statementResult->setRemainingCount($storage->count($collection, $expression, $queryOptions));
 
@@ -330,6 +330,10 @@ class Statement extends Base implements StatementInterface
             $statementResult->setHasMore(false);
         }
 
+        $queryOptions['limit'] = (int)$limit;
+        
+        $cursor = $storage->find($collection, $expression, $queryOptions);
+
         $statementResult->setCursor($cursor);
 
         return $statementResult;
@@ -337,7 +341,10 @@ class Statement extends Base implements StatementInterface
 
     public function getById($statementId)
     {
-        $requestedStatement = $this->getDocumentManager()->getCollection()->find()->where('statement.id', $statementId)->current();
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+        $expression->where('statement.id', $statementId);
+        $requestedStatement = $storage->findOne('statements', $expression);
 
         if (null === $requestedStatement) {
             throw new \InvalidArgumentException('Requested statement does not exist!', Resource::STATUS_BAD_REQUEST);
@@ -359,12 +366,13 @@ class Statement extends Base implements StatementInterface
         // TODO: This should be in Activity storage manager!
         //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getContainer()->url->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
+        $attachmentBase = $this->getContainer()['url']->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
 
         if (isset($statementObject['id'])) {
-            $cursor = $collection->find();
-            $cursor->where('statement.id', $statementObject['id']);
-            $result = $cursor->findOne();
+            $expression = $storage->createExpression();
+            $expression->where('statement.id', $statementObject['id']);
+
+            $result = $storage->findOne($collection, $expression);
 
             // ID exists, validate if different or conflict
             if ($result) {
@@ -381,6 +389,7 @@ class Statement extends Base implements StatementInterface
         $statementDocument->setStatement($statementObject);
         // Dates
         $currentDate = Util\Date::dateTimeExact();
+        $statementDocument->setVoided(false);
         $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
         $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
         $statementDocument->setDefaultTimestamp();
@@ -392,7 +401,8 @@ class Statement extends Base implements StatementInterface
             // Copy values of referenced statement chain inside current statement for faster query-ing
             // (space-time tradeoff)
             $referencedStatementId = $statementDocument->getReferencedStatementId();
-            $referencedStatement = $this->getStatementById($referencedStatementId);
+            $referencedStatement = $this->getById($referencedStatementId);
+            $referencedStatement = new \API\Document\Statement($referencedStatement);
 
             $existingReferences = [];
             if (null !== $referencedStatement->getReferences()) {
@@ -401,14 +411,18 @@ class Statement extends Base implements StatementInterface
             $existingReferences[] = $referencedStatement->getStatement();
             $statementDocument->setReferences($existingReferences);
         }
-        $statements[] = $statementDocument->toArray();
+        //$statements[] = $statementDocument->toArray();
         if ($statementDocument->isVoiding()) {
             $referencedStatementId = $statementDocument->getReferencedStatementId();
-            $referencedStatement = $this->getStatementById($referencedStatementId);
+            $referencedStatement = $this->getById($referencedStatementId);
+            $referencedStatement = new \API\Document\Statement($referencedStatement);
 
             $this->validateVoidedStatementNotVoiding($referencedStatement);
             $referencedStatement->setVoided(true);
-            $referencedStatement->save();
+            $expression = $storage->createExpression();
+            $expression->where('statement.id', $referencedStatementId);
+        
+            $storage->update($collection, $expression, $referencedStatement);
         }
         /*if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
@@ -416,13 +430,14 @@ class Statement extends Base implements StatementInterface
                 $activityCollection->insertMultiple($activities);
             }
         }*/
+        // TODO: Save this as a batch
         // Save statement
         $storage->insertOne($collection, $statementDocument);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
 
-        // TODO: Batch insertion of log upserts!!! - possible with new driver :)
+        // TODO: Batch insertion of statement upserts!!! - possible with new driver :)
         // $collection->insertMultiple($statements); // Batch operation is much faster ~600%
         // However, because we add every single statement to the access log, we can't use it
         // The only way to still use (fast) batch inserts would be to move the attachment of
@@ -435,7 +450,7 @@ class Statement extends Base implements StatementInterface
     {
         $statementDocument = $this->insert($statementObject);
         $statementResult = new StatementResult();
-        $statementResult->setCursor([$statementObject]);
+        $statementResult->setCursor([$statementDocument]);
         $statementResult->setRemainingCount(1);
         $statementResult->setHasMore(false);
 
@@ -465,7 +480,7 @@ class Statement extends Base implements StatementInterface
             throw new Exception('The statementId parameter is missing!', Resource::STATUS_BAD_REQUEST);
         }
 
-        //$this->validateStatementId($parameters['statementId']);
+        $this->validateStatementId($parameters['statementId']);
 
         // Check statementId
         if (isset($statementObject['id'])) {
@@ -532,8 +547,10 @@ class Statement extends Base implements StatementInterface
 
     private function validateCursorNotEmpty($cursor)
     {
-        if ($cursor->count() === 0) {
+        $cursor = $cursor->toArray();
+        if (empty($cursor)) {
             throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
         }
+        return $cursor;
     }
 }

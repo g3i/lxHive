@@ -22,36 +22,40 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\AttachmentInterface;
+use API\Util;
+use API\Storage\Adapter\Base;
 
 class Attachment extends Base implements AttachmentInterface
 {
     public function storeAttachment($hash, $contentType, $timestamp = null)
     {
-        $attachmentCollection = $this->getDocumentManager()->getCollection('attachments');
+        $storage = $this->getContainer()['storage'];
 
-        $attachmentDocument = $attachmentCollection->createDocument();
+        $attachmentDocument = new \API\Document\Generic();
         $attachmentDocument->setSha2($hash);
         $attachmentDocument->setContentType($contentType);
         if (null === $timestamp) {
-            $timestamp = new MongoDate();
+            $timestamp = new \DateTime();
+            $timestamp = Util\Date::dateTimeToMongoDate($timestamp);
         }
         $attachmentDocument->setTimestamp($timestamp);
-        $attachmentDocument->save();
+        $storage->insertOne('attachments', $attachmentDocument);
 
         return $attachmentDocument;
     }
 
     public function fetchMetadataBySha2($sha2)
     {
-        $collection = $this->getDocumentManager()->getCollection('attachments');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
 
-        $cursor->where('sha2', $sha2);
+        $expression = $storage->createExpression();
 
-        $document = $cursor->current();
+        $expression->where('sha2', $sha2);
+
+        $document = $storage->findOne('attachments', $expression);
 
         return $document;
     }

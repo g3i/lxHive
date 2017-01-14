@@ -131,7 +131,7 @@ class Bootstrap
 
         $container['errorHandler'] = function ($container) {
             return function ($request, $response, $exception) use ($container) {
-                $data = null;
+                $data = [];
                 $code = $exception->getCode();
                 if ($code < 100) {
                     $code = 500;
@@ -140,7 +140,7 @@ class Bootstrap
                     $data = $exception->getData();
                 }
                 $errorResource = new Error($container, $request, $response);
-                $error = $errorResource->error($code, $exception->getMessage());
+                $error = $errorResource->error($code, $exception->getMessage(), $data);
 
                 return $error;
                 //return $c['response']->withStatus($code)
@@ -283,37 +283,49 @@ class Bootstrap
         $app = new App($container);
 
         // CORS compatibility layer (Internet Explorer)
-        /*$app->hook('slim.before.router', function () use ($app) {
-            if ($app->request->isPost() && $app->request->get('method')) {
-                $method = $app->request->get('method');
-                $app->environment()['REQUEST_METHOD'] = strtoupper($method);
-                mb_parse_str($app->request->getBody(), $postData);
+        $app->add(function ($request, $response, $next) use ($container) {
+            if ($request->isPost() && $request->getQueryParam('method')) {
+                $method = $request->getQueryParam('method');
+                $request = $request->withMethod($method);
+                mb_parse_str($request->getBody(), $postData);
                 $parameters = new Set($postData);
                 if ($parameters->has('content')) {
-                    $content = $parameters->get('content');
-                    $app->environment()['slim.input'] = $content;
-                    $parameters->remove('content');
+                    $string = $parameters->get('content');
                 } else {
                     // Content is the only valid body parameter...everything else are either headers or query parameters
-                    $app->environment()['slim.input'] = '';
+                    $string = '';
                 }
-                $app->request->headers->replace($parameters->all());
-                $app->environment()['slim.request.query_hash'] = $parameters->all();
+                
+                // Remove body, add headers
+                $parameters->remove('content');
+                foreach ($parameters as $key => $value) {
+                    $request = $request->withHeader($key, explode(',', $value));
+                }
+
+                // Write the string into the body
+                $stream = fopen('php://memory','r+');
+                fwrite($stream, $string);
+                rewind($stream);
+                $body = new \Slim\Http\Stream($stream);
+                $request = $request->withBody($body)->reparseBody();
+
+                // Query string
+                $uri = $request->getUri();
+                $uri = $uri->withQuery(http_build_query($parameters->all()));
+                $request = $request->withUri($uri);
+
+                // Reparse the request - override request (sort of a hack)
+                $container->offsetUnset('request');
+                $container->offsetSet('request', $request);
+                //$container['parser']->parseRequest($request);
             }
+
+            $response = $next($request, $response);
+
+            return $response;
         });
 
-        // Parse version
-        $app->hook('slim.before.dispatch', function () use ($app, $appRoot) {
-        
-        // Load Twig only if this is a request where we actually need it!
-        if (strpos(strtolower($app->request->getPathInfo()), '/oauth') === 0) {
-        $twigContainer = new Twig();
-        $app->container->singleton('view', function () use ($twigContainer) {
-            return $twigContainer;
-        });
-        $app->view->parserOptions['cache'] = $appRoot.'/storage/.Cache';
-        }
-
+        /*
         // Content type check
         if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
         // Bad Content-Type

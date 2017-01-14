@@ -39,7 +39,7 @@ class HttpException extends \Exception
      *
      * @throws \Exception
      */
-    public function __construct($message, $statusCode = 400, $data = null, \Exception $previous = null)
+    public function __construct($message, $statusCode = 400, $data = [], \Exception $previous = null)
     {
         $this->data = $data;
         parent::__construct($message, $statusCode, $previous);

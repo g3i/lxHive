@@ -22,4 +22,4 @@ xAPI:
 filesystem:
     exposed_url: /attachments
     in_use: local
-    local: { root_dir: '%app.root%/storage/files' }
+    local: { root_dir: '../storage/files' }

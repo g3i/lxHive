@@ -193,9 +193,9 @@ abstract class Resource
      * @param int    $code    Error code
      * @param string $message Error message
      */
-    public function error($code, $message = '')
+    public function error($code, $message = '', $data = [])
     {
-        return $this->jsonResponse($code, ['code' => $code, 'message' => $message]);
+        return $this->jsonResponse($code, ['code' => $code, 'message' => $message, 'data' => $data]);
     }
 
     /**

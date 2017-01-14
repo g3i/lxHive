@@ -25,34 +25,10 @@
 namespace API\Service;
 
 use API\Service;
-use Slim\Helper\Set;
+use API\Util\Set;
 
 class AgentProfile extends Service
 {
-    // Will be deprecated with AgentProfileResult class
-    /**
-     * Activity profiles.
-     *
-     * @var array
-     */
-    protected $agentProfiles;
-
-    // Will be deprecated with AgentProfileResult class
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    // Will be deprecated with AgentProfileResult class
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Fetches agent profiles according to the given parameters.
      *
@@ -60,35 +36,32 @@ class AgentProfile extends Service
      *
      * @return array An array of agentProfile objects.
      */
-    public function agentProfileGet($request)
+    public function agentProfileGet()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
-        $cursor = $this->getStorage()->getAgentProfileStorage()->getAgentProfilesFiltered($params);
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->getAgentProfilesFiltered($params);
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Tries to save (merge) an agentProfile.
      */
-    public function agentProfilePost($request)
+    public function agentProfilePost()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
-        $rawBody = $request->getBody();
+        $rawBody = $request->getRawPayload();
 
-        $params->set('headers', $request->headers());
+        $params->set('headers', $request->getHeaders());
 
-        $agentProfileDocument = $this->getStorage()->getAgentProfileStorage()->postAgentProfile($params, $rawBody);
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->postAgentProfile($params, $rawBody);
 
-        $this->single = true;
-        $this->agentProfiles = [$agentProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -96,28 +69,18 @@ class AgentProfile extends Service
      *
      * @return
      */
-    public function agentProfilePut($request)
+    public function agentProfilePut()
     {
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        $rawBody = $request->getBody();
-        $body = json_decode($rawBody, true);
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
-        // Some clients escape the JSON - handle them
-        if (is_string($body)) {
-            $body = json_decode($body, true);
-        }
+        $params->set('headers', $request->getHeaders());
 
-        // Single
-        $params = new Set($request->get());
+        $rawBody = $request->getRawPayload();
 
-        $params->set('headers', $request->headers());
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->putAgentProfile($params, $rawBody);
 
-        $agentProfileDocument = $this->getStorage()->getAgentProfileStorage()->putAgentProfile($params, $rawBody);
-
-        $this->single = true;
-        $this->agentProfiles = [$agentProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -127,15 +90,16 @@ class AgentProfile extends Service
      *
      * @return self Nothing.
      */
-    public function agentProfileDelete($request)
+    public function agentProfileDelete()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
-        $params->set('headers', $request->headers());
+        $params->set('headers', $request->getHeaders());
 
-        $this->getStorage()->getAgentProfileStorage()->deleteAgentProfile($params);
+        $deletionResult = $this->getStorage()->getAgentProfileStorage()->deleteAgentProfile($params);
 
-        return $this;
+        return $deletionResult;
     }
 
     /**

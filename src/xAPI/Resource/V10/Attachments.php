@@ -26,7 +26,7 @@ namespace API\Resource\V10;
 
 use API\Resource;
 use API\Service\Attachment as AttachmentService;
-use Slim\Helper\Set;
+use API\Util;
 
 class Attachments extends Resource
 {
@@ -45,28 +45,30 @@ class Attachments extends Resource
 
     public function get()
     {
-        $request = $this->getContainer()->request();
+        $request = $this->getContainer()['parser']->getData();
 
         // Check authentication
-        $this->getContainer()->auth->checkPermission('attachments');
+        //$this->getContainer()->auth->checkPermission('attachments');
 
-        $params = new Set($request->get());
+        $params = new Util\Set($request->getParameters());
         if (!$params->has('sha2')) {
             throw new \Exception('Missing sha2 parameter!', Resource::STATUS_BAD_REQUEST);
         }
 
         $sha2 = $params->get('sha2');
-
         $encoding = $params->get('encoding');
+
         // Fetch attachment metadata and data
         $metadata = $this->attachmentService->fetchMetadataBySha2($sha2);
         $data = $this->attachmentService->fetchFileBySha2($sha2);
         if ($encoding !== 'binary') {
             $data = base64_encode($data);
         }
-        $this->getContainer()->response->headers->set('Content-Type', $metadata->getContentType());
 
-        Resource::response(Resource::STATUS_OK, $data);
+        $metadataDocument = new \API\Document\Generic($metadata);
+        $this->setResponse($this->getResponse()->withHeader('Content-Type', $metadataDocument->getContentType()));
+
+        return $this->response(Resource::STATUS_OK, $data);
     }
 
     public function options()

@@ -31,7 +31,7 @@ namespace API\Storage\Adapter\Mongo;
 use FieldType;
 use Exception;
 
-class Expression
+class Expression implements ExpressionInterface
 {
     protected $expression = [];
 

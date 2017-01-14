@@ -44,6 +44,7 @@ namespace API\Document;
 
 use API\Validator;
 use Ramsey\Uuid\Uuid;
+use League\Url\Url;
 
 class Statement extends Base implements DocumentInterface
 {
@@ -123,6 +124,11 @@ class Statement extends Base implements DocumentInterface
             return $this->data['metadata'];
         }
     }*/
+
+    public function getId()
+    {
+        return $this->data['_id'];
+    }
 
     public function setStored($timestamp)
     {

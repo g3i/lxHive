@@ -49,7 +49,7 @@ class Profile extends Resource
     public function get()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('profile');
+        //$this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
@@ -72,7 +72,7 @@ class Profile extends Resource
     public function put()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('profile');
+        //$this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -88,7 +88,7 @@ class Profile extends Resource
     public function post()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('profile');
+        //$this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -104,7 +104,7 @@ class Profile extends Resource
     public function delete()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('profile');
+        //$this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);

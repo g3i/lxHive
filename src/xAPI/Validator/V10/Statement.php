@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2017 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,28 +58,27 @@ class Statement extends Validator
     }
 
     // POST-ing a statement validation
-    public function validatePostRequest($request)
+    public function validatePostRequest()
     {
         $data = $this->getContainer()['parser']->getData()->getPayload();
 
-        $validator = $this->validateBySchemaFragment($data, 'postBody', true);
+        $validator = $this->validateBySchemaFragment($data, 'postBody');
         if (!$validator->isValid()) {
             $this->throwSchemaErrors('Statements do not validate.', $validator);
         }
     }
 
     // PUT-ing one or more statements validation
-    public function validatePutRequest($request)
+    public function validatePutRequest()
     {
         // Then do specific validation
-        $data = $request->get();
+        $data = $this->getContainer()['parser']->getData()->getParameters();
         $validator = $this->validateBySchemaFragment($data, 'putParameters');
         if (!$validator->isValid()) {
             $this->throwSchemaErrors('PUT parameters do not validate.', $validator);
         }
 
-        $data = $request->getBody();
-        $data = json_decode($data);
+        $data = $this->getContainer()['parser']->getData()->getPayload();
 
         $validator = $this->validateBySchemaFragment($data, 'putBody');
         if (!$validator->isValid()) {

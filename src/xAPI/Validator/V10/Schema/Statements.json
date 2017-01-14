@@ -3,7 +3,7 @@
     "description": "Schema for the xAPI Statements endpoint",
     "getParameters": {
         "type": ["object", "array"],
-        "oneOf" : [
+        "anyOf" : [
             {
                 "type": "array",
                 "maxItems": 0
@@ -46,6 +46,12 @@
                     "until": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "until_id": {
+                        "type": "string"
+                    },
+                    "since_id": {
+                        "type": "string"
                     },
                     "limit": {
                         "type": "number",
@@ -529,10 +535,7 @@
                 },
                 {
                     "oneOf": [{"$ref": "#/definitions/mbox"}, {"$ref": "#/definitions/mbox_sha1sum"}, {"$ref": "#/definitions/account"}, {"$ref": "#/definitions/openid"}],
-                    "additionalProperties": false
-                },
-                {
-                    "additionalProperties": false
+                    "additionalProperties": true
                 }
             ]
         },

@@ -39,7 +39,7 @@ class PsrRequest
         $this->parseRequest($request);
     }
 
-    private function parseRequest($request)
+    public function parseRequest($request)
     {
 
         if ($this->isMultipart($request)) {
@@ -63,7 +63,7 @@ class PsrRequest
         $boundary = $request->getMediaTypeParams()['boundary'];
         
         // Split bodies by the boundary
-        $bodies = explode('--' . $boundary, (string)$this->getBody());
+        $bodies = explode('--' . $boundary, (string)$request->getBody());
         
         // RFC says, to ignore preamble and epilogue.
         $preamble = array_shift($bodies);
@@ -73,7 +73,7 @@ class PsrRequest
             $isHeader = true;
             $headers = [];
             $content = [];
-            $data = explode('\n', $body);
+            $data = explode(PHP_EOL, $body);
             foreach ($data as $i => $line) {
                 if (0 == $i) {
                     // Skip the first line
@@ -89,16 +89,17 @@ class PsrRequest
                 if ($isHeader) {
                     list($header, $value) = explode(':', $line);
                     if ($header) {
-                        $headers[$header] = trim($value);
+                        $headers[strtolower($header)] = explode(',', trim($value));
                     }
                     array_shift($data);
                 } else {
-                    $content = implode('\n', $data);
+                    $content = implode(PHP_EOL, $data);
                     break;
                 }
             }
-            if (!isset($headers['Content-Type'])) {
-                $headers['Content-Type'] = 'text/plain';
+
+            if (!isset($headers['content-type'])) {
+                $headers['content-type'] = ['text/plain'];
             }
 
             $parserResult = new ParserResult();
@@ -106,11 +107,21 @@ class PsrRequest
             $parameters = $request->getQueryParams();
             $parserResult->setParameters($parameters);
 
-            $parserResult->setHeaders($headers);
+            $requestHeaders = $request->getHeaders();
+            $parsedHeaders = [];
+            // TODO: I hate this, there must be a better way!
+            foreach ($requestHeaders as $key => $value) {
+                $key = strtr(strtolower($key), '_', '-');
+                if (strpos($key, 'http-') === 0) {
+                    $key = substr($key, 5);
+                }
+                $parsedHeaders[$key] = $value;
+            }
+            $parserResult->setHeaders($headers + $parsedHeaders);
 
             $parserResult->setRawPayload($content);
 
-            if (strpos($headers['Content-Type'], 'application/json') === 0) {
+            if (strpos($headers['content-type'][0], 'application/json') === 0) {
                 $content = json_decode($content, true);
 
                 // Some clients escape the JSON twice - handle them
@@ -126,11 +137,15 @@ class PsrRequest
         return $requestParts;
     }
 
-    private function parseSingleRequest($request)
+    private function parseSingleRequest($request, $reparseQuery = false)
     {
         $parserResult = new ParserResult();
 
         $parameters = $request->getQueryParams();
+        // CORS override!
+        if (isset($parameters['method'])) {
+            mb_parse_str($request->getUri()->getQuery(), $parameters);
+        }
         $parserResult->setParameters($parameters);
 
         $headers = $request->getHeaders();

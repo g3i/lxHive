@@ -59,8 +59,8 @@ class Statements extends Resource
         //$this->getContainer()->auth->checkPermission('statements/read');
 
         // Do the validation
-        //$this->statementValidator->validateRequest();
-        //$this->statementValidator->validateGetRequest();
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validateGetRequest();
 
         // Load the statements
         $statementResult = $this->statementService->statementGet();
@@ -68,7 +68,7 @@ class Statements extends Resource
         // Render them
         $view = new StatementView($this->getResponse(), $this->getDiContainer());
 
-        if ($statementResult->getIsSingle()) {
+        if ($statementResult->getSingleStatementRequest()) {
             $view = $view->renderGetSingle($statementResult);
         } else {
             $view = $view->renderGet($statementResult);
@@ -82,9 +82,10 @@ class Statements extends Resource
         // Check authentication
         //$this->getContainer()->auth->checkPermission('statements/write');
 
+        $request = $this->getContainer()['parser']->getData();
         // Do the validation
-        //$this->statementValidator->validateRequest();
-        //$this->statementValidator->validatePutRequest();
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePutRequest();
 
         // Save the statements
         $this->statementService->statementPut();
@@ -99,8 +100,8 @@ class Statements extends Resource
         //$this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation and multipart splitting
-        //$this->statementValidator->validateRequest();
-        //$this->statementValidator->validatePostRequest();
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePostRequest();
 
         // Save the statements
         $statementResult = $this->statementService->statementPost();

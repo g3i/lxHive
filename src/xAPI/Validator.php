@@ -65,7 +65,7 @@ abstract class Validator
     public function validateSchema($data, $uri, $debug = false)
     {
         $schema = self::$schemaStorage->getSchema($uri);
-        $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage, null, Constraint::CHECK_MODE_TYPE_CAST));
+        $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage, null, JsonSchema\Constraints\Constraint::CHECK_MODE_TYPE_CAST));
         $validator->check($data, $schema);
 
         if ($debug) {
@@ -102,9 +102,11 @@ abstract class Validator
      *
      * @param \Silex\Request $request The request
      */
-    public function validateRequest($request)
+    public function validateRequest()
     {
-        if ($request->headers('X-Experience-API-Version') === null) {
+        $header = $this->getContainer()['parser']->getData()->getHeaders()['x-experience-api-version'];
+
+        if ($header === null) {
             throw new Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
         }
     }

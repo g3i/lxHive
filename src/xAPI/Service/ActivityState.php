@@ -29,22 +29,6 @@ use Slim\Helper\Set;
 
 class ActivityState extends Service
 {
-    // Will be deprecated with ActivityStateResult class
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    // Will be deprecated with ActivityStateResult class
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Fetches activity states according to the given parameters.
      *
@@ -52,33 +36,30 @@ class ActivityState extends Service
      *
      * @return array An array of statement objects.
      */
-    public function activityStateGet($request)
+    public function activityStateGet()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
-        $cursor = $this->getStorage()->getActivityStateStorage()->getActivityStatesFiltered($params);
+        $documentResult = $this->getStorage()->getActivityStateStorage()->getActivityStatesFiltered($params);
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Tries to save (merge) an activityState.
      */
-    public function activityStatePost($request)
+    public function activityStatePost()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
-        $rawBody = $request->getBody();
+        $rawBody = $request->getRawPayload();
 
-        $activityStateDocument = $this->getStorage()->getActivityStateStorage()->postActivityState($params, $rawBody);
+        $documentResult = $this->getStorage()->getActivityStateStorage()->postActivityState($params, $rawBody);
 
-        $this->cursor = [$activityStateDocument];
-        $this->single = true;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -86,20 +67,17 @@ class ActivityState extends Service
      *
      * @return
      */
-    public function activityStatePut($request)
+    public function activityStatePut()
     {
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        $rawBody = $request->getBody();
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
-        // Single
-        $params = new Set($request->get());
+        // Validation has been completed already - everything is assumed to be valid
+        $rawBody = $request->getRawPayload();
 
-        $activityStateDocument = $this->getStorage()->getActivityStateStorage()->putActivityState($params, $rawBody);
+        $documentResult = $this->getStorage()->getActivityStateStorage()->putActivityState($params, $rawBody);
 
-        $this->single = true;
-        $this->cursor = [$activityStateDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -109,9 +87,10 @@ class ActivityState extends Service
      *
      * @return array An array of statement objects.
      */
-    public function activityStateDelete($request)
+    public function activityStateDelete()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Set($request->getParameters());
 
         $this->getStorage()->getActivityStateStorage()->deleteActivityState($params);
 

@@ -26,6 +26,7 @@ namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Adapter\AdapterInterface;
 use MongoDB\Driver\Command;
+use API\Document\DocumentInterface;
 
 class Mongo implements AdapterInterface
 {
@@ -54,7 +55,10 @@ class Mongo implements AdapterInterface
     public function insertOne($collection, $document)
     {
         $bulk = new \MongoDB\Driver\BulkWrite();
-        $bulk->insert($document->toArray());
+        if ($document instanceof DocumentInterface) {
+            $document = $document->toArray();
+        }
+        $bulk->insert($document);
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
         return $result;
@@ -72,6 +76,9 @@ class Mongo implements AdapterInterface
     {
         $bulk = new \MongoDB\Driver\BulkWrite();
         foreach ($documents as $document) {
+            if ($document instanceof DocumentInterface) {
+                $document = $document->toArray();
+            }
             $bulk->insert($document);
         }
 
@@ -95,7 +102,10 @@ class Mongo implements AdapterInterface
         }
 
         $bulk = new \MongoDB\Driver\BulkWrite();
-        $bulk->update($document);
+        if ($newDocument instanceof DocumentInterface) {
+            $newDocument = $newDocument->toArray();
+        }
+        $bulk->update($filter, $newDocument);
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
         return $result;
@@ -164,6 +174,9 @@ class Mongo implements AdapterInterface
 
     public function count($collection, $filter = [], $options = [])
     {
+        if ($filter instanceof ExpressionInterface) {
+            $filter = $filter->toArray();
+        }
         $command = ['count' => $collection];
         if (!empty($filter)) {
             $command['query'] = $filter;

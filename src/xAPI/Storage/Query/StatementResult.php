@@ -32,6 +32,8 @@ class StatementResult extends DocumentResult
 
     public $sortAscending;
 
+    public $singleStatementRequest;
+
     /**
      * Gets the value of requestedFormat.
      *
@@ -100,6 +102,30 @@ class StatementResult extends DocumentResult
     public function setSortAscending($sortAscending)
     {
         $this->sortAscending = $sortAscending;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of singleStatementRequest.
+     *
+     * @return mixed
+     */
+    public function getSingleStatementRequest()
+    {
+        return $this->singleStatementRequest;
+    }
+
+    /**
+     * Sets the value of singleStatementRequest.
+     *
+     * @param mixed $singleStatementRequest the single statement request
+     *
+     * @return self
+     */
+    public function setSingleStatementRequest($singleStatementRequest)
+    {
+        $this->singleStatementRequest = $singleStatementRequest;
 
         return $this;
     }
