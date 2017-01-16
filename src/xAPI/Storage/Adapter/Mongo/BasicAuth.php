@@ -33,18 +33,19 @@ class BasicAuth extends Base implements BasicAuthInterface
 {
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'basicTokens';
 
-        $accessTokenDocument = $collection->createDocument();
+        $accessTokenDocument = new \API\Document\AccessToken();
 
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
-        $accessTokenDocument->addRelation('user', $user);
-        $scopeIds = [];
+        //$accessTokenDocument->addRelation('user', $user);
+        /*$scopeIds = [];
         foreach ($scopes as $scope) {
             $scopeIds[] = $scope->getId();
         }
-        $accessTokenDocument->setScopeIds($scopeIds);
+        $accessTokenDocument->setScopeIds($scopeIds);*/
 
         if (isset($expiresAt)) {
             $expiresDate = new \DateTime();
@@ -55,21 +56,21 @@ class BasicAuth extends Base implements BasicAuthInterface
         if (null !== $key) {
             $accessTokenDocument->setKey($key);
         } else {
-            //Generate token
+            // Generate token
             $accessTokenDocument->setKey(\API\Util\OAuth::generateToken());
         }
 
         if (null !== $secret) {
             $accessTokenDocument->setSecret($secret);
         } else {
-            //Generate token
+            // Generate token
             $accessTokenDocument->setSecret(\API\Util\OAuth::generateToken());
         }
 
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
 
-        $accessTokenDocument->save();
+        $storage->insertOne($collection, $accessTokenDocument);
 
         return $accessTokenDocument;
     }
@@ -128,10 +129,11 @@ class BasicAuth extends Base implements BasicAuthInterface
 
     public function getScopeByName($name)
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor = $collection->find();
-        $cursor->where('name', $name);
-        $scopeDocument = $cursor->current();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'authScopes';
+        $expression = $storage->createExpression();
+        $expression->where('name', $name);
+        $scopeDocument = $storage->findOne($collection, $expression);
 
         $this->validateScope($scopeDocument);
 

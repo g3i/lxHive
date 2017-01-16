@@ -48,14 +48,14 @@ class ExtendedQuery extends Resource
         $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getContainer()->auth->checkPermission('statements/querybuilder');
+        //$this->getContainer()->auth->checkPermission('statements/querybuilder');
 
-        $this->getExtendedStatementService()->statementGet($request);
+        $documentResult = $this->getExtendedStatementService()->statementGet();
 
         // Render them
-        $view = new ProjectedStatementView(['service' => $this->getExtendedStatementService()]);
+        $view = new ProjectedStatementView($this->getResponse(), $this->getContainer());
 
-        $view = $view->render();
+        $view = $view->render($documentResult);
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
@@ -71,12 +71,12 @@ class ExtendedQuery extends Resource
         $this->getContainer()->auth->checkPermission('statements/querybuilder');
 
         // Load the statements - this needs to change, drastically, as it's garbage
-        $this->getExtendedStatementService()->statementPost($request);
+        $documentResult = $this->getExtendedStatementService()->statementPost($request);
 
         // Render them
-        $view = new ProjectedStatementView(['service' => $this->getExtendedStatementService()]);
+        $view = new ProjectedStatementView($this->getResponse(), $this->getContainer());
 
-        $view = $view->render();
+        $view = $view->render($documentResult);
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
@@ -84,7 +84,7 @@ class ExtendedQuery extends Resource
     public function options()
     {
         // Handle options request
-        $this->getContainer()->response->headers->set('Allow', 'HEAD, GET, POST, OPTIONS');
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,HEAD,GET,OPTIONS'));
         return $this->response(Resource::STATUS_OK);
     }
 

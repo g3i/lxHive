@@ -27,6 +27,8 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\OAuthInterface;
 use API\Resource;
 use API\HttpException as Exception;
+use API\Storage\Adapter\Base;
+use API\Util;
 
 class OAuth extends Base implements OAuthInterface
 {
@@ -96,12 +98,13 @@ class OAuth extends Base implements OAuthInterface
         $accessTokenDocument->save();
     }
 
-    public function storeClient($name, $description, $redirectUri)
+    public function addClient($name, $description, $redirectUri)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'oAuthClients';
 
         // Set up the Client to be saved
-        $clientDocument = $collection->createDocument();
+        $clientDocument = new \API\Document\Generic();
 
         $clientDocument->setName($name);
 
@@ -115,17 +118,21 @@ class OAuth extends Base implements OAuthInterface
         $secret = Util\OAuth::generateToken();
         $clientDocument->setSecret($secret);
 
-        $clientDocument->save();
+        $storage->insertOne($collection, $clientDocument);
 
         return $clientDocument;
     }
 
     public function getClients()
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'oAuthClients';
 
-        return $cursor;
+        $cursor = $storage->find($collection);
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
     }
 
     public function getClientById($id)
@@ -167,13 +174,16 @@ class OAuth extends Base implements OAuthInterface
 
     public function getTokenWithOneTimeCode($params)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'oAuthTokens';
+        $expression = $storage->createExpression();
 
-        $cursor->where('code', $params['code']);
-        $tokenDocument = $cursor->current();
+        $expression->where('code', $params['code']);
+        
+        $tokenDocument = $storage->findOne($collection, $expression);
 
         $this->validateAccessTokenNotEmpty($tokenDocument);
+        $tokenDocument = new \API\Document\AccessToken($tokenDocument);
 
         // TODO: This will be removed soon
         $clientDocument = $tokenDocument->client;
@@ -183,8 +193,12 @@ class OAuth extends Base implements OAuthInterface
         $this->validateRedirectUri($params, $clientDocument);
 
         //Remove one-time code
+        
         $tokenDocument->setCode(false);
-        $tokenDocument->save();
+
+        $storage->update($collection, $expression, $tokenDocument);
+
+        return $tokenDocument;
     }
 
     private function validateExpiresAt($expiresAt)

@@ -25,22 +25,21 @@
 namespace API\View\V10\BasicAuth;
 
 use API\View;
+use API\Util;
 
 class AccessToken extends View
 {
-    public function render()
+    public function render($accessTokenDocument)
     {
-        $accessTokenDocument = $this->service->getAccessTokens()[0];
-
         $view = [
             'key' => $accessTokenDocument->getKey(),
             'secret' => $accessTokenDocument->getSecret(),
-            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getExpiresAt()),
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getCreatedAt()),
             'expired' => $accessTokenDocument->isExpired(),
-            'scopes' => array_values($accessTokenDocument->scopes),
-            'user' => $accessTokenDocument->user->renderSummary(),
+            //'scopes' => array_values($accessTokenDocument->scopes),
+            //'user' => $accessTokenDocument->user->renderSummary(),
         ];
 
         return $view;

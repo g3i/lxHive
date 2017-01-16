@@ -155,7 +155,7 @@ class BasicTokenCreateCommand extends Command
             $secret = null;
         }
 
-        $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+        $token = $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
 
         $text = json_encode($token, JSON_PRETTY_PRINT);
 

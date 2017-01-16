@@ -95,7 +95,7 @@ class Mongo implements AdapterInterface
      *
      * @return DocumentResult The result of this query
      */
-    public function update($collection, $filter, $newDocument)
+    public function update($collection, $filter, $newDocument, $upsert = false)
     {
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();
@@ -105,7 +105,9 @@ class Mongo implements AdapterInterface
         if ($newDocument instanceof DocumentInterface) {
             $newDocument = $newDocument->toArray();
         }
-        $bulk->update($filter, $newDocument);
+        $updateOptions = ['upsert' => $upsert];
+
+        $bulk->update($filter, $newDocument, $updateOptions);
 
         $result = $this->getClient()->executeBulkWrite($this->databaseName . '.' . $collection, $bulk);
         return $result;
@@ -139,7 +141,7 @@ class Mongo implements AdapterInterface
      *
      * @return DocumentResult Result of fetch
      */
-    public function find($collection, $filter, $options = [])
+    public function find($collection, $filter = [], $options = [])
     {
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();

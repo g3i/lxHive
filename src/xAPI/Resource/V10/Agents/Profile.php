@@ -55,16 +55,16 @@ class Profile extends Resource
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->agentProfileService->agentProfileGet();
+        $documentResult = $this->agentProfileService->agentProfileGet();
 
         // Render them
-        $view = new AgentProfileView(['service' => $this->agentProfileService]);
+        $view = new AgentProfileView($this->getResponse(), $this->getDiContainer());
 
-        if ($this->agentProfileService->getSingle()) {
-            $view = $view->renderGetSingle();
-            Resource::response(Resource::STATUS_OK, $view);
+        if ($documentResult->getIsSingle()) {
+            $view = $view->renderGetSingle($documentResult);
+            return $this->response(Resource::STATUS_OK, $view);
         } else {
-            $view = $view->renderGet();
+            $view = $view->renderGet($documentResult);
             return $this->jsonResponse(Resource::STATUS_OK, $view);
         }
     }
@@ -120,7 +120,7 @@ class Profile extends Resource
     public function options()
     {
         //Handle options request
-        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
         return $this->response(Resource::STATUS_OK);
     }
 

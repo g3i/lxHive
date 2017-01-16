@@ -35,6 +35,16 @@ class Expression implements ExpressionInterface
 {
     protected $expression = [];
 
+    public function __construct($array = [])
+    {
+        $this->expression = $array;
+    }
+
+    public function fromArray($array)
+    {
+        $this->expression = $array;
+    }
+
     /**
      * Create new instance of expression
      * @return \Expression

@@ -31,10 +31,10 @@ class User extends Base
     public function fetchAvailablePermissions()
     {
         $userService = new UserService($this->getContainer());
-        $userService->fetchAvailablePermissions();
+        $documentResult = $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
-        foreach ($userService->getCursor() as $permission) {
-            $permissionsDictionary[$permission->getName()] = $permission;
+        foreach ($documentResult->getCursor() as $permission) {
+            $permissionsDictionary[$permission['name']] = $permission;
         }
 
         return $permissionsDictionary;
@@ -51,10 +51,10 @@ class User extends Base
     public function fetchAllUserEmails()
     {
         $userService = new UserService($this->getContainer());
-        $userService->fetchAll();
+        $documentResult = $userService->fetchAll();
         $users = [];
-        foreach ($userService->getCursor() as $user) {
-            $users[$user->getEmail()] = $user;
+        foreach ($documentResult->getCursor() as $user) {
+            $users[$user['email']] = $user;
         }
 
         return $users;

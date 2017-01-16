@@ -54,7 +54,7 @@ class Agents extends Resource
     public function options()
     {
         //Handle options request
-        $this->getContainer()->response->headers->set('Allow', 'GET');
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
         return $this->response(Resource::STATUS_OK);
     }
 }

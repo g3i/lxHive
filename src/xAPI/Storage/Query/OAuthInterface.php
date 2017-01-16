@@ -34,7 +34,7 @@ interface OAuthInterface
 
     public function expireToken($accessToken);
 
-    public function storeClient($name, $description, $redirectUri);
+    public function addClient($name, $description, $redirectUri);
 
     public function getClients();
 

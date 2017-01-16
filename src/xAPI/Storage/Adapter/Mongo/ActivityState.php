@@ -25,13 +25,14 @@
 namespace API\Storage\Adapter\MongoLegacy;
 
 use API\Storage\Query\ActivityStateInterface;
+use API\Storage\Query\DocumentResult;
 use API\Util;
 use API\Resource;
 use API\HttpException as Exception;
 
 class ActivityState extends Base implements ActivityStateInterface
 {
-    public function getActivityStatesFiltered(\Traversable $parameters)
+    public function getActivityStatesFiltered($parameters)
     {
         $collection = $this->getDocumentManager()->getCollection('activityStates');
         $cursor = $collection->find();

@@ -49,7 +49,6 @@ class Statement extends Service
     protected function statementQuery($parameters)
     {
         $storageClass = $this->resolveStorageClass();
-        // TODO: In future getSlim will be getContainer, replace when applicable!
         $extendedStatementStorage = new $storageClass($this->getContainer());
         $statementResult = $extendedStatementStorage->extendedQuery($parameters);
 
@@ -58,7 +57,7 @@ class Statement extends Service
 
     protected function resolveStorageClass()
     {
-        $storageInUse = $app->config('storage']['in_use'];
+        $storageInUse = $this->getContainer()['settings']['storage']['in_use'];
         $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\'.$storageInUse.'\\ExtendedStatement';
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is incompatible with ExtendedQuery extension!');

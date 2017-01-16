@@ -22,55 +22,70 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Resource;
 use API\HttpException as Exception;
+use API\Storage\Query\DocumentResult;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {
-    public function getActivityProfilesFiltered(\Traversable $parameters)
+    public function getActivityProfilesFiltered($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityProfiles';
+        $expression = $storage->createExpression();
 
         // Single activity state
         if (isset($parameters['profileId'])) {
-            $cursor->where('profileId', $parameters['profileId']);
-            $cursor->where('activityId', $parameters['activityId']);
+            $expression->where('profileId', $parameters['profileId']);
+            $expression->where('activityId', $parameters['activityId']);
 
-            $cursorCount = $cursor->count();
-            $this->validateCount($cursorCount);
+            $cursorCount = $storage->count($collection, $expression);
+            $this->validateCursorCountValid($cursorCount);
 
-            $this->cursor = $cursor;
-            $this->single = true;
+            $cursor = $storage->find($collection, $expression);
 
-            return $this;
+            $documentResult = new DocumentResult();
+            $documentResult->setCursor($cursor);
+            $documentResult->setIsSingle(true);
+            $documentResult->setRemainingCount(1);
+            $documentResult->setTotalCount(1);
+
+            return $documentResult;
         }
 
-        $cursor->where('activityId', $parameters['activityId']);
+        $expression->where('activityId', $parameters['activityId']);
 
         if (isset($parameters['since'])) {
             $since = Util\Date::dateStringToMongoDate($parameters['since']);
-            $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
+            $expression->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
-        return $cursor;
+        $cursor = $storage->find($collection, $expression);
+
+        $documentResult = new DocumentResult();
+        $documentResult->setCursor($cursor);
+        $documentResult->setIsSingle(false);
+
+        return $documentResult;
     }
 
     public function postActivityProfile($parameters, $profileObject)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityProfiles';
 
         // Set up the body to be saved
-        $activityProfileDocument = $collection->createDocument();
+        $activityProfileDocument = new \API\Document\Generic();
 
         // Check for existing state - then merge if applicable
-        $cursor = $collection->find();
-        $cursor->where('profileId', $parameters['profileId']);
-        $cursor->where('activityId', $parameters['activityId']);
+        $expression = $storage->createExpression();
+        $expression->where('profileId', $parameters['profileId']);
+        $expression->where('activityId', $parameters['activityId']);
 
-        $result = $cursor->findOne();
+        $result = $storage->findOne($collection, $expression);
+        $result = new \API\Document\Generic($result);
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
@@ -103,10 +118,11 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->setProfileId($parameters['profileId']);
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
-        $activityProfileDocument->save();
+
+        $storage->update($collection, $expression, $activityProfileDocument, true);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
     }

@@ -35,10 +35,7 @@ class Auth extends Base
 
         $documentResult = $oAuthService->fetchClients();
 
-        $textArray = [];
-        foreach ($oAuthService->getCursor() as $document) {
-            $textArray[] = json_encode($document);
-        }
+        $textArray = $documentResult->getCursor()->toArray();
 
         return $textArray;
     }

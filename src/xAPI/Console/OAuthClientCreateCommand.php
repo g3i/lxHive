@@ -28,7 +28,6 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use API\Service\Auth\OAuth as OAuthService;
 use API\Admin\Auth;
 
 class OAuthClientCreateCommand extends Command
@@ -59,8 +58,6 @@ class OAuthClientCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getContainer());
-
         $helper = $this->getHelper('question');
 
         $question = new Question('Please enter a name: ', 'untitled');

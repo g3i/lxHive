@@ -62,6 +62,13 @@ class Date
         return $mongoDate;
     }
 
+    public static function mongoDateToTimestamp(\MongoDB\BSON\UTCDateTime $mongoDate)
+    {
+        $dateTime = $mongoDate->toDateTime();
+        $timestamp = $dateTime->getTimestamp();
+        return $timestamp;
+    }
+
     public static function dateTimeToISO8601($dateTime)
     {
         $dateTime = $dateTime->format('c');

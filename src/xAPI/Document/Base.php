@@ -41,7 +41,7 @@ abstract class Base implements DocumentInterface
      *
      * @return void
      */
-    public function __construct($data = [], $documentState = null, $version = null)
+    public function __construct($data = [], $documentState = DocumentState::TRUSTED, $version = null)
     {
         $this->data = $data;
         $this->state = $documentState;
@@ -151,7 +151,7 @@ abstract class Base implements DocumentInterface
             return $this->set(lcfirst(substr($name, 3)), $arguments[0]);
         }
 
-        throw new Exception('Document has no method "' . $name . '"');
+        throw new \Exception('Document has no method "' . $name . '"');
     }
 
     public function jsonSerialize()

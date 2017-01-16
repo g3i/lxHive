@@ -111,4 +111,28 @@ class UserCreateCommand extends Command
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
+
+    /**
+     * Gets the User Admin class.
+     *
+     * @return API\Admin\User
+     */
+    public function getUserAdmin()
+    {
+        return $this->userAdmin;
+    }
+
+    /**
+     * Sets the User Admin class.
+     *
+     * @param API\Admin\User $userAdmin the user admin
+     *
+     * @return self
+     */
+    private function _setUserAdmin(API\Admin\User $userAdmin)
+    {
+        $this->userAdmin = $userAdmin;
+
+        return $this;
+    }
 }

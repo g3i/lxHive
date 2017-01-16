@@ -25,28 +25,30 @@
 namespace API\Extensions\ExtendedQuery\Storage\Adapter\MongoLegacy;
 
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
-use API\Storage\Adapter\MongoLegacy\Base;
+use API\Storage\Adapter\Mongo\Base;
 use API\Storage\Adapter\Query\StatementResult;
 use API\Resource;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
-    public function extendedQuery(\Traversable $parameters)
+    public function extendedQuery()
     {
-        $collection = $this->getDocumentManager()->getCollection('statements');
-        $cursor = $collection->find();
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'statements';
+
+        $queryOptions = [];
 
         // New StatementResult for non-single statement queries
         $statementResult = new StatementResult();
 
         // Merge in query
-        $mutableExpression = new MutableExpression();
+        $expression = $storage->createExpression();
         $query = $parameters['query'];
         if (is_string($query)) {
             $query = json_decode($query, true);
         }
-        $mutableExpression->fromArray($query);
-        $cursor->query($mutableExpression);
+        $expression->fromArray($query);
 
         // Add projection
         if (isset($parameters['projection'])) {
@@ -61,35 +63,34 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             }
             $fields = array_keys($fields);
             array_unshift($fields, '_id');
-            $cursor->fields($fields);
+            $queryOptions['projection'] = $fields;
         } else {
-            $cursor->fields(['_id', 'statement']);
+            $queryOptions['projection'] = ['_id', 'statement'];
         }
 
         // Count before paginating
-        $statementResult->setTotalCount($cursor->count());
+        $count = $storage->count($collection, $expression, $queryOptions);
+        $statementResult->setTotalCount($count);
 
         // Handle pagination
         if (isset($parameters['since_id'])) {
             $id = new \MongoId($parameters['since_id']);
-            $cursor->whereGreaterOrEqual('_id', $id);
+            $cursor->whereGreater('_id', $id);
         }
 
         if (isset($parameters['until_id'])) {
             $id = new \MongoId($parameters['until_id']);
-            $cursor->whereLessOrEqual('_id', $id);
+            $cursor->whereLess('_id', $id);
         }
 
         if (isset($parameters['ascending']) && $parameters['ascending'] === 'true') {
             $statementResult->setSortDescending(false);
             $statementResult->setSortAscending(true);
-            $cursor->sort(['_id' => 1]);
-            $this->descending = false;
+            $queryOptions['sort'] = ['_id' => 1];
         } else {
             $statementResult->setSortDescending(true);
             $statementResult->setSortAscending(false);
-            $cursor->sort(['_id' => -1]);
-            $this->descending = true;
+            $queryOptions['sort'] = ['_id' => -1];
         }
 
         if (isset($parameters['limit']) && $parameters['limit'] < $this->getContainer()['settings']['xAPI']['statement_get_limit'] && $parameters['limit'] > 0) {
@@ -98,16 +99,18 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
         }
 
-        $cursor->limit($limit);
+        $queryOptions['limit'] = $limit;
 
         // Remaining includes the current page!
-        $statementResult->setRemainingCount($cursor->count());
+        $count = $storage->count($collection, $expression, $queryOptions);
+        $statementResult->setRemainingCount($count);
 
         if ($statementResult->getRemainingCount() > $limit) {
             $statementResult->setHasMore(true);
         } else {
             $statementResult->setHasMore(false);
         }
+        $cursor = $storage->find($collection, $expression, $queryOptions);
         $statementResult->setCursor($cursor);
 
         return $statementResult;

@@ -22,9 +22,10 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\UserInterface;
+use API\Storage\Adapter\Base;
 
 class User extends Base implements UserInterface
 {
@@ -52,38 +53,48 @@ class User extends Base implements UserInterface
 
     public function addUser($email, $password, $permissions)
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'users';
 
         // Set up the User to be saved
-        $userDocument = $collection->createDocument();
+        $userDocument = new \API\Document\Generic();
 
         $userDocument->setEmail($email);
 
         $passwordHash = sha1($password);
         $userDocument->setPasswordHash($passwordHash);
 
-        foreach ($permissions as $permission) {
+        /*foreach ($permissions as $permission) {
             $userDocument->addPermission($permission);
-        }
+        }*/
 
-        $userDocument->save();
+        $storage->insertOne($collection, $userDocument);
 
         return $userDocument;
     }
 
     public function fetchAll()
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
-        $cursor = $collection->find();
+        $collection = 'users';
+        $storage = $this->getContainer()['storage'];
+        $cursor = $storage->find($collection);
 
-        return $cursor;
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
     }
 
     public function fetchAvailablePermissions()
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor = $collection->find();
+        $collection = 'authScopes';
+        $storage = $this->getContainer()['storage'];
 
-        return $cursor;
+        $cursor = $storage->find($collection);
+
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
     }
 }

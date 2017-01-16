@@ -49,17 +49,17 @@ class Token extends Resource
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->oAuthService->accessTokenPost();
+        $accessTokenDocument = $this->oAuthService->accessTokenPost();
         // Authorization is always requested
-        $view = new AccessTokenView(['service' => $this->oAuthService]);
-        $view = $view->renderGet();
+        $view = new AccessTokenView($this->getResponse(), $this->getDiContainer());
+        $view = $view->renderGet($accessTokenDocument);
         return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getContainer()->response->headers->set('Allow', 'POST');
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST'));
         return $this->response(Resource::STATUS_OK);
     }
 

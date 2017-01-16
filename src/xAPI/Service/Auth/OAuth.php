@@ -131,11 +131,9 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $cursor = $this->getStorage()->getOAuthStorage()->getClients();
+        $documentResult = $this->getStorage()->getOAuthStorage()->getClients();
 
-        $this->setCursor($cursor);
-
-        return $this;
+        return $documentResult;
     }
 
     public function addScope($name, $description)
@@ -195,6 +193,8 @@ class OAuth extends Service implements AuthInterface
      */
     public function authorizePost($request)
     {
+        $params = $this->getContainer()['parser']->getData()->getParameters();
+
         $postParams = new Set($request->post());
         $params = new Set($request->get());
 
@@ -236,9 +236,10 @@ class OAuth extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function accessTokenPost($request)
+    public function accessTokenPost()
     {
-        $params = new Set($request->post());
+        $params = $this->getContainer()['parser']->getData()->getPayload();
+        $params = new Util\Set($params);
 
         $requiredParams = ['grant_type', 'client_id', 'client_secret', 'redirect_uri', 'code'];
 
@@ -247,9 +248,6 @@ class OAuth extends Service implements AuthInterface
 
         // getTokenWithOneTimeCode($params)
         $tokenDocument = $this->getStorage()->getOAuthStorage()->getTokenWithOneTimeCode($params);
-
-        $this->accessTokens = [$tokenDocument];
-        $this->single = true;
 
         return $tokenDocument;
     }

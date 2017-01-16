@@ -22,78 +22,102 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\MongoLegacy;
+namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\AgentProfileInterface;
+use API\Storage\Query\DocumentResult;
 use API\Util;
 use API\Resource;
 use API\HttpException as Exception;
+use API\Storage\Adapter\Base;
 
 class AgentProfile extends Base implements AgentProfileInterface
 {
-    public function getAgentProfilesFiltered(\Traversable $parameters)
+    public function getAgentProfilesFiltered($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'agentProfiles';
+        $expression = $storage->createExpression();
+
+        $parameters = new Util\Set($parameters);
 
         // Single activity profile
         if ($parameters->has('profileId')) {
-            $cursor->where('profileId', $parameters['profileId']);
+            $expression->where('profileId', $parameters['profileId']);
             $agent = $parameters['agent'];
             $agent = json_decode($agent, true);
 
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-            $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+            $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-            $cursorCount = $cursor->count();
+            $cursorCount = $storage->count($collection, $expression);
             $this->validateCursorCountValid($cursorCount);
 
-            $this->cursor = $cursor;
-            $this->single = true;
+            $cursor = $storage->find($collection, $expression);
 
-            return $this;
+            $documentResult = new DocumentResult();
+            $documentResult->setCursor($cursor);
+            $documentResult->setIsSingle(true);
+            $documentResult->setRemainingCount(1);
+            $documentResult->setTotalCount(1);
+
+            return $documentResult;
         }
 
         $agent = $parameters['agent'];
         $agent = json_decode($agent);
-        $cursor->where('agent', $agent);
+        $expression->where('agent', $agent);
 
         if ($parameters->has('since')) {
             $since = Util\Date::dateStringToMongoDate($parameters['since']);
-            $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
+            $expression->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
-        return $cursor;
+        // Fetch
+        $cursor = $storage->find($collection, $expression);
+
+        $documentResult = new DocumentResult();
+        $documentResult->setCursor($cursor);
+        $documentResult->setIsSingle(false);
+
+        return $documentResult;
     }
 
-    public function postAgentProfile(\Traversable $parameters, $profileObject)
+    public function postAgentProfile($parameters, $profileObject)
     {
+        $profileObject = (string)$profileObject;
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'agentProfiles';
 
         // Set up the body to be saved
-        $agentProfileDocument = $collection->createDocument();
+        $agentProfileDocument = new \API\Document\Generic();
 
         // Check for existing state - then merge if applicable
-        $cursor = $collection->find();
-        $cursor->where('profileId', $parameters['profileId']);
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression = $storage->createExpression();
+        $expression->where('profileId', $parameters['profileId']);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $cursor->findOne();
-
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $result = $storage->findOne($collection, $expression);
+        if ($result) {
+            $result = new \API\Document\Generic($result);
+        }
+    
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-none-match'] : null;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // ID exists, merge body
-        $contentType = $parameters['headers']['Content-Type'];
+        $contentType = $parameters['headers']['content-type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
+        } else {
+            $contentType = $contentType[0];
         }
 
         // ID exists, try to merge body if applicable
@@ -118,10 +142,11 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
-        $agentProfileDocument->save();
+        
+        $storage->update($collection, $expression, $agentProfileDocument, true);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         return $agentProfileDocument;
     }

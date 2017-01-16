@@ -27,10 +27,6 @@ namespace API\Service;
 use API\Service;
 use API\Resource;
 use API\Util\OAuth;
-use API\Util\Rememberme\MongoStorage as RemembermeMongoStorage;
-use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
-use Birke\Rememberme;
 use API\HttpException as Exception;
 
 class User extends Service
@@ -89,41 +85,14 @@ class User extends Service
         $_SESSION['userId'] = $document->getId();
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
 
-        // TODO: Remove this remember me helper/library
-        // Set the Remember me cookie
-        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
-        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
-
-        if ($params->has('rememberMe')) {
-            $rememberMe->createCookie($document->getId());
-        } else {
-            $rememberMe->clearCookie();
-        }
-
         return $document;
     }
 
     public function loggedIn()
     {
-        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
-        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
-
         if (isset($_SESSION['userId']) && isset($_SESSION['expiresAt']) && $_SESSION['expiresAt'] > time()) {
             $_SESSION['expiresAt'] = time() + 3600; //Renew session on every activity
             return true;
-        } elseif (!empty($_COOKIE[$rememberMe->getCookieName()]) && $rememberMe->cookieIsValid()) { // Remember me cookie
-            $loginresult = $rememberMe->login();
-            if ($loginresult) {
-                // Load user into session and return true
-                // Set the session
-                $_SESSION['userId'] = $loginresult;
-                $_SESSION['expiresAt'] = time() + 3600; //1 hour
-                $_SESSION['rememberedByCookie'] = true;
-            } else {
-                if ($rememberMe->loginTokenWasInvalid()) {
-                    throw new \Exception('Remember me cookie invalid!', Resource::STATUS_BAD_REQUEST);
-                }
-            }
         } else {
             return false;
         }
@@ -156,20 +125,16 @@ class User extends Service
 
     public function fetchAll()
     {
-        $cursor = $userDocument = $this->getStorage()->getUserStorage()->fetchAll();
+        $documentResult = $userDocument = $this->getStorage()->getUserStorage()->fetchAll();
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     public function fetchAvailablePermissions()
     {
-        $cursor = $userDocument = $this->getStorage()->getUserStorage()->fetchAvailablePermissions();
+        $documentResult = $this->getStorage()->getUserStorage()->fetchAvailablePermissions();
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     private function validateCsrf($params)
@@ -186,87 +151,5 @@ class User extends Service
         if (!isset($params['email']) || !isset($params['password'])) {
             throw new Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
         }
-    }
-
-    /**
-     * Gets the Users.
-     *
-     * @return array
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    /**
-     * Sets the Users.
-     *
-     * @param array $users the users
-     *
-     * @return self
-     */
-    public function setUsers(array $users)
-    {
-        $this->users = $users;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Gets the Is this a single user fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single user fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Any errors that might've ocurred are stored here.
-     *
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    /**
-     * Sets the Any errors that might've ocurred are stored here.
-     *
-     * @param array $errors the errors
-     *
-     * @return self
-     */
-    public function setErrors(array $errors)
-    {
-        $this->errors = $errors;
-
-        return $this;
     }
 }

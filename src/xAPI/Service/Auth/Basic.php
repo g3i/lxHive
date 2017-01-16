@@ -26,7 +26,6 @@ namespace API\Service\Auth;
 
 use API\Service;
 use API\Resource;
-use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Service\User as UserService;
 use API\Util;
@@ -35,33 +34,9 @@ use API\Service\Auth\Exception as AuthFailureException;
 
 class Basic extends Service implements AuthInterface
 {
-    /**
-     * Access tokens.
-     *
-     * @var array
-     */
-    protected $accessTokens;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    /**
-     * Is this a single access token fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     public function addToken($name, $description, $expiresAt, $user, array $scopes = [], $key = null, $secret = null)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes, $key, $secret);
-
-        $this->single = true;
-        $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
     }
@@ -149,25 +124,17 @@ class Basic extends Service implements AuthInterface
     /**
      * Tries to create a new access token.
      */
-    public function accessTokenPost($request)
+    public function accessTokenPost()
     {
-        $body = $request->getBody();
-        $body = json_decode($body, true);
+        $body = $this->getContainer()['parser']->getData()->getPayload();
 
-        // Some clients escape the JSON - handle them
-        if (is_string($body)) {
-            $body = json_decode($body, true);
-        }
-
-        $this->validateJsonDecodeErrors();
-
-        $requestParams = new Set($body);
+        $requestParams = new Util\Set($body);
 
         $this->validateRequiredParams($requestParams);
 
         $currentDate = new \DateTime();
 
-        $defaultParams = new Set([
+        $defaultParams = new Util\Set([
             'user' => [
                 'password' => 'password',
                 'permissions' => [
@@ -182,7 +149,7 @@ class Basic extends Service implements AuthInterface
             'expiresAt' => null,
         ]);
 
-        $params = new Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
+        $params = new Util\Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
 
         $scopeDocuments = [];
         $scopes = $params->get('scopes');
@@ -211,9 +178,9 @@ class Basic extends Service implements AuthInterface
         $userService = new UserService($this->getContainer());
         $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
 
-        $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
+        $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 
-        return $this;
+        return $accessTokenDocument;
     }
 
     /**

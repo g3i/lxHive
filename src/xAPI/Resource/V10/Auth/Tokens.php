@@ -46,7 +46,7 @@ class Tokens extends Resource
     public function get()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -55,7 +55,7 @@ class Tokens extends Resource
         $this->accessTokenService->accessTokenGet();
 
         // Render them
-        $view = new AccessTokenView(['service' => $this->accessTokenService]);
+        $view = new AccessTokenView($this->getResponse(), $this->getDiContainer());
 
         $view = $view->render();
 
@@ -65,18 +65,18 @@ class Tokens extends Resource
     public function post()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->accessTokenService->accessTokenPost();
+        $accessTokenDocument = $this->accessTokenService->accessTokenPost();
 
         // Render them
-        $view = new AccessTokenView(['service' => $this->accessTokenService]);
+        $view = new AccessTokenView($this->getResponse(), $this->getDiContainer());
 
-        $view = $view->render();
+        $view = $view->render($accessTokenDocument);
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
@@ -84,7 +84,7 @@ class Tokens extends Resource
     public function put()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -103,7 +103,7 @@ class Tokens extends Resource
     public function delete()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -117,7 +117,7 @@ class Tokens extends Resource
     public function options()
     {
         //Handle options request
-        $this->getContainer()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
         return $this->response(Resource::STATUS_OK);
     }
 
