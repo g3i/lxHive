@@ -32,16 +32,17 @@ class Activity extends Base implements ActivityInterface
 {
     public function fetchActivityById($id)
     {
-        $collection = $this->getDocumentManager()->getCollection('activities');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activities';
+        $expression = $storage->createExpression();
 
-        $cursor->where('id', $id);
+        $expression->where('id', $id);
 
-        if ($cursor->count() === 0) {
+        if ($storage->count($collection, $expression) === 0) {
             throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
         }
 
-        $document = $cursor->current();
+        $document = $storage->findOne($collection, $expression);
 
         return $document;
     }

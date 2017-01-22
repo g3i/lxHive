@@ -143,7 +143,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
         
-        $storage->update($collection, $expression, $agentProfileDocument, true);
+        $storage->upsert($collection, $expression, $agentProfileDocument);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
@@ -158,17 +158,22 @@ class AgentProfile extends Base implements AgentProfileInterface
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'agentProfiles';
 
-        $agentProfileDocument = $collection->createDocument();
+        // Set up the body to be saved
+        $agentProfileDocument = new \API\Document\Generic();
 
         // Check for existing state - then replace if applicable
-        $cursor = $collection->find();
-        $cursor->where('profileId', $parameters['profileId']);
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression = $storage->createExpression();
+        $expression->where('profileId', $parameters['profileId']);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $cursor->findOne();
-
+        $result = $storage->findOne($collection, $expression);
+        if ($result) {
+            $result = new \API\Document\Generic($result);
+        }
+        
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
         $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
@@ -193,28 +198,30 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
-        $agentProfileDocument->save();
+        
+        $storage->upsert($collection, $expression, $agentProfileDocument);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
 
         return $agentProfileDocument;
     }
 
     public function deleteAgentProfile($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('agentProfiles');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'agentProfiles';
+        $expression = $storage->createExpression();
 
-        $cursor->where('profileId', $parameters['profileId']);
+        $expression->where('profileId', $parameters['profileId']);
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $cursor->findOne();
+        $result = $storage->findOne($collection, $expression);
 
         if (!$result) {
             throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
@@ -225,9 +232,9 @@ class AgentProfile extends Base implements AgentProfileInterface
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('agentProfiles', $result)->save();
+        //$this->getContainer()->requestLog->addRelation('agentProfiles', $result)->save();
 
-        $result->delete();
+        $deletionResult = $storage->delete($collection, $expression);
     }
 
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)

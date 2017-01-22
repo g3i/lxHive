@@ -86,6 +86,11 @@ class Mongo implements AdapterInterface
         return $result;
     }
 
+    public function upsert($collection, $filter, $newDocument)
+    {
+        return $this->update($collection, $filter, $newDocument, true);
+    }
+
     /**
      * Updates documents matching the filter.
      *

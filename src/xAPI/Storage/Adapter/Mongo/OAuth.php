@@ -34,17 +34,18 @@ class OAuth extends Base implements OAuthInterface
 {
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-
-        $accessTokenDocument = $collection->createDocument();
+        $collection = 'oAuthTokens';
+        $storage = $this->getContainer()['storage'];
+        
+        $accessTokenDocument = new \API\Document\Generic();
 
         $expiresDate = new \DateTime();
         $expiresDate->setTimestamp($expiresAt);
         $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
-        $accessTokenDocument->addRelation('user', $user);
-        $accessTokenDocument->addRelation('client', $client);
+        //$accessTokenDocument->addRelation('user', $user);
+        //$accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];
         foreach ($scopes as $scope) {
             $scopeIds[] = $scope->getId();
@@ -56,20 +57,23 @@ class OAuth extends Base implements OAuthInterface
             $accessTokenDocument->setCode($code);
         }
 
-        $accessTokenDocument->save();
+        $storage->insertOne($collection, $accessTokenDocument);
 
         return $accessTokenDocument;
     }
 
     public function getToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
+        $collection = 'oAuthTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
+        $expression->where('token', $accessToken);
+        $accessTokenDocument = $storage->findOne($collection, $expression);
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
+
+        $accessTokenDocument = new \API\Document\Generic($accessTokenDocument);
 
         $expiresAt = $accessTokenDocument->getExpiresAt();
 
@@ -80,22 +84,23 @@ class OAuth extends Base implements OAuthInterface
 
     public function deleteToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $collection = 'oAuthTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
-        $expression = $collection->expression();
         $expression->where('token', $accessToken);
-        $collection->deleteDocuments($expression);
+
+        $storage->delete($collection, $expression);
     }
 
     public function expireToken($accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor = $collection->find();
+        $collection = 'oAuthTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
-        $accessTokenDocument->setExpired(true);
-        $accessTokenDocument->save();
+        $expression->where('token', $accessToken);
+        $storage->update($collection, $expression, ['expired' => true]);
     }
 
     public function addClient($name, $description, $redirectUri)
@@ -137,37 +142,41 @@ class OAuth extends Base implements OAuthInterface
 
     public function getClientById($id)
     {
-        $collection = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'oAuthClients';
+        $expression = $storage->createExpression();
 
-        $cursor->where('clientId', $id);
-        $clientDocument = $cursor->current();
+        $expression->where('clientId', $id);
+        $clientDocument = $storage->findOne($collection, $expression);
 
         return $clientDocument;
     }
 
     public function addScope($name, $description)
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'authScopes';
 
         // Set up the Client to be saved
-        $scopeDocument = $collection->createDocument();
+        $scopeDocument = new \API\Document\Generic();
 
         $scopeDocument->setName($name);
 
         $scopeDocument->setDescription($description);
 
-        $scopeDocument->save();
+        $storage->insertOne($collection, $scopeDocument);
 
         return $scopeDocument;
     }
 
     public function getScopeByName($name)
     {
-        $collection = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor = $collection->find();
-        $cursor->where('name', $name);
-        $scopeDocument = $cursor->current();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'authScopes';
+        $expression = $storage->createExpression();
+
+        $expression->where('name', $name);
+        $scopeDocument = $storage->findOne($collection, $expression);
 
         return $scopeDocument;
     }

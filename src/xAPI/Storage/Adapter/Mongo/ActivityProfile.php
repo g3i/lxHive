@@ -129,31 +129,43 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
     public function putActivityProfile($parameters, $profileObject)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityProfiles';
 
-        $activityProfileDocument = $collection->createDocument();
+        // Set up the body to be saved
+        $activityProfileDocument = new \API\Document\Generic();
 
-        // Check for existing state - then replace if applicable
-        $cursor = $collection->find();
-        $cursor->where('profileId', $parameters['profileId']);
-        $cursor->where('activityId', $parameters['activityId']);
+        // Check for existing state - then merge if applicable
+        $expression = $storage->createExpression();
+        $expression->where('profileId', $parameters['profileId']);
+        $expression->where('activityId', $parameters['activityId']);
 
-        $result = $cursor->findOne();
+        $result = $storage->findOne($collection, $expression);
+        if ($result) {
+            $result = new \API\Document\Generic($result);
+        }
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
-
-        $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
-
-        // ID exists, replace body
-        if ($result) {
-            $activityProfileDocument = $result;
-        }
 
         $contentType = $parameters['headers']['Content-Type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
+        }
+
+        // ID exists, try to merge body if applicable
+        if ($result) {
+            $this->validateDocumentType($result, $contentType);
+
+            $decodedExisting = json_decode($result->getContent(), true);
+            $this->validateJsonDecodeErrors();
+
+            $decodedPosted = json_decode($profileObject, true);
+            $this->validateJsonDecodeErrors();
+
+            $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
+            $activityProfileDocument = $result;
         }
 
         $activityProfileDocument->setContent($profileObject);
@@ -164,37 +176,40 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->setProfileId($parameters['profileId']);
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
-        $activityProfileDocument->save();
+
+        $storage->update($collection, $expression, $activityProfileDocument, true);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
 
         return $activityProfileDocument;
     }
 
     public function deleteActivityProfile($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityProfiles';
+        $expression = $storage->createExpression();
 
-        $cursor->where('profileId', $parameters['profileId']);
-        $cursor->where('activityId', $parameters['activityId']);
+        $expression->where('profileId', $parameters['profileId']);
+        $expression->where('activityId', $parameters['activityId']);
 
-        $result = $cursor->findOne();
+        $result = $storage->findOne($collection, $expression);
 
-        $cursorCount = $cursor->count();
+        $cursorCount = $storage->count($collection, $expression);
 
         $this->validateCursorCountValid($cursorCount);
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
 
-        $this->validateMatchHeaders($ifMatchH->geader, $ifNoneMatchHeader, $result);
+        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // Add to log
-        $this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
+        //$this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
+        $deletionResult = $storage->delete($collection, $expression);
 
-        $result->delete();
+        return $deletionResult;
     }
 
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)

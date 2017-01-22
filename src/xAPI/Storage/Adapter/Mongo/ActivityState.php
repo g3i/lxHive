@@ -34,73 +34,100 @@ class ActivityState extends Base implements ActivityStateInterface
 {
     public function getActivityStatesFiltered($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityStates');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityStates';
+        $expression = $storage->createExpression();
+
+        $parameters = new Util\Set($parameters);
 
         // Single activity state
         if (isset($parameters['stateId'])) {
-            $cursor->where('stateId', $parameters->get('stateId'));
-            $cursor->where('activityId', $parameters->get('activityId'));
+            $expression->where('stateId', $parameters->get('stateId'));
+            $expression->where('activityId', $parameters->get('activityId'));
             $agent = $parameters->get('agent');
             $agent = json_decode($agent, true);
 
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-            $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+            $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             if (isset($parameters['registration'])) {
                 $cursor->where('registration', $parameters->get('registration'));
             }
 
-            $cursorCount = $cursor->count();
-
+            $cursorCount = $storage->count($collection, $expression);
+            
             $this->validateCursorCountValid($cursorCount);
+            $cursor = $storage->find($collection, $expression);
+
+            $documentResult = new DocumentResult();
+            $documentResult->setCursor($cursor);
+            $documentResult->setIsSingle(true);
+            $documentResult->setRemainingCount(1);
+            $documentResult->setTotalCount(1);
+
+            return $documentResult;
         }
 
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $expression->where('activityId', $parameters->get('activityId'));
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
-            $cursor->where('registration', $parameters->get('registration'));
+            $expression->where('registration', $parameters->get('registration'));
         }
 
         if ($parameters->has('since')) {
             $since = Util\Date::dateStringToMongoDate($parameters->get('since'));
-            $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
+            $expression->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
-        return $cursor;
+        // Fetch
+        $cursor = $storage->find($collection, $expression);
+
+        $documentResult = new DocumentResult();
+        $documentResult->setCursor($cursor);
+        $documentResult->setIsSingle(false);
+
+        return $documentResult;
     }
 
     public function postActivityState($parameters, $stateObject)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityStates');
+        $parameters = new Util\Set($parameters);
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityStates';
+        $expression = $storage->createExpression();
 
         // Set up the body to be saved
-        $activityStateDocument = $collection->createDocument();
+        $agentProfileDocument = new \API\Document\Generic();
 
         // Check for existing state - then merge if applicable
-        $cursor = $collection->find();
-        $cursor->where('stateId', $parameters->get('stateId'));
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $expression = $storage->createExpression();
+
+        // Check for existing state - then merge if applicable
+        $expression->where('stateId', $parameters->get('stateId'));
+        $expression->where('activityId', $parameters->get('activityId'));
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
-            $cursor->where('registration', $parameters->get('registration'));
+            $expression->where('registration', $parameters->get('registration'));
         }
 
-        $result = $cursor->findOne();
+        $result = $storage->findOne($collection, $expression);
+        if ($result) {
+            $result = new \API\Document\Generic($result);
+        }
 
         // ID exists, merge body
         $contentType = $request->headers('Content-Type');
@@ -135,47 +162,43 @@ class ActivityState extends Base implements ActivityStateInterface
         $activityStateDocument->setStateId($parameters->get('stateId'));
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($stateObject));
-        $activityStateDocument->save();
+        
+        $storage->upsert($collection, $expression, $activityStateDocument);
 
         // TODO: Abstract this away somehow!
         // Add to log
-        $this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         return $activityStateDocument;
     }
 
     public function putActivityState($parameters, $stateObject)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityStates');
+        $parameters = new Util\Set($parameters);
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityStates';
+        $expression = $storage->createExpression();
 
-        $activityStateDocument = $collection->createDocument();
+        $activityStateDocument = new \API\Document\Generic();
 
         // Check for existing state - then replace if applicable
-        $cursor = $collection->find();
-        $cursor->where('stateId', $parameters->get('stateId'));
-        $cursor->where('activityId', $parameters->get('activityId'));
+        $expression->where('stateId', $parameters->get('stateId'));
+        $expression->where('activityId', $parameters->get('activityId'));
 
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
+        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
-            $cursor->where('registration', $parameters->get('registration'));
+            $expression->where('registration', $parameters->get('registration'));
         }
-
-        $result = $cursor->findOne();
 
         $contentType = $request->headers('Content-Type');
         if ($contentType === null) {
             $contentType = 'text/plain';
-        }
-
-        // ID exists, replace
-        if ($result) {
-            $activityStateDocument = $result;
         }
 
         $activityStateDocument->setContent($stateObject);
@@ -191,20 +214,21 @@ class ActivityState extends Base implements ActivityStateInterface
         $activityStateDocument->setStateId($parameters->get('stateId'));
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($stateObject));
-        $activityStateDocument->save();
+        $storage->upsert($collection, $expression, $activityStateDocument);
 
         // TODO: Abstract this away somehow!
         // Add to log
-        $this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
+        //$this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
 
         return $activityStateDocument;
     }
 
     public function deleteActivityState($parameters)
     {
-        $collection = $this->getDocumentManager()->getCollection('activityStates');
-
-        $expression = $collection->expression();
+        $parameters = new Util\Set($parameters);
+        $storage = $this->getContainer()['storage'];
+        $collection = 'activityStates';
+        $expression = $storage->createExpression();
 
         if ($parameters->has('stateId')) {
             $expression->where('stateId', $parameters->get('stateId'));
@@ -223,7 +247,8 @@ class ActivityState extends Base implements ActivityStateInterface
             $expression->where('registration', $parameters->get('registration'));
         }
 
-        $collection->deleteDocuments($expression);
+        $deletionResult = $storage->delete($collection, $expression);
+        return $deletionResult;
     }
 
     private function validateCursorCountValid($cursorCount)

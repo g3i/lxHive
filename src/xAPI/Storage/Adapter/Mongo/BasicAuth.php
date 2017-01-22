@@ -96,33 +96,34 @@ class BasicAuth extends Base implements BasicAuthInterface
 
     public function deleteToken($clientId)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-
-        $expression = $collection->expression();
+        $collection = 'basicTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
         $expression->where('clientId', $clientId);
 
-        $collection->deleteDocuments($expression);
+        $deletionResult = $storage->delete($expression);
+        return $deletionResult;
     }
 
     public function expireToken($clientId, $accessToken)
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
+        $collection = 'basicTokens';
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
 
-        $cursor->where('token', $accessToken);
-        $cursor->where('clientId', $clientId);
-        $accessTokenDocument = $cursor->current();
-        $accessTokenDocument->setExpired(true);
-        $accessTokenDocument->save();
+        $expression->where('token', $accessToken);
+        $expression->where('clientId', $clientId);
+        $updateResult = $storage->update($collection, $expression, ['expired' => true]);
 
-        return $accessTokenDocument;
+        return $updateResult;
     }
 
     public function getTokens()
     {
-        $collection = $this->getDocumentManager()->getCollection('basicTokens');
-        $cursor = $collection->find();
+        $collection = 'basicTokens';
+        $storage = $this->getContainer()['storage'];
+        $cursor = $storage->find($collection);
 
         return $cursor;
     }

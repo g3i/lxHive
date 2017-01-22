@@ -31,22 +31,27 @@ class User extends Base implements UserInterface
 {
     public function findByEmailAndPassword($username, $password)
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
-        $cursor = $collection->find();
+        $storage = $this->getContainer()['storage'];
+        $collection = 'users';
+        $expression = $storage->createExpression();
 
-        $cursor->where('email', $params->get('email'));
-        $cursor->where('passwordHash', sha1($params->get('password')));
+        $expression->where('email', $params->get('email'));
+        $expression->where('passwordHash', sha1($params->get('password')));
 
-        $document = $cursor->current();
+        $document = $storage->findOne($collection, $expression);
 
         return $document;
     }
 
     public function findById($id)
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
+        $storage = $this->getContainer()['storage'];
+        $collection = 'users';
+        $expression = $storage->createExpression();
 
-        $result = $collection->getDocument($id);
+        $expression->where('_id', $id);
+
+        $result = $storage->findOne($id);
 
         return $result;
     }
