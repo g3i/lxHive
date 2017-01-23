@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,48 +47,44 @@ class Authorize extends Resource
      */
     public function init()
     {
-        $this->setOAuthService(new OAuthService($this->getSlim()));
-        $this->setUserService(new UserService($this->getSlim()));
+        $this->oAuthService = new OAuthService($this->getContainer());
+        $this->userService = new UserService($this->getContainer());
         OAuth::loadSession();
     }
 
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         if ($this->userService->loggedIn()) {
-            $this->oAuthService->authorizeGet($request);
+            $this->oAuthService->authorizeGet();
             // Authorization is always requested
             $view = new OAuthAuthorizeView(['service' => $this->oAuthService, 'userService' => $this->userService]);
             $view = $view->renderGet();
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             // Redirect to login
-            $redirectUrl = $this->getSlim()->url;
+            $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('authorize');
             $redirectUrl->getPath()->append('login');
-            $this->getSlim()->response->headers->set('Location', $redirectUrl);
+            $this->getContainer()->response->headers->set('Location', $redirectUrl);
             Resource::response(Resource::STATUS_FOUND);
         }
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         if ($this->userService->loggedIn()) {
             // Authorization is always requested
-            $this->oAuthService->authorizePost($request);
+            $this->oAuthService->authorizePost();
             $redirectUri = $this->oAuthService->getRedirectUri();
-            $this->getSlim()->response->headers->set('Location', $redirectUri);
+            $this->getContainer()->response->headers->set('Location', $redirectUri);
             Resource::response(Resource::STATUS_FOUND);
         } else {
             // Unauthorized
@@ -99,8 +95,8 @@ class Authorize extends Resource
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,GET'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -114,20 +110,6 @@ class Authorize extends Resource
     }
 
     /**
-     * Sets the value of oAuthService.
-     *
-     * @param \API\Service\Auth\OAuth $oAuthService the o auth service
-     *
-     * @return self
-     */
-    public function setOAuthService(\API\Service\Auth\OAuth $oAuthService)
-    {
-        $this->oAuthService = $oAuthService;
-
-        return $this;
-    }
-
-    /**
      * Gets the value of userService.
      *
      * @return \API\Service\User
@@ -135,19 +117,5 @@ class Authorize extends Resource
     public function getUserService()
     {
         return $this->userService;
-    }
-
-    /**
-     * Sets the value of userService.
-     *
-     * @param \API\Service\User $userService the user service
-     *
-     * @return self
-     */
-    public function setUserService(\API\Service\User $userService)
-    {
-        $this->userService = $userService;
-
-        return $this;
     }
 }

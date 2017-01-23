@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,44 +29,45 @@ use InvalidArgumentException;
 class Versioning
 {
     /**
-     * Prefix for class
+     * Prefix for class.
      **/
     const CLASSPREFIX = 'V';
 
     /**
-     * Major version
+     * Major version.
      *
      * @var int
      **/
-    private $major = 0;
+    public $major = 0;
 
     /**
-     * Minor version
+     * Minor version.
      *
      * @var int
      **/
-    private $minor = 0;
+    public $minor = 0;
 
     /**
-     * Patch version
+     * Patch version.
      *
      * @var int
      **/
-    private $patch = 0;
+    public $patch = 0;
 
     /**
-     * Original version String
+     * Original version String.
      *
      * @var string
      */
-    private $originalVersionString;
+    public $originalVersionString;
 
     /**
-     * Parse a string into Versionable properties
+     * Parse a string into Versionable properties.
      *
      * @throws InvalidArgumentException
      *
-     * @param  string             $string
+     * @param string $string
+     *
      * @return Version
      **/
     public static function fromString($string)
@@ -74,14 +75,14 @@ class Versioning
         // Sanity check
         if (substr_count($string, '.') !== 2) {
             throw new InvalidArgumentException(
-                'Version "' . $string . '" can not be parsed into a valid SemVer major.minor.patch version'
+                'Version "'.$string.'" can not be parsed into a valid SemVer major.minor.patch version'
             );
         }
 
         $parts = explode('.', $string);
-        
+
         $versionable = new self();
-        
+
         // Extra check
         if (!is_numeric($parts[0])
             || ((int) $parts[0] < 0)
@@ -91,7 +92,7 @@ class Versioning
             || ((int) $parts[2] < 0)
         ) {
             throw new InvalidArgumentException(
-                'Version "' . $string . '" can not be parsed into a valid SemVer major.minor.patch version'
+                'Version "'.$string.'" can not be parsed into a valid SemVer major.minor.patch version'
             );
         }
 
@@ -107,7 +108,7 @@ class Versioning
 
     public function generateClassNamespace()
     {
-        return (self::CLASSPREFIX . $this->getMajor() . $this->getMinor());
+        return self::CLASSPREFIX.$this->getMajor().$this->getMinor();
     }
 
     /**

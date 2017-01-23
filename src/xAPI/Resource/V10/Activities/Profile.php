@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class Profile extends Resource
      */
     public function init()
     {
-        $this->setActivityProfileService(new ActivityProfileService($this->getSlim()));
+        $this->activityProfileService = new ActivityProfileService($this->getContainer());
     }
 
     /**
@@ -48,16 +48,14 @@ class Profile extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->activityProfileService->activityProfileGet($request);
+        $this->activityProfileService->activityProfileGet();
 
         // Render them
         $view = new ActivityProfileView(['service' => $this->activityProfileService]);
@@ -67,69 +65,63 @@ class Profile extends Resource
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             $view = $view->renderGet();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
+            return $this->jsonResponse(Resource::STATUS_OK, $view);
         }
     }
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfilePut($request);
+        $this->activityProfileService->activityProfilePut();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfilePost($request);
+        $this->activityProfileService->activityProfilePost();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function delete()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfileDelete($request);
+        $this->activityProfileService->activityProfileDelete();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -140,19 +132,5 @@ class Profile extends Resource
     public function getActivityProfileService()
     {
         return $this->activityProfileService;
-    }
-
-    /**
-     * Sets the value of activityProfileService.
-     *
-     * @param \API\Service\ActivityProfile $activityProfileService the activity service
-     *
-     * @return self
-     */
-    public function setActivityProfileService(\API\Service\ActivityProfile $activityProfileService)
-    {
-        $this->activityProfileService = $activityProfileService;
-
-        return $this;
     }
 }

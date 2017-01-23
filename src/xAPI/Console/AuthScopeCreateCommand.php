@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,26 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use API\Service\Auth\OAuth as OAuthService;
+use API\Admin\Auth;
 
 class AuthScopeCreateCommand extends Command
 {
+    /**
+     * Auth Admin class.
+     *
+     * @var API\Admin\Auth
+     */
+    private $authAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->authAdmin = new Auth($container);
+    }
+
     protected function configure()
     {
         $this
@@ -42,8 +58,6 @@ class AuthScopeCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getSlim());
-
         $helper = $this->getHelper('question');
 
         $question = new Question('Please enter a name (scope identifier): ', 'untitled');
@@ -52,11 +66,21 @@ class AuthScopeCreateCommand extends Command
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
-        $scope = $oAuthService->addScope($name, $description);
+        $scope = $this->getAuthAdmin()->createAuthScope($name, $description);
+
         $text = json_encode($scope, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Auth scope successfully created!</info>');
         $output->writeln('<info>Info:</info>');
-        $output->writeln($text);
+    }
+
+    /**
+     * Gets the Auth Admin class.
+     *
+     * @return API\Admin\Auth
+     */
+    public function getAuthAdmin()
+    {
+        return $this->authAdmin;
     }
 }

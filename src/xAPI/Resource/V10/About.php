@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,18 +32,17 @@ class About extends Resource
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = $this->getSlim()->config('xAPI')['supported_versions'];
-
-        $view = new AboutView(['versions' => $versions]);
+        $versions = $this->getContainer()['settings']['xAPI']['supported_versions'];
+        $view = new AboutView($this->getResponse(), $this->getDiContainer(), ['versions' => $versions]);
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
+        return $this->response(Resource::STATUS_OK);
     }
 }

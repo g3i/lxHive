@@ -12,6 +12,9 @@
         <script src="../../../js/bootstrap.min.js"></script>
         <script src="../../../js/typeahead.min.js"></script>
         <script src="../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -70,11 +73,18 @@
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>Statement</h1>
+        <h1>
+            Statement
+                
+        </h1>
     </div>
 
     <p>    class
-    <strong>Statement</strong>        extends <a href="../../../API/Validator.html"><abbr title="API\Validator">Validator</abbr></a></p>
+    <strong>Statement</strong>        extends <a href="../../../API/Validator.html"><abbr title="API\Validator">Validator</abbr></a>
+</p>
+
+        
+    
 
     
     
@@ -89,77 +99,30 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method___construct">__construct</a>()
+        
                                             <p>Constructor.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method___construct"><abbr title="API\Validator">Validator</abbr></a></small></div>
+                <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     <abbr title="JsonSchema\Validator">Validator</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_getSchemaValidator">getSchemaValidator</a>()
+                    <a href="#method_validateSchema">validateSchema</a>($data, $uri, $debug = false)
+        
                                             <p class="no-description">No description</p>
                                     </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_getSchemaValidator"><abbr title="API\Validator">Validator</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_validateSchema"><abbr title="API\Validator">Validator</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_setSchemaValidator">setSchemaValidator</a>(<abbr title="JsonSchema\Validator">Validator</abbr> $schemaValidator)
-                                            <p class="no-description">No description</p>
-                                    </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_setSchemaValidator"><abbr title="API\Validator">Validator</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <abbr title="JsonSchema\RefResolver">RefResolver</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_getSchemaReferenceResolver">getSchemaReferenceResolver</a>()
-                                            <p class="no-description">No description</p>
-                                    </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_getSchemaReferenceResolver"><abbr title="API\Validator">Validator</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_setSchemaReferenceResolver">setSchemaReferenceResolver</a>(<abbr title="JsonSchema\RefResolver">RefResolver</abbr> $refResolver)
-                                            <p class="no-description">No description</p>
-                                    </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_setSchemaReferenceResolver"><abbr title="API\Validator">Validator</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_getSchemaRetriever">getSchemaRetriever</a>()
-                                            <p class="no-description">No description</p>
-                                    </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_getSchemaRetriever"><abbr title="API\Validator">Validator</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_setSchemaRetriever">setSchemaRetriever</a>(<abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr> $uriRetriever)
-                                            <p class="no-description">No description</p>
-                                    </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_setSchemaRetriever"><abbr title="API\Validator">Validator</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_setDefaultSchemaValidator">setDefaultSchemaValidator</a>()
-                                            <p>Sets the default schema validator.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_setDefaultSchemaValidator"><abbr title="API\Validator">Validator</abbr></a></small></div>
+                    <a href="#method_debugSchema">debugSchema</a>($data, $uri, $validator, $schema)
+        
+                                            <p>validate data with JsonSchema.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_debugSchema"><abbr title="API\Validator">Validator</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -167,6 +130,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_validateRequest">validateRequest</a>(<abbr title="Silex\Request">Request</abbr> $request)
+        
                                             <p>Performs general validation of the request.</p>                </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../../API/Validator.html#method_validateRequest"><abbr title="API\Validator">Validator</abbr></a></small></div>
             </div>
@@ -176,6 +140,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_validateGetRequest">validateGetRequest</a>($request)
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -186,6 +151,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_validatePostRequest">validatePostRequest</a>($request)
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -196,6 +162,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_validatePutRequest">validatePutRequest</a>($request)
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -208,11 +175,15 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">in <a href="../../../API/Validator.html#method___construct"><abbr title="API\Validator">Validator</abbr></a> at line 50</div>
+        <div class="location">at line         line 31</div>
         <code>                    
-    <strong>__construct</strong>()</code>
+    <strong>__construct</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Constructor.</p>                                </div>
                 <div class="tags">
@@ -224,21 +195,44 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_getSchemaValidator">
-        <div class="location">in <a href="../../../API/Validator.html#method_getSchemaValidator"><abbr title="API\Validator">Validator</abbr></a> at line 58</div>
+                    <h3 id="method_validateSchema">
+        <div class="location">in <a href="../../../API/Validator.html#method_validateSchema"><abbr title="API\Validator">Validator</abbr></a> at line         line 50</div>
         <code>                    <abbr title="JsonSchema\Validator">Validator</abbr>
-    <strong>getSchemaValidator</strong>()</code>
+    <strong>validateSchema</strong>($data, $uri, $debug = false)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$data</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$uri</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$debug</td>
+                <td></td>
+            </tr>
+            </table>
+
             
                             <h4>Return Value</h4>
 
                     <table class="table table-condensed">
         <tr>
             <td><abbr title="JsonSchema\Validator">Validator</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -249,145 +243,55 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_setSchemaValidator">
-        <div class="location">in <a href="../../../API/Validator.html#method_setSchemaValidator"><abbr title="API\Validator">Validator</abbr></a> at line 65</div>
+                    <h3 id="method_debugSchema">
+        <div class="location">in <a href="../../../API/Validator.html#method_debugSchema"><abbr title="API\Validator">Validator</abbr></a> at line         line 72</div>
         <code>                    
-    <strong>setSchemaValidator</strong>(<abbr title="JsonSchema\Validator">Validator</abbr> $schemaValidator)</code>
+    <strong>debugSchema</strong>($data, $uri, $validator, $schema)
+        </code>
     </h3>
     <div class="details">
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><abbr title="JsonSchema\Validator">Validator</abbr></td>
-                <td>$schemaValidator</td>
-                <td>
-</td>
-            </tr>
-            </table>
-
             
-            
-            
-                    </div>
-    </div>
+    
 
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_getSchemaReferenceResolver">
-        <div class="location">in <a href="../../../API/Validator.html#method_getSchemaReferenceResolver"><abbr title="API\Validator">Validator</abbr></a> at line 73</div>
-        <code>                    <abbr title="JsonSchema\RefResolver">RefResolver</abbr>
-    <strong>getSchemaReferenceResolver</strong>()</code>
-    </h3>
-    <div class="details">
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><abbr title="JsonSchema\RefResolver">RefResolver</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_setSchemaReferenceResolver">
-        <div class="location">in <a href="../../../API/Validator.html#method_setSchemaReferenceResolver"><abbr title="API\Validator">Validator</abbr></a> at line 80</div>
-        <code>                    
-    <strong>setSchemaReferenceResolver</strong>(<abbr title="JsonSchema\RefResolver">RefResolver</abbr> $refResolver)</code>
-    </h3>
-    <div class="details">
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><abbr title="JsonSchema\RefResolver">RefResolver</abbr></td>
-                <td>$refResolver</td>
-                <td>
-</td>
-            </tr>
-            </table>
-
-            
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_getSchemaRetriever">
-        <div class="location">in <a href="../../../API/Validator.html#method_getSchemaRetriever"><abbr title="API\Validator">Validator</abbr></a> at line 88</div>
-        <code>                    <abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr>
-    <strong>getSchemaRetriever</strong>()</code>
-    </h3>
-    <div class="details">
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_setSchemaRetriever">
-        <div class="location">in <a href="../../../API/Validator.html#method_setSchemaRetriever"><abbr title="API\Validator">Validator</abbr></a> at line 95</div>
-        <code>                    
-    <strong>setSchemaRetriever</strong>(<abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr> $uriRetriever)</code>
-    </h3>
-    <div class="details">
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td><abbr title="JsonSchema\Uri\UriRetriever">UriRetriever</abbr></td>
-                <td>$uriRetriever</td>
-                <td>
-</td>
-            </tr>
-            </table>
-
-            
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_setDefaultSchemaValidator">
-        <div class="location">in <a href="../../../API/Validator.html#method_setDefaultSchemaValidator"><abbr title="API\Validator">Validator</abbr></a> at line 103</div>
-        <code>                    
-    <strong>setDefaultSchemaValidator</strong>()</code>
-    </h3>
-    <div class="details">
                     <div class="method-description">
-                                    <p>Sets the default schema validator.</p>                                </div>
+                                    <p>validate data with JsonSchema.</p>                                </div>
                 <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$data</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$uri</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$validator</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$schema</td>
+                <td></td>
+            </tr>
+            </table>
+
             
             
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a href="../../../API/HttpException.html"><abbr title="API\HttpException">HttpException</abbr></a></td>
+                <td></td>
+            </tr>
+            </table>
+
             
                     </div>
     </div>
@@ -395,11 +299,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_validateRequest">
-        <div class="location">in <a href="../../../API/Validator.html#method_validateRequest"><abbr title="API\Validator">Validator</abbr></a> at line 115</div>
+        <div class="location">in <a href="../../../API/Validator.html#method_validateRequest"><abbr title="API\Validator">Validator</abbr></a> at line         line 89</div>
         <code>                    
-    <strong>validateRequest</strong>(<abbr title="Silex\Request">Request</abbr> $request)</code>
+    <strong>validateRequest</strong>(<abbr title="Silex\Request">Request</abbr> $request)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Performs general validation of the request.</p>                                </div>
                 <div class="tags">
@@ -422,11 +330,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_validateGetRequest">
-        <div class="location">at line 50</div>
+        <div class="location">at line         line 44</div>
         <code>                    
-    <strong>validateGetRequest</strong>($request)</code>
+    <strong>validateGetRequest</strong>($request)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -434,8 +346,7 @@
                     <tr>
                 <td></td>
                 <td>$request</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -448,11 +359,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_validatePostRequest">
-        <div class="location">at line 64</div>
+        <div class="location">at line         line 66</div>
         <code>                    
-    <strong>validatePostRequest</strong>($request)</code>
+    <strong>validatePostRequest</strong>($request)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -460,8 +375,7 @@
                     <tr>
                 <td></td>
                 <td>$request</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -474,11 +388,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_validatePutRequest">
-        <div class="location">at line 80</div>
+        <div class="location">at line         line 79</div>
         <code>                    
-    <strong>validatePutRequest</strong>($request)</code>
+    <strong>validatePutRequest</strong>($request)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -486,8 +404,7 @@
                     <tr>
                 <td></td>
                 <td>$request</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 

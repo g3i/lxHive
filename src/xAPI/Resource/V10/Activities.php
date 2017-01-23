@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 namespace API\Resource\V10;
 
 use API\Resource;
-use Slim\Helper\Set;
 use API\Service\Activity as ActivityService;
 use API\View\V10\Activity as ActivityView;
 
@@ -41,31 +40,29 @@ class Activities extends Resource
      */
     public function init()
     {
-        $this->setActivityService(new ActivityService($this->getSlim()));
+        $this->activityService = new ActivityService($this->getContainer());
     }
 
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
-        $this->activityService->activityGet($request);
+        $this->activityService->activityGet();
 
         // Render them
         $view = new ActivityView(['service' => $this->activityService]);
 
         $view = $view->renderGetSingle();
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -76,19 +73,5 @@ class Activities extends Resource
     public function getActivityService()
     {
         return $this->activityService;
-    }
-
-    /**
-     * Sets the value of activityService.
-     *
-     * @param \API\Service\Activity $activityService the activity service
-     *
-     * @return self
-     */
-    public function setActivityService(\API\Service\Activity $activityService)
-    {
-        $this->activityService = $activityService;
-
-        return $this;
     }
 }

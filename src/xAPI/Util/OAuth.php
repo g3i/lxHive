@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class OAuth
     {
         // Generate a token
         $stripped = '';
-        $length   = 40;
+        $length = 40;
         do {
             $bytes = openssl_random_pseudo_bytes($length, $strong);
             if ($bytes === false || $strong === false) {

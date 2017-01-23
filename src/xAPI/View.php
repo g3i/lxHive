@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,36 +24,72 @@
 
 namespace API;
 
-use Slim\Slim;
+use API\Util\Set;
 
-abstract class View extends \Slim\Helper\Set
+abstract class View extends Set
 {
-    /**
-     * @var \Slim\Slim
-     */
-    private $slim;
+    use BaseTrait;
+
+    private $items;
+
+    private $response;
 
     /**
      * Construct.
      */
-    public function __construct($items = [])
+    public function __construct($response, $container, $items = [])
     {
         parent::__construct($items);
-        $this->setSlim(Slim::getInstance());
+        $this->setResponse($response);
+        $this->setDiContainer($container);
+        $this->items = $items;
     }
 
     /**
-     * @return \Slim\Slim
+     * Gets the value of items.
+     *
+     * @return mixed
      */
-    public function getSlim()
+    public function getItems()
     {
-        return $this->slim;
+        return $this->items;
     }
+
     /**
-     * @param \Slim\Slim $slim
+     * Gets the value of response.
+     *
+     * @return mixed
      */
-    public function setSlim($slim)
+    public function getResponse()
     {
-        $this->slim = $slim;
+        return $this->response;
+    }
+
+    /**
+     * Sets the value of items.
+     *
+     * @param mixed $items the items
+     *
+     * @return self
+     */
+    private function setItems($items)
+    {
+        $this->items = $items;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of response.
+     *
+     * @param mixed $response the response
+     *
+     * @return self
+     */
+    private function setResponse($response)
+    {
+        $this->response = $response;
+
+        return $this;
     }
 }

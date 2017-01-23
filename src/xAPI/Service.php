@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,41 +26,13 @@ namespace API;
 
 abstract class Service
 {
+    use BaseTrait;
+    
     /**
-     * @var \Slim\Slim
+     * Construct.
      */
-    private $slim;
-
-    /**
-     * Constructor.
-     *
-     * @param \Slim\Slim $slim Slim framework
-     */
-    public function __construct($slim)
+    public function __construct($container)
     {
-        $this->setSlim($slim);
-    }
-
-    /**
-     * @return \Sokil\Mongo\Client
-     */
-    public function getDocumentManager()
-    {
-        return $this->getSlim()->mongo;
-    }
-
-    /**
-     * @return \Slim\Slim
-     */
-    public function getSlim()
-    {
-        return $this->slim;
-    }
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
+        $this->setDiContainer($container);
     }
 }

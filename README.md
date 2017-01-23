@@ -1,12 +1,10 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* v0.9.1
-* supports xAPI specs <= 1.0.2
+* Current version: **v0.9.1**
+* Supports xAPI spec <= 1.0.2
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/master.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
-
-* now also available as [Saas edition](https://saas.lxhive.com/)
 
 ## <a name="introduction" />Introduction
 
@@ -59,10 +57,8 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 $ cd /<path_to_application_root>
 # View available commands
 $ ./X
-# Set up database
-$ ./X setup:db
-# Set up OAuth scopes
-$ ./X setup:oauth
+# Run the setup
+$ ./X setup
 # Create a new user
 $ ./X user:create
 

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,27 +28,35 @@ use API\View;
 
 class BaseDocument extends View
 {
-    public function renderGet()
+    public function renderGet($documentResult)
     {
-        $idArray     = [];
+        $idArray = [];
 
-        $cursor = $this->service->getCursor();
+        $cursor = $documentResult->getCursor();
 
         foreach ($cursor as $document) {
-            $idArray[] = $document->getIdentifier();
+            $document = new \API\Document\Generic($document);
+            // TODO: Implement check in Generic document for document type and fetch identifier accordingly
+            //$idArray[] = $document->getIdentifier();
+            $idArray[] = $document->getProfileId();
         }
 
         return $idArray;
     }
 
-    public function renderGetSingle()
+    public function renderGetSingle($documentResult)
     {
-        $document = $this->service->getCursor()->current();
+        $document = current($documentResult->getCursor()->toArray());
+        $document = new \API\Document\Generic($document);
         $content = $document->getContent();
 
-        $this->getSlim()->response->headers->set('ETag', '"'.$document->getHash().'"'); //Quotes required - RFC2616 3.11
-        $this->getSlim()->response->headers->set('Content-Type', $document->getContentType());
+        // Write content
+        $newResponse = $this->getResponse()->withHeader('ETag', '"'.$document->getHash().'"')
+                                           ->withHeader('Content-Type', $document->getContentType());
+        // Write body
+        $body = $newResponse->getBody();
+        $body->write($content);
 
-        return $content;
+        return $newResponse;
     }
 }

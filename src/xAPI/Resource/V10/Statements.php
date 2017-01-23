@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,8 @@ class Statements extends Resource
      */
     public function init()
     {
-        $this->setStatementService(new StatementService($this->getSlim()));
-        $this->setStatementValidator(new StatementValidator());
-        $this->getStatementValidator()->setDefaultSchemaValidator();
+        $this->statementService = new StatementService($this->getContainer());
+        $this->statementValidator = new StatementValidator($this->getContainer());
     }
 
     /**
@@ -56,89 +55,68 @@ class Statements extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/read');
+        //$this->getContainer()->auth->checkPermission('statements/read');
 
         // Do the validation
-        $this->statementValidator->validateRequest($request);
-        $this->statementValidator->validateGetRequest($request);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validateGetRequest();
 
-        // Load the statements - this needs to change, drastically, as it's garbage
-        $this->statementService->statementGet($request);
+        // Load the statements
+        $statementResult = $this->statementService->statementGet();
 
         // Render them
-        $view = new StatementView(['service' => $this->statementService]);
+        $view = new StatementView($this->getResponse(), $this->getDiContainer());
 
-        if ($this->statementService->getSingle()) {
-            $view = $view->renderGetSingle();
+        if ($statementResult->getSingleStatementRequest()) {
+            $view = $view->renderGetSingle($statementResult);
         } else {
-            $view = $view->renderGet();
+            $view = $view->renderGet($statementResult);
         }
 
-        // Multipart responses are intentionally disabled for now
-        //if (null === $attachments) {
-            $this->setHeaders();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
-        //} else {
-        //    $this->setHeaders();
-        //    Resource::multipartResponse(Resource::STATUS_OK, $view, $attachments);
-        //}
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/write');
+        //$this->getContainer()->auth->checkPermission('statements/write');
 
+        $request = $this->getContainer()['parser']->getData();
         // Do the validation
-        $this->statementValidator->validateRequest($request);
-        $this->statementValidator->validatePutRequest($request);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePutRequest();
 
         // Save the statements
-        $this->statementService->statementPut($request);
+        $this->statementService->statementPut();
 
-        //Always an empty response, unless there was an Exception
-        $this->setHeaders();
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        // Always an empty response, unless there was an Exception
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/write');
+        //$this->getContainer()->auth->checkPermission('statements/write');
 
         // Do the validation and multipart splitting
-        $this->statementValidator->validateRequest($request);
-
-        if ($request->isMultipart()) {
-            $jsonRequest = $this->extractJsonRequestFromMultipart($request);
-        } else {
-            $jsonRequest = $request;
-        }
-
-        $this->statementValidator->validatePostRequest($jsonRequest);
+        $this->statementValidator->validateRequest();
+        $this->statementValidator->validatePostRequest();
 
         // Save the statements
-        $this->statementService->statementPost($request);
+        $statementResult = $this->statementService->statementPost();
 
-        $view = new StatementView(['service' => $this->statementService]);
-        $view = $view->renderPost();
+        $view = new StatementView($this->getResponse(), $this->getDiContainer());
+        $view = $view->renderPost($statementResult);
 
-        $this->setHeaders();
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -150,27 +128,11 @@ class Statements extends Resource
     }
 
     /**
-     * @param \API\Service\Statement $statementService
-     */
-    public function setStatementService($statementService)
-    {
-        $this->statementService = $statementService;
-    }
-
-    /**
      * @return \API\Validator\Statement
      */
     public function getStatementValidator()
     {
         return $this->statementValidator;
-    }
-
-    /**
-     * @param \API\Validator\Statement $statementValidator
-     */
-    public function setStatementValidator($statementValidator)
-    {
-        $this->statementValidator = $statementValidator;
     }
 
     /**
@@ -209,15 +171,4 @@ class Statements extends Resource
 
         return $requests;
     }
-
-    /**
-     * Sets specific headers for this request
-     *
-     * @return void
-     */
-
-    protected function setHeaders()
-    {
-    }
-
 }
