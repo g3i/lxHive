@@ -70,7 +70,7 @@ class Setup
         }
         $data = Yaml::parse($template, true);// exceptionOnInvalidType
         if (!empty($mergeData)) {
-            $data += $mergeData;
+            $data = array_merge($data, $mergeData);
         }
         $this->yamlData = $data;
         $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType

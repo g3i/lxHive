@@ -85,7 +85,7 @@ class SetupCommand extends SymfonyCommand
         $question = new Question('Enter the name of your MongoDB database (default: "lxHive"): ', 'lxHive');
         $mongoDatabase = $helper->ask($input, $output, $question);
 
-        $mergeConfig = ['name' => $name, 'storage' => ['Mongo' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]]];
+        $mergeConfig = ['name' => $name, 'storage' => ['in_use' => 'Mongo', 'Mongo' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]]];
         $this->getSetup()->installYaml('Config.yml', $mergeConfig);
 
         if (!$this->getSetup()->checkYaml('Config.production.yml')) {
