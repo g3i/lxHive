@@ -151,31 +151,6 @@ class Bootstrap
 
         $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
 
-        // Load any extensions that may exist
-        $extensions = $container['settings']['extensions'];
-
-        if ($extensions) {
-            foreach ($extensions as $extension) {
-                if ($extension['enabled'] === true) {
-                    // Instantiate the extension class
-                    $className = $extension['class_name'];
-                    $extension = new $className($app);
-
-                    // Load any xAPI event handlers added by the extension
-                    $listeners = $extension->getEventListeners();
-                    foreach ($listeners as $listener) {
-                        $container['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
-                    }
-
-                    // Load any routes added by extension
-                    $routes = $extension->getRoutes();
-                    foreach ($routes as $route) {
-                        $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
-                    }
-                }
-            }
-        }
-
         // Parser
         $container['parser'] = function ($container) {
             $parser = new PsrRequestParser($container['request']);
@@ -325,12 +300,30 @@ class Bootstrap
             return $response;
         });
 
-        /*
-        // Content type check
-        if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
-        // Bad Content-Type
-        throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);
-        }*/
+        // Load any extensions that may exist
+        $extensions = $container['settings']['extensions'];
+
+        if ($extensions) {
+            foreach ($extensions as $extension) {
+                if ($extension['enabled'] === true) {
+                    // Instantiate the extension class
+                    $className = $extension['class_name'];
+                    $extension = new $className($app);
+
+                    // Load any xAPI event handlers added by the extension
+                    $listeners = $extension->getEventListeners();
+                    foreach ($listeners as $listener) {
+                        $container['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+                    }
+
+                    // Load any routes added by extension
+                    $routes = $extension->getRoutes();
+                    foreach ($routes as $route) {
+                        $app->map($route['methods'], $route['pattern'], [$extension, $route['callable']]);
+                    }
+                }
+            }
+        }
 
         $app->get('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
             $resource = $args['resource'];
