@@ -43,7 +43,7 @@ class Statement extends Base implements StatementInterface
         $collection = $this->getDocumentManager()->getCollection('statements');
         $cursor = $collection->find();
 
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
 
         // Single statement
         if ($parameters->has('statementId')) {

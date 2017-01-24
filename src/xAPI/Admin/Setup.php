@@ -96,7 +96,7 @@ class Setup
         $container = $bootstrapper->initCliContainer();
         $oAuthService = new OAuthService($container);
 
-        foreach ($container['settings']['xAPI']['supported_auth_scopes'] as $authScope) {
+        foreach ($container['config']->get('xAPI.supported_auth_scopes') as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }

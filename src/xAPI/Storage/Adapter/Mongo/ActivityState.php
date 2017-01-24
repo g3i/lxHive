@@ -38,7 +38,7 @@ class ActivityState extends Base implements ActivityStateInterface
         $collection = 'activityStates';
         $expression = $storage->createExpression();
 
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
 
         // Single activity state
         if (isset($parameters['stateId'])) {
@@ -98,7 +98,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
     public function postActivityState($parameters, $stateObject)
     {
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
         $collection = 'activityStates';
         $expression = $storage->createExpression();
@@ -174,7 +174,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
     public function putActivityState($parameters, $stateObject)
     {
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
         $collection = 'activityStates';
         $expression = $storage->createExpression();
@@ -225,7 +225,7 @@ class ActivityState extends Base implements ActivityStateInterface
 
     public function deleteActivityState($parameters)
     {
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
         $collection = 'activityStates';
         $expression = $storage->createExpression();

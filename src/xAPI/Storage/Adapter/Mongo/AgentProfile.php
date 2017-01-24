@@ -39,7 +39,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $collection = 'agentProfiles';
         $expression = $storage->createExpression();
 
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
 
         // Single activity profile
         if ($parameters->has('profileId')) {

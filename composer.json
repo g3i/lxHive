@@ -21,6 +21,11 @@
         "symfony/event-dispatcher": "^3.2",
         "ext-mongodb": "*"
     },
+    "scripts": {
+        "post-package-install": [
+            "php -r \"mkdir('./storage/files/',0770, true);\""
+        ]
+    },
     "require-dev": {
         "phpunit/phpunit": "4.3.*"
     },

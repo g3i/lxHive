@@ -30,7 +30,7 @@ use API\Document\DocumentInterface;
 
 class Mongo implements AdapterInterface
 {
-    protected $container;
+    use BaseTrait;
 
     private $client;
 
@@ -38,9 +38,9 @@ class Mongo implements AdapterInterface
 
     public function __construct($container)
     {
-        $this->container = $container;
-        $client = new \MongoDB\Driver\Manager($this->getContainer()['settings']['storage']['Mongo']['host_uri']);
-        $this->databaseName = $this->getContainer()['settings']['storage']['Mongo']['db_name'];
+        $this->setContainer($container);
+        $client = new \MongoDB\Driver\Manager($this->getConfig()->get('storage.Mongo.host_uri'));
+        $this->databaseName = $this->getConfig()->get('storage.Mongo.db_name');
         $this->client = $client;
     }
 

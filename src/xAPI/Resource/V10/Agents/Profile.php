@@ -58,7 +58,7 @@ class Profile extends Resource
         $documentResult = $this->agentProfileService->agentProfileGet();
 
         // Render them
-        $view = new AgentProfileView($this->getResponse(), $this->getDiContainer());
+        $view = new AgentProfileView($this->getResponse(), $this->getContainer());
 
         if ($documentResult->getIsSingle()) {
             $view = $view->renderGetSingle($documentResult);

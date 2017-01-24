@@ -32,10 +32,8 @@ class Authorize extends View
     {
         $view = $this->getContainer()->view;
         $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
-        $this->set('csrfToken', $_SESSION['csrfToken']);
-        $this->set('name', $this->getContainer()['settings']['name'));
-        $this->set('branding', $this->getContainer()['settings']['xAPI']['oauth']['branding']);
-        $output = $view->render('authorize.twig', $this->all());
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => $this->getConfig()->get('settings.name'), 'branding' => $this->getConfig()->get('settings.xAPI.oauth.branding')]);
+        $output = $view->render('authorize.twig', $this->getItems());
 
         // Set Content-Type to html
         $this->getContainer()->response->headers->set('Content-Type', 'text/html');

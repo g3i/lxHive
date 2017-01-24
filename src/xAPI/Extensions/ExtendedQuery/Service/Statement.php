@@ -10,7 +10,7 @@ class Statement extends Service
 {
     public function statementGet($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
         $response = $this->statementQuery($params);
 
         return $response;
@@ -32,7 +32,7 @@ class Statement extends Service
             $body = json_decode($body, true);
         }
 
-        $params = new Set($body);
+        $params = new Collection($body);
         $params->replace($request->get());
         $response = $this->statementQuery($params);
 
@@ -57,7 +57,7 @@ class Statement extends Service
 
     protected function resolveStorageClass()
     {
-        $storageInUse = $this->getContainer()['settings']['storage']['in_use'];
+        $storageInUse = $this->getConfig()->get('storage.in_use');
         $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\'.$storageInUse.'\\ExtendedStatement';
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is incompatible with ExtendedQuery extension!');

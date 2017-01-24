@@ -93,10 +93,10 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $queryOptions['sort'] = ['_id' => -1];
         }
 
-        if (isset($parameters['limit']) && $parameters['limit'] < $this->getContainer()['settings']['xAPI']['statement_get_limit'] && $parameters['limit'] > 0) {
+        if (isset($parameters['limit']) && $parameters['limit'] < $this->getConfig()->get('xAPI.statement_get_limit') && $parameters['limit'] > 0) {
             $limit = $parameters['limit'];
         } else {
-            $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
+            $limit = $this->getConfig()->get('xAPI.statement_get_limit');
         }
 
         $queryOptions['limit'] = $limit;

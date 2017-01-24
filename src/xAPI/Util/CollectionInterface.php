@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -20,40 +19,27 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * This file was adapted from slim. 
+ * License information is available at https://github.com/slimphp/Slim/blob/3.x/LICENSE.md
+ * 
  */
 
-namespace API;
+namespace Slim\Interfaces;
 
-trait BaseTrait
+interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Arrayable
 {
-    /**
-     * @var \Slim\Container
-     */
-    private $diContainer;
+    public function set($key, $value);
 
-    /**
-     * @var \Storage\AdapterInterface
-     */
-    private $storage;
+    public function get($key, $default = null);
 
-    /**
-     * @var \Monolog\Monolog
-     */
-    private $log;
+    public function replace(array $items);
 
-    /**
-     * Sets the value of diContainer.
-     *
-     * @param \Slim\Container $diContainer the di container
-     *
-     * @return self
-     */
-    public function setDiContainer(\Slim\Container $diContainer)
-    {
-        $this->diContainer = $diContainer;
-        $this->storage = $diContainer['storage'];
-        $this->log = $diContainer['log'];
+    public function all();
 
-        return $this;
-    }
+    public function has($key);
+
+    public function remove($key);
+
+    public function clear();
 }

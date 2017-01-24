@@ -114,7 +114,7 @@ class Basic extends Service implements AuthInterface
      */
     public function accessTokenGet($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $this->fetchToken($params->get('key'), $params->get('secret'));
 
@@ -128,13 +128,13 @@ class Basic extends Service implements AuthInterface
     {
         $body = $this->getContainer()['parser']->getData()->getPayload();
 
-        $requestParams = new Util\Set($body);
+        $requestParams = new Util\Collection($body);
 
         $this->validateRequiredParams($requestParams);
 
         $currentDate = new \DateTime();
 
-        $defaultParams = new Util\Set([
+        $defaultParams = new Util\Collection([
             'user' => [
                 'password' => 'password',
                 'permissions' => [
@@ -149,7 +149,7 @@ class Basic extends Service implements AuthInterface
             'expiresAt' => null,
         ]);
 
-        $params = new Util\Set(array_replace_recursive($defaultParams->all(), $requestParams->all()));
+        $params = new Util\Collection(array_replace_recursive($defaultParams->all(), $requestParams->all()));
 
         $scopeDocuments = [];
         $scopes = $params->get('scopes');
@@ -188,7 +188,7 @@ class Basic extends Service implements AuthInterface
      */
     public function accessTokenDelete($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $this->deleteToken($params->get('key'), $params->get('secret'));
 

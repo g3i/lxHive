@@ -50,7 +50,7 @@ class Attachments extends Resource
         // Check authentication
         //$this->getContainer()->auth->checkPermission('attachments');
 
-        $params = new Util\Set($request->getParameters());
+        $params = new Util\Collection($request->getParameters());
         if (!$params->has('sha2')) {
             throw new \Exception('Missing sha2 parameter!', Resource::STATUS_BAD_REQUEST);
         }

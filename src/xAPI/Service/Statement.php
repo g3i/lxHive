@@ -56,7 +56,7 @@ class Statement extends Service
         $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
         if (count($this->getContainer()['parser']->getAttachments()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
 
             foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
@@ -104,7 +104,7 @@ class Statement extends Service
         $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
         if (count($this->getContainer()['parser']->getAttachments()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getContainer()['settings']['filesystem']);
+            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
 
             foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();

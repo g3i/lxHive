@@ -25,7 +25,7 @@
 namespace API\Service;
 
 use API\Service;
-use API\Util\Set;
+use API\Util\Collection;
 
 class AgentProfile extends Service
 {
@@ -39,7 +39,7 @@ class AgentProfile extends Service
     public function agentProfileGet()
     {
         $request = $this->getContainer()['parser']->getData();
-        $params = new Set($request->getParameters());
+        $params = new Collection($request->getParameters());
 
         $documentResult = $this->getStorage()->getAgentProfileStorage()->getAgentProfilesFiltered($params);
 
@@ -52,7 +52,7 @@ class AgentProfile extends Service
     public function agentProfilePost()
     {
         $request = $this->getContainer()['parser']->getData();
-        $params = new Set($request->getParameters());
+        $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getRawPayload();
@@ -72,7 +72,7 @@ class AgentProfile extends Service
     public function agentProfilePut()
     {
         $request = $this->getContainer()['parser']->getData();
-        $params = new Set($request->getParameters());
+        $params = new Collection($request->getParameters());
 
         $params->set('headers', $request->getHeaders());
 
@@ -93,7 +93,7 @@ class AgentProfile extends Service
     public function agentProfileDelete()
     {
         $request = $this->getContainer()['parser']->getData();
-        $params = new Set($request->getParameters());
+        $params = new Collection($request->getParameters());
 
         $params->set('headers', $request->getHeaders());
 

@@ -46,7 +46,7 @@ class Statement extends Base implements StatementInterface
         $expression = $storage->createExpression();
         $queryOptions = [];
 
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
 
         // Single statement
         if ($parameters->has('statementId')) {
@@ -298,7 +298,7 @@ class Statement extends Base implements StatementInterface
             $expression->whereLess('_id', $id);
         }
 
-        $statementResult->setRequestedFormat($this->getContainer()['settings']['xAPI']['default_statement_get_format']);
+        $statementResult->setRequestedFormat($this->getConfig('xAPI.default_statement_get_format'));
         if ($parameters->has('format')) {
             $statementResult->setRequestedFormat($parameters->get('format'));
         }
@@ -315,10 +315,10 @@ class Statement extends Base implements StatementInterface
             }
         }
 
-        if ($parameters->has('limit') && $parameters->get('limit') < $this->getContainer()['settings']['xAPI']['statement_get_limit'] && $parameters->get('limit') > 0) {
+        if ($parameters->has('limit') && $parameters->get('limit') < $this->getConfig()->get('xAPI.statement_get_limit') && $parameters->get('limit') > 0) {
             $limit = $parameters->get('limit');
         } else {
-            $limit = $this->getContainer()['settings']['xAPI']['statement_get_limit'];
+            $limit = $this->getConfig()->get('xAPI.statement_get_limit');
         }
 
         // Remaining includes the current page!
@@ -366,7 +366,7 @@ class Statement extends Base implements StatementInterface
         // TODO: This should be in Activity storage manager!
         //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getContainer()['url']->getBaseUrl().$this->getContainer()['settings']['filesystem']['exposed_url'];
+        $attachmentBase = $this->getContainer()['url']->getBaseUrl().$this->getConfig()->get('filesystem.exposed_url');
 
         if (isset($statementObject['id'])) {
             $expression = $storage->createExpression();
@@ -473,7 +473,7 @@ class Statement extends Base implements StatementInterface
 
     public function put($parameters, $statementObject)
     {
-        $parameters = new Util\Set($parameters);
+        $parameters = new Util\Collection($parameters);
 
         // Check statementId exists
         if (!$parameters->has('statementId')) {

@@ -29,7 +29,7 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 use API\Resource;
 use League\Url\Url;
 use API\Bootstrap;
-use API\Util\Set;
+use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
@@ -39,6 +39,7 @@ use API\Util\Versioning;
 use Slim\Container;
 use Slim\App;
 use API\Resource\Error;
+use API\Config;
 
 class Bootstrap
 {
@@ -57,21 +58,23 @@ class Bootstrap
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
 
         // 0. Use settings from Config.yml
-        $settings = $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.yml'));
+        $config = $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.yml'));
 
         // 1. Load more settings based on mode
-        $settings = array_merge($settings, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $settings['mode'] . '.yml')));
+        $config = array_merge($config, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml')));
 
-        // 2. Insert settings into container
+        $config = new Config($config);
+
+        // 2. Insert config into container
         if ($container === null) {
-            $container = new \Slim\Container(['settings' => $settings]);
+            $container = new \Slim\Container(['config' => $config]);
         } else {
-            $container['settings'] = $settings;
+            $container['config'] = $config;
         }
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
-            $storageInUse = $container['settings']['storage']['in_use'];
+            $storageInUse = $container['config']['storage']['in_use'];
             $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new \InvalidArgumentException('Storage type selected in config is invalid!');
@@ -93,8 +96,8 @@ class Bootstrap
         // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
-        $handlerConfig = $container['settings']['log']['handlers'];
-        $stream = $appRoot.'/storage/logs/' . $container['settings']['mode'] . '.' . date('Y-m-d') . '.log';
+        $handlerConfig = $container['config']['log']['handlers'];
+        $stream = $appRoot.'/storage/logs/' . $container['config']['mode'] . '.' . date('Y-m-d') . '.log';
         
         if (null === $handlerConfig) {
             $handlerConfig = ['ErrorLogHandler'];
@@ -150,31 +153,6 @@ class Bootstrap
         };
 
         $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
-
-        // Load any extensions that may exist
-        $extensions = $container['settings']['extensions'];
-
-        if ($extensions) {
-            foreach ($extensions as $extension) {
-                if ($extension['enabled'] === true) {
-                    // Instantiate the extension class
-                    $className = $extension['class_name'];
-                    $extension = new $className($app);
-
-                    // Load any xAPI event handlers added by the extension
-                    $listeners = $extension->getEventListeners();
-                    foreach ($listeners as $listener) {
-                        $container['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
-                    }
-
-                    // Load any routes added by extension
-                    $routes = $extension->getRoutes();
-                    foreach ($routes as $route) {
-                        $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
-                    }
-                }
-            }
-        }
 
         // Parser
         $container['parser'] = function ($container) {
@@ -236,7 +214,7 @@ class Bootstrap
         // Version
         $container['version'] = function ($container) {
             if ($container['request']->isOptions() || $container['request']->getUri()->getPath() === '/about' || $container['request']->getUri()->getPath() === '/oauth') {
-                $versionString = $container['settings']['xAPI']['latest_version'];
+                $versionString = $container['config']['xAPI']['latest_version'];
             } else {
                 $versionString = $container['request']->getHeaderLine('X-Experience-API-Version');
             }
@@ -250,7 +228,7 @@ class Bootstrap
                     throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
                 }
 
-                if (!in_array($versionString, $container['settings']['xAPI']['supported_versions'])) {
+                if (!in_array($versionString, $container['config']['xAPI']['supported_versions'])) {
                     throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
                 }
 
@@ -288,7 +266,7 @@ class Bootstrap
                 $method = $request->getQueryParam('method');
                 $request = $request->withMethod($method);
                 mb_parse_str($request->getBody(), $postData);
-                $parameters = new Set($postData);
+                $parameters = new Collection($postData);
                 if ($parameters->has('content')) {
                     $string = $parameters->get('content');
                 } else {
@@ -325,12 +303,30 @@ class Bootstrap
             return $response;
         });
 
-        /*
-        // Content type check
-        if (($app->request->isPost() || $app->request->isPut()) && $app->request->getPathInfo() === '/statements' && !in_array($app->request->getMediaType(), ['application/json', 'multipart/mixed', 'application/x-www-form-urlencoded'])) {
-        // Bad Content-Type
-        throw new \Exception('Bad Content-Type.', Resource::STATUS_BAD_REQUEST);
-        }*/
+        // Load extensions (event listeners and routes) that may exist
+        $extensions = $container['config']['extensions'];
+
+        if ($extensions) {
+            foreach ($extensions as $extension) {
+                if ($extension['enabled'] === true) {
+                    // Instantiate the extension class
+                    $className = $extension['class_name'];
+                    $extension = new $className($container);
+
+                    // Load any xAPI event handlers added by the extension
+                    $listeners = $extension->getEventListeners();
+                    foreach ($listeners as $listener) {
+                        $container['eventDispatcher']->addListener($listener['event'], [$extension, $listener['callable']], (isset($listener['priority']) ? $listener['priority'] : 0));
+                    }
+
+                    // Load any routes added by extension
+                    $routes = $extension->getRoutes();
+                    foreach ($routes as $route) {
+                        $app->map($route['pattern'], [$extension, $route['callable']])->via($route['methods']);
+                    }
+                }
+            }
+        }
 
         $app->get('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
             $resource = $args['resource'];
