@@ -5,9 +5,6 @@ storage:
     Mongo:
         host_uri: 'mongodb://127.0.0.1'
         db_name: lxHive
-    MongoLegacy:
-        host_uri: 'mongodb://127.0.0.1'
-        db_name: lxHive
 extensions:
     ExtendedQuery:
         class_name: "\API\Extensions\ExtendedQuery\ExtendedQuery"
