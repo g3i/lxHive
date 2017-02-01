@@ -32,8 +32,8 @@ class About extends Resource
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = $this->getContainer()['settings']['xAPI']['supported_versions'];
-        $view = new AboutView($this->getResponse(), $this->getDiContainer(), ['versions' => $versions]);
+        $versions = $this->getConfig()->get('xAPI.supported_versions');
+        $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
         $view = $view->render();
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);

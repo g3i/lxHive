@@ -26,10 +26,7 @@ namespace API\Storage\Adapter;
 
 abstract class Base
 {
-    /**
-     * @var PSR-11 Container
-     */
-    private $container;
+    use BaseTrait;
 
     /**
      * Constructor.
@@ -38,16 +35,7 @@ abstract class Base
      */
     public function __construct($container)
     {
-        $this->container = $container;
+        $this->setContainer($container);
     }
 
-    /**
-     * Gets the value of container.
-     *
-     * @return \Slim\Slim - in future DI container
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
 }

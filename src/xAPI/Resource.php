@@ -75,7 +75,7 @@ abstract class Resource
      */
     public function __construct($container, $request, $response)
     {
-        $this->setDiContainer($container);
+        $this->setContainer($container);
         $this->setRequest($request);
         $this->setResponse($response);
 

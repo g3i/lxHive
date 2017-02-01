@@ -66,7 +66,7 @@ class Statements extends Resource
         $statementResult = $this->statementService->statementGet();
 
         // Render them
-        $view = new StatementView($this->getResponse(), $this->getDiContainer());
+        $view = new StatementView($this->getResponse(), $this->getContainer());
 
         if ($statementResult->getSingleStatementRequest()) {
             $view = $view->renderGetSingle($statementResult);
@@ -106,7 +106,7 @@ class Statements extends Resource
         // Save the statements
         $statementResult = $this->statementService->statementPost();
 
-        $view = new StatementView($this->getResponse(), $this->getDiContainer());
+        $view = new StatementView($this->getResponse(), $this->getContainer());
         $view = $view->renderPost($statementResult);
 
         return $this->jsonResponse(Resource::STATUS_OK, $view);

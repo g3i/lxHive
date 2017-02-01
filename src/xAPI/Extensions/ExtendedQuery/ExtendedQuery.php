@@ -2,11 +2,12 @@
 
 namespace API\Extensions\ExtendedQuery;
 
+use API\BaseTrait;
 use API\Extensions\ExtensionInterface;
 
 class ExtendedQuery implements ExtensionInterface
 {
-    protected $container;
+    use BaseTrait;
 
     /**
      * [__construct description].
@@ -87,29 +88,5 @@ class ExtendedQuery implements ExtensionInterface
         $response = $this->getResource()->options();
 
         return $response;
-    }
-
-    /**
-     * Gets the value of container.
-     *
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Sets the value of container.
-     *
-     * @param mixed $container the container
-     *
-     * @return self
-     */
-    protected function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }

@@ -29,42 +29,20 @@ trait BaseTrait
     /**
      * @var \Slim\Container
      */
-    private $diContainer;
+    private $container;
 
     /**
-     * @var \Storage\AdapterInterface
-     */
-    private $storage;
-
-    /**
-     * @var \Monolog\Monolog
-     */
-    private $log;
-
-    /**
-     * Sets the value of diContainer.
+     * Sets the value of container.
      *
-     * @param \Slim\Container $diContainer the di container
+     * @param \Slim\Container $container the di container
      *
      * @return self
      */
-    public function setDiContainer(\Slim\Container $diContainer)
+    public function setContainer(\Slim\Container $container)
     {
-        $this->diContainer = $diContainer;
-        $this->storage = $diContainer['storage'];
-        $this->log = $diContainer['logger'];
+        $this->container = $container;
 
         return $this;
-    }
-
-    /**
-     * Gets the value of diContainer.
-     *
-     * @return \Slim\Container
-     */
-    public function getDiContainer()
-    {
-        return $this->diContainer;
     }
 
         /**
@@ -74,7 +52,7 @@ trait BaseTrait
      */
     public function getContainer()
     {
-        return $this->diContainer;
+        return $this->container;
     }
 
     /**
@@ -84,7 +62,7 @@ trait BaseTrait
      */
     public function getStorage()
     {
-        return $this->storage;
+        return $this->container['storage'];
     }
 
     /**
@@ -94,6 +72,16 @@ trait BaseTrait
      */
     public function getLog()
     {
-        return $this->log;
+        return $this->container['log'];
+    }
+
+    /**
+     * Gets the value of log.
+     *
+     * @return \Monolog\Monolog
+     */
+    public function getConfig()
+    {
+        return $this->container['config'];
     }
 }

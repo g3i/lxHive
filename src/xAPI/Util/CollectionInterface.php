@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -20,40 +19,27 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * This file was adapted from slim. 
+ * License information is available at https://github.com/slimphp/Slim/blob/3.x/LICENSE.md
+ * 
  */
 
-namespace API\View\V10;
+namespace Slim\Interfaces;
 
-use API\View;
-use Slim\Helper\Set;
-
-class Agent extends View
+interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Arrayable
 {
-    public function renderGet()
-    {
-        $agent = new Collection($this->agent);
+    public function set($key, $value);
 
-        $object = ['objectType' => 'Person'];
-        if ($agent->has('name')) {
-            $object['name'] = [$agent->get('name')];
-        }
+    public function get($key, $default = null);
 
-        if ($agent->has('mbox')) {
-            $object['mbox'] = [$agent->get('mbox')];
-        }
+    public function replace(array $items);
 
-        if ($agent->has('mbox_sha1sum')) {
-            $object['mbox_sha1sum'] = [$agent->get('mbox_sha1sum')];
-        }
+    public function all();
 
-        if ($agent->has('openid')) {
-            $object['openid'] = [$agent->get('openid')];
-        }
+    public function has($key);
 
-        if ($agent->has('account')) {
-            $object['account'] = [$agent->get('account')];
-        }
+    public function remove($key);
 
-        return $object;
-    }
+    public function clear();
 }

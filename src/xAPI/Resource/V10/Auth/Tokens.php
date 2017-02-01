@@ -55,7 +55,7 @@ class Tokens extends Resource
         $this->accessTokenService->accessTokenGet();
 
         // Render them
-        $view = new AccessTokenView($this->getResponse(), $this->getDiContainer());
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
 
         $view = $view->render();
 
@@ -74,7 +74,7 @@ class Tokens extends Resource
         $accessTokenDocument = $this->accessTokenService->accessTokenPost();
 
         // Render them
-        $view = new AccessTokenView($this->getResponse(), $this->getDiContainer());
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
 
         $view = $view->render($accessTokenDocument);
 

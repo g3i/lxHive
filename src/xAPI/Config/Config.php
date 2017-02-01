@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -20,40 +19,29 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * This file was adapted from slim. 
+ * License information is available at https://github.com/slimphp/Slim/blob/3.x/LICENSE.md
+ * 
  */
 
-namespace API\View\V10;
+namespace API\Config;
 
-use API\View;
-use Slim\Helper\Set;
+use API\Util\Collection;
 
-class Agent extends View
+class Config extends Collection
 {
-    public function renderGet()
+    /**
+     * Set collection item
+     *
+     * @param string $key   The data key
+     * @param mixed  $value The data value
+     */
+    public function set($key, $value)
     {
-        $agent = new Collection($this->agent);
-
-        $object = ['objectType' => 'Person'];
-        if ($agent->has('name')) {
-            $object['name'] = [$agent->get('name')];
+        if ($this->has($key)) {
+            throw new \InvalidArgumentException('Cannot override existing Config property!');
         }
-
-        if ($agent->has('mbox')) {
-            $object['mbox'] = [$agent->get('mbox')];
-        }
-
-        if ($agent->has('mbox_sha1sum')) {
-            $object['mbox_sha1sum'] = [$agent->get('mbox_sha1sum')];
-        }
-
-        if ($agent->has('openid')) {
-            $object['openid'] = [$agent->get('openid')];
-        }
-
-        if ($agent->has('account')) {
-            $object['account'] = [$agent->get('account')];
-        }
-
-        return $object;
+        $this->data[$key] = $value;
     }
 }

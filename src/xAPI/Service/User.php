@@ -65,7 +65,7 @@ class User extends Service
     public function loginPost($request)
     {
         // TODO: This will be fetched from Parser class in future!
-        $params = new Set($request->post());
+        $params = new Collection($request->post());
 
         $this->validateCsrf($params);
         $this->validateRequiredParameters($params);

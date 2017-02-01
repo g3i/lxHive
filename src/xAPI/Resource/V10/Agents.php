@@ -39,7 +39,7 @@ class Agents extends Resource
 
         // TODO: Validation.
 
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $agent = $params->get('agent');
 

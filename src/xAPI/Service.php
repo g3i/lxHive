@@ -33,6 +33,6 @@ abstract class Service
      */
     public function __construct($container)
     {
-        $this->setDiContainer($container);
+        $this->setContainer($container);
     }
 }

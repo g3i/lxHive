@@ -54,7 +54,7 @@ class ActivityProfile extends Service
      */
     public function activityProfileGet($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $cursor = $this->getStorage()->getActivityProfileStorage()->getActivityProfilesFiltered($params);
 
@@ -68,7 +68,7 @@ class ActivityProfile extends Service
      */
     public function activityProfilePost($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getBody();
@@ -94,7 +94,7 @@ class ActivityProfile extends Service
         $rawBody = $request->getBody();
 
         // Single
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $params->set('headers', $request->headers());
 
@@ -115,7 +115,7 @@ class ActivityProfile extends Service
      */
     public function activityProfileDelete($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $params->set('headers', $request->headers());
 

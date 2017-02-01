@@ -24,9 +24,9 @@
 
 namespace API;
 
-use API\Util\Set;
+use API\Util\Collection;
 
-abstract class View extends Set
+abstract class View extends Collection
 {
     use BaseTrait;
 
@@ -41,7 +41,7 @@ abstract class View extends Set
     {
         parent::__construct($items);
         $this->setResponse($response);
-        $this->setDiContainer($container);
+        $this->setContainer($container);
         $this->items = $items;
     }
 
