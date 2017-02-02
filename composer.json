@@ -3,30 +3,28 @@
     "description": "An open-source LRS from Brightcookie",
     "license": "GPL-3.0",
     "repositories": [
-        {   
+        {
             "type": "vcs",
             "url": "https://github.com/sraka1/Slim"
-        },
-        {   
-            "type": "vcs",
-            "url": "https://github.com/sraka1/json-schema"
         }
     ],
     "require": {
-        "slim/slim": "2.*",
-        "techsterx/slim-config-yaml": "dev-master",
-        "flynsarmy/slim-monolog": "~1.0",
-        "sokil/php-mongo": "~1.13",
-        "justinrainbow/json-schema": "dev-master",
+        "slim/slim": "3.*",
+        "justinrainbow/json-schema": "~4.0",
         "league/url": "~3.3",
-        "ramsey/uuid": "~2.8",
+        "ramsey/uuid": "3.*",
         "league/flysystem": "~0.5",
         "symfony/console": "*",
-        "slim/views": "~0.1",
-        "twig/twig": "~1.18",
         "symfony/yaml": "~2.6",
-        "birke/rememberme": "~1.0",
-        "sokil/php-mongo-migrator": "~0.2"
+        "monolog/monolog": "^1.21",
+        "slim/twig-view": "^2.1",
+        "symfony/event-dispatcher": "^3.2",
+        "ext-mongodb": "*"
+    },
+    "scripts": {
+        "post-package-install": [
+            "php -r \"mkdir('./storage/files/',0770, true);\""
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "4.3.*"

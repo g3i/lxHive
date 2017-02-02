@@ -12,6 +12,9 @@
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/typeahead.min.js"></script>
         <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -69,11 +72,18 @@
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>User</h1>
+        <h1>
+            User
+                
+        </h1>
     </div>
 
     <p>    class
-    <strong>User</strong>        extends <a href="../../API/Service.html"><abbr title="API\Service">Service</abbr></a></p>
+    <strong>User</strong>        extends <a href="../../API/Service.html"><abbr title="API\Service">Service</abbr></a>
+</p>
+
+        
+    
 
     
     
@@ -88,6 +98,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method___construct">__construct</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+        
                                             <p>Constructor.</p>                </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a></small></div>
             </div>
@@ -97,6 +108,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getDocumentManager">getDocumentManager</a>()
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a></small></div>
@@ -107,6 +119,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getSlim">getSlim</a>()
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a></small></div>
@@ -117,25 +130,39 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_setSlim">setSlim</a>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a>
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getStorage">getStorage</a>()
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../API/Service.html#method_getStorage"><abbr title="API\Service">Service</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="API\Document\User">User</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_loginGet">loginGet</a>($request)
+        
                                             <p>Logs the user in.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a>
+                    <abbr title="API\Document\User">User</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_loginPost">loginPost</a>($request)
+        
                                             <p>Logs the user in.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -145,6 +172,29 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_loggedIn">loggedIn</a>()
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_findById">findById</a>($id)
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getLoggedIn">getLoggedIn</a>()
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -155,6 +205,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_addUser">addUser</a>($email, $password, $permissions)
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -165,6 +216,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_fetchAll">fetchAll</a>()
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -175,6 +227,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_fetchAvailablePermissions">fetchAvailablePermissions</a>()
+        
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -185,6 +238,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getUsers">getUsers</a>()
+        
                                             <p>Gets the Users.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -194,6 +248,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_setUsers">setUsers</a>(array $users)
+        
                                             <p>Sets the Users.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -203,6 +258,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getCursor">getCursor</a>()
+        
                                             <p>Gets the Cursor.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -212,6 +268,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_setCursor">setCursor</a>(<abbr title="Sokil\Mongo\Cursor">Cursor</abbr> $cursor)
+        
                                             <p>Sets the Cursor.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -221,6 +278,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getSingle">getSingle</a>()
+        
                                             <p>Gets the Is this a single user fetch?.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -230,6 +288,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_setSingle">setSingle</a>(bool $single)
+        
                                             <p>Sets the Is this a single user fetch?.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -239,6 +298,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getErrors">getErrors</a>()
+        
                                             <p>Gets the Any errors that might've ocurred are stored here.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -248,6 +308,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_setErrors">setErrors</a>(array $errors)
+        
                                             <p>Sets the Any errors that might've ocurred are stored here.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -259,11 +320,15 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">in <a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a> at line 39</div>
+        <div class="location">in <a href="../../API/Service.html#method___construct"><abbr title="API\Service">Service</abbr></a> at line         line 39</div>
         <code>                    
-    <strong>__construct</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    <strong>__construct</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Constructor.</p>                                </div>
                 <div class="tags">
@@ -286,11 +351,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getDocumentManager">
-        <div class="location">in <a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a> at line 47</div>
+        <div class="location">in <a href="../../API/Service.html#method_getDocumentManager"><abbr title="API\Service">Service</abbr></a> at line         line 47</div>
         <code>                    <abbr title="Sokil\Mongo\Client">Client</abbr>
-    <strong>getDocumentManager</strong>()</code>
+    <strong>getDocumentManager</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
             
                             <h4>Return Value</h4>
@@ -298,8 +367,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><abbr title="Sokil\Mongo\Client">Client</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -311,11 +379,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getSlim">
-        <div class="location">in <a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a> at line 55</div>
+        <div class="location">in <a href="../../API/Service.html#method_getSlim"><abbr title="API\Service">Service</abbr></a> at line         line 56</div>
         <code>                    <abbr title="Slim\Slim">Slim</abbr>
-    <strong>getSlim</strong>()</code>
+    <strong>getSlim</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
             
                             <h4>Return Value</h4>
@@ -323,8 +395,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><abbr title="Slim\Slim">Slim</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -336,11 +407,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setSlim">
-        <div class="location">in <a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a> at line 62</div>
+        <div class="location">in <a href="../../API/Service.html#method_setSlim"><abbr title="API\Service">Service</abbr></a> at line         line 63</div>
         <code>                    
-    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)</code>
+    <strong>setSlim</strong>(<abbr title="Slim\Slim">Slim</abbr> $slim)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -348,8 +423,7 @@
                     <tr>
                 <td><abbr title="Slim\Slim">Slim</abbr></td>
                 <td>$slim</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -361,12 +435,35 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_loginGet">
-        <div class="location">at line 68</div>
-        <code>                    <a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a>
-    <strong>loginGet</strong>($request)</code>
+                    <h3 id="method_getStorage">
+        <div class="location">in <a href="../../API/Service.html#method_getStorage"><abbr title="API\Service">Service</abbr></a> at line         line 69</div>
+        <code>                    
+    <strong>getStorage</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_loginGet">
+        <div class="location">at line         line 73</div>
+        <code>                    <abbr title="API\Document\User">User</abbr>
+    <strong>loginGet</strong>($request)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Logs the user in.</p>                                </div>
                 <div class="tags">
@@ -376,8 +473,7 @@
                     <tr>
                 <td></td>
                 <td>$request</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -386,7 +482,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a></td>
+            <td><abbr title="API\Document\User">User</abbr></td>
             <td>The user document</td>
         </tr>
     </table>
@@ -399,11 +495,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_loginPost">
-        <div class="location">at line 79</div>
-        <code>                    <a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a>
-    <strong>loginPost</strong>($request)</code>
+        <div class="location">at line         line 84</div>
+        <code>                    <abbr title="API\Document\User">User</abbr>
+    <strong>loginPost</strong>($request)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Logs the user in.</p>                                </div>
                 <div class="tags">
@@ -413,8 +513,7 @@
                     <tr>
                 <td></td>
                 <td>$request</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -423,7 +522,7 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../API/Document/User.html"><abbr title="API\Document\User">User</abbr></a></td>
+            <td><abbr title="API\Document\User">User</abbr></td>
             <td>The user document</td>
         </tr>
     </table>
@@ -436,11 +535,63 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_loggedIn">
-        <div class="location">at line 117</div>
+        <div class="location">at line         line 128</div>
         <code>                    
-    <strong>loggedIn</strong>()</code>
+    <strong>loggedIn</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_findById">
+        <div class="location">at line         line 154</div>
+        <code>                    
+    <strong>findById</strong>($id)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$id</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getLoggedIn">
+        <div class="location">at line         line 161</div>
+        <code>                    
+    <strong>getLoggedIn</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
                 <div class="tags">
             
             
@@ -451,11 +602,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_addUser">
-        <div class="location">at line 127</div>
+        <div class="location">at line         line 169</div>
         <code>                    
-    <strong>addUser</strong>($email, $password, $permissions)</code>
+    <strong>addUser</strong>($email, $password, $permissions)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -463,20 +618,17 @@
                     <tr>
                 <td></td>
                 <td>$email</td>
-                <td>
-</td>
+                <td></td>
             </tr>
                     <tr>
                 <td></td>
                 <td>$password</td>
-                <td>
-</td>
+                <td></td>
             </tr>
                     <tr>
                 <td></td>
                 <td>$permissions</td>
-                <td>
-</td>
+                <td></td>
             </tr>
             </table>
 
@@ -489,11 +641,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_fetchAll">
-        <div class="location">at line 151</div>
+        <div class="location">at line         line 179</div>
         <code>                    
-    <strong>fetchAll</strong>()</code>
+    <strong>fetchAll</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
             
             
@@ -504,11 +660,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_fetchAvailablePermissions">
-        <div class="location">at line 161</div>
+        <div class="location">at line         line 188</div>
         <code>                    
-    <strong>fetchAvailablePermissions</strong>()</code>
+    <strong>fetchAvailablePermissions</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                 <div class="tags">
             
             
@@ -519,11 +679,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getUsers">
-        <div class="location">at line 176</div>
+        <div class="location">at line         line 202</div>
         <code>                    array
-    <strong>getUsers</strong>()</code>
+    <strong>getUsers</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Gets the Users.</p>                                </div>
                 <div class="tags">
@@ -533,8 +697,7 @@
                     <table class="table table-condensed">
         <tr>
             <td>array</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -546,11 +709,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setUsers">
-        <div class="location">at line 188</div>
+        <div class="location">at line         line 214</div>
         <code>                    <a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a>
-    <strong>setUsers</strong>(array $users)</code>
+    <strong>setUsers</strong>(array $users)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Sets the Users.</p>                                </div>
                 <div class="tags">
@@ -570,8 +737,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -583,11 +749,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getCursor">
-        <div class="location">at line 200</div>
+        <div class="location">at line         line 226</div>
         <code>                    <abbr title="API\Service\cursor">cursor</abbr>
-    <strong>getCursor</strong>()</code>
+    <strong>getCursor</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Gets the Cursor.</p>                                </div>
                 <div class="tags">
@@ -597,8 +767,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><abbr title="API\Service\cursor">cursor</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -610,11 +779,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setCursor">
-        <div class="location">at line 212</div>
+        <div class="location">at line         line 238</div>
         <code>                    <a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a>
-    <strong>setCursor</strong>(<abbr title="Sokil\Mongo\Cursor">Cursor</abbr> $cursor)</code>
+    <strong>setCursor</strong>(<abbr title="Sokil\Mongo\Cursor">Cursor</abbr> $cursor)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Sets the Cursor.</p>                                </div>
                 <div class="tags">
@@ -634,8 +807,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -647,11 +819,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getSingle">
-        <div class="location">at line 224</div>
+        <div class="location">at line         line 250</div>
         <code>                    bool
-    <strong>getSingle</strong>()</code>
+    <strong>getSingle</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Gets the Is this a single user fetch?.</p>                                </div>
                 <div class="tags">
@@ -661,8 +837,7 @@
                     <table class="table table-condensed">
         <tr>
             <td>bool</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -674,11 +849,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setSingle">
-        <div class="location">at line 236</div>
+        <div class="location">at line         line 262</div>
         <code>                    <a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a>
-    <strong>setSingle</strong>(bool $single)</code>
+    <strong>setSingle</strong>(bool $single)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Sets the Is this a single user fetch?.</p>                                </div>
                 <div class="tags">
@@ -698,8 +877,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -711,11 +889,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_getErrors">
-        <div class="location">at line 248</div>
+        <div class="location">at line         line 274</div>
         <code>                    array
-    <strong>getErrors</strong>()</code>
+    <strong>getErrors</strong>()
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Gets the Any errors that might've ocurred are stored here.</p>                                </div>
                 <div class="tags">
@@ -725,8 +907,7 @@
                     <table class="table table-condensed">
         <tr>
             <td>array</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -738,11 +919,15 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_setErrors">
-        <div class="location">at line 260</div>
+        <div class="location">at line         line 286</div>
         <code>                    <a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a>
-    <strong>setErrors</strong>(array $errors)</code>
+    <strong>setErrors</strong>(array $errors)
+        </code>
     </h3>
     <div class="details">
+            
+    
+
                     <div class="method-description">
                                     <p>Sets the Any errors that might've ocurred are stored here.</p>                                </div>
                 <div class="tags">
@@ -762,8 +947,7 @@
                     <table class="table table-condensed">
         <tr>
             <td><a href="../../API/Service/User.html"><abbr title="API\Service\User">User</abbr></a></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 

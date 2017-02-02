@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@
 namespace API\Util;
 
 use DateTime;
-use MongoDate;
 
 class Date
 {
     public static function dateTimeExact()
     {
         $date = DateTime::createFromFormat('U.u', sprintf('%.f', microtime(true)));
+
         return $date;
     }
 
@@ -43,13 +43,30 @@ class Date
         return $mongoDate;
     }
 
+    public static function dateTimeToMongoDateLegacy($dateTime)
+    {
+        $seconds = $dateTime->getTimestamp();
+        $microseconds = $dateTime->format('u');
+        $mongoDate = new \MongoDate($seconds, $microseconds);
+
+        return $mongoDate;
+    }
+
     public static function dateTimeToMongoDate($dateTime)
     {
         $seconds = $dateTime->getTimestamp();
         $microseconds = $dateTime->format('u');
-        $mongoDate = new MongoDate($seconds, $microseconds);
+        $milliSecondTotal = $seconds*1000+(int)($microseconds/1000);
+        $mongoDate = new \MongoDB\BSON\UTCDateTime($milliSecondTotal);
 
         return $mongoDate;
+    }
+
+    public static function mongoDateToTimestamp(\MongoDB\BSON\UTCDateTime $mongoDate)
+    {
+        $dateTime = $mongoDate->toDateTime();
+        $timestamp = $dateTime->getTimestamp();
+        return $timestamp;
     }
 
     public static function dateTimeToISO8601($dateTime)

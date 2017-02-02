@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,36 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use API\Service\Auth\Basic as BasicAuthService;
-use API\Service\User as UserService;
+use API\Admin\Auth;
+use API\Admin\User;
 
 class BasicTokenCreateCommand extends Command
 {
+    /**
+     * Auth Admin class.
+     *
+     * @var API\Admin\Auth
+     */
+    private $authAdmin;
+
+    /**
+     * User Admin class.
+     *
+     * @var API\Admin\User
+     */
+    private $userAdmin;
+
+    /**
+     * Construct.
+     */
+    public function __construct($container)
+    {
+        parent::__construct($container);
+        $this->authAdmin = new Auth($container);
+        $this->userAdmin = new User($container);
+    }
+
     protected function configure()
     {
         $this
@@ -44,10 +67,10 @@ class BasicTokenCreateCommand extends Command
             ->setDescription('Creates a new basic auth token')
             ->setDefinition(
                 new InputDefinition(array(
-                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
                     new InputOption('name', 'na', InputOption::VALUE_OPTIONAL),
                     new InputOption('description', 'd', InputOption::VALUE_OPTIONAL),
                     new InputOption('expiration', 'x', InputOption::VALUE_OPTIONAL),
+                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
                     new InputOption('scopes', 's', InputOption::VALUE_OPTIONAL),
                     new InputOption('key', 'k', InputOption::VALUE_OPTIONAL),
                     new InputOption('secret', 'sc', InputOption::VALUE_OPTIONAL),
@@ -58,79 +81,8 @@ class BasicTokenCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $basicAuthService = new BasicAuthService($this->getSlim());
-        $userService = new UserService($this->getSlim());
-        $userService->fetchAll();
-        $users = [];
-
-        foreach ($userService->getCursor() as $user) {
-            $users[$user->get('email')] = $user;
-        }
-
-        $helper = $this->getHelper('question');
-
-        $output->writeln([
-            '<info>==========================</>',
-            '<info>Create a Basic token</>',
-            '<info>==========================</>',
-            '',
-            '- Creating a basic tokens requires an already registered user (email address match).',
-            '- Use the <info>./X user:create</info> console command for creating users.',
-            '',
-        ]);
-
-        $question = new ConfirmationQuestion('Continue? (y/n) ', false);
-        if (!$helper->ask($input, $output, $question)) {
-            $output->writeln('<error>Process aborted by user.</error>');
-            return 0;
-        }
-
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter the email of the associated user: ', '');
-            $question->setAutocompleterValues(array_keys($users));
-
-            $question->setNormalizer(function ($value) {
-                return $value ? trim(strtolower($value)) : '';
-            });
-
-            $question->setValidator(function ($answer) use ($users, $output) {
-                if (!is_string($answer) || empty($answer)) {
-                    throw new \RuntimeException(
-                        'Invalid input!'
-                    );
-                }
-
-                if ('exit' === $answer) {
-                    return $answer;
-                }
-
-                if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                    throw new \RuntimeException(
-                        'Invalid email address!'
-                    );
-                }
-
-                if (!isset($users[$answer])) {
-                    $output->writeln('  - Hint: Type <info>exit</info> to exit this dialog and return to the console.');
-                    throw new \RuntimeException(
-                        'No user record for "'.$answer.'" found! '
-                    );
-                }
-
-                return $answer;
-            });
-            $question->setMaxAttempts(null);
-
-            $email = $helper->ask($input, $output, $question);
-            if('exit' === $email){
-                $output->writeln('<error>Process aborted by user.</error>');
-                return 0;
-            }
-            $user = $users[$email];
-        }
-
-
         if (null === $input->getOption('name')) {
+            $helper = $this->getHelper('question');
             $question = new Question('Please enter a name: ', 'untitled');
             $name = $helper->ask($input, $output, $question);
         } else {
@@ -151,11 +103,22 @@ class BasicTokenCreateCommand extends Command
             $expiresAt = $input->getOption('expiration');
         }
 
-        $userService->fetchAvailablePermissions();
-        $scopesDictionary = [];
-        foreach ($userService->getCursor() as $scope) {
-            $scopesDictionary[$scope->getName()] = $scope;
+        $users = $this->getUserAdmin()->fetchAllUserEmails();
+
+        if (null === $input->getOption('email')) {
+            $question = new Question('Please enter enter the e-mail of the associated user: ', '');
+            $question->setAutocompleterValues(array_keys($users));
+            $email = $helper->ask($input, $output, $question);
+            $user = $users[$email];
+        } else {
+            $email = $input->getOption('email');
+            if (!isset($users[$email])) {
+                throw new \Exception('Invalid e-mail provided! User does not exist!');
+            }
+            $user = $users[$email];
         }
+
+        $scopesDictionary = $this->getUserAdmin()->fetchAvailablePermissions();
 
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
@@ -180,22 +143,44 @@ class BasicTokenCreateCommand extends Command
             $selectedScopes[] = $scopesDictionary[$selectedScopeName];
         }
 
-        $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes);
-
         if (null !== $input->getOption('key')) {
-            $token->setKey($input->getOption('key'));
-            $token->save();
+            $key = $input->getOption('key');
+        } else {
+            $key = null;
         }
 
         if (null !== $input->getOption('secret')) {
-            $token->setSecret($input->getOption('secret'));
-            $token->save();
+            $secret = $input->getOption('secret');
+        } else {
+            $secret = null;
         }
 
-        $text  = json_encode($token, JSON_PRETTY_PRINT);
+        $token = $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+
+        $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+    }
+
+    /**
+     * Gets the Auth Admin class.
+     *
+     * @return API\Admin\Auth
+     */
+    public function getAuthAdmin()
+    {
+        return $this->authAdmin;
+    }
+
+    /**
+     * Gets the User Admin class.
+     *
+     * @return API\Admin\User
+     */
+    public function getUserAdmin()
+    {
+        return $this->userAdmin;
     }
 }

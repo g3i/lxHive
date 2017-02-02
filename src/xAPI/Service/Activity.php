@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,19 +25,12 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
 
 class Activity extends Service
 {
-    /**
-     * Activities.
-     *
-     * @var array
-     */
-    protected $activities;
-
+    // Will be deprecated with ActivityResult class
     /**
      * Cursor.
      *
@@ -45,6 +38,7 @@ class Activity extends Service
      */
     protected $cursor;
 
+    // Will be deprecated with ActivityResult class
     /**
      * Is this a single activity state fetch?
      *
@@ -61,43 +55,12 @@ class Activity extends Service
      */
     public function activityGet($request)
     {
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
-        $collection  = $this->getDocumentManager()->getCollection('activities');
-        $cursor      = $collection->find();
+        $activity = $this->getStorage()->getActivityStorage()->fetchActivityById($params->get('activityId'));
 
-        $cursor->where('id', $params->get('activityId'));
-
-        if ($cursor->count() === 0) {
-            throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
-        }
-
-        $this->cursor = $cursor;
+        $this->cursor = [$activity];
         $this->single = true;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Activities.
-     *
-     * @return array
-     */
-    public function getActivities()
-    {
-        return $this->activityProfiles;
-    }
-
-    /**
-     * Sets the Activities.
-     *
-     * @param array $activities the activities
-     *
-     * @return self
-     */
-    public function setActivities(array $activities)
-    {
-        $this->activities = $activities;
 
         return $this;
     }

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ if (!file_exists($workingDirectory . '/vendor/autoload.php')) {
 }
 
 require_once $workingDirectory . '/vendor/autoload.php';
-require_once $workingDirectory . '/public/index.php';
 
+use API\Bootstrap;
 use Symfony\Component\Console\Application;
 use API\Console\UserCreateCommand;
 use API\Console\BasicTokenCreateCommand;
@@ -53,40 +53,32 @@ use API\Console\BasicTokenExpireCommand;
 use API\Console\OAuthClientCreateCommand;
 use API\Console\OAuthClientListCommand;
 use API\Console\AuthScopeCreateCommand;
-use API\Console\SetupDbCommand;
+use API\Console\SetupCommand;
 use API\Console\SetupOAuthCommand;
-use Sokil\Mongo\Migrator\Console\Command\Create as MigrationCreateCommand;
-use Sokil\Mongo\Migrator\Console\Command\Init as MigrationInitCommand;
-use Sokil\Mongo\Migrator\Console\Command\Migrate as MigrationMigrateCommand;
-use Sokil\Mongo\Migrator\Console\Command\Rollback as MigrationRollbackCommand;
-use Sokil\Mongo\Migrator\Console\Command\Status as MigrationStatusCommand;
+
+// Bootstrapper
+$bootstrapper = new Bootstrap();
+
+// If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
+try {
+	$container = $bootstrapper->initCliContainer();
+} catch (League\Flysystem\FileNotFoundException $e) {
+	$application = new Application();
+	$application->add(new SetupCommand());
+	$application->run();
+}
+
 
 $application = new Application();
-$application->add(new UserCreateCommand());
-$application->add(new BasicTokenListCommand());
-$application->add(new BasicTokenDeleteCommand());
-$application->add(new BasicTokenExpireCommand());
-$application->add(new BasicTokenCreateCommand());
-$application->add(new OAuthClientCreateCommand());
-$application->add(new OAuthClientListCommand());
-$application->add(new AuthScopeCreateCommand());
-$application->add(new SetupDbCommand());
-$application->add(new SetupOAuthCommand());
-$migrationCreateCommand = new MigrationCreateCommand();
-$migrationCreateCommand->setName('db:migration:create');
-$migrationInitCommand = new MigrationInitCommand();
-$migrationInitCommand->setName('db:migration:init');
-$migrationMigrateCommand = new MigrationMigrateCommand();
-$migrationMigrateCommand->setName('db:migration:migrate');
-$migrationRollbackCommand = new MigrationRollbackCommand();
-$migrationRollbackCommand->setName('db:migration:rollback');
-$migrationStatusCommand = new MigrationStatusCommand();
-$migrationStatusCommand->setName('db:migration:status');
-$application->add($migrationCreateCommand);
-$application->add($migrationInitCommand);
-$application->add($migrationMigrateCommand);
-$application->add($migrationRollbackCommand);
-$application->add($migrationStatusCommand);
+$application->add(new UserCreateCommand($container));
+$application->add(new BasicTokenListCommand($container));
+$application->add(new BasicTokenDeleteCommand($container));
+$application->add(new BasicTokenExpireCommand($container));
+$application->add(new BasicTokenCreateCommand($container));
+$application->add(new OAuthClientCreateCommand($container));
+$application->add(new OAuthClientListCommand($container));
+$application->add(new AuthScopeCreateCommand($container));
+$application->add(new SetupCommand($container));
 $application->run();
  
 ?>

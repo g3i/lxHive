@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class State extends Resource
      */
     public function init()
     {
-        $this->setActivityStateService(new ActivityStateService($this->getSlim()));
+        $this->activityStateService = new ActivityStateService($this->getContainer());
     }
 
     /**
@@ -48,16 +48,14 @@ class State extends Resource
      */
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->activityStateService->activityStateGet($request);
+        $this->activityStateService->activityStateGet();
 
         // Render them
         $view = new ActivityStateView(['service' => $this->activityStateService]);
@@ -67,69 +65,63 @@ class State extends Resource
             Resource::response(Resource::STATUS_OK, $view);
         } else {
             $view = $view->renderGet();
-            Resource::jsonResponse(Resource::STATUS_OK, $view);
+            return $this->jsonResponse(Resource::STATUS_OK, $view);
         }
     }
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStatePut($request);
+        $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStatePost($request);
+        $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function delete()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('state');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityStateService->activityStateDelete($request);
+        $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -140,19 +132,5 @@ class State extends Resource
     public function getActivityStateService()
     {
         return $this->activityStateService;
-    }
-
-    /**
-     * Sets the value of activityStateService.
-     *
-     * @param \API\Service\ActivityState $activityStateService the activity service
-     *
-     * @return self
-     */
-    public function setActivityStateService(\API\Service\ActivityState $activityStateService)
-    {
-        $this->activityStateService = $activityStateService;
-
-        return $this;
     }
 }

@@ -1,0 +1,6 @@
+# Development configuration overrides
+log:
+  enabled: true
+  handlers: [ErrorLogHandler, FirePHPHandler]
+  name: Development
+debug: true

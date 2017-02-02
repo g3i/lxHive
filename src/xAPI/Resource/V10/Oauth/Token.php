@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,29 +40,27 @@ class Token extends Resource
      */
     public function init()
     {
-        $this->setOAuthService(new OAuthService($this->getSlim()));
+        $this->oAuthService = new OAuthService($this->getContainer());
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->oAuthService->accessTokenPost($request);
+        $accessTokenDocument = $this->oAuthService->accessTokenPost();
         // Authorization is always requested
-        $view = new AccessTokenView(['service' => $this->oAuthService]);
-        $view = $view->renderGet();
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
+        $view = $view->renderGet($accessTokenDocument);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -73,19 +71,5 @@ class Token extends Resource
     public function getOAuthService()
     {
         return $this->oAuthService;
-    }
-
-    /**
-     * Sets the value of oAuthService.
-     *
-     * @param \API\Service\Auth\OAuth $oAuthService the o auth service
-     *
-     * @return self
-     */
-    public function setOAuthService(\API\Service\Auth\OAuth $oAuthService)
-    {
-        $this->oAuthService = $oAuthService;
-
-        return $this;
     }
 }

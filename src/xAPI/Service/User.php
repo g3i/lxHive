@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,27 +27,11 @@ namespace API\Service;
 use API\Service;
 use API\Resource;
 use API\Util\OAuth;
-use API\Util\Rememberme\MongoStorage as RemembermeMongoStorage;
-use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
-use Birke\Rememberme;
+use API\HttpException as Exception;
 
 class User extends Service
 {
-    /**
-     * Users.
-     *
-     * @var array
-     */
-    protected $users;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
+    // Will be deprecated with UserResult class
     /**
      * Is this a single user fetch?
      *
@@ -80,25 +64,13 @@ class User extends Service
      */
     public function loginPost($request)
     {
-        $params = new Set($request->post());
+        // TODO: This will be fetched from Parser class in future!
+        $params = new Collection($request->post());
 
-        // CSRF protection
-        if (!$params->has('csrfToken') || !isset($_SESSION['csrfToken']) || ($params->get('csrfToken') !== $_SESSION['csrfToken'])) {
-            throw new \Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateCsrf($params);
+        $this->validateRequiredParameters($params);
 
-        // This could be in JSON schema as well :)
-        if (!$params->has('email') || !$params->has('password')) {
-            throw new \Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        $collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
-
-        $cursor->where('email', $params->get('email'));
-        $cursor->where('passwordHash', sha1($params->get('password')));
-
-        $document = $cursor->current();
+        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password'));
 
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';
@@ -107,47 +79,20 @@ class User extends Service
         }
 
         $this->single = true;
-        $this->users = [$document];
+        $this->cursor = [$document];
 
         // Set the session
         $_SESSION['userId'] = $document->getId();
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
-
-        // Set the Remember me cookie
-        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
-        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
-
-
-        if ($params->has('rememberMe')) {
-            $rememberMe->createCookie($document->getId());
-        } else {
-            $rememberMe->clearCookie();
-        }
 
         return $document;
     }
 
     public function loggedIn()
     {
-        $rememberMeStorage = new RemembermeMongoStorage($this->getDocumentManager());
-        $rememberMe = new Rememberme\Authenticator($rememberMeStorage);
-        
         if (isset($_SESSION['userId']) && isset($_SESSION['expiresAt']) && $_SESSION['expiresAt'] > time()) {
             $_SESSION['expiresAt'] = time() + 3600; //Renew session on every activity
             return true;
-        } else if (!empty($_COOKIE[$rememberMe->getCookieName()]) && $rememberMe->cookieIsValid()) { // Remember me cookie
-            $loginresult = $rememberMe->login();
-            if ($loginresult) {
-                // Load user into session and return true
-                // Set the session
-                $_SESSION['userId'] = $loginresult;
-                $_SESSION['expiresAt'] = time() + 3600; //1 hour
-                $_SESSION['rememberedByCookie'] = true;
-            } else {
-                if ($rememberMe->loginTokenWasInvalid()) {
-                    throw new \Exception('Remember me cookie invalid!', Resource::STATUS_BAD_REQUEST);
-                }
-            }
         } else {
             return false;
         }
@@ -155,11 +100,9 @@ class User extends Service
 
     public function findById($id)
     {
-        $collection = $this->getDocumentManager()->getCollection('users');
+        $document = $this->getStorage()->getUserStorage()->findById($id);
 
-        $result = $collection->getDocument($id);
-
-        return $result;
+        return $document;
     }
 
     public function getLoggedIn()
@@ -172,141 +115,41 @@ class User extends Service
 
     public function addUser($email, $password, $permissions)
     {
-        $collection  = $this->getDocumentManager()->getCollection('users');
-
-        // Set up the User to be saved
-        $userDocument = $collection->createDocument();
-
-        $userDocument->setEmail($email);
-
-        $passwordHash = sha1($password);
-        $userDocument->setPasswordHash($passwordHash);
-
-        foreach ($permissions as $permission) {
-            $userDocument->addPermission($permission);
-        }
-
-        $userDocument->save();
+        $userDocument = $this->getStorage()->getUserStorage()->addUser($email, $password, $permissions);
 
         $this->single = true;
-        $this->users = [$userDocument];
+        $this->cursor = [$userDocument];
 
         return $userDocument;
     }
 
     public function fetchAll()
     {
-        $collection  = $this->getDocumentManager()->getCollection('users');
-        $cursor      = $collection->find();
+        $documentResult = $userDocument = $this->getStorage()->getUserStorage()->fetchAll();
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     public function fetchAvailablePermissions()
     {
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
-        $cursor      = $collection->find();
+        $documentResult = $this->getStorage()->getUserStorage()->fetchAvailablePermissions();
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
-    /**
-     * Gets the Users.
-     *
-     * @return array
-     */
-    public function getUsers()
+    private function validateCsrf($params)
     {
-        return $this->users;
+        // CSRF protection
+        if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
+            throw new Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Sets the Users.
-     *
-     * @param array $users the users
-     *
-     * @return self
-     */
-    public function setUsers(array $users)
+    private function validateRequiredParameters($params)
     {
-        $this->users = $users;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor(Cursor $cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Is this a single user fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single user fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Any errors that might've ocurred are stored here.
-     *
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    /**
-     * Sets the Any errors that might've ocurred are stored here.
-     *
-     * @param array $errors the errors
-     *
-     * @return self
-     */
-    public function setErrors(array $errors)
-    {
-        $this->errors = $errors;
-
-        return $this;
+        // This could be in JSON schema as well :)
+        if (!isset($params['email']) || !isset($params['password'])) {
+            throw new Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
+        }
     }
 }

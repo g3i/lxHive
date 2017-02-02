@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,14 +32,14 @@ class Agents extends Resource
 {
     public function get()
     {
-        $request = $this->getSlim()->request();
+        $request = $this->getContainer()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('profile');
 
         // TODO: Validation.
 
-        $params = new Set($request->get());
+        $params = new Collection($request->get());
 
         $agent = $params->get('agent');
 
@@ -48,13 +48,13 @@ class Agents extends Resource
         $view = new AgentView(['agent' => $agent]);
         $view = $view->renderGet();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'GET');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
+        return $this->response(Resource::STATUS_OK);
     }
 }

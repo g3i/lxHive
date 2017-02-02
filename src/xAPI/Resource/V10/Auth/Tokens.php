@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,93 +40,85 @@ class Tokens extends Resource
      */
     public function init()
     {
-        $this->setAccessTokenService(new BasicTokenService($this->getSlim()));
+        $this->accessTokenService = new BasicTokenService($this->getContainer());
     }
 
     public function get()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->accessTokenService->accessTokenGet($request);
+        $this->accessTokenService->accessTokenGet();
 
         // Render them
-        $view = new AccessTokenView(['service' => $this->accessTokenService]);
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
 
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function post()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->accessTokenService->accessTokenPost($request);
+        $accessTokenDocument = $this->accessTokenService->accessTokenPost();
 
         // Render them
-        $view = new AccessTokenView(['service' => $this->accessTokenService]);
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
 
-        $view = $view->render();
+        $view = $view->render($accessTokenDocument);
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function put()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->accessTokenService->accessTokenPut($request);
+        $this->accessTokenService->accessTokenPut();
 
         // Render them
         $view = new AccessTokenView(['service' => $this->accessTokenService]);
 
         $view = $view->render();
 
-        Resource::jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Resource::STATUS_OK, $view);
     }
 
     public function delete()
     {
-        $request = $this->getSlim()->request();
-
         // Check authentication
-        $this->getSlim()->auth->checkPermission('super');
+        //$this->getContainer()->auth->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        $this->accessTokenService->accessTokenDelete($request);
+        $this->accessTokenService->accessTokenDelete();
 
-        Resource::response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Resource::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
-        $this->getSlim()->response->headers->set('Allow', 'POST,PUT,GET,DELETE');
-        Resource::response(Resource::STATUS_OK);
+        $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
+        return $this->response(Resource::STATUS_OK);
     }
 
     /**
@@ -137,19 +129,5 @@ class Tokens extends Resource
     public function getAccessTokenService()
     {
         return $this->accessTokenService;
-    }
-
-    /**
-     * Sets the value of accessTokenService.
-     *
-     * @param \API\Service\AccessToken $accessTokenService the access token service
-     *
-     * @return self
-     */
-    public function setAccessTokenService(\API\Service\Auth\Basic $accessTokenService)
-    {
-        $this->accessTokenService = $accessTokenService;
-
-        return $this;
     }
 }

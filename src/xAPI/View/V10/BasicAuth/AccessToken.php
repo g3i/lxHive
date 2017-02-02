@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,22 +25,21 @@
 namespace API\View\V10\BasicAuth;
 
 use API\View;
+use API\Util;
 
 class AccessToken extends View
 {
-    public function render()
+    public function render($accessTokenDocument)
     {
-        $accessTokenDocument = $this->service->getAccessTokens()[0];
-
         $view = [
-            'key'       => $accessTokenDocument->getKey(),
-            'secret'    => $accessTokenDocument->getSecret(),
-            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
+            'key' => $accessTokenDocument->getKey(),
+            'secret' => $accessTokenDocument->getSecret(),
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getExpiresAt()),
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
-            'expired'   => $accessTokenDocument->isExpired(),
-            'scopes'    => array_values($accessTokenDocument->scopes),
-            'user'      => $accessTokenDocument->user->renderSummary(),
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getCreatedAt()),
+            'expired' => $accessTokenDocument->isExpired(),
+            //'scopes' => array_values($accessTokenDocument->scopes),
+            //'user' => $accessTokenDocument->user->renderSummary(),
         ];
 
         return $view;

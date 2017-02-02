@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +37,7 @@ class Attachment extends Service
      */
     public function fetchMetadataBySha2($sha2)
     {
-        $collection  = $this->getDocumentManager()->getCollection('attachments');
-        $cursor      = $collection->find();
-
-        $cursor->where('sha2', $sha2);
-
-        $document = $cursor->current();
+        $document = $this->getStorage()->getAttachmentStorage()->fetchMetadataBySha2($sha2);
 
         return $document;
     }
@@ -56,7 +51,7 @@ class Attachment extends Service
      */
     public function fetchFileBySha2($sha2)
     {
-        $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getSlim()->config('filesystem'));
+        $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
         $contents = $fsAdapter->read($sha2);
 
         return $contents;
