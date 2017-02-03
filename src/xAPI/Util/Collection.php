@@ -27,6 +27,8 @@
 
 namespace API\Util;
 
+use ArrayIterator;
+
 class Collection implements CollectionInterface
 {
     /**
