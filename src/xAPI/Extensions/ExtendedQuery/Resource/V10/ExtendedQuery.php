@@ -45,7 +45,7 @@ class ExtendedQuery extends Resource
      */
     public function get()
     {
-        $request = $this->getContainer()->request();
+        $request = $this->getRequest();
 
         // Check authentication
         //$this->getContainer()->auth->checkPermission('statements/querybuilder');
@@ -65,13 +65,13 @@ class ExtendedQuery extends Resource
      */
     public function post()
     {
-        $request = $this->getContainer()->request();
+        $request = $this->getRequest();
 
         // Check authentication
         $this->getContainer()->auth->checkPermission('statements/querybuilder');
 
         // Load the statements - this needs to change, drastically, as it's garbage
-        $documentResult = $this->getExtendedStatementService()->statementPost($request);
+        $documentResult = $this->getExtendedStatementService()->statementPost();
 
         // Render them
         $view = new ProjectedStatementView($this->getResponse(), $this->getContainer());

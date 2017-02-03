@@ -8,33 +8,28 @@ use Slim\Helper\Set;
 
 class Statement extends Service
 {
-    public function statementGet($request)
+    public function statementGet()
     {
-        $params = new Collection($request->get());
-        $response = $this->statementQuery($params);
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+
+        $response = $this->statementQuery($parameters);
 
         return $response;
     }
 
-    public function statementPost($request)
+    public function statementPost()
     {
         // TODO: Move header validation in a json-schema
-        if ($request->getMediaType() !== 'application/json') {
+        /*if ($request->getMediaType() !== 'application/json') {
             throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
-        }
+        }*/
 
         // Validation has been completed already - everyhing is assumed to be valid
-        $body = $request->getBody();
-        $body = json_decode($body, true);
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $bodyParams = $this->getContainer()['parser']->getData()->getPayload();
 
-        // Some clients escape the JSON - handle them
-        if (is_string($body)) {
-            $body = json_decode($body, true);
-        }
-
-        $params = new Collection($body);
-        $params->replace($request->get());
-        $response = $this->statementQuery($params);
+        $allParams = array_merge($parameters, $bodyParams);
+        $response = $this->statementQuery($parameters);
 
         return $response;
     }

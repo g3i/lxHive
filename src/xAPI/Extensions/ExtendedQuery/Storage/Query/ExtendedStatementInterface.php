@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Extensions\ExtendedQuery\Storage\Query;
 
 interface ExtendedStatementInterface
 {

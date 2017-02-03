@@ -22,18 +22,17 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Extensions\ExtendedQuery\Storage\Adapter\MongoLegacy;
+namespace API\Extensions\ExtendedQuery\Storage\Adapter\Mongo;
 
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
-use API\Storage\Adapter\Mongo\Base;
-use API\Storage\Adapter\Query\StatementResult;
+use API\Storage\Adapter\Base;
+use API\Storage\Query\StatementResult;
 use API\Resource;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
-    public function extendedQuery()
+    public function extendedQuery($parameters)
     {
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
         $storage = $this->getContainer()['storage'];
         $collection = 'statements';
 
@@ -42,13 +41,18 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
         // New StatementResult for non-single statement queries
         $statementResult = new StatementResult();
 
-        // Merge in query
+        // Blank expression
         $expression = $storage->createExpression();
-        $query = $parameters['query'];
-        if (is_string($query)) {
-            $query = json_decode($query, true);
+
+        // Merge in query
+        if (isset($parameters['query'])) {
+            $query = $parameters['query'];
+            if (is_string($query)) {
+                $query = json_decode($query, true);
+            }
+            // TODO: Add validation that JSON is valid!
+            $expression->fromArray($query);
         }
-        $expression->fromArray($query);
 
         // Add projection
         if (isset($parameters['projection'])) {
@@ -61,11 +65,10 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
                     throw new \Exception('Invalid projection parameters!.', Resource::STATUS_BAD_REQUEST);
                 }
             }
-            $fields = array_keys($fields);
-            array_unshift($fields, '_id');
+            $fields = ['_id' => 1] + $fields;
             $queryOptions['projection'] = $fields;
         } else {
-            $queryOptions['projection'] = ['_id', 'statement'];
+            $queryOptions['projection'] = ['_id' => 1, 'statement' => 1];
         }
 
         // Count before paginating
@@ -75,12 +78,12 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
         // Handle pagination
         if (isset($parameters['since_id'])) {
             $id = new \MongoId($parameters['since_id']);
-            $cursor->whereGreater('_id', $id);
+            $expression->whereGreater('_id', $id);
         }
 
         if (isset($parameters['until_id'])) {
             $id = new \MongoId($parameters['until_id']);
-            $cursor->whereLess('_id', $id);
+            $expression->whereLess('_id', $id);
         }
 
         if (isset($parameters['ascending']) && $parameters['ascending'] === 'true') {
@@ -99,17 +102,17 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $limit = $this->getConfig()->get('xAPI.statement_get_limit');
         }
 
-        $queryOptions['limit'] = $limit;
-
         // Remaining includes the current page!
-        $count = $storage->count($collection, $expression, $queryOptions);
-        $statementResult->setRemainingCount($count);
+        $statementResult->setRemainingCount($storage->count($collection, $expression, $queryOptions));
 
         if ($statementResult->getRemainingCount() > $limit) {
             $statementResult->setHasMore(true);
         } else {
             $statementResult->setHasMore(false);
         }
+
+        $queryOptions['limit'] = (int)$limit;
+
         $cursor = $storage->find($collection, $expression, $queryOptions);
         $statementResult->setCursor($cursor);
 

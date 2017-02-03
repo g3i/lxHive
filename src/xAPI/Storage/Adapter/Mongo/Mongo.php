@@ -152,6 +152,7 @@ class Mongo implements AdapterInterface
         if ($filter instanceof ExpressionInterface) {
             $filter = $filter->toArray();
         }
+
         $query = new \MongoDB\Driver\Query($filter, $options);
         $cursor = $this->getClient()->executeQuery($this->databaseName . '.' . $collection, $query);
         $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);

@@ -31,34 +31,31 @@ class ProjectedStatement extends View
     public function render($statementResult)
     {
         $view = [];
-
-        if (!is_array($statementResult) && $statementResult instanceof \Traversable) {
-            $resultArray = iterator_to_array($statementResult->getCursor());
-        }
+        $idArray = [];
+        $resultArray = [];
 
         $view['statements'] = [];
         $view['more'] = '';
-        $view['totalCount'] = $count;
+        $view['totalCount'] = $statementResult->getTotalCount();
 
-        if ($statementResult->getHasMore()) {
-            $latestId = end($resultArray)->getId();
-            $latestId = $latestId->__toString();
-            if ($descending) {
-                $this->getContainer()->getUrl()->getQuery()->modify(['until_id' => $latestId]);
-            } else { //Ascending
-                $this->getContainer()->getUrl()->getQuery()->modify(['since_id' => $latestId]);
-            }
-            $view['more'] = $this->getContainer()->getUrl()->getRelativeUrl();
-        }
-
-        foreach ($resultArray as $result) {
-            if (!is_array($result) && $result instanceof \Traversable) {
-                $result = $result->toArray();
-            }
+        foreach ($statementResult->getCursor() as $result) {
             unset($result['_id']);
             if (isset($result['statement'])) {
                 $result = $result['statement'];
+                $idArray[] = $result['id'];
+                $resultArray[] = $result;
             }
+        }
+
+        // TODO: Abstract this away somewhere...
+        if ($statementResult->getHasMore()) {
+            $latestId = end($idArray);
+            if ($statementResult->getSortDescending()) {
+                $this->getContainer()['url']->getQuery()->modify(['until_id' => $latestId]);
+            } else { //Ascending
+                $this->getContainer()['url']->getQuery()->modify(['since_id' => $latestId]);
+            }
+            $view['more'] = $this->getContainer()['url']->getRelativeUrl();
         }
 
         $view['statements'] = array_values($resultArray);

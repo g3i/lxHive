@@ -60,32 +60,32 @@ class ExtendedQuery implements ExtensionInterface
     {
     }
 
-    protected function getResource()
+    protected function getResource($request, $response)
     {
         $versionString = $this->getContainer()->version->generateClassNamespace();
         $resourceName = __NAMESPACE__.'\\Resource\\'.$versionString.'\\ExtendedQuery';
-        $resource = new $resourceName();
+        $resource = new $resourceName($this->getContainer(), $request, $response);
 
         return $resource;
     }
 
-    public function handleGetRoute()
+    public function handleGetRoute($request, $response, $args)
     {
-        $response = $this->getResource()->get();
+        $response = $this->getResource($request, $response)->get();
 
         return $response;
     }
 
-    public function handlePostRoute()
+    public function handlePostRoute($request, $response, $args)
     {
-        $response = $this->getResource()->post();
+        $response = $this->getResource($request, $response)->post();
 
         return $response;
     }
 
-    public function handleOptionsRoute()
+    public function handleOptionsRoute($request, $response, $args)
     {
-        $response = $this->getResource()->options();
+        $response = $this->getResource($request, $response)->options();
 
         return $response;
     }
