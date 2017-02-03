@@ -27,6 +27,7 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Adapter\AdapterInterface;
 use MongoDB\Driver\Command;
 use API\Document\DocumentInterface;
+use API\BaseTrait;
 
 class Mongo implements AdapterInterface
 {
@@ -199,7 +200,7 @@ class Mongo implements AdapterInterface
 
         $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
         $result = current($cursor->toArray());
-        
+
         // Older server versions may return a float
         if (!isset($result->n) || ! (is_integer($result->n) || is_float($result->n))) {
             throw new Exception('Count command did not return a numeric "n" value');
@@ -226,7 +227,7 @@ class Mongo implements AdapterInterface
         } else {
             $result = false;
         }
-        
+
         return $result;
     }
 

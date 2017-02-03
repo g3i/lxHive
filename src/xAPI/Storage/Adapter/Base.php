@@ -23,6 +23,7 @@
  */
 
 namespace API\Storage\Adapter;
+use API\BaseTrait;
 
 abstract class Base
 {
