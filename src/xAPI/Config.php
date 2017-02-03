@@ -25,7 +25,7 @@
  * 
  */
 
-namespace API\Config;
+namespace API;
 
 use API\Util\Collection;
 

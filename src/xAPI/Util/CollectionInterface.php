@@ -25,9 +25,9 @@
  * 
  */
 
-namespace Slim\Interfaces;
+namespace API\Util;
 
-interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, \Arrayable
+interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, ArrayableInterface
 {
     public function set($key, $value);
 

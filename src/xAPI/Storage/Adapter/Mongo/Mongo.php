@@ -27,6 +27,7 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Adapter\AdapterInterface;
 use MongoDB\Driver\Command;
 use API\Document\DocumentInterface;
+use API\BaseTrait;
 
 class Mongo implements AdapterInterface
 {
