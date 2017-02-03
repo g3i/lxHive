@@ -20,12 +20,20 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  *
- * This file was adapted from slim. 
+ * This file was adapted from slim.
  * License information is available at https://github.com/slimphp/Slim/blob/3.x/LICENSE.md
- * 
+ *
  */
 
+ /*
+  * Slightly altered version of Slim\Interfaces\CollectionInterface (Slim 3)
+  * @author https://github.com/slimphp
+  * @see https://github.com/slimphp/Slim/blob/3.x/Slim/Interfaces/CollectionInterface.php
+  * @see https://www.slimframework.com/
+  */
+
 namespace API\Util;
+use API\Util\ArrayableInterface as ArrayableInterface;
 
 interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, ArrayableInterface
 {
