@@ -298,7 +298,7 @@ class Statement extends Base implements StatementInterface
             $expression->whereLess('_id', $id);
         }
 
-        $statementResult->setRequestedFormat($this->getConfig('xAPI.default_statement_get_format'));
+        $statementResult->setRequestedFormat($this->getConfig()->get('xAPI.default_statement_get_format'));
         if ($parameters->has('format')) {
             $statementResult->setRequestedFormat($parameters->get('format'));
         }
