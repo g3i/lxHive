@@ -2,12 +2,6 @@
     "name": "brightcookie/lxhive",
     "description": "An open-source LRS from Brightcookie",
     "license": "GPL-3.0",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/sraka1/Slim"
-        }
-    ],
     "require": {
         "slim/slim": "3.*",
         "justinrainbow/json-schema": "~4.0",
