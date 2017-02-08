@@ -2,6 +2,9 @@
     "name": "brightcookie/lxhive",
     "description": "An open-source LRS from Brightcookie",
     "license": "GPL-3.0",
+    "keywords": ["experience api", "xapi", "lrs"],
+    "type": "project",
+    "homepage": "http://www.lxhive.com/",
     "require": {
         "slim/slim": "3.*",
         "justinrainbow/json-schema": "~4.0",
