@@ -330,63 +330,100 @@ class Bootstrap
             }
         }
 
-        $app->get('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
-            $resource = $args['resource'];
-            if (isset($args['action'])) {
-                $subResource = $args['action'];
-            } else {
-                $subResource = null;
-            }
-            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
-            return $resource->get();
+        /*
+            ROUTING SECTION
+            TODO: Move this chunk of code to a separate class like API\Router in future
+        */
+
+        // About
+        $app->map(['GET', 'OPTIONS'], '/statements', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'about');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
         });
 
-        // Post
-        $app->post('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
-            $resource = $args['resource'];
-            if (isset($args['action'])) {
-                $subResource = $args['action'];
-            } else {
-                $subResource = null;
-            }
-            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
-            return $resource->post();
+        // Activities
+        $app->map(['GET', 'OPTIONS'], '/activities', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'activities');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
         });
 
-        // Put
-        $app->put('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
-            $resource = $args['resource'];
-            if (isset($args['action'])) {
-                $subResource = $args['action'];
-            } else {
-                $subResource = null;
-            }
-            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
-            return $resource->put();
+        // ActivitiesProfile
+        $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/profile', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'profile');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
         });
 
-        // Delete
-        $app->delete('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
-            $resource = $args['resource'];
-            if (isset($args['action'])) {
-                $subResource = $args['action'];
-            } else {
-                $subResource = null;
-            }
-            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
-            return $resource->delete();
+        // ActivitiesState
+        $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/state', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'state');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
         });
 
-        // Options
-        $app->options('/{resource}[/[{action}[/]]]', function ($request, $response, $args) use ($container) {
-            $resource = $args['resource'];
-            if (isset($args['action'])) {
-                $subResource = $args['action'];
-            } else {
-                $subResource = null;
-            }
-            $resource = Resource::load($container['version'], $resource, $subResource, $container, $request, $response);
-            return $resource->options();
+        // Agents
+        $app->map(['GET', 'OPTIONS'], '/agents', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'agents');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // AgentsProfile
+        $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/profile', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'profile');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // AgentsState
+        $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/state', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'state');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // Attachments
+        $app->map(['GET', 'OPTIONS'], '/attachments', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'attachments');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // AuthTokens
+        $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/auth/tokens', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'auth', 'tokens');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // OAuthAuthorize
+        $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/authorize', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'authorize');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // OAuthLogin
+        $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/login', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'login');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // OAuthToken
+        $app->map(['POST', 'OPTIONS'], '/oauth/token', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'token');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
+        });
+
+        // Statements
+        $app->map(['GET', 'PUT', 'POST', 'OPTIONS'], '/statements', function ($request, $response, $args) use ($container) {
+            $resource = Resource::load($container['version'], $container, $request, $response, 'statements');
+            $method = strtolower($request->getMethod());
+            return $resource->$method();
         });
 
         return $app;

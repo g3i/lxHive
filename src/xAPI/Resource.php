@@ -204,7 +204,7 @@ abstract class Resource
      *
      * @return mixed
      */
-    public static function load($version, $resource, $subResource, $container, $request, $response)
+    public static function load($version, $container, $request, $response, $resource, $subResource = null)
     {
         $versionNamespace = $version->generateClassNamespace();
         if (null !== $subResource) {
