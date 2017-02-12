@@ -18,17 +18,17 @@
         "symfony/event-dispatcher": "^3.2",
         "ext-mongodb": "*"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "php -r \"@mkdir('./storage/files/',0770, true);\""
-        ]
-    },
     "require-dev": {
-        "phpunit/phpunit": "4.3.*"
+        "phpunit/phpunit": "5.5.*"
     },
     "autoload": {
         "psr-4": {
             "API\\": "src/xAPI"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/tdd"
         }
     }
 }
