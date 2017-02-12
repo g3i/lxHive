@@ -30,15 +30,16 @@ use API\HttpException as Exception;
 
 class Activity extends Base implements ActivityInterface
 {
+    const COLLECTION_NAME = 'activities';
+
     public function fetchActivityById($id)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activities';
         $expression = $storage->createExpression();
 
         $expression->where('id', $id);
 
-        if ($storage->count($collection, $expression) === 0) {
+        if ($storage->count(self::COLLECTION_NAME, $expression) === 0) {
             throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
         }
 

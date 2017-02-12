@@ -30,10 +30,11 @@ use API\Storage\Query\DocumentResult;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {
+    const COLLECTION_NAME = 'activityProfiles';
+
     public function getActivityProfilesFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityProfiles';
         $expression = $storage->createExpression();
 
         // Single activity state
@@ -41,10 +42,10 @@ class ActivityProfile extends Base implements ActivityProfileInterface
             $expression->where('profileId', $parameters['profileId']);
             $expression->where('activityId', $parameters['activityId']);
 
-            $cursorCount = $storage->count($collection, $expression);
+            $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
             $this->validateCursorCountValid($cursorCount);
 
-            $cursor = $storage->find($collection, $expression);
+            $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $documentResult = new DocumentResult();
             $documentResult->setCursor($cursor);
@@ -62,7 +63,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
             $expression->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
-        $cursor = $storage->find($collection, $expression);
+        $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
         $documentResult = new DocumentResult();
         $documentResult->setCursor($cursor);
@@ -74,7 +75,6 @@ class ActivityProfile extends Base implements ActivityProfileInterface
     public function postActivityProfile($parameters, $profileObject)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityProfiles';
 
         // Set up the body to be saved
         $activityProfileDocument = new \API\Document\Generic();
@@ -84,7 +84,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $expression->where('profileId', $parameters['profileId']);
         $expression->where('activityId', $parameters['activityId']);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
         $result = new \API\Document\Generic($result);
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
@@ -119,7 +119,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
 
-        $storage->update($collection, $expression, $activityProfileDocument, true);
+        $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
@@ -130,7 +130,6 @@ class ActivityProfile extends Base implements ActivityProfileInterface
     public function putActivityProfile($parameters, $profileObject)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityProfiles';
 
         // Set up the body to be saved
         $activityProfileDocument = new \API\Document\Generic();
@@ -140,7 +139,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $expression->where('profileId', $parameters['profileId']);
         $expression->where('activityId', $parameters['activityId']);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
@@ -177,7 +176,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         $activityProfileDocument->setContentType($contentType);
         $activityProfileDocument->setHash(sha1($profileObject));
 
-        $storage->update($collection, $expression, $activityProfileDocument, true);
+        $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
@@ -188,15 +187,14 @@ class ActivityProfile extends Base implements ActivityProfileInterface
     public function deleteActivityProfile($parameters)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityProfiles';
         $expression = $storage->createExpression();
 
         $expression->where('profileId', $parameters['profileId']);
         $expression->where('activityId', $parameters['activityId']);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
-        $cursorCount = $storage->count($collection, $expression);
+        $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
 
         $this->validateCursorCountValid($cursorCount);
 
@@ -207,7 +205,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
-        $deletionResult = $storage->delete($collection, $expression);
+        $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
 
         return $deletionResult;
     }

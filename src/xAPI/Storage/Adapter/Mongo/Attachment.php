@@ -30,6 +30,8 @@ use API\Storage\Adapter\Base;
 
 class Attachment extends Base implements AttachmentInterface
 {
+    const COLLECTION_NAME = 'attachments';
+
     public function storeAttachment($hash, $contentType, $timestamp = null)
     {
         $storage = $this->getContainer()['storage'];
@@ -42,7 +44,7 @@ class Attachment extends Base implements AttachmentInterface
             $timestamp = Util\Date::dateTimeToMongoDate($timestamp);
         }
         $attachmentDocument->setTimestamp($timestamp);
-        $storage->insertOne('attachments', $attachmentDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $attachmentDocument);
 
         return $attachmentDocument;
     }
@@ -55,7 +57,7 @@ class Attachment extends Base implements AttachmentInterface
 
         $expression->where('sha2', $sha2);
 
-        $document = $storage->findOne('attachments', $expression);
+        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $document;
     }

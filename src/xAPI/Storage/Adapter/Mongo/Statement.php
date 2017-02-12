@@ -34,6 +34,7 @@ use API\Storage\Adapter\Base;
 
 class Statement extends Base implements StatementInterface
 {
+    const COLLECTION_NAME = 'statements';
     /**
      * @param  $parameters parameters as per xAPI spec
      *
@@ -41,7 +42,6 @@ class Statement extends Base implements StatementInterface
      */
     public function get($parameters)
     {
-        $collection = 'statements';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
         $queryOptions = [];
@@ -55,7 +55,7 @@ class Statement extends Base implements StatementInterface
 
             $this->validateStatementId($parameters['statementId']);
 
-            $cursor = $storage->find($collection, $expression);
+            $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $cursor = $this->validateCursorNotEmpty($cursor);
             
@@ -75,7 +75,7 @@ class Statement extends Base implements StatementInterface
 
             $this->validateStatementId($parameters['voidedStatementId']);
 
-            $cursor = $storage->find($collection, $expression);
+            $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $cursor = $this->validateCursorNotEmpty($cursor);
 
@@ -285,7 +285,7 @@ class Statement extends Base implements StatementInterface
         }
 
         // Count before paginating
-        $statementResult->setTotalCount($storage->count($collection, $expression, $queryOptions));
+        $statementResult->setTotalCount($storage->count(self::COLLECTION_NAME, $expression, $queryOptions));
 
         // Handle pagination
         if ($parameters->has('since_id')) {
@@ -322,7 +322,7 @@ class Statement extends Base implements StatementInterface
         }
 
         // Remaining includes the current page!
-        $statementResult->setRemainingCount($storage->count($collection, $expression, $queryOptions));
+        $statementResult->setRemainingCount($storage->count(self::COLLECTION_NAME, $expression, $queryOptions));
 
         if ($statementResult->getRemainingCount() > $limit) {
             $statementResult->setHasMore(true);
@@ -332,7 +332,7 @@ class Statement extends Base implements StatementInterface
 
         $queryOptions['limit'] = (int)$limit;
         
-        $cursor = $storage->find($collection, $expression, $queryOptions);
+        $cursor = $storage->find(self::COLLECTION_NAME, $expression, $queryOptions);
 
         $statementResult->setCursor($cursor);
 
@@ -360,7 +360,6 @@ class Statement extends Base implements StatementInterface
 
     public function insert($statementObject)
     {
-        $collection = 'statements';
         $storage = $this->getContainer()['storage'];
         
         // TODO: This should be in Activity storage manager!
@@ -372,7 +371,7 @@ class Statement extends Base implements StatementInterface
             $expression = $storage->createExpression();
             $expression->where('statement.id', $statementObject['id']);
 
-            $result = $storage->findOne($collection, $expression);
+            $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
             // ID exists, validate if different or conflict
             if ($result) {
@@ -422,7 +421,7 @@ class Statement extends Base implements StatementInterface
             $expression = $storage->createExpression();
             $expression->where('statement.id', $referencedStatementId);
         
-            $storage->update($collection, $expression, $referencedStatement);
+            $storage->update(self::COLLECTION_NAME, $expression, $referencedStatement);
         }
         /*if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
@@ -432,13 +431,13 @@ class Statement extends Base implements StatementInterface
         }*/
         // TODO: Save this as a batch
         // Save statement
-        $storage->insertOne($collection, $statementDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
 
         // TODO: Batch insertion of statement upserts!!! - possible with new driver :)
-        // $collection->insertMultiple($statements); // Batch operation is much faster ~600%
+        // self::COLLECTION_NAME->insertMultiple($statements); // Batch operation is much faster ~600%
         // However, because we add every single statement to the access log, we can't use it
         // The only way to still use (fast) batch inserts would be to move the attachment of
         // statements to their respective log entries in a async queue!

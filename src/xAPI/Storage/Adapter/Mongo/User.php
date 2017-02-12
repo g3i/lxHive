@@ -29,16 +29,17 @@ use API\Storage\Adapter\Base;
 
 class User extends Base implements UserInterface
 {
+    const COLLECTION_NAME = 'users';
+
     public function findByEmailAndPassword($username, $password)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'users';
         $expression = $storage->createExpression();
 
         $expression->where('email', $params->get('email'));
         $expression->where('passwordHash', sha1($params->get('password')));
 
-        $document = $storage->findOne($collection, $expression);
+        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $document;
     }
@@ -46,7 +47,6 @@ class User extends Base implements UserInterface
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'users';
         $expression = $storage->createExpression();
 
         $expression->where('_id', $id);
@@ -59,7 +59,6 @@ class User extends Base implements UserInterface
     public function addUser($email, $password, $permissions)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'users';
 
         // Set up the User to be saved
         $userDocument = new \API\Document\Generic();
@@ -73,16 +72,15 @@ class User extends Base implements UserInterface
             $userDocument->addPermission($permission);
         }*/
 
-        $storage->insertOne($collection, $userDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $userDocument);
 
         return $userDocument;
     }
 
     public function fetchAll()
     {
-        $collection = 'users';
         $storage = $this->getContainer()['storage'];
-        $cursor = $storage->find($collection);
+        $cursor = $storage->find(self::COLLECTION_NAME);
 
         $documentResult = new \API\Storage\Query\DocumentResult();
         $documentResult->setCursor($cursor);
@@ -92,10 +90,9 @@ class User extends Base implements UserInterface
 
     public function fetchAvailablePermissions()
     {
-        $collection = 'authScopes';
         $storage = $this->getContainer()['storage'];
 
-        $cursor = $storage->find($collection);
+        $cursor = $storage->find(self::COLLECTION_NAME);
 
         $documentResult = new \API\Storage\Query\DocumentResult();
         $documentResult->setCursor($cursor);

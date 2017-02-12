@@ -31,10 +31,11 @@ use API\Storage\Adapter\Base;
 
 class BasicAuth extends Base implements BasicAuthInterface
 {
+    const COLLECTION_NAME = 'basicTokens';
+
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'basicTokens';
 
         $accessTokenDocument = new \API\Document\AccessToken();
 
@@ -70,20 +71,19 @@ class BasicAuth extends Base implements BasicAuthInterface
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
 
-        $storage->insertOne($collection, $accessTokenDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $accessTokenDocument);
 
         return $accessTokenDocument;
     }
 
     public function getToken($key, $secret)
     {
-        $collection = 'basicTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
         $expression->where('secret', $secret);
-        $accessTokenDocument = $storage->findOne($collection, $expression);
+        $accessTokenDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
@@ -96,7 +96,6 @@ class BasicAuth extends Base implements BasicAuthInterface
 
     public function deleteToken($clientId)
     {
-        $collection = 'basicTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
@@ -108,22 +107,20 @@ class BasicAuth extends Base implements BasicAuthInterface
 
     public function expireToken($clientId, $accessToken)
     {
-        $collection = 'basicTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
         $expression->where('clientId', $clientId);
-        $updateResult = $storage->update($collection, $expression, ['expired' => true]);
+        $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['expired' => true]);
 
         return $updateResult;
     }
 
     public function getTokens()
     {
-        $collection = 'basicTokens';
         $storage = $this->getContainer()['storage'];
-        $cursor = $storage->find($collection);
+        $cursor = $storage->find(self::COLLECTION_NAME);
 
         return $cursor;
     }
@@ -131,10 +128,9 @@ class BasicAuth extends Base implements BasicAuthInterface
     public function getScopeByName($name)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'authScopes';
         $expression = $storage->createExpression();
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne($collection, $expression);
+        $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         $this->validateScope($scopeDocument);
 

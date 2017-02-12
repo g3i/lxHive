@@ -33,10 +33,11 @@ use API\Storage\Adapter\Base;
 
 class AgentProfile extends Base implements AgentProfileInterface
 {
+    const COLLECTION_NAME = 'agentProfiles';
+
     public function getAgentProfilesFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'agentProfiles';
         $expression = $storage->createExpression();
 
         // Single activity profile
@@ -49,10 +50,10 @@ class AgentProfile extends Base implements AgentProfileInterface
 
             $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-            $cursorCount = $storage->count($collection, $expression);
+            $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
             $this->validateCursorCountValid($cursorCount);
 
-            $cursor = $storage->find($collection, $expression);
+            $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $documentResult = new DocumentResult();
             $documentResult->setCursor($cursor);
@@ -73,7 +74,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         }
 
         // Fetch
-        $cursor = $storage->find($collection, $expression);
+        $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
         $documentResult = new DocumentResult();
         $documentResult->setCursor($cursor);
@@ -91,7 +92,6 @@ class AgentProfile extends Base implements AgentProfileInterface
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $storage = $this->getContainer()['storage'];
-        $collection = 'agentProfiles';
 
         // Set up the body to be saved
         $agentProfileDocument = new \API\Document\Generic();
@@ -101,7 +101,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $expression->where('profileId', $parameters['profileId']);
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
@@ -141,7 +141,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
         
-        $storage->upsert($collection, $expression, $agentProfileDocument);
+        $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
@@ -157,7 +157,6 @@ class AgentProfile extends Base implements AgentProfileInterface
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
         $storage = $this->getContainer()['storage'];
-        $collection = 'agentProfiles';
 
         // Set up the body to be saved
         $agentProfileDocument = new \API\Document\Generic();
@@ -167,7 +166,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $expression->where('profileId', $parameters['profileId']);
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
@@ -197,7 +196,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
         
-        $storage->upsert($collection, $expression, $agentProfileDocument);
+        $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
@@ -208,7 +207,6 @@ class AgentProfile extends Base implements AgentProfileInterface
     public function deleteAgentProfile($parameters)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'agentProfiles';
         $expression = $storage->createExpression();
 
         $expression->where('profileId', $parameters['profileId']);
@@ -219,7 +217,7 @@ class AgentProfile extends Base implements AgentProfileInterface
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         if (!$result) {
             throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
@@ -232,7 +230,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         // Add to log
         //$this->getContainer()->requestLog->addRelation('agentProfiles', $result)->save();
 
-        $deletionResult = $storage->delete($collection, $expression);
+        $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
     }
 
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)

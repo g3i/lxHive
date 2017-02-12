@@ -30,6 +30,8 @@ use API\Storage\Adapter\Base;
 
 class Log extends Base implements LogInterface
 {
+    const COLLECTION_NAME = 'logs';
+
     public function logRequest($ip, $method, $endpoint, $timestamp)
     {
         $storage = $this->getContainer()['storage'];
@@ -40,7 +42,7 @@ class Log extends Base implements LogInterface
         $document->setEndpoint($endpoint);
         $document->setTimestamp(Util\Date::dateTimeToMongoDate($timestamp));
 
-        $storage->insertOne('logs', $document);
+        $storage->insertOne(self::COLLECTION_NAME, $document);
 
         return $document;
     }

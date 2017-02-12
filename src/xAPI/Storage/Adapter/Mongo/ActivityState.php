@@ -32,10 +32,11 @@ use API\HttpException as Exception;
 
 class ActivityState extends Base implements ActivityStateInterface
 {
+    const COLLECTION_NAME = 'activityStates';
+
     public function getActivityStatesFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityStates';
         $expression = $storage->createExpression();
 
         $parameters = new Util\Collection($parameters);
@@ -55,10 +56,10 @@ class ActivityState extends Base implements ActivityStateInterface
                 $cursor->where('registration', $parameters->get('registration'));
             }
 
-            $cursorCount = $storage->count($collection, $expression);
+            $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
             
             $this->validateCursorCountValid($cursorCount);
-            $cursor = $storage->find($collection, $expression);
+            $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $documentResult = new DocumentResult();
             $documentResult->setCursor($cursor);
@@ -87,7 +88,7 @@ class ActivityState extends Base implements ActivityStateInterface
         }
 
         // Fetch
-        $cursor = $storage->find($collection, $expression);
+        $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
         $documentResult = new DocumentResult();
         $documentResult->setCursor($cursor);
@@ -100,7 +101,6 @@ class ActivityState extends Base implements ActivityStateInterface
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityStates';
         $expression = $storage->createExpression();
 
         // Set up the body to be saved
@@ -124,7 +124,7 @@ class ActivityState extends Base implements ActivityStateInterface
             $expression->where('registration', $parameters->get('registration'));
         }
 
-        $result = $storage->findOne($collection, $expression);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
@@ -163,7 +163,7 @@ class ActivityState extends Base implements ActivityStateInterface
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($stateObject));
         
-        $storage->upsert($collection, $expression, $activityStateDocument);
+        $storage->upsert(self::COLLECTION_NAME, $expression, $activityStateDocument);
 
         // TODO: Abstract this away somehow!
         // Add to log
@@ -176,7 +176,6 @@ class ActivityState extends Base implements ActivityStateInterface
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityStates';
         $expression = $storage->createExpression();
 
         $activityStateDocument = new \API\Document\Generic();
@@ -214,7 +213,7 @@ class ActivityState extends Base implements ActivityStateInterface
         $activityStateDocument->setStateId($parameters->get('stateId'));
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($stateObject));
-        $storage->upsert($collection, $expression, $activityStateDocument);
+        $storage->upsert(self::COLLECTION_NAME, $expression, $activityStateDocument);
 
         // TODO: Abstract this away somehow!
         // Add to log
@@ -227,7 +226,6 @@ class ActivityState extends Base implements ActivityStateInterface
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
-        $collection = 'activityStates';
         $expression = $storage->createExpression();
 
         if ($parameters->has('stateId')) {
@@ -247,7 +245,7 @@ class ActivityState extends Base implements ActivityStateInterface
             $expression->where('registration', $parameters->get('registration'));
         }
 
-        $deletionResult = $storage->delete($collection, $expression);
+        $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
         return $deletionResult;
     }
 

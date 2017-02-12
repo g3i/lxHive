@@ -32,9 +32,10 @@ use API\Util;
 
 class OAuth extends Base implements OAuthInterface
 {
+    const COLLECTION_NAME = 'oAuthTokens';
+
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
-        $collection = 'oAuthTokens';
         $storage = $this->getContainer()['storage'];
         
         $accessTokenDocument = new \API\Document\Generic();
@@ -57,19 +58,18 @@ class OAuth extends Base implements OAuthInterface
             $accessTokenDocument->setCode($code);
         }
 
-        $storage->insertOne($collection, $accessTokenDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $accessTokenDocument);
 
         return $accessTokenDocument;
     }
 
     public function getToken($accessToken)
     {
-        $collection = 'oAuthTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
-        $accessTokenDocument = $storage->findOne($collection, $expression);
+        $accessTokenDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
@@ -84,29 +84,26 @@ class OAuth extends Base implements OAuthInterface
 
     public function deleteToken($accessToken)
     {
-        $collection = 'oAuthTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
 
-        $storage->delete($collection, $expression);
+        $storage->delete(self::COLLECTION_NAME, $expression);
     }
 
     public function expireToken($accessToken)
     {
-        $collection = 'oAuthTokens';
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
-        $storage->update($collection, $expression, ['expired' => true]);
+        $storage->update(self::COLLECTION_NAME, $expression, ['expired' => true]);
     }
 
     public function addClient($name, $description, $redirectUri)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'oAuthClients';
 
         // Set up the Client to be saved
         $clientDocument = new \API\Document\Generic();
@@ -123,7 +120,7 @@ class OAuth extends Base implements OAuthInterface
         $secret = Util\OAuth::generateToken();
         $clientDocument->setSecret($secret);
 
-        $storage->insertOne($collection, $clientDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $clientDocument);
 
         return $clientDocument;
     }
@@ -131,9 +128,8 @@ class OAuth extends Base implements OAuthInterface
     public function getClients()
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'oAuthClients';
 
-        $cursor = $storage->find($collection);
+        $cursor = $storage->find(self::COLLECTION_NAME);
         $documentResult = new \API\Storage\Query\DocumentResult();
         $documentResult->setCursor($cursor);
 
@@ -143,11 +139,10 @@ class OAuth extends Base implements OAuthInterface
     public function getClientById($id)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'oAuthClients';
         $expression = $storage->createExpression();
 
         $expression->where('clientId', $id);
-        $clientDocument = $storage->findOne($collection, $expression);
+        $clientDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $clientDocument;
     }
@@ -155,7 +150,6 @@ class OAuth extends Base implements OAuthInterface
     public function addScope($name, $description)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'authScopes';
 
         // Set up the Client to be saved
         $scopeDocument = new \API\Document\Generic();
@@ -164,7 +158,7 @@ class OAuth extends Base implements OAuthInterface
 
         $scopeDocument->setDescription($description);
 
-        $storage->insertOne($collection, $scopeDocument);
+        $storage->insertOne(self::COLLECTION_NAME, $scopeDocument);
 
         return $scopeDocument;
     }
@@ -172,11 +166,10 @@ class OAuth extends Base implements OAuthInterface
     public function getScopeByName($name)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'authScopes';
         $expression = $storage->createExpression();
 
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne($collection, $expression);
+        $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $scopeDocument;
     }
@@ -184,12 +177,11 @@ class OAuth extends Base implements OAuthInterface
     public function getTokenWithOneTimeCode($params)
     {
         $storage = $this->getContainer()['storage'];
-        $collection = 'oAuthTokens';
         $expression = $storage->createExpression();
 
         $expression->where('code', $params['code']);
         
-        $tokenDocument = $storage->findOne($collection, $expression);
+        $tokenDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         $this->validateAccessTokenNotEmpty($tokenDocument);
         $tokenDocument = new \API\Document\AccessToken($tokenDocument);
@@ -205,7 +197,7 @@ class OAuth extends Base implements OAuthInterface
         
         $tokenDocument->setCode(false);
 
-        $storage->update($collection, $expression, $tokenDocument);
+        $storage->update(self::COLLECTION_NAME, $expression, $tokenDocument);
 
         return $tokenDocument;
     }
