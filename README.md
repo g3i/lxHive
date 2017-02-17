@@ -26,9 +26,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 * GNU GPL v3
 
-## <a name="xAPi-Endpoints" />Endpoints
-
-### Document storage endpoints
+## <a name="xAPi-Endpoints" />Document storage endpoints
 
 | endpoint              | xAPI version  | PUT   | POST  | GET   | DELETE | Notes                                        | Links
 | ---                   | ---           |:-----:|:-----:|:-----:|:------:| ---                                          |---
