@@ -26,6 +26,22 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 * GNU GPL v3
 
+## <a name="xAPi-Endpoints" />Endpoints
+
+### Document storage endpoints
+
+| endpoint              | xAPI version  | PUT   | POST  | GET   | DELETE | Notes                                        | Links
+| ---                   | ---           |:-----:|:-----:|:-----:|:------:| ---                                          |---
+|  /about               | 1.0.2         | -     | -     | x     | -      | (JSON) info about LRS                        | [xAPI, section 7.7](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#77-about-resource)
+|  /statements          | 1.0.2         | x     | x     | x     | -      | (JSON) create, retrieve xAPI statements      | [xAPI, section 7.2](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#72-statement-api)
+|  /activities          | 1.0.2         | -     | -     | x     | -      | (JSON) retrieve s single activity            | [xAPI, section 7.5](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#75-activity-profile-api)
+|  /activities/state    | 1.0.2         | x     | x     | x     | x      | (JSON) CRUD - state(s) of an activity        | [xAPI, section 7.4](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#74-state-api)
+|  /activities/profile  | 1.0.2         | x     | x     | x     | x      | (JSON) CRUD - profile(s) of an activity      | [xAPI, section 7.5](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#75-activity-profile-api)
+|  /agents              | 1.0.2         | -     | -     | x     | -      | (JSON) retrieve a single agent               | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
+|  /agents/profile      | 1.0.2         | x     | x     | x     | x      | (JSON) CRUD - profile(s) of an actor         | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
+
+* see our [wiki](https://github.com/Brightcookie/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
+
 ## <a name="installation" />Installation
 
 ### Requirements
