@@ -27,6 +27,7 @@ namespace API;
 use API\Resource\Error as Error;
 use API\View\Error as ErrorView;
 use Psr\Http\Message\ResponseInterface;
+use API\Config;
 
 abstract class Resource
 {
@@ -151,7 +152,7 @@ abstract class Resource
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
                                          ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
-                                         ->withHeader('X-Experience-API-Version', $this->getContainer()['settings']['xAPI']['latest_version'])
+                                         ->withHeader('X-Experience-API-Version', Config::get('xAPI.latest_version'))
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
@@ -177,7 +178,7 @@ abstract class Resource
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
                                          ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
-                                         ->withHeader('X-Experience-API-Version', $this->getContainer()['settings']['xAPI']['latest_version'])
+                                         ->withHeader('X-Experience-API-Version', Config::get('xAPI.latest_version'))
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
 
         if (!empty($allow)) {
