@@ -27,6 +27,7 @@ namespace API\Service;
 use API\Service;
 use API\Resource;
 use API\HttpException as Exception;
+use API\Config;
 
 class Statement extends Service
 {
@@ -56,7 +57,7 @@ class Statement extends Service
         $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
         if (count($this->getContainer()['parser']->getAttachments()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
+            $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
             foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
@@ -104,7 +105,7 @@ class Statement extends Service
         $this->validateJsonMediaType($this->getContainer()['parser']->getData());
 
         if (count($this->getContainer()['parser']->getAttachments()) > 0) {
-            $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
+            $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
             foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();

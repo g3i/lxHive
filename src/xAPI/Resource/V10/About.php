@@ -26,13 +26,14 @@ namespace API\Resource\V10;
 
 use API\Resource;
 use API\View\V10\About as AboutView;
+use API\Config;
 
 class About extends Resource
 {
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = $this->getConfig()->get('xAPI.supported_versions');
+        $versions = Config::get('xAPI.supported_versions');
         $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
         $view = $view->render();
 

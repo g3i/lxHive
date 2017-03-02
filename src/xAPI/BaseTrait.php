@@ -74,14 +74,4 @@ trait BaseTrait
     {
         return $this->container['log'];
     }
-
-    /**
-     * Gets the value of log.
-     *
-     * @return \Monolog\Monolog
-     */
-    public function getConfig()
-    {
-        return $this->container['config'];
-    }
 }

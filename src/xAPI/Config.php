@@ -29,19 +29,50 @@ namespace API;
 
 use API\Util\Collection;
 
-class Config extends Collection
+class Config
 {
+    private static $collection = null;
+    private static $instantiated = false;
+
+    /**
+     * Get collection item
+     * @param  string $key The key to get
+     * @return mixed The value at this key
+     */
+    public static function get($key)
+    {
+        if (!self::$instantiated) {
+            throw new \Exception('You must call the Config factory before being able to get and set values!');
+        }
+        self::$collection->get($key);
+    }
+
     /**
      * Set collection item
      *
      * @param string $key   The data key
      * @param mixed  $value The data value
      */
-    public function set($key, $value)
+    public static function set($key, $value)
     {
-        if ($this->has($key)) {
+        if (!self::$instantiated) {
+            throw new \Exception('You must call the Config factory before being able to get and set values!');
+        }
+
+        if (self::$collection->has($key)) {
             throw new \InvalidArgumentException('Cannot override existing Config property!');
         }
-        $this->data[$key] = $value;
+        self::$collection->set($key, $value);
     }
+
+    public static function factory($array = [])
+    {
+        if (null === self::$collection && !self::$instantiated) {
+           self::$collection = new Collection($array);
+        } else {
+            throw new \Exception('Config cannot be reinitiated!');
+        }
+    }
+
+
 }

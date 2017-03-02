@@ -25,6 +25,7 @@
 namespace API\Service;
 
 use API\Service;
+use API\Config;
 
 class Attachment extends Service
 {
@@ -51,7 +52,7 @@ class Attachment extends Service
      */
     public function fetchFileBySha2($sha2)
     {
-        $fsAdapter = \API\Util\Filesystem::generateAdapter($this->getConfig()->get('filesystem'));
+        $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
         $contents = $fsAdapter->read($sha2);
 
         return $contents;

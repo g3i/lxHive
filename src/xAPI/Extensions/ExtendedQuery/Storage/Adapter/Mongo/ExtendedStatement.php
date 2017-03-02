@@ -28,6 +28,7 @@ use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
 use API\Storage\Adapter\Base;
 use API\Storage\Query\StatementResult;
 use API\Resource;
+use API\Config;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
@@ -96,10 +97,10 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             $queryOptions['sort'] = ['_id' => -1];
         }
 
-        if (isset($parameters['limit']) && $parameters['limit'] < $this->getConfig()->get('xAPI.statement_get_limit') && $parameters['limit'] > 0) {
+        if (isset($parameters['limit']) && $parameters['limit'] < Config::get('xAPI.statement_get_limit') && $parameters['limit'] > 0) {
             $limit = $parameters['limit'];
         } else {
-            $limit = $this->getConfig()->get('xAPI.statement_get_limit');
+            $limit = Config::get('xAPI.statement_get_limit');
         }
 
         // Remaining includes the current page!

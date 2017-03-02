@@ -28,6 +28,7 @@ use API\Storage\Adapter\AdapterInterface;
 use MongoDB\Driver\Command;
 use API\Document\DocumentInterface;
 use API\BaseTrait;
+use API\Config;
 
 class Mongo implements AdapterInterface
 {
@@ -40,8 +41,8 @@ class Mongo implements AdapterInterface
     public function __construct($container)
     {
         $this->setContainer($container);
-        $client = new \MongoDB\Driver\Manager($this->getConfig()->get('storage.Mongo.host_uri'));
-        $this->databaseName = $this->getConfig()->get('storage.Mongo.db_name');
+        $client = new \MongoDB\Driver\Manager(Config::get('storage.Mongo.host_uri'));
+        $this->databaseName = Config::get('storage.Mongo.db_name');
         $this->client = $client;
     }
 

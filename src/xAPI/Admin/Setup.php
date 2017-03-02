@@ -27,6 +27,7 @@ namespace API\Admin;
 use Symfony\Component\Yaml\Yaml;
 use API\Bootstrap;
 use API\Service\Auth\OAuth as OAuthService;
+use API\Config;
 
 class Setup
 {
@@ -96,7 +97,7 @@ class Setup
         $container = $bootstrapper->initCliContainer();
         $oAuthService = new OAuthService($container);
 
-        foreach ($container['config']->get('xAPI.supported_auth_scopes') as $authScope) {
+        foreach (Config::get('xAPI.supported_auth_scopes') as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }

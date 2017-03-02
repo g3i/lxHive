@@ -25,6 +25,7 @@
 namespace API\View\V10\OAuth;
 
 use API\View;
+use API\Config;
 
 class Authorize extends View
 {
@@ -32,7 +33,7 @@ class Authorize extends View
     {
         $view = $this->getContainer()->view;
         $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => $this->getConfig()->get('settings.name'), 'branding' => $this->getConfig()->get('settings.xAPI.oauth.branding')]);
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get('settings.name'), 'branding' => Config::get('settings.xAPI.oauth.branding')]);
         $output = $view->render('authorize.twig', $this->getItems());
 
         // Set Content-Type to html
