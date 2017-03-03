@@ -69,6 +69,7 @@ class Config
     {
         if (null === self::$collection && !self::$instantiated) {
            self::$collection = new Collection($array);
+           self::$instantiated = true;
         } else {
             throw new \Exception('Config cannot be reinitiated!');
         }
