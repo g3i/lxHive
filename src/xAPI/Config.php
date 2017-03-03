@@ -35,6 +35,21 @@ class Config
     private static $instantiated = false;
 
     /**
+     * Initiate the Config (only callable once)
+     * @param  array  $array The data to initiate it with
+     * @return void
+     */
+    public static function factory($array = [])
+    {
+        if (null === self::$collection && !self::$instantiated) {
+           self::$collection = new Collection($array);
+           self::$instantiated = true;
+        } else {
+            throw new \Exception('Config cannot be reinitiated!');
+        }
+    }
+
+    /**
      * Get collection item
      * @param  string $key The key to get
      * @return mixed The value at this key
@@ -64,16 +79,4 @@ class Config
         }
         self::$collection->set($key, $value);
     }
-
-    public static function factory($array = [])
-    {
-        if (null === self::$collection && !self::$instantiated) {
-           self::$collection = new Collection($array);
-           self::$instantiated = true;
-        } else {
-            throw new \Exception('Config cannot be reinitiated!');
-        }
-    }
-
-
 }
