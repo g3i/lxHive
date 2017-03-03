@@ -36,14 +36,19 @@ class Config
 
     /**
      * Initiate the Config (only callable once)
-     * @param  array  $array The data to initiate it with
+     * @param  Collection|array  $data The data to initiate it with
      * @return void
      */
-    public static function factory($array = [])
+    public static function factory($data = [])
     {
         if (null === self::$collection && !self::$instantiated) {
-           self::$collection = new Collection($array);
-           self::$instantiated = true;
+            if ($data instanceof Collection) {
+                self::$collection = $data;
+            } else {
+                // Data should be an array if it's not a Collection object
+                self::$collection = new Collection($data);
+            }
+            self::$instantiated = true;
         } else {
             throw new \Exception('Config cannot be reinitiated!');
         }
