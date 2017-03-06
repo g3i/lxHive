@@ -43,14 +43,57 @@ use API\Config;
 
 class Bootstrap
 {
-    private $id;
+    const Web     = 0;
+    const Console = 1;
+    const Testing = 2;
 
-    public function __construct($id = null)
+    private static $containerInstance;
+    private static $containerInstantiated = false;
+
+    /**
+     * Factory for container contained within bootstrap, which is a base for booting everything else
+     * It's basically sugar around the init methods
+     * @param  int $mode The mode enum
+     * @return void
+     */
+    public static function factory($mode)
     {
-        $this->id = $id;
+        if ($containerInstantiated) {
+            throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
+        }
+
+        switch ($mode) {
+            case self::Web: {
+                $bootstrap = new self();
+                $container = $bootstrap->initWebContainer();
+                self::$container = $container;
+                self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            case self::Console: {
+                $bootstrap = new self();
+                $container = $bootstrap->initCliContainer();
+                self::$container = $container;
+                self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            case self::Testing: {
+                $bootstrap = new self();
+                $container = $bootstrap->initGenericContainer();
+                self::$container = $container;
+                self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            default: {
+                throw new \InvalidArgumentException('You must provide a valid mode when calling the Boostrapper factory!');
+            }
+        }
     }
 
-    protected function initGenericContainer()
+    public function initGenericContainer()
     {
         // Get file paths of project and config
         $appRoot = realpath(__DIR__.'/../../');
@@ -254,9 +297,13 @@ class Bootstrap
         return $container;
     }
 
-    public function bootWebAppWithContainer($container)
+    public function bootWebApp()
     {
-        $app = new App($container);
+        if (!self::$containerInstantiated) {
+            throw new \InvalidArgumentException('You must initiate the Bootstrapper using the static factory!');
+        }
+        
+        $app = new App(self::$container);
 
         // CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {

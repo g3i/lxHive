@@ -29,9 +29,6 @@ use API\Bootstrap;
 use Slim\App;
 use API\Resource;
 
-$bootstrapper = new Bootstrap();
-
-$container = $bootstrapper->initWebContainer();
-
-$app = $bootstrapper->bootWebAppWithContainer($container);
+$bootstrapper = Bootstrap::factory(Bootstrap::Web);
+$app = $bootstrapper->bootWebApp();
 $app->run();
