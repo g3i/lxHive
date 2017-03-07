@@ -58,7 +58,7 @@ class Bootstrap
      */
     public static function factory($mode)
     {
-        if ($containerInstantiated) {
+        if (self::$containerInstantiated) {
             throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
         }
 
@@ -66,7 +66,7 @@ class Bootstrap
             case self::Web: {
                 $bootstrap = new self();
                 $container = $bootstrap->initWebContainer();
-                self::$container = $container;
+                self::$containerInstance = $container;
                 self::$containerInstantiated = true;
                 return $bootstrap;
                 break;
@@ -74,7 +74,7 @@ class Bootstrap
             case self::Console: {
                 $bootstrap = new self();
                 $container = $bootstrap->initCliContainer();
-                self::$container = $container;
+                self::$containerInstance = $container;
                 self::$containerInstantiated = true;
                 return $bootstrap;
                 break;
@@ -82,7 +82,7 @@ class Bootstrap
             case self::Testing: {
                 $bootstrap = new self();
                 $container = $bootstrap->initGenericContainer();
-                self::$container = $container;
+                self::$containerInstance = $container;
                 self::$containerInstantiated = true;
                 return $bootstrap;
                 break;
@@ -109,9 +109,7 @@ class Bootstrap
         $config = Config::factory($config);
 
         // 2. Create default container
-        if ($container === null) {
-            $container = new \Slim\Container();
-        }
+        $container = new \Slim\Container();
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
@@ -302,8 +300,10 @@ class Bootstrap
         if (!self::$containerInstantiated) {
             throw new \InvalidArgumentException('You must initiate the Bootstrapper using the static factory!');
         }
-        
-        $app = new App(self::$container);
+
+        $container = self::$containerInstance;
+
+        $app = new App($container);
 
         // CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
@@ -381,7 +381,7 @@ class Bootstrap
         */
 
         // About
-        $app->map(['GET', 'OPTIONS'], '/statements', function ($request, $response, $args) use ($container) {
+        $app->map(['GET', 'OPTIONS'], '/about', function ($request, $response, $args) use ($container) {
             $resource = Resource::load($container['version'], $container, $request, $response, 'about');
             $method = strtolower($request->getMethod());
             return $resource->$method();
