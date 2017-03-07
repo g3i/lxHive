@@ -31,6 +31,7 @@ use API\Util;
 use Ramsey\Uuid\Uuid;
 use API\HttpException as Exception;
 use API\Storage\Adapter\Base;
+use API\Config;
 
 class Statement extends Base implements StatementInterface
 {
@@ -298,7 +299,7 @@ class Statement extends Base implements StatementInterface
             $expression->whereLess('_id', $id);
         }
 
-        $statementResult->setRequestedFormat($this->getConfig()->get('xAPI.default_statement_get_format'));
+        $statementResult->setRequestedFormat(Config::get('xAPI.default_statement_get_format'));
         if ($parameters->has('format')) {
             $statementResult->setRequestedFormat($parameters->get('format'));
         }
@@ -315,10 +316,10 @@ class Statement extends Base implements StatementInterface
             }
         }
 
-        if ($parameters->has('limit') && $parameters->get('limit') < $this->getConfig()->get('xAPI.statement_get_limit') && $parameters->get('limit') > 0) {
+        if ($parameters->has('limit') && $parameters->get('limit') < Config::get('xAPI.statement_get_limit') && $parameters->get('limit') > 0) {
             $limit = $parameters->get('limit');
         } else {
-            $limit = $this->getConfig()->get('xAPI.statement_get_limit');
+            $limit = Config::get('xAPI.statement_get_limit');
         }
 
         // Remaining includes the current page!
@@ -365,7 +366,7 @@ class Statement extends Base implements StatementInterface
         // TODO: This should be in Activity storage manager!
         //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
-        $attachmentBase = $this->getContainer()['url']->getBaseUrl().$this->getConfig()->get('filesystem.exposed_url');
+        $attachmentBase = $this->getContainer()['url']->getBaseUrl().Config::get('filesystem.exposed_url');
 
         if (isset($statementObject['id'])) {
             $expression = $storage->createExpression();
