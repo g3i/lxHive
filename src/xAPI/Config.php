@@ -64,7 +64,7 @@ class Config
         if (!self::$instantiated) {
             throw new \Exception('You must call the Config factory before being able to get and set values!');
         }
-        self::$collection->get($key);
+        return self::$collection->get($key);
     }
 
     /**
