@@ -31,14 +31,9 @@ use Symfony\Component\Console\Command\Command as SymfonyCommand;
 class Command extends SymfonyCommand
 {
     /**
-     * @var
-     */
-    private $container;
-
-    /**
      * Construct.
      */
-    public function __construct($container)
+    public function __construct()
     {
         parent::__construct();
 
@@ -57,6 +52,6 @@ class Command extends SymfonyCommand
      */
     public function getContainer()
     {
-        return $this->container;
+        return $this->getApplication()->getContainer();
     }
 }

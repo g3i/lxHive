@@ -32,22 +32,6 @@ use API\Admin\Auth;
 
 class AuthScopeCreateCommand extends Command
 {
-    /**
-     * Auth Admin class.
-     *
-     * @var API\Admin\Auth
-     */
-    private $authAdmin;
-
-    /**
-     * Construct.
-     */
-    public function __construct($container)
-    {
-        parent::__construct($container);
-        $this->authAdmin = new Auth($container);
-    }
-
     protected function configure()
     {
         $this
@@ -58,6 +42,7 @@ class AuthScopeCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $authAdmin = new Auth($this->getContainer());
         $helper = $this->getHelper('question');
 
         $question = new Question('Please enter a name (scope identifier): ', 'untitled');
@@ -66,21 +51,11 @@ class AuthScopeCreateCommand extends Command
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
-        $scope = $this->getAuthAdmin()->createAuthScope($name, $description);
+        $scope = $authAdmin->createAuthScope($name, $description);
 
         $text = json_encode($scope, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Auth scope successfully created!</info>');
         $output->writeln('<info>Info:</info>');
-    }
-
-    /**
-     * Gets the Auth Admin class.
-     *
-     * @return API\Admin\Auth
-     */
-    public function getAuthAdmin()
-    {
-        return $this->authAdmin;
     }
 }

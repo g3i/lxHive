@@ -36,30 +36,6 @@ use API\Admin\User;
 
 class BasicTokenCreateCommand extends Command
 {
-    /**
-     * Auth Admin class.
-     *
-     * @var API\Admin\Auth
-     */
-    private $authAdmin;
-
-    /**
-     * User Admin class.
-     *
-     * @var API\Admin\User
-     */
-    private $userAdmin;
-
-    /**
-     * Construct.
-     */
-    public function __construct($container)
-    {
-        parent::__construct($container);
-        $this->authAdmin = new Auth($container);
-        $this->userAdmin = new User($container);
-    }
-
     protected function configure()
     {
         $this
@@ -81,6 +57,9 @@ class BasicTokenCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $authAdmin = new Auth($this->getContainer());
+        $userAdmin = new User($this->getContainer());
+
         if (null === $input->getOption('name')) {
             $helper = $this->getHelper('question');
             $question = new Question('Please enter a name: ', 'untitled');
@@ -103,7 +82,7 @@ class BasicTokenCreateCommand extends Command
             $expiresAt = $input->getOption('expiration');
         }
 
-        $users = $this->getUserAdmin()->fetchAllUserEmails();
+        $users = $userAdmin->fetchAllUserEmails();
 
         if (null === $input->getOption('email')) {
             $question = new Question('Please enter enter the e-mail of the associated user: ', '');
@@ -118,7 +97,7 @@ class BasicTokenCreateCommand extends Command
             $user = $users[$email];
         }
 
-        $scopesDictionary = $this->getUserAdmin()->fetchAvailablePermissions();
+        $scopesDictionary = $userAdmin->fetchAvailablePermissions();
 
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
@@ -155,32 +134,12 @@ class BasicTokenCreateCommand extends Command
             $secret = null;
         }
 
-        $token = $this->getAuthAdmin()->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+        $token = $authAdmin->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
 
         $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
-    }
-
-    /**
-     * Gets the Auth Admin class.
-     *
-     * @return API\Admin\Auth
-     */
-    public function getAuthAdmin()
-    {
-        return $this->authAdmin;
-    }
-
-    /**
-     * Gets the User Admin class.
-     *
-     * @return API\Admin\User
-     */
-    public function getUserAdmin()
-    {
-        return $this->userAdmin;
     }
 }

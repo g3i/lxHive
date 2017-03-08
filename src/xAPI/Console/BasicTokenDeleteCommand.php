@@ -33,22 +33,6 @@ use API\Admin\Auth;
 
 class BasicTokenDeleteCommand extends Command
 {
-    /**
-     * Auth Admin class.
-     *
-     * @var API\Admin\Auth
-     */
-    private $authAdmin;
-
-    /**
-     * Construct.
-     */
-    public function __construct($container)
-    {
-        parent::__construct($container);
-        $this->authAdmin = new Auth($container);
-    }
-
     protected function configure()
     {
         $this
@@ -59,10 +43,12 @@ class BasicTokenDeleteCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $authAdmin = new Auth($this->getContainer());
+
         $helper = $this->getHelper('question');
         $accessTokenService = new AccessTokenService($this->getContainer());
 
-        $clientIds = $this->getAuthAdmin()->listBasicTokenIds();
+        $clientIds = $authAdmin->listBasicTokenIds();
 
         $question = new Question('Please enter the the client ID of the token you wish to delete: ');
         $question->setAutocompleterValues($clientIds);
@@ -75,18 +61,8 @@ class BasicTokenDeleteCommand extends Command
             return;
         }
 
-        $this->getAuthAdmin()->deleteBasicToken($clientId);
+        $authAdmin->deleteBasicToken($clientId);
 
         $output->writeln('<info>Supertoken successfully deleted!</info>');
-    }
-
-    /**
-     * Gets the Auth Admin class.
-     *
-     * @return API\Admin\Auth
-     */
-    public function getAuthAdmin()
-    {
-        return $this->authAdmin;
     }
 }

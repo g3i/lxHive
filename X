@@ -44,7 +44,7 @@ if (!file_exists($workingDirectory . '/vendor/autoload.php')) {
 require_once $workingDirectory . '/vendor/autoload.php';
 
 use API\Bootstrap;
-use Symfony\Component\Console\Application;
+use API\Console\Application;
 use API\Console\UserCreateCommand;
 use API\Console\BasicTokenCreateCommand;
 use API\Console\BasicTokenListCommand;
@@ -61,24 +61,24 @@ $bootstrapper = new Bootstrap();
 
 // If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
 try {
-	$container = $bootstrapper->initCliContainer();
+	$bootstrapper = Bootstrap::factory(Bootstrap::Console);
+	$application = $bootstrapper->bootCliApp();
 } catch (League\Flysystem\FileNotFoundException $e) {
 	$application = new Application();
 	$application->add(new SetupCommand());
 	$application->run();
 }
 
-
-$application = new Application();
-$application->add(new UserCreateCommand($container));
-$application->add(new BasicTokenListCommand($container));
-$application->add(new BasicTokenDeleteCommand($container));
-$application->add(new BasicTokenExpireCommand($container));
-$application->add(new BasicTokenCreateCommand($container));
-$application->add(new OAuthClientCreateCommand($container));
-$application->add(new OAuthClientListCommand($container));
-$application->add(new AuthScopeCreateCommand($container));
-$application->add(new SetupCommand($container));
+// TODO: Maybe move all of this into Bootstrapper?
+$application->add(new UserCreateCommand());
+$application->add(new BasicTokenListCommand());
+$application->add(new BasicTokenDeleteCommand());
+$application->add(new BasicTokenExpireCommand());
+$application->add(new BasicTokenCreateCommand());
+$application->add(new OAuthClientCreateCommand());
+$application->add(new OAuthClientListCommand());
+$application->add(new AuthScopeCreateCommand());
+$application->add(new SetupCommand());
 $application->run();
  
 ?>

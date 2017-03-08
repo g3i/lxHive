@@ -31,22 +31,6 @@ use API\Admin\Auth;
 
 class BasicTokenListCommand extends Command
 {
-    /**
-     * Auth Admin class.
-     *
-     * @var API\Admin\Auth
-     */
-    private $authAdmin;
-
-    /**
-     * Construct.
-     */
-    public function __construct($container)
-    {
-        parent::__construct($container);
-        $this->authAdmin = new Auth($container);
-    }
-
     protected function configure()
     {
         $this
@@ -57,22 +41,13 @@ class BasicTokenListCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $textArray = $this->getAuthAdmin()->listBasicTokens();
+        $authAdmin = new Auth($this->getContainer());
+        $textArray = $authAdmin->listBasicTokens();
 
         $text = json_encode($textArray, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Tokens successfully fetched!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
-    }
-
-    /**
-     * Gets the Auth Admin class.
-     *
-     * @return API\Admin\Auth
-     */
-    public function getAuthAdmin()
-    {
-        return $this->authAdmin;
     }
 }

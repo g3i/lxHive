@@ -40,6 +40,7 @@ use Slim\Container;
 use Slim\App;
 use API\Resource\Error;
 use API\Config;
+use API\Console\Application;
 
 class Bootstrap
 {
@@ -471,6 +472,12 @@ class Bootstrap
             return $resource->$method();
         });
 
+        return $app;
+    }
+
+    public function bootCliApp()
+    {
+        $app = new Application(self::$containerInstance);
         return $app;
     }
 

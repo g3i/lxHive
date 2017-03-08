@@ -24,29 +24,39 @@
 
 namespace API\Console;
 
-use API\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use API\Admin\Auth;
+use Symfony\Component\Console\Application as SymfonyApplication;
 
-class OAuthClientListCommand extends Command
+class Application extends SymfonyApplication
 {
-    protected function configure()
+    private $container;
+
+    public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
     {
-        $this
-            ->setName('oauth:client:list')
-            ->setDescription('Lists OAuth clients')
-        ;
+        $this->setContainer($container);
+        parent::__construct($name, $version);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * Gets the value of container.
+     *
+     * @return mixed
+     */
+    public function getContainer()
     {
-        $authAdmin = new Auth($this->getContainer());
-        $textArray = $authAdmin->listOAuthClients();
-        $text = json_encode($textArray, JSON_PRETTY_PRINT);
+        return $this->container;
+    }
 
-        $output->writeln('<info>Clients successfully fetched!</info>');
-        $output->writeln('<info>Info:</info>');
-        $output->writeln($text);
+    /**
+     * Sets the value of container.
+     *
+     * @param mixed $container the container
+     *
+     * @return self
+     */
+    private function setContainer($container)
+    {
+        $this->container = $container;
+
+        return $this;
     }
 }
