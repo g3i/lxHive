@@ -54,6 +54,15 @@ class UserCreateCommand extends Command
     {
         $userService = new UserService($this->getSlim());
 
+        // get permissions from user service. Abort if no permissions set
+        $userService->fetchAvailablePermissions();
+        $hasPermissions = $userService->getCursor()->count();
+        if(!$hasPermissions){
+            throw new \RuntimeException(
+                'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
+            );
+        }
+
         $helper = $this->getHelper('question');
 
         if (null === $input->getOption('email')) {
@@ -70,7 +79,6 @@ class UserCreateCommand extends Command
             $password = $input->getOption('password');
         }
 
-        $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
         foreach ($userService->getCursor() as $permission) {
             $permissionsDictionary[$permission->getName()] = $permission;
