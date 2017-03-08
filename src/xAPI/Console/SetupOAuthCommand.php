@@ -27,6 +27,9 @@ namespace API\Console;
 use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Question\Question;
 use API\Service\Auth\OAuth as OAuthService;
 
 class SetupOAuthCommand extends Command
@@ -36,17 +39,31 @@ class SetupOAuthCommand extends Command
         $this
             ->setName('setup:oauth')
             ->setDescription('Sets up default OAuth scopes')
+            ->setDefinition(
+                new InputDefinition([
+                    new InputArgument('scopes', InputArgument::OPTIONAL),
+                ])
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Setting up default OAuth scopes...</info>');
+        $scopes = $input->getArgument('scopes');
+
+        if(!$scopes){
+            $scopes = $this->getSlim()->config('xAPI')['supported_auth_scopes'];
+        }
 
         $oAuthService = new OAuthService($this->getSlim());
-
-        foreach ($this->getSlim()->config('xAPI')['supported_auth_scopes'] as $authScope) {
+        foreach ($scopes as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
+            if(!$scope){
+                $output->writeln('  - <comment>skip</comment> scope '.$authScope['name'].' exits already.');
+            } else{
+                $output->writeln('  - <info>new</info> scope '.$authScope['name'].' added.');
+            }
         }
 
         $output->writeln('<info>OAuth scopes configured!</info>');
