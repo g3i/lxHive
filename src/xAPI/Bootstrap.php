@@ -322,8 +322,13 @@ class Bootstrap
                 
                 // Remove body, add headers
                 $parameters->remove('content');
+                // TODO: Allow more headers here
+                $allowedHeaders = ['content-type', 'authorization'];
                 foreach ($parameters as $key => $value) {
-                    $request = $request->withHeader($key, explode(',', $value));
+                    if (in_array(strtolower($key), $allowedHeaders)) {
+                        $request = $request->withHeader($key, explode(',', $value));
+                        $parameters->remove($key);
+                    }
                 }
 
                 // Write the string into the body
