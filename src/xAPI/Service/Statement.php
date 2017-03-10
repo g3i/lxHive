@@ -331,12 +331,20 @@ class Statement extends Service
 
         // Date based filters
         if ($params->has('since')) {
-            $since = Util\Date::dateStringToMongoDate($params->get('since'));
+            $date = Util\Date::dateRFC3339($params->get('since'));
+            if(!$date){
+                throw new Exception('"since" parameter is not a valid ISO 8601 timestamp.(Good example: 2015-11-18T12:17:00+00:00), ', Resource::STATUS_NOT_FOUND);
+            }
+            $since = Util\Date::dateTimeToMongoDate($date);
             $cursor->whereGreaterOrEqual('mongo_timestamp', $since);
         }
 
         if ($params->has('until')) {
-            $until = Util\Date::dateStringToMongoDate($params->get('until'));
+            $date = Util\Date::dateRFC3339($params->get('until'));
+            if(!$date){
+                throw new Exception('"until" parameter is not a valid ISO 8601 timestamp.(Good example: 2015-11-18T12:17:00+00:00), ', Resource::STATUS_NOT_FOUND);
+            }
+            $until = Util\Date::dateTimeToMongoDate($date);
             $cursor->whereLessOrEqual('mongo_timestamp', $until);
         }
 

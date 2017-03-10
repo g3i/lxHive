@@ -6,7 +6,7 @@
         "oneOf" : [
             {
                 "type": "array",
-                "maxItems": 0 
+                "maxItems": 0
             },
             {
                 "type": "object",
@@ -40,12 +40,10 @@
                         "type": "boolean"
                     },
                     "since": {
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "string"
                     },
                     "until": {
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "string"
                     },
                     "limit": {
                         "type": "number",
@@ -325,7 +323,7 @@
                                 }
                             ]
                         }
-                        
+
                     }
                 }
             },

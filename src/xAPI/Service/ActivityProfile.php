@@ -86,7 +86,11 @@ class ActivityProfile extends Service
         $cursor->where('activityId', $params->get('activityId'));
 
         if ($params->has('since')) {
-            $since = Util\Date::dateStringToMongoDate($params->get('since'));
+            $date = Util\Date::dateRFC3339($params->get('since'));
+            if(!$date){
+                throw new Exception('"since" parameter is not a valid ISO 8601 timestamp.(Good example: 2015-11-18T12:17:00+00:00), ', Resource::STATUS_NOT_FOUND);
+            }
+            $since = Util\Date::dateTimeToMongoDate($date);
             $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
         }
 
