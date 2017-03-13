@@ -26,8 +26,6 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use API\Bootstrap;
-use Slim\App;
-use API\Resource;
 
 $bootstrapper = Bootstrap::factory(Bootstrap::Web);
 $app = $bootstrapper->bootWebApp();

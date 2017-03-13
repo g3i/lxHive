@@ -114,7 +114,7 @@ class Bootstrap
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
-            $storageInUse = Config::get('storage.in_use');
+            $storageInUse = Config::get(['storage', 'in_use']);
             $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new \InvalidArgumentException('Storage type selected in config is invalid!');
@@ -136,7 +136,7 @@ class Bootstrap
         // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
-        $handlerConfig = Config::get('log.handlers');
+        $handlerConfig = Config::get(['log', 'handlers']);
         $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
         
         if (null === $handlerConfig) {
@@ -254,7 +254,7 @@ class Bootstrap
         // Version
         $container['version'] = function ($container) {
             if ($container['request']->isOptions() || $container['request']->getUri()->getPath() === '/about' || $container['request']->getUri()->getPath() === '/oauth') {
-                $versionString = Config::get('xAPI.latest_version');
+                $versionString = Config::get(['xAPI', 'latest_version']);
             } else {
                 $versionString = $container['request']->getHeaderLine('X-Experience-API-Version');
             }
@@ -268,7 +268,7 @@ class Bootstrap
                     throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
                 }
 
-                if (!in_array($versionString, Config::get('xAPI.supported_versions'))) {
+                if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
                     throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
                 }
 

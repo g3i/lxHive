@@ -53,7 +53,7 @@ class Statement extends Service
 
     protected function resolveStorageClass()
     {
-        $storageInUse = Config::get('storage.in_use');
+        $storageInUse = Config::get(['storage', 'in_use']);
         $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\'.$storageInUse.'\\ExtendedStatement';
         if (!class_exists($storageClass)) {
             throw new \InvalidArgumentException('Storage type selected in config is incompatible with ExtendedQuery extension!');

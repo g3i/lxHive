@@ -33,7 +33,7 @@ class About extends Resource
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = Config::get('xAPI.supported_versions');
+        $versions = Config::get(['xAPI', 'supported_versions']);
         $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
         $view = $view->render();
 

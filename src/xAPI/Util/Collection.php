@@ -51,10 +51,8 @@ class Collection implements CollectionInterface
     /********************************************************************************
      * Collection interface
      *******************************************************************************/   
-    private function getDotted($path, $separator = '.', $default)
+    private function getArray($keys, $default)
     {
-        $keys = explode($separator, $path);
-
         $array = $this->data;
 
         foreach ($keys as $key) {
@@ -68,15 +66,14 @@ class Collection implements CollectionInterface
         return $array;
     }
 
-    private function hasDotted($path, $separator = '.')
+    private function hasArray($keys)
     {
-        $keys = explode($separator, $path);
-
         $array = $this->data;
 
         foreach ($keys as $key) {
             if (isset($array[$key])) {
                 // Loop onwards
+                $array = $array[$key];
             } else {
                 return false;
             }
@@ -106,8 +103,8 @@ class Collection implements CollectionInterface
      */
     public function get($key, $default = null)
     {
-        if (strpos($key, '.') !== false) {
-            return $this->getDotted($key, '.', $default);
+        if (is_array($key)) {
+            return $this->getArray($key, $default);
         } else {
             return $this->has($key) ? $this->data[$key] : $default;
         }
@@ -154,8 +151,8 @@ class Collection implements CollectionInterface
      */
     public function has($key)
     {
-        if (strpos($key, '.') !== false) {
-            return $this->hasDotted($key, '.');
+        if (is_array($key)) {
+            return $this->hasArray($key);
         } else {
             return array_key_exists($key, $this->data);
         }
