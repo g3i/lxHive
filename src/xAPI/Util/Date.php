@@ -80,4 +80,31 @@ class Date
 
         return $output;
     }
+
+    /**
+     * Attempts to convert a string to a DateTime instance, based on typical (but not all) ISO 8601/RFC 3339 patterns.
+     * Adds also millisecond precision.
+     * @param string $dateString
+     * @param bool $validateStrict is set it checks for precision to at least milliseconds (3 decimal points beyond seconds).
+     *
+     * @return \DateTime|null
+     */
+    public static function dateRFC3339($dateString, $validateStrict = false)
+    {
+        // This is a customized version of the Rfc3339 class in https://github.com/justinrainbow/json-schema.
+        // Tests have shown that this is both a very solid and fast solution.
+        $pattern = '/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\.\d+)?(Z|([+-]\d{2}):?(\d{2}))$/';
+        if (!preg_match($pattern, strtoupper($dateString), $matches)) {
+            return null;
+        }
+        $dateAndTime = $matches[1];
+        if($validateStrict && !$matches[2]){
+            return null;
+        }
+        $microseconds = $matches[2] ?: '.000';
+        $timeZone = 'Z' !== $matches[3] ? $matches[4] . ':' . $matches[5] : '+00:00';
+        $dateTime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $dateAndTime . $microseconds . $timeZone, new \DateTimeZone('UTC'));
+        return $dateTime ?: null;
+    }
+
 }

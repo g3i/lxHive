@@ -79,6 +79,15 @@ class BasicTokenCreateCommand extends Command
             '',
         ]);
 
+        // get permissions from user service. Abort if no permissions set
+        $userService->fetchAvailablePermissions();
+        $hasPermissions = $userService->getCursor()->count();
+        if (!$hasPermissions) {
+            throw new \RuntimeException(
+                'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
+            );
+        }
+
         $question = new ConfirmationQuestion('Continue? (y/n) ', false);
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('<error>Process aborted by user.</error>');
@@ -122,7 +131,7 @@ class BasicTokenCreateCommand extends Command
             $question->setMaxAttempts(null);
 
             $email = $helper->ask($input, $output, $question);
-            if('exit' === $email){
+            if ('exit' === $email) {
                 $output->writeln('<error>Process aborted by user.</error>');
                 return 0;
             }
@@ -151,7 +160,6 @@ class BasicTokenCreateCommand extends Command
             $expiresAt = $input->getOption('expiration');
         }
 
-        $userService->fetchAvailablePermissions();
         $scopesDictionary = [];
         foreach ($userService->getCursor() as $scope) {
             $scopesDictionary[$scope->getName()] = $scope;
