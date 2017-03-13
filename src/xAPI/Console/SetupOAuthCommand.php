@@ -46,7 +46,7 @@ class SetupOAuthCommand extends Command
         $oAuthService = new OAuthService($this->getSlim());
         foreach ($this->getSlim()->config('xAPI')['supported_auth_scopes'] as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
-            if(!$scope){
+            if (!$scope) {
                 $output->writeln('  - <comment>skip</comment> scope '.$authScope['name'].' exits already.');
             } else{
                 $output->writeln('  - <info>new</info> scope '.$authScope['name'].' added.');

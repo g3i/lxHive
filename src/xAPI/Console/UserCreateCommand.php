@@ -57,7 +57,7 @@ class UserCreateCommand extends Command
         // get permissions from user service. Abort if no permissions set
         $userService->fetchAvailablePermissions();
         $hasPermissions = $userService->getCursor()->count();
-        if(!$hasPermissions){
+        if (!$hasPermissions) {
             throw new \RuntimeException(
                 'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
             );

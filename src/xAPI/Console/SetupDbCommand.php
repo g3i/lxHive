@@ -86,9 +86,9 @@ class SetupDbCommand extends Command
         $output->writeln('Setting up default OAuth scopes...');
         $mongo = new \API\Util\MongoClient($newConfig);
         $collection = $mongo->db->getCollection('authScopes');
-        foreach($newConfig['xAPI']['supported_auth_scopes'] as $scope){
+        foreach ($newConfig['xAPI']['supported_auth_scopes'] as $scope) {
             $exists = $collection->find()->where('name', $scope['name'])->findOne();
-            if($exists){
+            if ($exists) {
                 $output->writeln('  - <comment>skip</comment> scope '.$exists->get('name').' exits already.');
             } else{
                 $output->writeln('  - <info>new</info> scope '.$scope['name'].' added.');

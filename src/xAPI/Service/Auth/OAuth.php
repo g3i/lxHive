@@ -209,7 +209,7 @@ class OAuth extends Service implements AuthInterface
 
         // #104, check if scope document record exists already
         $exists = $collection->find()->where('name', $name)->findOne();
-        if($exists){
+        if ($exists) {
             return false;
         }
 
