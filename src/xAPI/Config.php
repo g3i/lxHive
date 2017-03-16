@@ -59,12 +59,12 @@ class Config
      * @param  string $key The key to get
      * @return mixed The value at this key
      */
-    public static function get($key)
+    public static function get($key, $default = null)
     {
         if (!self::$instantiated) {
             throw new \Exception('You must call the Config factory before being able to get and set values!');
         }
-        return self::$collection->get($key);
+        return self::$collection->get($key, $default);
     }
 
     /**

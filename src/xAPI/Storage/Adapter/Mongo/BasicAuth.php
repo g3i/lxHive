@@ -42,11 +42,11 @@ class BasicAuth extends Base implements BasicAuthInterface
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
         //$accessTokenDocument->addRelation('user', $user);
-        /*$scopeIds = [];
+        $scopeIds = [];
         foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->getId();
+            $scopeIds[] = $scope['id'];
         }
-        $accessTokenDocument->setScopeIds($scopeIds);*/
+        $accessTokenDocument->setScopeIds($scopeIds);
 
         if (isset($expiresAt)) {
             $expiresDate = new \DateTime();

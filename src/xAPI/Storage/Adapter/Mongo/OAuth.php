@@ -49,7 +49,7 @@ class OAuth extends Base implements OAuthInterface
         //$accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];
         foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->getId();
+            $scopeIds[] = $scope['id'];
         }
         $accessTokenDocument->setScopeIds($scopeIds);
 

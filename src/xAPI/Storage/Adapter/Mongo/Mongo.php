@@ -41,8 +41,8 @@ class Mongo implements AdapterInterface
     public function __construct($container)
     {
         $this->setContainer($container);
-        $client = new \MongoDB\Driver\Manager(Config::get('storage.Mongo.host_uri'));
-        $this->databaseName = Config::get('storage.Mongo.db_name');
+        $client = new \MongoDB\Driver\Manager(Config::get(['storage', 'Mongo', 'host_uri']));
+        $this->databaseName = Config::get(['storage', 'Mongo', 'db_name']);
         $this->client = $client;
     }
 

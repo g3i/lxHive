@@ -216,7 +216,7 @@ class Basic extends Service implements AuthInterface
             }
         }
 
-        return $token;
+        return $this;
     }
 
     private function validateJsonDecodeErrors()

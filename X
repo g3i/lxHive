@@ -56,9 +56,6 @@ use API\Console\AuthScopeCreateCommand;
 use API\Console\SetupCommand;
 use API\Console\SetupOAuthCommand;
 
-// Bootstrapper
-$bootstrapper = new Bootstrap();
-
 // If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
 try {
 	$bootstrapper = Bootstrap::factory(Bootstrap::Console);
