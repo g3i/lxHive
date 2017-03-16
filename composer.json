@@ -25,10 +25,5 @@
         "psr-4": {
             "API\\": "src/xAPI"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/tdd"
-        }
     }
 }

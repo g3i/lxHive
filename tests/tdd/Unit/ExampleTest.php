@@ -10,8 +10,8 @@ class ExamplesTest extends TestCase
      *
      * @return void
      */
-    public function testBasicTest()
+    public function testOK()
     {
-        $this->assertTrue(true, 'Example test');
+        $this->assertTrue(true);
     }
 }

@@ -1,0 +1,6 @@
+##
+# Temporarily ignore all tests until unit test migration is finished
+##
+
+**/
+!Unit/ExampleTest.php
