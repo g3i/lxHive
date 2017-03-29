@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "faa01e90b4cd1a0fab266b8cf01e542f",
-    "content-hash": "8dc26a1917d66648588c36c127232947",
+    "hash": "0cd705751f914a7e882ccb41c2198d78",
+    "content-hash": "d4d895af3dacbfc73df382169f2df7b3",
     "packages": [
         {
             "name": "birke/rememberme",
