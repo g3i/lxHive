@@ -61,6 +61,12 @@
                     },
                     "ascending": {
                         "type": "boolean"
+                    },
+                    "until_id": {
+                        "type": "string"
+                    },
+                    "since_id": {
+                        "type": "string"
                     }
                 }
             }
