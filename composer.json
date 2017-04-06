@@ -21,7 +21,7 @@
         "league/url": "3.3.*",
         "ramsey/uuid": "2.9.*",
         "league/flysystem": "0.5.*",
-        "symfony/console": "2.3.*",
+        "symfony/console": "2.6.*",
         "slim/views": "0.1.*",
         "twig/twig": "1.33.*",
         "symfony/yaml": "2.8.*",
