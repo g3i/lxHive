@@ -27,6 +27,7 @@ namespace API\Service;
 use API\Service;
 use Slim\Helper\Set;
 use Sokil\Mongo\Cursor;
+use API\Util\Collection;
 
 class Activity extends Service
 {

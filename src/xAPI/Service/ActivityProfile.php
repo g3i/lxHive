@@ -25,7 +25,7 @@
 namespace API\Service;
 
 use API\Service;
-use Slim\Helper\Set;
+use API\Util\Collection;
 
 class ActivityProfile extends Service
 {

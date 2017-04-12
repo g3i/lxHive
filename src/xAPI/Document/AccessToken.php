@@ -43,6 +43,7 @@
 namespace API\Document;
 
 use API\Validator;
+use API\Resource;
 
 class AccessToken extends Base implements DocumentInterface
 {
