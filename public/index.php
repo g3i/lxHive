@@ -116,6 +116,16 @@ $app->error(function (\Exception $e) {
 
 // Database layer setup
 $app->hook('slim.before', function () use ($app) {
+
+    // #91, Slim 2 cannot deal with full uri's in $_SERVER['REQUEST_URI']
+    // TODO: remove in Slim 3 ?
+    $info = $app->environment()['PATH_INFO'];
+    $url = $app->request->getUrl();
+    if (stripos($info, $url) !== false) {
+        $url .= (substr($url, -1) == '/' ? '' : '/');
+        $app->environment()['PATH_INFO'] = str_replace($url, '', $info);
+    }
+
     $app->container->singleton('mongo', function () use ($app) {
         $client = new Client($app->config('database')['host_uri']);
         $client->map([

@@ -3,11 +3,11 @@
     "description": "An open-source LRS from Brightcookie",
     "license": "GPL-3.0",
     "repositories": [
-        {   
+        {
             "type": "vcs",
             "url": "https://github.com/sraka1/Slim"
         },
-        {   
+        {
             "type": "vcs",
             "url": "https://github.com/sraka1/json-schema"
         }
@@ -29,7 +29,7 @@
         "sokil/php-mongo-migrator": "0.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.3.*"
+        "phpunit/phpunit": "5.5.*"
     },
     "autoload": {
         "psr-4": {
