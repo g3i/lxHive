@@ -22,9 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Oauth;
+namespace API\Controller\V10\Oauth;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\User as UserService;
 use API\View\V10\OAuth\Authorize as OAuthAuthorizeView;
@@ -63,14 +63,14 @@ class Authorize extends Resource
             // Authorization is always requested
             $view = new OAuthAuthorizeView(['service' => $this->oAuthService, 'userService' => $this->userService]);
             $view = $view->renderGet();
-            Resource::response(Resource::STATUS_OK, $view);
+            Controller::response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to login
             $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('authorize');
             $redirectUrl->getPath()->append('login');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Resource::response(Resource::STATUS_FOUND);
+            Controller::response(Controller::STATUS_FOUND);
         }
     }
 
@@ -85,10 +85,10 @@ class Authorize extends Resource
             $this->oAuthService->authorizePost();
             $redirectUri = $this->oAuthService->getRedirectUri();
             $this->getContainer()->response->headers->set('Location', $redirectUri);
-            Resource::response(Resource::STATUS_FOUND);
+            Controller::response(Controller::STATUS_FOUND);
         } else {
             // Unauthorized
-            Resource::response(Resource::STATUS_UNAUTHORIZED);
+            Controller::response(Controller::STATUS_UNAUTHORIZED);
         }
     }
 
@@ -96,7 +96,7 @@ class Authorize extends Resource
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

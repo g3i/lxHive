@@ -107,7 +107,7 @@ abstract class Validator
         $header = $this->getContainer()['parser']->getData()->getHeaders()['x-experience-api-version'];
 
         if ($header === null) {
-            throw new Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -122,7 +122,7 @@ abstract class Validator
     protected function throwErrors($message, $errors)
     {
         $errors = (array) $errors;
-        throw new Exception($message, Resource::STATUS_BAD_REQUEST, $errors);
+        throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
     }
 
     /**
@@ -143,7 +143,7 @@ abstract class Validator
                 $errors[$key] = sprintf($error['message']);
             }
         }
-        throw new Exception($message, Resource::STATUS_BAD_REQUEST, $errors);
+        throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
     }
 
     /**

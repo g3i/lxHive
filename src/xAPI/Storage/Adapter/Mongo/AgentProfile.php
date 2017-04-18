@@ -27,7 +27,7 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\AgentProfileInterface;
 use API\Storage\Query\DocumentResult;
 use API\Util;
-use API\Resource;
+use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Adapter\Base;
 
@@ -220,7 +220,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         if (!$result) {
-            throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
+            throw new \Exception('Profile does not exist!.', Controller::STATUS_NOT_FOUND);
         }
 
         $ifMatchHeader = $parameters['headers']['If-Match'];
@@ -237,15 +237,15 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         // If-Match first
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
-            throw new Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
+            throw new Exception('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
-                throw new Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
+                throw new Exception('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
             } elseif ($result && $this->trimHeader($ifNoneMatch) === $result->getHash()) {
-                throw new Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
+                throw new Exception('If-None-Match header matches the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
             }
         }
     }
@@ -254,31 +254,31 @@ class AgentProfile extends Base implements AgentProfileInterface
     {
         // Check If-Match and If-None-Match here
         if (!$ifMatch && !$ifNoneMatch && $result) {
-            throw new Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
+            throw new Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Controller::STATUS_CONFLICT);
         }
     }
 
     private function validateDocumentType($document)
     {
         if ($document->getContentType() !== 'application/json') {
-            throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
         if ($document !== 'application/json') {
-            throw new Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new Exception('Agent profile does not exist.', Resource::STATUS_NOT_FOUND);
+            throw new Exception('Agent profile does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 

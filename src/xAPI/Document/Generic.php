@@ -42,8 +42,6 @@
 
 namespace API\Document;
 
-use API\Validator;
-
 class Generic extends Base implements DocumentInterface
 {
 

@@ -25,7 +25,7 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\ActivityInterface;
-use API\Resource;
+use API\Controller;
 use API\HttpException as Exception;
 
 class Activity extends Base implements ActivityInterface
@@ -40,7 +40,7 @@ class Activity extends Base implements ActivityInterface
         $expression->where('id', $id);
 
         if ($storage->count(self::COLLECTION_NAME, $expression) === 0) {
-            throw new Exception('Activity does not exist.', Resource::STATUS_NOT_FOUND);
+            throw new Exception('Activity does not exist.', Controller::STATUS_NOT_FOUND);
         }
 
         $document = $storage->findOne($collection, $expression);

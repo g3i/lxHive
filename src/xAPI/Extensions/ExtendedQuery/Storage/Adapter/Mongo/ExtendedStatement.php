@@ -27,7 +27,7 @@ namespace API\Extensions\ExtendedQuery\Storage\Adapter\Mongo;
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
 use API\Storage\Adapter\Base;
 use API\Storage\Query\StatementResult;
-use API\Resource;
+use API\Controller;
 use API\Config;
 
 class ExtendedStatement extends Base implements ExtendedStatementInterface
@@ -63,7 +63,7 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             }
             foreach ($fields as $field => $value) {
                 if (strpos($field, 'statement.') !== 0) {
-                    throw new \Exception('Invalid projection parameters!.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
                 }
             }
             $fields = ['_id' => 1] + $fields;

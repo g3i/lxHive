@@ -25,7 +25,7 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
+use API\Controller;
 use API\Util\OAuth;
 use API\HttpException as Exception;
 
@@ -75,7 +75,7 @@ class User extends Service
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';
             $this->errors[] = $errorMessage;
-            throw new \Exception($errorMessage, Resource::STATUS_UNAUTHORIZED);
+            throw new \Exception($errorMessage, Controller::STATUS_UNAUTHORIZED);
         }
 
         $this->single = true;
@@ -141,7 +141,7 @@ class User extends Service
     {
         // CSRF protection
         if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
-            throw new Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid CSRF token.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -149,7 +149,7 @@ class User extends Service
     {
         // This could be in JSON schema as well :)
         if (!isset($params['email']) || !isset($params['password'])) {
-            throw new Exception('Username or password missing!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Username or password missing!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }
