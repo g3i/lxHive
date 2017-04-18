@@ -36,7 +36,8 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
-use Slim\Container;
+use Pimple\Container;
+use Slim\DefaultServicesProvider;
 use Slim\App;
 use API\Resource\Error;
 use API\Config;
@@ -110,7 +111,7 @@ class Bootstrap
         $config = Config::factory($config);
 
         // 2. Create default container
-        $container = new \Slim\Container();
+        $container = new Container();
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
@@ -127,12 +128,36 @@ class Bootstrap
         return $container;
     }
 
+    // Note: the current web container is dependant on Slim (but not the generic one)
     public function initWebContainer($container = null)
     {
         $appRoot = realpath(__DIR__.'/../../');
         $container = $this->initGenericContainer($container);
 
-        // 4. Insert URL object
+        // 4. Set up Slim services
+        /* 
+            * Slim\App expects a container that implements Interop\Container\ContainerInterface
+            * with these service keys configured and ready for use:
+            *
+            *  - settings: an array or instance of \ArrayAccess
+            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
+            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
+            *  - response: an instance of \Psr\Http\Message\ResponseInterface
+            *  - router: an instance of \Slim\Interfaces\RouterInterface
+            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
+            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
+            *  - notFoundHandler: a callable with the signature: function($request, $response)
+            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
+            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+        */
+        $slimSettings = Config::get(['slim', 'settings']);
+        // Slim *requires* a 'settings' key in the container, no way to override this (so that Slim would use our Config class directly)
+        $container['settings'] = $slimSettings;
+        // Use Slim's default service provide to provide the required services
+        $slimDefaultServiceProvider = new DefaultServicesProvider();
+        $slimDefaultServiceProvider->register($this);
+
+        // 5. Insert URL object
         // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
