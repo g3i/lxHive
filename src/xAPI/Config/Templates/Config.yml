@@ -25,3 +25,12 @@ storage:
     Mongo:
         host_uri: 'mongodb://127.0.0.1'
         db_name: lxHive
+slim:
+    settings:
+        httpVersion: 1.1
+        responseChunkSize: 4096
+        outputBuffering: append
+        determineRouteBeforeAppMiddleware: false
+        displayErrorDetails: false
+        addContentLengthHeader: true
+        routerCacheFile: false
