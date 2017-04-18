@@ -148,7 +148,7 @@ class Statement extends Service
     {
         // TODO: Move header validation in json-schema as well
         if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
-            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

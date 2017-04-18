@@ -22,9 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10;
+namespace API\Controller\V10;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Attachment as AttachmentService;
 use API\Util;
 
@@ -52,7 +52,7 @@ class Attachments extends Resource
 
         $params = new Util\Collection($request->getParameters());
         if (!$params->has('sha2')) {
-            throw new \Exception('Missing sha2 parameter!', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Missing sha2 parameter!', Controller::STATUS_BAD_REQUEST);
         }
 
         $sha2 = $params->get('sha2');
@@ -68,14 +68,14 @@ class Attachments extends Resource
         $metadataDocument = new \API\Document\Generic($metadata);
         $this->setResponse($this->getResponse()->withHeader('Content-Type', $metadataDocument->getContentType()));
 
-        return $this->response(Resource::STATUS_OK, $data);
+        return $this->response(Controller::STATUS_OK, $data);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

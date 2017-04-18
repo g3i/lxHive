@@ -22,28 +22,56 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10;
+namespace API\Controller\V10;
 
-use API\Resource;
-use API\View\V10\About as AboutView;
-use API\Config;
+use API\Controller;
+use API\Service\Activity as ActivityService;
+use API\View\V10\Activity as ActivityView;
 
-class About extends Resource
+class Activities extends Resource
 {
+    /**
+     * @var \API\Service\Activity
+     */
+    private $activityService;
+
+    /**
+     * Get activity service.
+     */
+    public function init()
+    {
+        $this->activityService = new ActivityService($this->getContainer());
+    }
+
     // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = Config::get(['xAPI', 'supported_versions']);
-        $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
-        $view = $view->render();
+        // Check authentication
+        $this->getContainer()->auth->checkPermission('profile');
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        $this->activityService->activityGet();
+
+        // Render them
+        $view = new ActivityView(['service' => $this->activityService]);
+
+        $view = $view->renderGetSingle();
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
+    }
+
+    /**
+     * Gets the value of activityService.
+     *
+     * @return \API\Service\Activity
+     */
+    public function getActivityService()
+    {
+        return $this->activityService;
     }
 }

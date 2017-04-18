@@ -3,7 +3,7 @@
 namespace API\Extensions\ExtendedQuery\Service;
 
 use API\Service;
-use API\Resource;
+use API\Controller;
 use Slim\Helper\Set;
 use API\Config;
 
@@ -22,7 +22,7 @@ class Statement extends Service
     {
         // TODO: Move header validation in a json-schema
         /*if ($request->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }*/
 
         // Validation has been completed already - everyhing is assumed to be valid

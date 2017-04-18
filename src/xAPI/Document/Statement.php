@@ -173,7 +173,7 @@ class Statement extends Base implements DocumentInterface
 
     public function renderCanonical()
     {
-        throw new \InvalidArgumentException('The \'canonical\' statement format is currently not supported.', Resource::STATUS_NOT_IMPLEMENTED);
+        throw new \InvalidArgumentException('The \'canonical\' statement format is currently not supported.', Controller::STATUS_NOT_IMPLEMENTED);
     }
 
     public function setDefaultTimestamp()

@@ -22,9 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Oauth;
+namespace API\Controller\V10\Oauth;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Auth\OAuth as OAuthService;
 use API\View\V10\OAuth\AccessToken as AccessTokenView;
 
@@ -53,14 +53,14 @@ class Token extends Resource
         // Authorization is always requested
         $view = new AccessTokenView($this->getResponse(), $this->getContainer());
         $view = $view->renderGet($accessTokenDocument);
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

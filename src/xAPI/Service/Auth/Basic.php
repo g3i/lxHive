@@ -25,7 +25,7 @@
 namespace API\Service\Auth;
 
 use API\Service;
-use API\Resource;
+use API\Controller;
 use Slim\Http\Request;
 use API\Service\User as UserService;
 use API\Util;
@@ -222,14 +222,14 @@ class Basic extends Service implements AuthInterface
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRequiredParams($requestParams)
     {
         if ($requestParams['user']['email'] === null) {
-            throw new Exception('Invalid request, user.email property not present!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid request, user.email property not present!', Controller::STATUS_BAD_REQUEST);
         }
     }
 

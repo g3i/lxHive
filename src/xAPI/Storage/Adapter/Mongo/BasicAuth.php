@@ -25,7 +25,7 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\BasicAuthInterface;
-use API\Resource;
+use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Adapter\Base;
 
@@ -140,7 +140,7 @@ class BasicAuth extends Base implements BasicAuthInterface
     private function validateScope($scope)
     {
         if (null === $scope) {
-            throw new Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -148,7 +148,7 @@ class BasicAuth extends Base implements BasicAuthInterface
     {
         if ($expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
+                throw new \Exception('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -156,7 +156,7 @@ class BasicAuth extends Base implements BasicAuthInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new \Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
+            throw new \Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 }
