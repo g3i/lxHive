@@ -25,7 +25,6 @@
 namespace API\Resource\V10;
 
 use API\Resource;
-use Slim\Helper\Set;
 use API\View\V10\Agent as AgentView;
 
 class Agents extends Resource

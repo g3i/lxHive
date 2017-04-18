@@ -26,7 +26,6 @@ namespace API\Service\Auth;
 
 use API\Service;
 use API\Resource;
-use Slim\Helper\Set;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;

@@ -25,7 +25,6 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
 use API\HttpException as Exception;
 use API\Config;
 

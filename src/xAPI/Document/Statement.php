@@ -42,7 +42,6 @@
 
 namespace API\Document;
 
-use API\Validator;
 use Ramsey\Uuid\Uuid;
 use League\Url\Url;
 

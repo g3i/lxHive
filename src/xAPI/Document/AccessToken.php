@@ -42,8 +42,6 @@
 
 namespace API\Document;
 
-use API\Validator;
-
 class AccessToken extends Base implements DocumentInterface
 {
     public function isSuperToken()

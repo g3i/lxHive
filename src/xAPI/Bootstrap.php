@@ -28,7 +28,6 @@ use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
 use API\Resource;
 use League\Url\Url;
-use API\Bootstrap;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
