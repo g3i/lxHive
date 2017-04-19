@@ -37,10 +37,10 @@ use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 use Pimple\Container;
 use Slim\DefaultServicesProvider;
-use Slim\App;
+use Slim\App as SlimApp;
 use API\Controller\Error;
 use API\Config;
-use API\Console\Application;
+use API\Console\Application as CliApp;
 
 class Bootstrap
 {
@@ -60,7 +60,9 @@ class Bootstrap
     public static function factory($mode)
     {
         if (self::$containerInstantiated) {
-            throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
+            if ($mode !== self::Testing) {
+                throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
+            }
         }
 
         switch ($mode) {
@@ -162,7 +164,7 @@ class Bootstrap
 
         $handlerConfig = Config::get(['log', 'handlers']);
         $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
-        
+
         if (null === $handlerConfig) {
             $handlerConfig = ['ErrorLogHandler'];
         }
@@ -328,7 +330,7 @@ class Bootstrap
 
         $container = self::$containerInstance;
 
-        $app = new App($container);
+        $app = new SlimApp($container);
 
         // CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
@@ -343,7 +345,7 @@ class Bootstrap
                     // Content is the only valid body parameter...everything else are either headers or query parameters
                     $string = '';
                 }
-                
+
                 // Remove body, add headers
                 $parameters->remove('content');
                 // TODO: Allow more headers here
@@ -506,7 +508,7 @@ class Bootstrap
 
     public function bootCliApp()
     {
-        $app = new Application(self::$containerInstance);
+        $app = new CliApp(self::$containerInstance);
         return $app;
     }
 
