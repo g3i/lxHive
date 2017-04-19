@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\ActivityProfile as ActivityProfileService;
 use API\View\V10\ActivityProfile as ActivityProfileView;
 
-class Profile extends Resource
+class Profile extends Controller
 {
     /**
      * @var \API\Service\ActivityProfile

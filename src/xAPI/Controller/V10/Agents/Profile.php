@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\AgentProfile as AgentProfileService;
 use API\View\V10\AgentProfile as AgentProfileView;
 
-class Profile extends Resource
+class Profile extends Controller
 {
     /**
      * @var \API\Service\AgentProfile

@@ -22,13 +22,13 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Extensions\ExtendedQuery\Resource\V10;
+namespace API\Extensions\ExtendedQuery\Controller\V10;
 
 use API\Controller;
 use API\Extensions\ExtendedQuery\Service\Statement as ExtendedStatementService;
 use API\Extensions\ExtendedQuery\View\V10\ProjectedStatement as ProjectedStatementView;
 
-class ExtendedQuery extends Resource
+class ExtendedQuery extends Controller
 {
     /**
      * @var ExtendedStatementService

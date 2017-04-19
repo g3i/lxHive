@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\Attachment as AttachmentService;
 use API\Util;
 
-class Attachments extends Resource
+class Attachments extends Controller
 {
     /**
      * @var \API\Service\Attachment

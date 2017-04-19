@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\ActivityState as ActivityStateService;
 use API\View\V10\ActivityState as ActivityStateView;
 
-class State extends Resource
+class State extends Controller
 {
     /**
      * @var \API\Service\ActivityState

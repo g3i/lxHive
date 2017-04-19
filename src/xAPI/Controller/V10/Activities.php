@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\Activity as ActivityService;
 use API\View\V10\Activity as ActivityView;
 
-class Activities extends Resource
+class Activities extends Controller
 {
     /**
      * @var \API\Service\Activity

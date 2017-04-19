@@ -28,7 +28,7 @@ use API\Controller;
 use API\Service\Auth\Basic as BasicTokenService;
 use API\View\V10\BasicAuth\AccessToken as AccessTokenView;
 
-class Tokens extends Resource
+class Tokens extends Controller
 {
     /**
      * @var \API\Service\AccessToken
