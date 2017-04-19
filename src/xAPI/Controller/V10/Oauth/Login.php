@@ -30,7 +30,7 @@ use API\Service\User as UserService;
 use API\View\V10\OAuth\Login as LoginView;
 use API\Util\OAuth;
 
-class Login extends Resource
+class Login extends Controller
 {
     /**
      * @var \API\Service\Auth\OAuth

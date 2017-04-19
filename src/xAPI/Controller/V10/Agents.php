@@ -27,7 +27,7 @@ namespace API\Controller\V10;
 use API\Controller;
 use API\View\V10\Agent as AgentView;
 
-class Agents extends Resource
+class Agents extends Controller
 {
     public function get()
     {

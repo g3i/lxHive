@@ -29,7 +29,7 @@ use API\Service\Statement as StatementService;
 use API\Validator\V10\Statement as StatementValidator;
 use API\View\V10\Statements as StatementView;
 
-class Statements extends Resource
+class Statements extends Controller
 {
     /**
      * @var \API\Service\Statement

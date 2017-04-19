@@ -30,7 +30,7 @@ use API\Service\User as UserService;
 use API\View\V10\OAuth\Authorize as OAuthAuthorizeView;
 use API\Util\OAuth;
 
-class Authorize extends Resource
+class Authorize extends Controller
 {
     /**
      * @var \API\Service\Auth\OAuth

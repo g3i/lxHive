@@ -28,7 +28,7 @@ use API\Controller;
 use API\View\V10\About as AboutView;
 use API\Config;
 
-class About extends Resource
+class About extends Controller
 {
     // Boilerplate code until this is figured out...
     public function get()
