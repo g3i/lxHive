@@ -24,12 +24,12 @@
 
 namespace API;
 
-use API\Resource\Error as Error;
+use API\Controller\Error as Error;
 use API\View\Error as ErrorView;
 use Psr\Http\Message\ResponseInterface;
 use API\Config;
 
-abstract class Resource
+abstract class Controller
 {
     use BaseTrait;
 

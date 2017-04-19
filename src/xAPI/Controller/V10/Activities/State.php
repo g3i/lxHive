@@ -22,25 +22,25 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Agents;
+namespace API\Controller\V10\Activities;
 
-use API\Resource;
-use API\Service\AgentProfile as AgentProfileService;
-use API\View\V10\AgentProfile as AgentProfileView;
+use API\Controller;
+use API\Service\ActivityState as ActivityStateService;
+use API\View\V10\ActivityState as ActivityStateView;
 
-class Profile extends Resource
+class State extends Resource
 {
     /**
-     * @var \API\Service\AgentProfile
+     * @var \API\Service\ActivityState
      */
-    private $agentProfileService;
+    private $activityStateService;
 
     /**
-     * Get agent profile service.
+     * Get activity service.
      */
     public function init()
     {
-        $this->agentProfileService = new AgentProfileService($this->getContainer());
+        $this->activityStateService = new ActivityStateService($this->getContainer());
     }
 
     /**
@@ -49,88 +49,88 @@ class Profile extends Resource
     public function get()
     {
         // Check authentication
-        //$this->getContainer()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $documentResult = $this->agentProfileService->agentProfileGet();
+        $this->activityStateService->activityStateGet();
 
         // Render them
-        $view = new AgentProfileView($this->getResponse(), $this->getContainer());
+        $view = new ActivityStateView(['service' => $this->activityStateService]);
 
-        if ($documentResult->getIsSingle()) {
-            $view = $view->renderGetSingle($documentResult);
-            return $this->response(Resource::STATUS_OK, $view);
+        if ($this->activityStateService->getSingle()) {
+            $view = $view->renderGetSingle();
+            Controller::response(Controller::STATUS_OK, $view);
         } else {
-            $view = $view->renderGet($documentResult);
-            return $this->jsonResponse(Resource::STATUS_OK, $view);
+            $view = $view->renderGet();
+            return $this->jsonResponse(Controller::STATUS_OK, $view);
         }
     }
 
     public function put()
     {
         // Check authentication
-        //$this->getContainer()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfilePut();
+        $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function post()
     {
         // Check authentication
-        //$this->getContainer()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfilePost();
+        $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function delete()
     {
         // Check authentication
-        //$this->getContainer()->auth->checkPermission('profile');
+        $this->getContainer()->auth->checkPermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->agentProfileService->agentProfileDelete();
+        $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**
-     * Gets the value of agentProfileService.
+     * Gets the value of activityStateService.
      *
-     * @return \API\Service\AgentProfile
+     * @return \API\Service\ActivityState
      */
-    public function getAgentProfileService()
+    public function getActivityStateService()
     {
-        return $this->agentProfileService;
+        return $this->activityStateService;
     }
 }

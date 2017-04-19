@@ -42,8 +42,6 @@
 
 namespace API\Document;
 
-use API\Validator;
-
 class AccessToken extends Base implements DocumentInterface
 {
     public function isSuperToken()
@@ -71,7 +69,7 @@ class AccessToken extends Base implements DocumentInterface
         if ($this->hasPermission($permissionName)) {
             return true;
         } else {
-            return new \Exception('Permission denied.', Resource::STATUS_FORBIDDEN);
+            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
         }
     }
 

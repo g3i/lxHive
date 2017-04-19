@@ -27,7 +27,7 @@ namespace API\Util;
 use League\Flysystem\Filesystem as Flysystem;
 use Aws\S3\S3Client;
 use League\Flysystem\Adapter\AwsS3 as S3Adapter;
-use API\Resource;
+use API\Controller;
 
 // Maybe move this to API/Service and remove ODM dependency on Services. Check out the semantics of this...
 class Filesystem
@@ -44,7 +44,7 @@ class Filesystem
             ));
             $filesystem = new Flysystem(new S3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));
         } else {
-            throw new \Exception('Server error.', Resource::STATUS_INTERNAL_SERVER_ERROR);
+            throw new \Exception('Server error.', Controller::STATUS_INTERNAL_SERVER_ERROR);
         }
 
         return $filesystem;

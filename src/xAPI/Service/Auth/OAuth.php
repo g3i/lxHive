@@ -25,8 +25,7 @@
 namespace API\Service\Auth;
 
 use API\Service;
-use API\Resource;
-use Slim\Helper\Set;
+use API\Controller;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
@@ -264,9 +263,9 @@ class OAuth extends Service implements AuthInterface
         $tokenParam = $request->getParam('access_token', false);
         // At least one (and only one) of client credentials method required.
         if (!$tokenHeader && !$tokenParam) {
-            throw new AuthFailureException('The request is missing a required parameter.', Resource::STATUS_BAD_REQUEST);
+            throw new AuthFailureException('The request is missing a required parameter.', Controller::STATUS_BAD_REQUEST);
         } elseif ($tokenHeader && $tokenParam) {
-            throw new AuthFailureException('The request includes multiple credentials.', Resource::STATUS_BAD_REQUEST);
+            throw new AuthFailureException('The request includes multiple credentials.', Controller::STATUS_BAD_REQUEST);
         }
 
         $accessToken = $tokenHeader
@@ -308,14 +307,14 @@ class OAuth extends Service implements AuthInterface
         if ($this->hasPermission($permissionName)) {
             return true;
         } else {
-            return new \Exception('Permission denied.', Resource::STATUS_FORBIDDEN);
+            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
         }
     }
 
     private function validateScopeDocument($scopeDocument)
     {
         if (null === $scopeDocument) {
-            throw new Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -323,14 +322,14 @@ class OAuth extends Service implements AuthInterface
     {
         // CSRF protection
         if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
-            throw new Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid CSRF token.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateAction($params)
     {
         if ($params['action'] !== 'accept' && $params['action'] !== 'deny') {
-            throw new Exception('Invalid.', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -339,7 +338,7 @@ class OAuth extends Service implements AuthInterface
         //TODO: Use json-schema validator
         foreach ($requiredParams as $requiredParam) {
             if (!isset($params[$requiredParam])) {
-                throw new Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
+                throw new Exception('Parameter '.$requiredParam.' is missing!', Controller::STATUS_BAD_REQUEST);
             }
         }
     }
@@ -347,28 +346,28 @@ class OAuth extends Service implements AuthInterface
     private function validateResponseType($responseType)
     {
         if ($responseType !== 'code') {
-            throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Invalid response_type specified.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRedirectUri($redirectUri, $clientDocument)
     {
         if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateGrantType($grantType)
     {
         if ($grantType !== 'authorization_code') {
-            throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Invalid grant_type specified.', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     public function validateClientDocument($clientDocument)
     {
         if (null === $clientDocument) {
-            throw new \Exception('Invalid client_id', Resource::STATUS_BAD_REQUEST);
+            throw new \Exception('Invalid client_id', Controller::STATUS_BAD_REQUEST);
         }
     }
 
