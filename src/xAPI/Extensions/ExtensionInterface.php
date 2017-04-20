@@ -40,10 +40,11 @@ interface ExtensionInterface
      */
     public function getRoutes();
 
-    /*
-        Initial setup function
-        This method can be called an indefinite amount of times
-        It should check if installed already and only execute if not
+    /**
+     * Initial setup function
+     * This method can be called an indefinite amount of times
+     * It should check if installed already and only execute if not
+     * @return void
     */
     public function install();
 }

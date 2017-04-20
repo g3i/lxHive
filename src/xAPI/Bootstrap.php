@@ -42,8 +42,22 @@ use API\Controller\Error;
 use API\Config;
 use API\Console\Application as CliApp;
 
+/**
+ * Bootstrap lxHive
+ *
+ * Bootstrap routines fall into two steps:
+ *      1 factory (initialization)
+ *      2 boot application
+ * Example for booting a Web App:
+ *      $bootstrap = \API\Bootstrap::factory(\API\Bootstrap::Web);
+ *      $app = $bootstrap->bootWebApp();
+ * An app can only be bootstraped once, the only Exception being mode Bootstap::Testing
+ */
 class Bootstrap
 {
+    /**
+     * @vars Bootstrap Mode
+     */
     const Web     = 0;
     const Console = 1;
     const Testing = 2;
@@ -52,16 +66,17 @@ class Bootstrap
     private static $containerInstantiated = false;
 
     /**
-     * Factory for container contained within bootstrap, which is a base for booting everything else
-     * It's basically sugar around the init methods
-     * @param  int $mode The mode enum
+     * Factory for container contained within bootstrap, which is a base for various initializations
+     *
+     * @param  int $mode Bootstrap mode constant
      * @return void
+     * @throws \RuntimeException
      */
     public static function factory($mode)
     {
         if (self::$containerInstantiated) {
             if ($mode !== self::Testing) {
-                throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
+                throw new \RuntimeException('You can only instantiate the Bootstrapper once!');
             }
         }
 
@@ -96,6 +111,10 @@ class Bootstrap
         }
     }
 
+    /**
+     * Initialize default configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initGenericContainer()
     {
         // Get file paths of project and config
@@ -129,14 +148,17 @@ class Bootstrap
         return $container;
     }
 
-    // Note: the current web container is dependant on Slim (but not the generic one)
+    /**
+     * Initialize  web mode configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initWebContainer($container = null)
     {
         $appRoot = realpath(__DIR__.'/../../');
         $container = $this->initGenericContainer($container);
 
         // 4. Set up Slim services
-        /* 
+        /*
             * Slim\App expects a container that implements Interop\Container\ContainerInterface
             * with these service keys configured and ready for use:
             *
@@ -305,6 +327,10 @@ class Bootstrap
         return $container;
     }
 
+    /**
+     * Initialize php-cli configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initCliContainer($container = null)
     {
         $container = $this->initGenericContainer($container);
@@ -322,6 +348,10 @@ class Bootstrap
         return $container;
     }
 
+    /**
+     * Boot web application (Slim App), including all routes
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function bootWebApp()
     {
         if (!self::$containerInstantiated) {
@@ -407,10 +437,10 @@ class Bootstrap
             }
         }
 
-        /*
-            ROUTING SECTION
-            TODO: Move this chunk of code to a separate class like API\Router in future
-        */
+        ////
+        // ROUTING
+        // TODO: Move this chunk of code to a separate class like API\Router in future
+        ////
 
         // About
         $app->map(['GET', 'OPTIONS'], '/about', function ($request, $response, $args) use ($container) {
@@ -506,6 +536,10 @@ class Bootstrap
         return $app;
     }
 
+    /**
+     * Boot php-cli application (Symfony Console), including all commands
+     * @return Symfony\Component\Console\Application instance
+     */
     public function bootCliApp()
     {
         $app = new CliApp(self::$containerInstance);
@@ -513,8 +547,16 @@ class Bootstrap
     }
 
     /**
+     * Empty placeholder for unit testing
+     * @return void
+     */
+    public function bootTest()
+    {
+        // nothing
+    }
+
+    /**
      * Gets the value of id.
-     *
      * @return mixed
      */
     public function getId()

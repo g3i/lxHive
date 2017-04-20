@@ -30,8 +30,16 @@ use API\Storage\Query\StatementResult;
 use API\Controller;
 use API\Config;
 
+/**
+ * Mongo Adaptor for this extension
+ */
 class ExtendedStatement extends Base implements ExtendedStatementInterface
 {
+    /**
+     * Query statements collection
+     * @param  array $parameters hashmap of GET params
+     * @return \API\Storage\Query\StatementInterface collection of statement documents
+     */
     public function extendedQuery($parameters)
     {
         $storage = $this->getContainer()['storage'];

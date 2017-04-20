@@ -27,8 +27,15 @@ namespace API\Admin;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 
+/**
+ * Auth Managment
+ */
 class Auth extends Base
 {
+    /**
+     * Fetches a list of all oAuth Clients
+     * @return array
+     */
     public function listOAuthClients()
     {
         $oAuthService = new OAuthService($this->getContainer());
@@ -40,6 +47,12 @@ class Auth extends Base
         return $textArray;
     }
 
+    /**
+     * Add an oAuth client record
+     * @param string $name
+     * @param string $description
+     * @param string $redirectUri
+     */
     public function addOAuthClient($name, $description, $redirectUri)
     {
         $oAuthService = new OAuthService($this->getContainer());
@@ -48,6 +61,10 @@ class Auth extends Base
         return $client;
     }
 
+    /**
+     * Fetches a list of all basic tokens
+     * @return array
+     */
     public function listBasicTokens()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
@@ -62,6 +79,10 @@ class Auth extends Base
         return $textArray;
     }
 
+    /**
+     * Fetches a list of all basic token id's
+     * @return array
+     */
     public function listBasicTokenIds()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
@@ -75,6 +96,11 @@ class Auth extends Base
         return $clientIds;
     }
 
+    /**
+     * Expire a basic token
+     * @param string $clientId valid clientId
+     * @return void
+     */
     public function expireBasicToken($clientId)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
@@ -82,6 +108,11 @@ class Auth extends Base
         $accessTokenService->expireToken($clientId);
     }
 
+    /**
+     * Deleta a basic token
+     * @param string $clientId valid clientId
+     * @return void
+     */
     public function deleteBasicToken($clientId)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
@@ -89,6 +120,12 @@ class Auth extends Base
         $accessTokenService->deleteToken($clientId);
     }
 
+    /**
+     * Create a new Authscope record
+     * @param string $name scope name/identifier
+     * @param string $description
+     * @return \stdClass Mongo entry
+     */
     public function createAuthScope($name, $description)
     {
         $oAuthService = new OAuthService($this->getContainer());
@@ -98,6 +135,16 @@ class Auth extends Base
         return $scope;
     }
 
+    /**
+     * Add a new basic Token
+     * @param string $name
+     * @param string $description
+     * @param int $expiresAt Unix timestamp
+     * @param string $user user id
+     * @param array $selectedScopes scope records
+     * @param string $key
+     * @param string $secret
+     */
     public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret)
     {
         $basicAuthService = new BasicAuthService($this->getContainer());

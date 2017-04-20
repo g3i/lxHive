@@ -26,15 +26,28 @@ namespace API\Parser;
 
 use Slim\Http\Request;
 
+/**
+ * Slim request parser
+ */
 class SlimRequest implements ParserInterface
 {
     protected $parts;
 
-    public function __construct(Request $request)
+    /**
+     * constructor
+     * @param RequestInterface $request
+     * @return void
+     */
+    public function __construct(RequestInterface $request)
     {
         $this->parseRequest($request);
     }
 
+    /**
+     * Parse http request
+     * @param  RequestInterface $request
+     * @return void
+     */
     private function parseRequest($request)
     {
         if ($request->isMultipart()) {
@@ -48,6 +61,11 @@ class SlimRequest implements ParserInterface
         }
     }
 
+    /**
+     * Parses request body
+     * @param  RequestInterface $request
+     * @return array|object of parsed request body
+     */
     private function parseSingleRequest($request)
     {
         $parserResult = new ParserResult();
@@ -75,8 +93,7 @@ class SlimRequest implements ParserInterface
     }
 
     /**
-     * Get the main part.
-     *
+     * Get main part of request
      * @return ParserResult an object or array, given the payload
      */
     public function getData()
@@ -85,9 +102,8 @@ class SlimRequest implements ParserInterface
     }
 
     /**
-     * Get the additional parts.
-     *
-     * @return \Traversable<ParserResult> an array of the parts
+     * Get additional parts (attachments) of request.
+     * @return array of ParserResult
      */
     public function getAttachments()
     {
@@ -98,9 +114,8 @@ class SlimRequest implements ParserInterface
     }
 
     /**
-     * Get the parts of the request.
-     *
-     * @return \Traversable<ParserResult> an array of the parts
+     * Get all parts of the request.
+     * @return array of ParserResult
      */
     public function getParts()
     {

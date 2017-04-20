@@ -22,14 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Extensions\ExtendedQuery\Storage\Query;
+namespace API;
 
-interface ExtendedStatementInterface
+interface ControllerInterface
 {
-    /**
-     * Query the statements collection
-     * @param  array $parameters hashmap of GET params
-     * @return \API\Storage\Query\StatementInterface $statementResult
-     */
-    public function extendedQuery($parameters);
+    //TODO
 }

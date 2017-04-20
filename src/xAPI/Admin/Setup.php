@@ -27,24 +27,36 @@ namespace API\Admin;
 use Symfony\Component\Yaml\Yaml;
 use API\Bootstrap;
 use API\Service\Auth\OAuth as OAuthService;
+use API\Storage\Adapter\Mongo\Mongo as Mongo;
 use API\Config;
 
+/**
+ * Scratch-Api for various Admin tasks who are not dependend on a bootstrapped application
+ */
 class Setup
 {
+    /**
+     * @var string configDir path to config folder
+     */
     private $configDir;
 
+    /**
+     * @var string yamlData internal cache for config.yaml data
+     */
     private $yamlData;
 
+    /**
+     * constructor
+     */
     public function __construct()
     {
         $this->configDir = __DIR__.'/../Config';
     }
 
     /**
-     * checks if a yaml config file exists already in /src/xAPI/Config/.
+     * Checks if a yaml config file exists already in /src/xAPI/Config/.
      *
      * @param string $configYML yaml file
-     *
      * @return bool
      */
     public function checkYaml($configYML)
@@ -57,7 +69,6 @@ class Setup
      *
      * @param string $yaml      yaml file to be created from template
      * @param array  $mergeData associative array of config data to be merged in to the new config file
-     *
      * @throws \Exception
      */
     public function installYaml($yml, array $mergeData = [])
@@ -80,19 +91,28 @@ class Setup
         }
     }
 
+    /**
+     * Test Mongo DB access
+     * @param  string $uri connection uri
+     * @return stdClass|false connection result (mongo.buildInfo)
+     */
     public function testDbConnection($uri)
     {
-        // TODO: Make this variable - i.e. user can provide own value in command
-        // Usable if we will ever have multiple storage adapters
-        $preferredStorageType = 'Mongo';
-        $storageClass = '\\API\\Storage\\Adapter\\' . $preferredStorageType . '\\' . $preferredStorageType;
-        $connectionTestResult = $storageClass::testConnection($uri);
-
-        return $connectionTestResult;
+        try {
+            $connectionTestResult = Mongo::testConnection($uri);
+            return $connectionTestResult;
+        } catch (\MongoDB\Driver\Exception\ConnectionException $e) {
+            return false;
+        }
     }
 
+    /**
+     * Load authscopes into Mongo
+     * @return void
+     */
     public function initializeAuthScopes()
     {
+        //TODO this method will be obsolete if we remove the authScopes collection
         $bootstrapper = new Bootstrap();
         $container = $bootstrapper->initCliContainer();
         $oAuthService = new OAuthService($container);

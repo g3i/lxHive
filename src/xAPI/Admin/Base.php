@@ -24,11 +24,17 @@
 
 namespace API\Admin;
 
+/**
+ * Base Admin class
+ */
 abstract class Base
 {
     private $container;
 
-    // Bootstrapped container
+    /**
+     * constructor
+     * @param \Psr\Container\ContainerInterface $container
+     */
     public function __construct($container)
     {
         $this->container = $container;
