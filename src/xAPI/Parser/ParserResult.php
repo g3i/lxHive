@@ -24,20 +24,33 @@
 
 namespace API\Parser;
 
+/**
+ * Storage class for Request parser
+ */
 class ParserResult
 {
+    /**
+     * @var array request params
+     */
     public $parameters;
-
+    /**
+     * @var array request headers
+     */
     public $headers;
 
+    /**
+     * @var string request payload (JSON)
+     */
     public $rawPayload;
 
+    /**
+     * @var object|array parsed json data
+     */
     public $payload;
 
     /**
-     * Gets the value of parameters.
-     *
-     * @return mixed
+     * Get request parameters
+     * @return array
      */
     public function getParameters()
     {
@@ -45,10 +58,8 @@ class ParserResult
     }
 
     /**
-     * Sets the value of parameters.
-     *
-     * @param mixed $parameters the parameters
-     *
+     * Set (parsed) request parameters.
+     * @param  array $parameters
      * @return self
      */
     public function setParameters($parameters)
@@ -59,9 +70,8 @@ class ParserResult
     }
 
     /**
-     * Gets the value of headers.
-     *
-     * @return mixed
+     * Get headers.
+     * @return array
      */
     public function getHeaders()
     {
@@ -69,10 +79,8 @@ class ParserResult
     }
 
     /**
-     * Sets the value of headers.
-     *
-     * @param mixed $headers the headers
-     *
+     * Sets (parsed) headers
+     * @param array $headers the headers
      * @return self
      */
     public function setHeaders($headers)
@@ -83,9 +91,8 @@ class ParserResult
     }
 
     /**
-     * Gets the value of rawPayload.
-     *
-     * @return mixed
+     * Gets rawPayload.
+     * @return string
      */
     public function getRawPayload()
     {
@@ -93,10 +100,8 @@ class ParserResult
     }
 
     /**
-     * Sets the value of rawPayload.
-     *
-     * @param mixed $rawPayload the raw payload
-     *
+     * Sets rawPayload.
+     * @param string
      * @return self
      */
     public function setRawPayload($rawPayload)
@@ -107,9 +112,8 @@ class ParserResult
     }
 
     /**
-     * Gets the value of payload.
-     *
-     * @return mixed
+     * Gets (parsed) )payload.
+     * @return array|object
      */
     public function getPayload()
     {
@@ -117,10 +121,8 @@ class ParserResult
     }
 
     /**
-     * Sets the value of payload.
-     *
-     * @param mixed $payload the payload
-     *
+     * Sets (parsed) payload.
+     * @param array|object $payload (json_decode)
      * @return self
      */
     public function setPayload($payload)
