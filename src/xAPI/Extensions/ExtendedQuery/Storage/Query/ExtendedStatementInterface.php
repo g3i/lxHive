@@ -26,5 +26,10 @@ namespace API\Extensions\ExtendedQuery\Storage\Query;
 
 interface ExtendedStatementInterface
 {
+    /**
+     * Query the statements collection
+     * @param  array $parameters hashmap of GET params
+     * @return \API\Storage\Query\StatementInterface $statementResult
+     */
     public function extendedQuery($parameters);
 }

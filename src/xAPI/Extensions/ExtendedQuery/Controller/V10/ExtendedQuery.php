@@ -28,20 +28,29 @@ use API\Controller;
 use API\Extensions\ExtendedQuery\Service\Statement as ExtendedStatementService;
 use API\Extensions\ExtendedQuery\View\V10\ProjectedStatement as ProjectedStatementView;
 
+/**
+ * Extension Controller class
+ * @see \API\ControllerInterface
+ */
 class ExtendedQuery extends Controller
 {
     /**
-     * @var ExtendedStatementService
+     * @var API\Extensions\ExtendedQuery\Service\Statement $extendedStatementService Servive instance
      */
     private $extendedStatementService;
 
+    /**
+     * Initialize controller
+     * @return void
+     */
     public function init()
     {
         $this->extendedStatementService = new ExtendedStatementService($this->getContainer());
     }
 
     /**
-     * Handle the query GET request.
+     * Process GET request
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function get()
     {
@@ -61,7 +70,8 @@ class ExtendedQuery extends Controller
     }
 
     /**
-     * Handle the query POST request.
+     * Process POST request
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function post()
     {
@@ -81,6 +91,10 @@ class ExtendedQuery extends Controller
         return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
+    /**
+     * Process OPTIONS request
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function options()
     {
         // Handle options request
@@ -89,9 +103,8 @@ class ExtendedQuery extends Controller
     }
 
     /**
-     * Gets the value of extendedStatementService.
-     *
-     * @return ExtendedStatementService
+     * Get extendedStatementService instance
+     * @return API\Extensions\ExtendedQuery\Service\Statement $extendedStatementService Servive instance
      */
     public function getExtendedStatementService()
     {
