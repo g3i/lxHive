@@ -22,28 +22,38 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10;
+namespace API\Controller\V10;
 
-use API\Resource;
-use API\View\V10\About as AboutView;
-use API\Config;
+use API\Controller;
+use API\View\V10\Agent as AgentView;
 
-class About extends Resource
+class Agents extends Controller
 {
-    // Boilerplate code until this is figured out...
     public function get()
     {
-        $versions = Config::get(['xAPI', 'supported_versions']);
-        $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
-        $view = $view->render();
+        $request = $this->getContainer()->request();
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        // Check authentication
+        $this->getContainer()->auth->checkPermission('profile');
+
+        // TODO: Validation.
+
+        $params = new Collection($request->get());
+
+        $agent = $params->get('agent');
+
+        $agent = json_decode($agent, true);
+
+        $view = new AgentView(['agent' => $agent]);
+        $view = $view->renderGet();
+
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 }

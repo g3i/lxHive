@@ -25,7 +25,7 @@
 namespace API\View\V10;
 
 use API\View;
-use Slim\Helper\Set;
+use API\Util\Collection;
 
 class Agent extends View
 {

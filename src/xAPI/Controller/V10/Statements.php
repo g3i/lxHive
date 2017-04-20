@@ -22,14 +22,14 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10;
+namespace API\Controller\V10;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Statement as StatementService;
 use API\Validator\V10\Statement as StatementValidator;
 use API\View\V10\Statements as StatementView;
 
-class Statements extends Resource
+class Statements extends Controller
 {
     /**
      * @var \API\Service\Statement
@@ -74,7 +74,7 @@ class Statements extends Resource
             $view = $view->renderGet($statementResult);
         }
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function put()
@@ -91,7 +91,7 @@ class Statements extends Resource
         $this->statementService->statementPut();
 
         // Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function post()
@@ -109,14 +109,14 @@ class Statements extends Resource
         $view = new StatementView($this->getResponse(), $this->getContainer());
         $view = $view->renderPost($statementResult);
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

@@ -25,8 +25,6 @@
 namespace API\Service;
 
 use API\Service;
-use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
 
 class Activity extends Service
 {
@@ -34,7 +32,7 @@ class Activity extends Service
     /**
      * Cursor.
      *
-     * @var cursor
+     * @var array
      */
     protected $cursor;
 
@@ -68,7 +66,7 @@ class Activity extends Service
     /**
      * Gets the Cursor.
      *
-     * @return cursor
+     * @return array
      */
     public function getCursor()
     {
@@ -78,11 +76,11 @@ class Activity extends Service
     /**
      * Sets the Cursor.
      *
-     * @param cursor $cursor the cursor
+     * @param array $cursor the cursor
      *
      * @return self
      */
-    public function setCursor(Cursor $cursor)
+    public function setCursor($cursor)
     {
         $this->cursor = $cursor;
 

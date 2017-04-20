@@ -22,13 +22,13 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Extensions\ExtendedQuery\Resource\V10;
+namespace API\Extensions\ExtendedQuery\Controller\V10;
 
-use API\Resource;
+use API\Controller;
 use API\Extensions\ExtendedQuery\Service\Statement as ExtendedStatementService;
 use API\Extensions\ExtendedQuery\View\V10\ProjectedStatement as ProjectedStatementView;
 
-class ExtendedQuery extends Resource
+class ExtendedQuery extends Controller
 {
     /**
      * @var ExtendedStatementService
@@ -57,7 +57,7 @@ class ExtendedQuery extends Resource
 
         $view = $view->render($documentResult);
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     /**
@@ -78,14 +78,14 @@ class ExtendedQuery extends Resource
 
         $view = $view->render($documentResult);
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         // Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,HEAD,GET,OPTIONS'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

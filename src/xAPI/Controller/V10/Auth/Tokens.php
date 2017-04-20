@@ -22,13 +22,13 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Auth;
+namespace API\Controller\V10\Auth;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Auth\Basic as BasicTokenService;
 use API\View\V10\BasicAuth\AccessToken as AccessTokenView;
 
-class Tokens extends Resource
+class Tokens extends Controller
 {
     /**
      * @var \API\Service\AccessToken
@@ -59,7 +59,7 @@ class Tokens extends Resource
 
         $view = $view->render();
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function post()
@@ -78,7 +78,7 @@ class Tokens extends Resource
 
         $view = $view->render($accessTokenDocument);
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function put()
@@ -97,7 +97,7 @@ class Tokens extends Resource
 
         $view = $view->render();
 
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function delete()
@@ -111,14 +111,14 @@ class Tokens extends Resource
 
         $this->accessTokenService->accessTokenDelete();
 
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

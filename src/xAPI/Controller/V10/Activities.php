@@ -22,13 +22,13 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10;
+namespace API\Controller\V10;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Activity as ActivityService;
 use API\View\V10\Activity as ActivityView;
 
-class Activities extends Resource
+class Activities extends Controller
 {
     /**
      * @var \API\Service\Activity
@@ -55,14 +55,14 @@ class Activities extends Resource
         $view = new ActivityView(['service' => $this->activityService]);
 
         $view = $view->renderGetSingle();
-        return $this->jsonResponse(Resource::STATUS_OK, $view);
+        return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

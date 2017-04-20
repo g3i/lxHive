@@ -28,9 +28,6 @@
 
 namespace API\Storage\Adapter\Mongo;
 
-use FieldType;
-use Exception;
-
 interface ExpressionInterface
 {
     /**

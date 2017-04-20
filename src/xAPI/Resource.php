@@ -24,12 +24,12 @@
 
 namespace API;
 
-use API\Resource\Error as Error;
+use API\Controller\Error as Error;
 use API\View\Error as ErrorView;
 use Psr\Http\Message\ResponseInterface;
 use API\Config;
 
-abstract class Resource
+abstract class Controller
 {
     use BaseTrait;
 
@@ -209,9 +209,9 @@ abstract class Resource
     {
         $versionNamespace = $version->generateClassNamespace();
         if (null !== $subResource) {
-            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
+            $class = __NAMESPACE__.'\\Controller\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
         } else {
-            $class = __NAMESPACE__.'\\Resource\\'.$versionNamespace.'\\'.ucfirst($resource);
+            $class = __NAMESPACE__.'\\Controller\\'.$versionNamespace.'\\'.ucfirst($resource);
         }
 
         if (!class_exists($class)) {

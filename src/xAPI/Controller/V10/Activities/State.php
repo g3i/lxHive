@@ -22,13 +22,13 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Activities;
+namespace API\Controller\V10\Activities;
 
-use API\Resource;
+use API\Controller;
 use API\Service\ActivityState as ActivityStateService;
 use API\View\V10\ActivityState as ActivityStateView;
 
-class State extends Resource
+class State extends Controller
 {
     /**
      * @var \API\Service\ActivityState
@@ -62,10 +62,10 @@ class State extends Resource
 
         if ($this->activityStateService->getSingle()) {
             $view = $view->renderGetSingle();
-            Resource::response(Resource::STATUS_OK, $view);
+            Controller::response(Controller::STATUS_OK, $view);
         } else {
             $view = $view->renderGet();
-            return $this->jsonResponse(Resource::STATUS_OK, $view);
+            return $this->jsonResponse(Controller::STATUS_OK, $view);
         }
     }
 
@@ -82,7 +82,7 @@ class State extends Resource
         $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function post()
@@ -98,7 +98,7 @@ class State extends Resource
         $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function delete()
@@ -114,14 +114,14 @@ class State extends Resource
         $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
-        return $this->response(Resource::STATUS_NO_CONTENT);
+        return $this->response(Controller::STATUS_NO_CONTENT);
     }
 
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,PUT,GET,DELETE'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

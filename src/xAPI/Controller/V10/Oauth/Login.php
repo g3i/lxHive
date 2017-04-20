@@ -22,15 +22,15 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Resource\V10\Oauth;
+namespace API\Controller\V10\Oauth;
 
-use API\Resource;
+use API\Controller;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\User as UserService;
 use API\View\V10\OAuth\Login as LoginView;
 use API\Util\OAuth;
 
-class Login extends Resource
+class Login extends Controller
 {
     /**
      * @var \API\Service\Auth\OAuth
@@ -66,14 +66,14 @@ class Login extends Resource
 
             $view = $view->renderGet();
 
-            Resource::response(Resource::STATUS_OK, $view);
+            Controller::response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to authorization
             $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Resource::response(Resource::STATUS_FOUND);
+            Controller::response(Controller::STATUS_FOUND);
         }
     }
 
@@ -90,11 +90,11 @@ class Login extends Resource
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Resource::response(Resource::STATUS_FOUND);
+            Controller::response(Controller::STATUS_FOUND);
         } catch (\Exception $e) {
             $view = new LoginView(['service' => $this->userService]);
             $view = $view->renderGet();
-            Resource::response(Resource::STATUS_UNAUTHORIZED, $view);
+            Controller::response(Controller::STATUS_UNAUTHORIZED, $view);
         }
     }
 
@@ -102,7 +102,7 @@ class Login extends Resource
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'POST,GET'));
-        return $this->response(Resource::STATUS_OK);
+        return $this->response(Controller::STATUS_OK);
     }
 
     /**

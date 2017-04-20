@@ -26,9 +26,8 @@ namespace API;
 
 use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
-use API\Resource;
+use API\Controller;
 use League\Url\Url;
-use API\Bootstrap;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
@@ -36,9 +35,10 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
-use Slim\Container;
+use Pimple\Container;
+use Slim\DefaultServicesProvider;
 use Slim\App as SlimApp;
-use API\Resource\Error;
+use API\Controller\Error;
 use API\Config;
 use API\Console\Application as CliApp;
 
@@ -112,7 +112,7 @@ class Bootstrap
         $config = Config::factory($config);
 
         // 2. Create default container
-        $container = new \Slim\Container();
+        $container = new Container();
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
@@ -129,12 +129,36 @@ class Bootstrap
         return $container;
     }
 
+    // Note: the current web container is dependant on Slim (but not the generic one)
     public function initWebContainer($container = null)
     {
         $appRoot = realpath(__DIR__.'/../../');
         $container = $this->initGenericContainer($container);
 
-        // 4. Insert URL object
+        // 4. Set up Slim services
+        /* 
+            * Slim\App expects a container that implements Interop\Container\ContainerInterface
+            * with these service keys configured and ready for use:
+            *
+            *  - settings: an array or instance of \ArrayAccess
+            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
+            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
+            *  - response: an instance of \Psr\Http\Message\ResponseInterface
+            *  - router: an instance of \Slim\Interfaces\RouterInterface
+            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
+            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
+            *  - notFoundHandler: a callable with the signature: function($request, $response)
+            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
+            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+        */
+        $slimSettings = Config::get(['slim', 'settings']);
+        // Slim *requires* a 'settings' key in the container, no way to override this (so that Slim would use our Config class directly)
+        $container['settings'] = $slimSettings;
+        // Use Slim's default service provide to provide the required services
+        $slimDefaultServiceProvider = new DefaultServicesProvider();
+        $slimDefaultServiceProvider->register($this);
+
+        // 5. Insert URL object
         // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
@@ -234,7 +258,7 @@ class Bootstrap
                 }
 
                 if (null === $token) {
-                    throw new \Exception('Credentials invalid!', Resource::STATUS_UNAUTHORIZED);
+                    throw new \Exception('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
                 }
 
                 return $token;
@@ -262,16 +286,16 @@ class Bootstrap
             }
 
             if (!$versionString) {
-                throw new \Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
+                throw new \Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
             } else {
                 try {
                     $version = Versioning::fromString($versionString);
                 } catch (\InvalidArgumentException $e) {
-                    throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
-                    throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 return $version;
@@ -390,91 +414,91 @@ class Bootstrap
 
         // About
         $app->map(['GET', 'OPTIONS'], '/about', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'about');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'about');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Activities
         $app->map(['GET', 'OPTIONS'], '/activities', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // ActivitiesProfile
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/profile', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'profile');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities', 'profile');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // ActivitiesState
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/state', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'state');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities', 'state');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Agents
         $app->map(['GET', 'OPTIONS'], '/agents', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AgentsProfile
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/profile', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'profile');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents', 'profile');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AgentsState
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/state', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'state');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents', 'state');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Attachments
         $app->map(['GET', 'OPTIONS'], '/attachments', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'attachments');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'attachments');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AuthTokens
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/auth/tokens', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'auth', 'tokens');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'auth', 'tokens');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthAuthorize
         $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/authorize', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'authorize');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'authorize');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthLogin
         $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/login', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'login');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'login');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthToken
         $app->map(['POST', 'OPTIONS'], '/oauth/token', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'token');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'token');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Statements
         $app->map(['GET', 'PUT', 'POST', 'OPTIONS'], '/statements', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'statements');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'statements');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
