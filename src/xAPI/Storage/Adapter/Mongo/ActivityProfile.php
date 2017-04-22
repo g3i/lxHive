@@ -27,6 +27,9 @@ namespace API\Storage\Adapter\Mongo;
 use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Query\DocumentResult;
+use API\Storage\Adapter\Base;
+use API\Storage\Query\ActivityProfileInterface;
+use API\Util;
 
 class ActivityProfile extends Base implements ActivityProfileInterface
 {

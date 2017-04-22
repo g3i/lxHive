@@ -31,6 +31,8 @@ use API\Service\User as UserService;
 use API\Util;
 use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
+use API\Util\Collection;
+
 
 class Basic extends Service implements AuthInterface
 {

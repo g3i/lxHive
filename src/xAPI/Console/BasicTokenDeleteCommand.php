@@ -30,6 +30,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use API\Admin\Auth;
+use API\Service\Basic as AccessTokenService;
 
 class BasicTokenDeleteCommand extends Command
 {

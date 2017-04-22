@@ -44,6 +44,7 @@ namespace API\Document;
 
 use Ramsey\Uuid\Uuid;
 use League\Url\Url;
+use API\Controller;
 
 class Statement extends Base implements DocumentInterface
 {
