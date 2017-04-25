@@ -58,12 +58,25 @@ class Bootstrap
     /**
      * @vars Bootstrap Mode
      */
-    const Web     = 0;
+    const None     = 0;
+    const Web     = 1;
     const Console = 1;
     const Testing = 2;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
+
+    private static $mode = 0;
+
+    /**
+     * constuructor
+     * Sets bootstrap mode
+     * @param  int $mode Bootstrap mode constant
+     */
+    private function __costruct($mode)
+    {
+        self::$mode = ($mode) ? $mode : self::None; // casting [0, null, false] to self::None
+    }
 
     /**
      * Factory for container contained within bootstrap, which is a base for various initializations
@@ -80,9 +93,11 @@ class Bootstrap
             }
         }
 
-        switch ($mode) {
+        $bootstrap = new self($mode);
+
+        switch (self::$mode) {
             case self::Web: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initWebContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -90,7 +105,7 @@ class Bootstrap
                 break;
             }
             case self::Console: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initCliContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -98,10 +113,14 @@ class Bootstrap
                 break;
             }
             case self::Testing: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            case self::None: {
                 return $bootstrap;
                 break;
             }
@@ -112,24 +131,63 @@ class Bootstrap
     }
 
     /**
+     * Returns the current bootstrap mode
+     * See mode constants.
+     * Check if the Bootstrap was initialized
+     *      if(!Bootstrap::mode()) {
+     *          ...
+     *      }
+     * @return int current mode
+     */
+    public static function mode()
+    {
+        return self::$mode;
+    }
+
+    /**
+     * Initialize default configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
+    public function initConfig()
+    {
+        // defaults
+        $defaults = [
+            'appRoot' => realpath(__DIR__.'/../../')
+        ];
+
+        Config::factory($defaults);
+
+        // load and merge config
+        $yml = '/src/xAPI/Config/Config.yml';
+        $contents = @file_get_contents($defaults['appRoot'].$yml);
+
+        if (!$contents) {
+            if(!self::$mode){
+                return;
+            }
+            $msg = ($contents === false) ? 'file not found' : 'file is empty';
+            throw new \RuntimeException('Bootstrap: Could not load '.$yml.' ['.$msg.']');
+        }
+
+        $yamlParser = new YamlParser();
+        $config = $yamlParser->parse($contents);
+
+        // Load and merge settings based on mode
+        $yml = 'src/xAPI/Config/Config.' . $config['mode'] . '.yml';
+        $contents = file_get_contents($defaults['appRoot'].$yml);
+        if ($contents) {
+            $config = array_merge($config, $yamlParser->parse($contents));
+        }
+
+        Config::merge($config);
+    }
+
+    /**
      * Initialize default configuration and load services
      * @return \Psr\Container\ContainerInterface service container
      */
     public function initGenericContainer()
     {
-        // Get file paths of project and config
-        $appRoot = realpath(__DIR__.'/../../');
-        $yamlParser = new YamlParser();
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
-
-        // 0. Use settings from Config.yml
-        $config = $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.yml'));
-
-        // 1. Load more settings based on mode
-        $config = array_merge($config, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml')));
-
-        $config = Config::factory($config);
-
         // 2. Create default container
         $container = new Container();
 
