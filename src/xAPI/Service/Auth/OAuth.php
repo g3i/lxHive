@@ -31,6 +31,7 @@ use API\Util;
 use League\Url\Url;
 use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
+use API\Util\Collection;
 
 class OAuth extends Service implements AuthInterface
 {

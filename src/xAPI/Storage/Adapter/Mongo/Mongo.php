@@ -205,7 +205,7 @@ class Mongo implements AdapterInterface
 
         // Older server versions may return a float
         if (!isset($result->n) || ! (is_integer($result->n) || is_float($result->n))) {
-            throw new Exception('Count command did not return a numeric "n" value');
+            throw new \Exception('Count command did not return a numeric "n" value');
         }
         return (integer) $result->n;
     }

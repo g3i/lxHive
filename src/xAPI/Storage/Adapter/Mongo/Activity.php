@@ -27,6 +27,7 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\ActivityInterface;
 use API\Controller;
 use API\HttpException as Exception;
+use API\Storage\Adapter\Base;
 
 class Activity extends Base implements ActivityInterface
 {

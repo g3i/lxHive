@@ -480,15 +480,15 @@ class Expression implements ExpressionInterface
      */
     public static function convertToArray($mixed)
     {
-        // Fet expression from callable
+        // Get expression from callable
         if (is_callable($mixed)) {
             $callable = $mixed;
             $mixed = new self();
             call_user_func($callable, $mixed);
         }
 
-        // get expression array
-        if($mixed instanceof ArrayableInterface && $mixed instanceof self) {
+        // Get expression array
+        if($mixed instanceof self) {
             $mixed = $mixed->toArray();
         } elseif(!is_array($mixed)) {
             throw new Exception('Mixed must be instance of \Expression');

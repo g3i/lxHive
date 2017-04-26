@@ -28,6 +28,7 @@ use API\Service;
 use API\Controller;
 use API\Util\OAuth;
 use API\HttpException as Exception;
+use API\Util\Collection;
 
 class User extends Service
 {

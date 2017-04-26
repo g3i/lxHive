@@ -26,6 +26,7 @@ namespace API\Controller\V10;
 
 use API\Controller;
 use API\View\V10\Agent as AgentView;
+use API\Util\Collection;
 
 class Agents extends Controller
 {
