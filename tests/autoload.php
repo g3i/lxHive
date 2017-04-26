@@ -21,7 +21,6 @@
  * file that was distributed with this source code.
  */
 
-
 error_reporting(E_ALL);
 
 $loader = require __DIR__.'/../vendor/autoload.php';
