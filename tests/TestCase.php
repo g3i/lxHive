@@ -22,6 +22,7 @@
  * file that was distributed with this source code.
  */
 namespace Tests;
+
 use PHPUnit_Framework_TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase

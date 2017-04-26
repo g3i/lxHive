@@ -15,7 +15,9 @@ class ExampleTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public static function check(){
-    echo 'test';die();
+    public static function check()
+    {
+        echo 'test';
+        die();
     }
 }
