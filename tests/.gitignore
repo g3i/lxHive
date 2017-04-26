@@ -1,3 +1,7 @@
-# Ignore external bdd suites
-bdd/*
-!bdd/.gitkeep
+Config.php
+
+src/*
+!src/xAPI/.gitkeep
+
+Unit/*
+!Unit/ExampleTest.php

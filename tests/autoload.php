@@ -21,8 +21,9 @@
  * file that was distributed with this source code.
  */
 
-// require App autoloader
-$autoloader = require __DIR__.'/../../vendor/autoload.php';
 
-// Register test classes
-$autoloader->addPsr4('Tests\\', __DIR__.'/');
+error_reporting(E_ALL);
+
+$loader = require __DIR__.'/../vendor/autoload.php';
+$loader->setPsr4('Tests\\', __DIR__);
+$loader->addPsr4('Tests\\API\\', __DIR__.'/src/xAPI');
