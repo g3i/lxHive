@@ -73,7 +73,7 @@ class Bootstrap
      * Sets bootstrap mode
      * @param  int $mode Bootstrap mode constant
      */
-    private function __costruct($mode)
+    private function __construct($mode)
     {
         self::$mode = ($mode) ? $mode : self::None; // casting [0, null, false] to self::None
     }
