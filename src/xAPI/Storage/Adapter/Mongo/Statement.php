@@ -381,7 +381,7 @@ class Statement extends Base implements StatementInterface
         }
 
         $statementDocument = new \API\Document\Statement();
-        // Uncomment this!
+        // TODO : Uncomment this!
         // Overwrite authority - unless it's a super token and manual authority is set
         //if (!($this->getAccessToken()->isSuperToken() && isset($statementObject['authority'])) || !isset($statementObject['authority'])) {
         //    $statementObject['authority'] = $this->getAccessToken()->generateAuthority();
