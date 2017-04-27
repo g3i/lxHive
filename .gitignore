@@ -13,7 +13,7 @@ cache/*
 
 # doc generator
 sami.phar
-SamiConfig.php
+docs/*
 
 # development
 htrouter.phar

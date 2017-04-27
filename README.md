@@ -114,10 +114,13 @@ Default file storage structure:
     ...
 ```
 
-
 ## Documentation
 
 See the Wiki and the `docs` directory for more detailed documentation.
+
+Compile code documentation:
+
+run `sh generate-docs.sh` from project root (file must be executable)
 
 ## Contributors
 

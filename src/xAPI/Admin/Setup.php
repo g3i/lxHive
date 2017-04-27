@@ -25,9 +25,10 @@
 namespace API\Admin;
 
 use Symfony\Component\Yaml\Yaml;
-use API\Bootstrap;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Storage\Adapter\Mongo as Mongo;
+
+use API\Bootstrap;
 use API\Config;
 
 /**
@@ -50,7 +51,11 @@ class Setup
      */
     public function __construct()
     {
-        $this->configDir = __DIR__.'/../Config';
+        if (!Bootstrap::mode()) {
+            $bootstrap = Bootstrap::factory(Bootstrap::None);
+            $config = $bootstrap->initConfig();
+        }
+        $this->configDir = Config::get('appRoot').'/src/xAPI/Config/';
     }
 
     /**
@@ -113,12 +118,37 @@ class Setup
     public function initializeAuthScopes()
     {
         //TODO this method will be obsolete if we remove the authScopes collection
-        $bootstrapper = new Bootstrap();
-        $container = $bootstrapper->initCliContainer();
+        $bootstrap = Bootstrap::factory(Bootstrap::Console);
+        $container = $bootstrap->initCliContainer();
         $oAuthService = new OAuthService($container);
 
         foreach (Config::get(['xAPI', 'supported_auth_scopes']) as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }
+
+    /**
+     * Download a remote file
+     * @param string $uri
+     * @param string $file path tho file
+     * @param string $mode fopen() mode, @see http://php.net/manual/en/function.fopen.php
+     * @return bool
+     * @throws \Exception on curl error
+     */
+    private function download($uri, $file, $mode = 'w+')
+    {
+        $ch = curl_init($uri);
+        $fp = fopen($file, $mode); //force latest
+        curl_setopt($ch, \CURLOPT_FILE, $fp);
+        curl_setopt($ch, \CURLOPT_HEADER, 0);
+
+        $success = curl_exec($ch);
+        if ($success === false) {
+            throw new \Exception( 'Setup::download returns curl error: ' . curl_error($ch));
+        }
+        curl_close($ch);
+        $success = fclose($fp);
+        return success;
+    }
+
 }
