@@ -30,7 +30,7 @@ class HttpException extends \Exception
     /**
      * Prepares a json response exception.
      *
-     * @see API/Resource::error()
+     * @see API/Controller::error()
      *
      * @param string            $message
      * @param int               $statusCode valid httpd status code

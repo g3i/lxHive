@@ -25,11 +25,20 @@
 namespace API\Admin;
 
 use API\Service\User as UserService;
+use API\Admin;
 
-class User extends Base
+/**
+ * User managment
+ */
+class User extends Admin
 {
+    /**
+     * Fetch all permissions from Mongo
+     * @return array collection of permissions with their name as key
+     */
     public function fetchAvailablePermissions()
     {
+        //TODO this method will be obsolete if we remove the authScopes collection
         $userService = new UserService($this->getContainer());
         $documentResult = $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
@@ -40,6 +49,13 @@ class User extends Base
         return $permissionsDictionary;
     }
 
+    /**
+     * Add a user record
+     * @param string $email
+     * @param string $password
+     * @param array $selectedPermissions selected scope permission records
+     * @return stdClass Mongo user record
+     */
     public function addUser($email, $password, $selectedPermissions)
     {
         $userService = new UserService($this->getContainer());
@@ -47,7 +63,11 @@ class User extends Base
 
         return $user;
     }
-
+    /**
+     * Fetch all user email addresses
+     * TODO, make scalable (search)
+     * @return array collection of user records with email as key
+     */
     public function fetchAllUserEmails()
     {
         $userService = new UserService($this->getContainer());

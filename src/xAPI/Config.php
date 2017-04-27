@@ -55,6 +55,20 @@ class Config
     }
 
     /**
+     * Merege collection of items
+     *
+     * @param array $data collection (assoziative array) of items
+     * @throws \Exception if key alredy exists
+     * @see sConfig::set()
+     */
+    public static function merge($data = [])
+    {
+        foreach($data as $key => $val){
+            self::set($key, $value);
+        }
+    }
+
+    /**
      * Get collection item
      * @param  string $key The key to get
      * @return mixed The value at this key

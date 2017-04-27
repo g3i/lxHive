@@ -26,6 +26,9 @@ namespace API\Parser;
 
 use Psr\Http\Message\RequestInterface;
 
+/**
+ * HTTP request parser
+ */
 class PsrRequest
 {
     protected $parameters;
@@ -34,14 +37,23 @@ class PsrRequest
 
     protected $payload;
 
+    /**
+     * constructor
+     * @param RequestInterface $request
+     * @return void
+     */
     public function __construct(RequestInterface $request)
     {
         $this->parseRequest($request);
     }
 
+    /**
+     * Parse http request
+     * @param  RequestInterface $request
+     * @return void
+     */
     public function parseRequest($request)
     {
-
         if ($this->isMultipart($request)) {
             $this->parts = $this->parseMultipartRequest($request);
         } else {
@@ -49,22 +61,32 @@ class PsrRequest
         }
     }
 
+    /**
+     * Checks if a request is a multipart request
+     * @param  RequestInterface $request
+     * @return boolean
+     */
     private function isMultipart($request)
     {
         return (strpos($request->getMediaType(), 'multipart/') === 0);
     }
 
+    /**
+     * Strips and parses multipart request body
+     * @param  RequestInterface $request
+     * @return array of parsed request body parts
+     */
     private function parseMultipartRequest($request)
     {
         if (false === stripos($request->getContentType(), ';')) {
             throw new \LogicException('Content-Type does not contain a \';\'');
         }
-        
+
         $boundary = $request->getMediaTypeParams()['boundary'];
-        
+
         // Split bodies by the boundary
         $bodies = explode('--' . $boundary, (string)$request->getBody());
-        
+
         // RFC says, to ignore preamble and epilogue.
         $preamble = array_shift($bodies);
         $epilogue = array_pop($bodies);
@@ -137,6 +159,11 @@ class PsrRequest
         return $requestParts;
     }
 
+    /**
+     * Parses request body
+     * @param  RequestInterface $request
+     * @return array|object of parsed request body
+     */
     private function parseSingleRequest($request, $reparseQuery = false)
     {
         $parserResult = new ParserResult();
@@ -170,8 +197,7 @@ class PsrRequest
     }
 
     /**
-     * Get the main part.
-     *
+     * Get main part of request
      * @return ParserResult an object or array, given the payload
      */
     public function getData()
@@ -180,9 +206,8 @@ class PsrRequest
     }
 
     /**
-     * Get the additional parts.
-     *
-     * @return \Traversable<ParserResult> an array of the parts
+     * Get additional parts (attachments) of request.
+     * @return array of ParserResult
      */
     public function getAttachments()
     {
@@ -193,9 +218,8 @@ class PsrRequest
     }
 
     /**
-     * Get the parts of the request.
-     *
-     * @return \Traversable<ParserResult> an array of the parts
+     * Get all parts of the request.
+     * @return array of ParserResult
      */
     public function getParts()
     {

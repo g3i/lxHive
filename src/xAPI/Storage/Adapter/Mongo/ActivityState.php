@@ -27,14 +27,15 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\ActivityStateInterface;
 use API\Storage\Query\DocumentResult;
 use API\Util;
-use API\Resource;
+use API\Controller;
 use API\HttpException as Exception;
+use API\Storage\Provider;
 
-class ActivityState extends Base implements ActivityStateInterface
+class ActivityState extends Provider implements ActivityStateInterface
 {
     const COLLECTION_NAME = 'activityStates';
 
-    public function getActivityStatesFiltered($parameters)
+    public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
@@ -97,7 +98,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $documentResult;
     }
 
-    public function postActivityState($parameters, $stateObject)
+    public function post($parameters, $stateObject)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
@@ -172,7 +173,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $activityStateDocument;
     }
 
-    public function putActivityState($parameters, $stateObject)
+    public function put($parameters, $stateObject)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
@@ -222,7 +223,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $activityStateDocument;
     }
 
-    public function deleteActivityState($parameters)
+    public function delete($parameters)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
@@ -252,24 +253,24 @@ class ActivityState extends Base implements ActivityStateInterface
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
+            throw new Exception('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
-            throw new Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
         if ($contentType !== 'application/json') {
-            throw new Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

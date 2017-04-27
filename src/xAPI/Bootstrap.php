@@ -26,9 +26,8 @@ namespace API;
 
 use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
-use API\Resource;
+use API\Controller;
 use League\Url\Url;
-use API\Bootstrap;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
@@ -36,36 +35,69 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
-use Slim\Container;
-use Slim\App;
-use API\Resource\Error;
+use Pimple\Container;
+use Slim\DefaultServicesProvider;
+use Slim\App as SlimApp;
+use API\Controller\Error;
 use API\Config;
-use API\Console\Application;
+use API\Console\Application as CliApp;
 
+/**
+ * Bootstrap lxHive
+ *
+ * Bootstrap routines fall into two steps:
+ *      1 factory (initialization)
+ *      2 boot application
+ * Example for booting a Web App:
+ *      $bootstrap = \API\Bootstrap::factory(\API\Bootstrap::Web);
+ *      $app = $bootstrap->bootWebApp();
+ * An app can only be bootstraped once, the only Exception being mode Bootstap::Testing
+ */
 class Bootstrap
 {
-    const Web     = 0;
+    /**
+     * @vars Bootstrap Mode
+     */
+    const None     = 0;
+    const Web     = 1;
     const Console = 1;
     const Testing = 2;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
 
+    private static $mode = 0;
+
     /**
-     * Factory for container contained within bootstrap, which is a base for booting everything else
-     * It's basically sugar around the init methods
-     * @param  int $mode The mode enum
+     * constuructor
+     * Sets bootstrap mode
+     * @param  int $mode Bootstrap mode constant
+     */
+    private function __construct($mode)
+    {
+        self::$mode = ($mode) ? $mode : self::None; // casting [0, null, false] to self::None
+    }
+
+    /**
+     * Factory for container contained within bootstrap, which is a base for various initializations
+     *
+     * @param  int $mode Bootstrap mode constant
      * @return void
+     * @throws \RuntimeException
      */
     public static function factory($mode)
     {
         if (self::$containerInstantiated) {
-            throw new \InvalidArgumentException('You can only instantiate the Bootstrapper once!');
+            if ($mode !== self::Testing) {
+                throw new \RuntimeException('You can only instantiate the Bootstrapper once!');
+            }
         }
 
-        switch ($mode) {
+        $bootstrap = new self($mode);
+
+        switch (self::$mode) {
             case self::Web: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initWebContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -73,7 +105,7 @@ class Bootstrap
                 break;
             }
             case self::Console: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initCliContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -81,10 +113,14 @@ class Bootstrap
                 break;
             }
             case self::Testing: {
-                $bootstrap = new self();
+                $config = $bootstrap->initConfig();
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            case self::None: {
                 return $bootstrap;
                 break;
             }
@@ -94,28 +130,71 @@ class Bootstrap
         }
     }
 
+    /**
+     * Returns the current bootstrap mode
+     * See mode constants.
+     * Check if the Bootstrap was initialized
+     *      if(!Bootstrap::mode()) {
+     *          ...
+     *      }
+     * @return int current mode
+     */
+    public static function mode()
+    {
+        return self::$mode;
+    }
+
+    /**
+     * Initialize default configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
+    public function initConfig()
+    {
+        // defaults
+        $defaults = [
+            'appRoot' => realpath(__DIR__.'/../../')
+        ];
+
+        Config::factory($defaults);
+
+        // load and merge config
+        $yml = '/src/xAPI/Config/Config.yml';
+        $contents = @file_get_contents($defaults['appRoot'].$yml);
+
+        if (!$contents) {
+            if(!self::$mode){
+                return;
+            }
+            $msg = ($contents === false) ? 'file not found' : 'file is empty';
+            throw new \RuntimeException('Bootstrap: Could not load '.$yml.' ['.$msg.']');
+        }
+
+        $yamlParser = new YamlParser();
+        $config = $yamlParser->parse($contents);
+
+        // Load and merge settings based on mode
+        $yml = 'src/xAPI/Config/Config.' . $config['mode'] . '.yml';
+        $contents = file_get_contents($defaults['appRoot'].$yml);
+        if ($contents) {
+            $config = array_merge($config, $yamlParser->parse($contents));
+        }
+
+        Config::merge($config);
+    }
+
+    /**
+     * Initialize default configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initGenericContainer()
     {
-        // Get file paths of project and config
-        $appRoot = realpath(__DIR__.'/../../');
-        $yamlParser = new YamlParser();
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
-
-        // 0. Use settings from Config.yml
-        $config = $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.yml'));
-
-        // 1. Load more settings based on mode
-        $config = array_merge($config, $yamlParser->parse($filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml')));
-
-        $config = Config::factory($config);
-
         // 2. Create default container
-        $container = new \Slim\Container();
+        $container = new Container();
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
             $storageInUse = Config::get(['storage', 'in_use']);
-            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
+            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new \InvalidArgumentException('Storage type selected in config is invalid!');
             }
@@ -127,18 +206,45 @@ class Bootstrap
         return $container;
     }
 
+    /**
+     * Initialize  web mode configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initWebContainer($container = null)
     {
         $appRoot = realpath(__DIR__.'/../../');
         $container = $this->initGenericContainer($container);
 
-        // 4. Insert URL object
+        // 4. Set up Slim services
+        /*
+            * Slim\App expects a container that implements Interop\Container\ContainerInterface
+            * with these service keys configured and ready for use:
+            *
+            *  - settings: an array or instance of \ArrayAccess
+            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
+            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
+            *  - response: an instance of \Psr\Http\Message\ResponseInterface
+            *  - router: an instance of \Slim\Interfaces\RouterInterface
+            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
+            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
+            *  - notFoundHandler: a callable with the signature: function($request, $response)
+            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
+            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+        */
+        $slimSettings = Config::get(['slim', 'settings']);
+        // Slim *requires* a 'settings' key in the container, no way to override this (so that Slim would use our Config class directly)
+        $container['settings'] = $slimSettings;
+        // Use Slim's default service provide to provide the required services
+        $slimDefaultServiceProvider = new DefaultServicesProvider();
+        $slimDefaultServiceProvider->register($this);
+
+        // 5. Insert URL object
         // TODO: Remove this soon - use PSR-7 request's URI object
         $container['url'] = Url::createFromServer($_SERVER);
 
         $handlerConfig = Config::get(['log', 'handlers']);
         $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
-        
+
         if (null === $handlerConfig) {
             $handlerConfig = ['ErrorLogHandler'];
         }
@@ -232,7 +338,7 @@ class Bootstrap
                 }
 
                 if (null === $token) {
-                    throw new \Exception('Credentials invalid!', Resource::STATUS_UNAUTHORIZED);
+                    throw new \Exception('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
                 }
 
                 return $token;
@@ -260,16 +366,16 @@ class Bootstrap
             }
 
             if (!$versionString) {
-                throw new \Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
+                throw new \Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
             } else {
                 try {
                     $version = Versioning::fromString($versionString);
                 } catch (\InvalidArgumentException $e) {
-                    throw new \Exception('X-Experience-API-Version header invalid.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
-                    throw new \Exception('X-Experience-API-Version is not supported.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 return $version;
@@ -279,6 +385,10 @@ class Bootstrap
         return $container;
     }
 
+    /**
+     * Initialize php-cli configuration and load services
+     * @return \Psr\Container\ContainerInterface service container
+     */
     public function initCliContainer($container = null)
     {
         $container = $this->initGenericContainer($container);
@@ -296,6 +406,10 @@ class Bootstrap
         return $container;
     }
 
+    /**
+     * Boot web application (Slim App), including all routes
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function bootWebApp()
     {
         if (!self::$containerInstantiated) {
@@ -304,7 +418,7 @@ class Bootstrap
 
         $container = self::$containerInstance;
 
-        $app = new App($container);
+        $app = new SlimApp($container);
 
         // CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
@@ -319,7 +433,7 @@ class Bootstrap
                     // Content is the only valid body parameter...everything else are either headers or query parameters
                     $string = '';
                 }
-                
+
                 // Remove body, add headers
                 $parameters->remove('content');
                 // TODO: Allow more headers here
@@ -381,98 +495,98 @@ class Bootstrap
             }
         }
 
-        /*
-            ROUTING SECTION
-            TODO: Move this chunk of code to a separate class like API\Router in future
-        */
+        ////
+        // ROUTING
+        // TODO: Move this chunk of code to a separate class like API\Router in future
+        ////
 
         // About
         $app->map(['GET', 'OPTIONS'], '/about', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'about');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'about');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Activities
         $app->map(['GET', 'OPTIONS'], '/activities', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // ActivitiesProfile
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/profile', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'profile');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities', 'profile');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // ActivitiesState
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/activities/state', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'activities', 'state');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'activities', 'state');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Agents
         $app->map(['GET', 'OPTIONS'], '/agents', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AgentsProfile
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/profile', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'profile');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents', 'profile');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AgentsState
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/agents/state', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'agents', 'state');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'agents', 'state');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Attachments
         $app->map(['GET', 'OPTIONS'], '/attachments', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'attachments');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'attachments');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // AuthTokens
         $app->map(['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], '/auth/tokens', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'auth', 'tokens');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'auth', 'tokens');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthAuthorize
         $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/authorize', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'authorize');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'authorize');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthLogin
         $app->map(['GET', 'POST', 'OPTIONS'], '/oauth/login', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'login');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'login');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // OAuthToken
         $app->map(['POST', 'OPTIONS'], '/oauth/token', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'oauth', 'token');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'oauth', 'token');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
 
         // Statements
         $app->map(['GET', 'PUT', 'POST', 'OPTIONS'], '/statements', function ($request, $response, $args) use ($container) {
-            $resource = Resource::load($container['version'], $container, $request, $response, 'statements');
+            $resource = Controller::load($container['version'], $container, $request, $response, 'statements');
             $method = strtolower($request->getMethod());
             return $resource->$method();
         });
@@ -480,19 +594,22 @@ class Bootstrap
         return $app;
     }
 
+    /**
+     * Boot php-cli application (Symfony Console), including all commands
+     * @return Symfony\Component\Console\Application instance
+     */
     public function bootCliApp()
     {
-        $app = new Application(self::$containerInstance);
+        $app = new CliApp(self::$containerInstance);
         return $app;
     }
 
     /**
-     * Gets the value of id.
-     *
-     * @return mixed
+     * Empty placeholder for unit testing
+     * @return void
      */
-    public function getId()
+    public function bootTest()
     {
-        return $this->id;
+        // nothing
     }
 }

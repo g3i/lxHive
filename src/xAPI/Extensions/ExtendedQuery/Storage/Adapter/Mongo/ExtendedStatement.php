@@ -25,13 +25,21 @@
 namespace API\Extensions\ExtendedQuery\Storage\Adapter\Mongo;
 
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Storage\Query\StatementResult;
-use API\Resource;
+use API\Controller;
 use API\Config;
 
-class ExtendedStatement extends Base implements ExtendedStatementInterface
+/**
+ * Mongo Adaptor for this extension
+ */
+class ExtendedStatement extends Provider implements ExtendedStatementInterface
 {
+    /**
+     * Query statements collection
+     * @param  array $parameters hashmap of GET params
+     * @return \API\Storage\Query\StatementInterface collection of statement documents
+     */
     public function extendedQuery($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -63,7 +71,7 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
             }
             foreach ($fields as $field => $value) {
                 if (strpos($field, 'statement.') !== 0) {
-                    throw new \Exception('Invalid projection parameters!.', Resource::STATUS_BAD_REQUEST);
+                    throw new \Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
                 }
             }
             $fields = ['_id' => 1] + $fields;
@@ -78,12 +86,12 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
 
         // Handle pagination
         if (isset($parameters['since_id'])) {
-            $id = new \MongoId($parameters['since_id']);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('since_id'));
             $expression->whereGreater('_id', $id);
         }
 
         if (isset($parameters['until_id'])) {
-            $id = new \MongoId($parameters['until_id']);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('until_id'));
             $expression->whereLess('_id', $id);
         }
 

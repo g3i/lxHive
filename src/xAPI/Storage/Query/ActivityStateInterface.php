@@ -26,11 +26,11 @@ namespace API\Storage\Query;
 
 interface ActivityStateInterface
 {
-    public function getActivityStatesFiltered($parameters);
+    public function get($parameters);
 
-    public function postActivityState($parameters, $stateObject);
+    public function post($parameters, $stateObject);
 
-    public function putActivityState($parameters, $stateObject);
+    public function put($parameters, $stateObject);
 
-    public function deleteActivityState($parameters);
+    public function delete($parameters);
 }

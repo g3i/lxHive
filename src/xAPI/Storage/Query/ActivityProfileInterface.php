@@ -26,11 +26,11 @@ namespace API\Storage\Query;
 
 interface ActivityProfileInterface
 {
-    public function getActivityProfilesFiltered($parameters);
+    public function get($parameters);
 
-    public function postActivityProfile($parameters, $profileObject);
+    public function post($parameters, $profileObject);
 
-    public function putActivityProfile($parameters, $profileObject);
+    public function put($parameters, $profileObject);
 
-    public function deleteActivityProfile($parameters);
+    public function delete($parameters);
 }

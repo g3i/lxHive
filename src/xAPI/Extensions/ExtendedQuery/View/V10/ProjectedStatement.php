@@ -26,8 +26,17 @@ namespace API\Extensions\ExtendedQuery\View\V10;
 
 use API\View;
 
+/**
+ * Statement view
+ * @see \API\View
+ */
 class ProjectedStatement extends View
 {
+    /**
+     * Render response view
+     * @param  \API\Storage\Query\StatementInterface $statementResult
+     * @return array hashmap of view properites, ready to be serialized into json
+     */
     public function render($statementResult)
     {
         $view = [];

@@ -24,7 +24,7 @@
 
 namespace API\Storage\Adapter\Mongo;
 
-use API\Resource;
+use API\Controller;
 use API\Storage\Query\StatementResult;
 use API\Storage\Query\StatementInterface;
 use API\Util;
@@ -348,7 +348,7 @@ class Statement extends Base implements StatementInterface
         $requestedStatement = $storage->findOne('statements', $expression);
 
         if (null === $requestedStatement) {
-            throw new \InvalidArgumentException('Requested statement does not exist!', Resource::STATUS_BAD_REQUEST);
+            throw new \InvalidArgumentException('Requested statement does not exist!', Controller::STATUS_BAD_REQUEST);
         }
 
         return $requestedStatement;
@@ -477,7 +477,7 @@ class Statement extends Base implements StatementInterface
 
         // Check statementId exists
         if (!$parameters->has('statementId')) {
-            throw new Exception('The statementId parameter is missing!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('The statementId parameter is missing!', Controller::STATUS_BAD_REQUEST);
         }
 
         $this->validateStatementId($parameters['statementId']);
@@ -501,7 +501,7 @@ class Statement extends Base implements StatementInterface
 
     public function delete($parameters)
     {
-        throw \InvalidArgumentException('Statements cannot be deleted, only voided!', Resource::STATUS_INTERNAL_SERVER_ERROR);
+        throw \InvalidArgumentException('Statements cannot be deleted, only voided!', Controller::STATUS_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -519,14 +519,14 @@ class Statement extends Base implements StatementInterface
         // Same - return 200
         if ($statementOne == $statementTwo) {
             // Mismatch - return 409 Conflict
-            throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Resource::STATUS_CONFLICT);
+            throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Controller::STATUS_CONFLICT);
         }
     }
 
     private function validateVoidedStatementNotVoiding($referencedStatement)
     {
         if ($referencedStatement->isVoiding()) {
-            throw new Exception('Voiding statements cannot be voided.', Resource::STATUS_CONFLICT);
+            throw new Exception('Voiding statements cannot be voided.', Controller::STATUS_CONFLICT);
         }
     }
 
@@ -534,14 +534,14 @@ class Statement extends Base implements StatementInterface
     {
         // Check statementId is acutally valid
         if (!Uuid::isValid($id)) {
-            throw new Exception('The provided statement ID is invalid!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('The provided statement ID is invalid!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateStatementIdMatch($statementIdOne, $statementIdTwo)
     {
         if ($statementIdOne !== $statementIdTwo) {
-            throw new Exception('Statement ID query parameter doesn\'t match the given statement property', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Statement ID query parameter doesn\'t match the given statement property', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -549,7 +549,7 @@ class Statement extends Base implements StatementInterface
     {
         $cursor = $cursor->toArray();
         if (empty($cursor)) {
-            throw new Exception('Statement does not exist.', Resource::STATUS_NOT_FOUND);
+            throw new Exception('Statement does not exist.', Controller::STATUS_NOT_FOUND);
         }
         return $cursor;
     }

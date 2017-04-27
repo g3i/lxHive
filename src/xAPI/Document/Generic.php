@@ -42,9 +42,9 @@
 
 namespace API\Document;
 
-use API\Validator;
+use API\Document;
 
-class Generic extends Base implements DocumentInterface
+class Generic extends Document
 {
 
 }

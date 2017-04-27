@@ -26,7 +26,7 @@ namespace API\Storage\Query;
 
 interface AttachmentInterface
 {
-    public function storeAttachment($hash, $contentType, $timestamp = null);
+    public function store($hash, $contentType, $timestamp = null);
 
     public function fetchMetadataBySha2($sha2);
 }

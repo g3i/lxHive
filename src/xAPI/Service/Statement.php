@@ -25,9 +25,9 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
 use API\HttpException as Exception;
 use API\Config;
+use API\Controller;
 
 class Statement extends Service
 {
@@ -76,7 +76,7 @@ class Statement extends Service
                 $hash = $attachment->getHeaders()['x-experience-api-hash'][0];
                 $contentType = $attachment->getHeaders()['content-type'][0];
 
-                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
+                $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
@@ -124,7 +124,7 @@ class Statement extends Service
                 $hash = $attachment->getHeaders()['X-Experience-API-Hash'];
                 $contentType = $part->getHeaders()['Content-Type'];
 
-                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
+                $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
@@ -149,7 +149,7 @@ class Statement extends Service
     {
         // TODO: Move header validation in json-schema as well
         if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
-            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

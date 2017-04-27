@@ -25,7 +25,7 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\OAuthInterface;
-use API\Resource;
+use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Adapter\Base;
 use API\Util;
@@ -42,9 +42,9 @@ class OAuth extends Base implements OAuthInterface
 
         $expiresDate = new \DateTime();
         $expiresDate->setTimestamp($expiresAt);
-        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
+        $accessTokenDocument->setExpiresAt(Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
+        $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
         //$accessTokenDocument->addRelation('user', $user);
         //$accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];
@@ -206,7 +206,7 @@ class OAuth extends Base implements OAuthInterface
     {
         if ($expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new Exception('Expired token.', Resource::STATUS_FORBIDDEN);
+                throw new Exception('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -214,21 +214,21 @@ class OAuth extends Base implements OAuthInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new Exception('Invalid credentials.', Resource::STATUS_FORBIDDEN);
+            throw new Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 
     private function validateClientSecret($params, $clientDocument)
     {
         if ($clientDocument->getClientId() !== $params['client_id'] || $clientDocument->getSecret() !== $params['client_secret']) {
-            throw new Exception('Invalid client_id/client_secret combination!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRedirectUri($params, $clientDocument)
     {
         if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
-            throw new Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
+            throw new Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }
