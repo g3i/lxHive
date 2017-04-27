@@ -46,6 +46,7 @@ use Ramsey\Uuid\Uuid;
 use League\Url\Url;
 use API\Controller;
 use API\Document;
+use API\DocumentState;
 
 class Statement extends Document
 {
