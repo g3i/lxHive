@@ -23,6 +23,7 @@
  */
 
 namespace API\Storage;
+
 use API\BaseTrait;
 
 abstract class Provider
@@ -38,5 +39,4 @@ abstract class Provider
     {
         $this->setContainer($container);
     }
-
 }

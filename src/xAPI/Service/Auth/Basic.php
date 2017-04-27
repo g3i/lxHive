@@ -33,7 +33,6 @@ use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Collection;
 
-
 class Basic extends Service implements AuthInterface
 {
     public function addToken($name, $description, $expiresAt, $user, array $scopes = [], $key = null, $secret = null)

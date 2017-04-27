@@ -71,7 +71,7 @@ class Container extends PimpleContainer implements ContainerInterface
     {
         if (!$this->offsetExists($id)) {
             // return an optional value
-            if (func_num_args() > 1){
+            if (func_num_args() > 1) {
                 return func_get_arg(1);
             }
             throw new ContainerException(sprintf('Property "%s" does not exist.', $id));
@@ -115,5 +115,4 @@ class Container extends PimpleContainer implements ContainerInterface
     {
         return $this->offsetExists($id);
     }
-
 }

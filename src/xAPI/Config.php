@@ -63,7 +63,7 @@ class Config
      */
     public static function merge($data = [])
     {
-        foreach($data as $key => $val){
+        foreach ($data as $key => $val) {
             self::set($key, $value);
         }
     }

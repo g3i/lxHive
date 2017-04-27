@@ -46,5 +46,4 @@ use API\Document;
 
 class Generic extends Document
 {
-
 }

@@ -150,33 +150,32 @@ class Bootstrap
      */
     public function initConfig()
     {
-        // defaults
+        // Defaults
         $defaults = [
             'appRoot' => realpath(__DIR__.'/../../')
         ];
 
         Config::factory($defaults);
 
-        // load and merge config
-        $yml = '/src/xAPI/Config/Config.yml';
-        $contents = @file_get_contents($defaults['appRoot'].$yml);
-
-        if (!$contents) {
-            if(!self::$mode){
+        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
+        
+        try {
+            $contents = $filesystem->read('src/xAPI/Config/Config.yml');
+            $config = $yamlParser->parse($contents);
+        } catch (\League\Flysystem\FileNotFoundException $e) {
+            if (self::$mode === self::None) {
                 return;
+            } else {
+                // Rethrow exception
+                throw $e;
             }
-            $msg = ($contents === false) ? 'file not found' : 'file is empty';
-            throw new \RuntimeException('Bootstrap: Could not load '.$yml.' ['.$msg.']');
         }
 
-        $yamlParser = new YamlParser();
-        $config = $yamlParser->parse($contents);
-
-        // Load and merge settings based on mode
-        $yml = 'src/xAPI/Config/Config.' . $config['mode'] . '.yml';
-        $contents = file_get_contents($defaults['appRoot'].$yml);
-        if ($contents) {
+        try {
+            $contents = $filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml');
             $config = array_merge($config, $yamlParser->parse($contents));
+        } catch (\League\Flysystem\FileNotFoundException $e) {
+            // Ignore exception
         }
 
         Config::merge($config);
@@ -446,7 +445,7 @@ class Bootstrap
                 }
 
                 // Write the string into the body
-                $stream = fopen('php://memory','r+');
+                $stream = fopen('php://memory', 'r+');
                 fwrite($stream, $string);
                 rewind($stream);
                 $body = new \Slim\Http\Stream($stream);
