@@ -25,7 +25,7 @@
 namespace API\Storage;
 use API\BaseTrait;
 
-abstract class Provider implements AdapterInterface
+abstract class Provider
 {
     use BaseTrait;
 

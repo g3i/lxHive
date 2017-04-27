@@ -29,6 +29,7 @@ use MongoDB\Driver\Command;
 use API\Document\DocumentInterface;
 use API\BaseTrait;
 use API\Config;
+use API\Storage\Adapter\Mongo;
 
 class Mongo implements AdapterInterface
 {
@@ -104,7 +105,7 @@ class Mongo implements AdapterInterface
      */
     public function update($collection, $filter, $newDocument, $upsert = false)
     {
-        if ($filter instanceof ExpressionInterface) {
+        if ($filter instanceof Mongo\ExpressionInterface) {
             $filter = $filter->toArray();
         }
 
@@ -130,7 +131,7 @@ class Mongo implements AdapterInterface
      */
     public function delete($collection, $filter)
     {
-        if ($filter instanceof ExpressionInterface) {
+        if ($filter instanceof Mongo\ExpressionInterface) {
             $filter = $filter->toArray();
         }
         $bulk = new \MongoDB\Driver\BulkWrite();
@@ -150,7 +151,7 @@ class Mongo implements AdapterInterface
      */
     public function find($collection, $filter = [], $options = [])
     {
-        if ($filter instanceof ExpressionInterface) {
+        if ($filter instanceof Mongo\ExpressionInterface) {
             $filter = $filter->toArray();
         }
 
@@ -171,7 +172,7 @@ class Mongo implements AdapterInterface
      */
     public function findOne($collection, $filter, $options = [])
     {
-        if ($filter instanceof ExpressionInterface) {
+        if ($filter instanceof Mongo\ExpressionInterface) {
             $filter = $filter->toArray();
         }
         $options = ['limit' => 1] + $options;
@@ -184,7 +185,7 @@ class Mongo implements AdapterInterface
 
     public function count($collection, $filter = [], $options = [])
     {
-        if ($filter instanceof ExpressionInterface) {
+        if ($filter instanceof Mongo\ExpressionInterface) {
             $filter = $filter->toArray();
         }
         $command = ['count' => $collection];
@@ -212,7 +213,7 @@ class Mongo implements AdapterInterface
 
     public function createExpression()
     {
-        $expression = new Expression();
+        $expression = new Mongo\Expression();
         return $expression;
     }
 
@@ -236,70 +237,70 @@ class Mongo implements AdapterInterface
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
     public function getStatementStorage()
     {
-        $statementStorage = new Statement($this->getContainer());
+        $statementStorage = new Mongo\Statement($this->getContainer());
 
         return $statementStorage;
     }
 
     public function getAttachmentStorage()
     {
-        $attachmentStorage = new Attachment($this->getContainer());
+        $attachmentStorage = new Mongo\Attachment($this->getContainer());
 
         return $attachmentStorage;
     }
 
     public function getUserStorage()
     {
-        $userStorage = new User($this->getContainer());
+        $userStorage = new Mongo\User($this->getContainer());
 
         return $userStorage;
     }
 
     public function getLogStorage()
     {
-        $logStorage = new Log($this->getContainer());
+        $logStorage = new Mongo\Log($this->getContainer());
 
         return $logStorage;
     }
 
     public function getActivityStorage()
     {
-        $activityStorage = new Activity($this->getContainer());
+        $activityStorage = new Mongo\Activity($this->getContainer());
 
         return $activityStorage;
     }
 
     public function getActivityStateStorage()
     {
-        $activityStateStorage = new ActivityState($this->getContainer());
+        $activityStateStorage = new Mongo\ActivityState($this->getContainer());
 
         return $activityStateStorage;
     }
 
     public function getActivityProfileStorage()
     {
-        $activityProfileStorage = new ActivityProfile($this->getContainer());
+        $activityProfileStorage = new Mongo\ActivityProfile($this->getContainer());
 
         return $activityProfileStorage;
     }
 
     public function getAgentProfileStorage()
     {
-        $agentProfileStorage = new AgentProfile($this->getContainer());
+        $agentProfileStorage = new Mongo\AgentProfile($this->getContainer());
 
         return $agentProfileStorage;
     }
 
     public function getBasicAuthStorage()
     {
-        $agentProfileStorage = new BasicAuth($this->getContainer());
+        $agentProfileStorage = new Mongo\BasicAuth($this->getContainer());
 
         return $agentProfileStorage;
     }
 
     public function getOAuthStorage()
     {
-        $agentProfileStorage = new OAuth($this->getContainer());
+        $agentProfileStorage = new Mongo\OAuth($this->getContainer());
 
         return $agentProfileStorage;
     }
