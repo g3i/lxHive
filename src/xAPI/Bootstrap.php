@@ -151,14 +151,17 @@ class Bootstrap
     public function initConfig()
     {
         // Defaults
+        $appRoot = realpath(__DIR__.'/../../');
         $defaults = [
-            'appRoot' => realpath(__DIR__.'/../../')
+            'appRoot' => $appRoot
         ];
 
         Config::factory($defaults);
 
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
         
+        $yamlParser = new YamlParser();
+
         try {
             $contents = $filesystem->read('src/xAPI/Config/Config.yml');
             $config = $yamlParser->parse($contents);
