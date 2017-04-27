@@ -26,11 +26,12 @@ namespace API\Admin;
 
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
+use API\Admin;
 
 /**
  * Auth Managment
  */
-class Auth extends Base
+class Auth extends Admin
 {
     /**
      * Fetches a list of all oAuth Clients

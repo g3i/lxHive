@@ -42,9 +42,9 @@ class OAuth extends Base implements OAuthInterface
 
         $expiresDate = new \DateTime();
         $expiresDate->setTimestamp($expiresAt);
-        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
+        $accessTokenDocument->setExpiresAt(Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
+        $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
         //$accessTokenDocument->addRelation('user', $user);
         //$accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];

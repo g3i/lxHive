@@ -22,9 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter\Mongo;
+namespace API\Storage\Adapter;
 
-use API\Storage\Adapter\AdapterInterface;
+use API\Storage\AdapterInterface;
 use MongoDB\Driver\Command;
 use API\Document\DocumentInterface;
 use API\BaseTrait;

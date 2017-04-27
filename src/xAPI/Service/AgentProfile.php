@@ -41,7 +41,7 @@ class AgentProfile extends Service
         $request = $this->getContainer()['parser']->getData();
         $params = new Collection($request->getParameters());
 
-        $documentResult = $this->getStorage()->getAgentProfileStorage()->getAgentProfilesFiltered($params);
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->getFiltered($params);
 
         return $documentResult;
     }
@@ -59,7 +59,7 @@ class AgentProfile extends Service
 
         $params->set('headers', $request->getHeaders());
 
-        $documentResult = $this->getStorage()->getAgentProfileStorage()->postAgentProfile($params, $rawBody);
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->post($params, $rawBody);
 
         return $documentResult;
     }
@@ -78,7 +78,7 @@ class AgentProfile extends Service
 
         $rawBody = $request->getRawPayload();
 
-        $documentResult = $this->getStorage()->getAgentProfileStorage()->putAgentProfile($params, $rawBody);
+        $documentResult = $this->getStorage()->getAgentProfileStorage()->put($params, $rawBody);
 
         return $documentResult;
     }
@@ -97,7 +97,7 @@ class AgentProfile extends Service
 
         $params->set('headers', $request->getHeaders());
 
-        $deletionResult = $this->getStorage()->getAgentProfileStorage()->deleteAgentProfile($params);
+        $deletionResult = $this->getStorage()->getAgentProfileStorage()->delete($params);
 
         return $deletionResult;
     }

@@ -136,7 +136,7 @@ class Bootstrap
         // 3. Storage setup
         $container['storage'] = function ($container) {
             $storageInUse = Config::get(['storage', 'in_use']);
-            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
+            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new \InvalidArgumentException('Storage type selected in config is invalid!');
             }
@@ -553,14 +553,5 @@ class Bootstrap
     public function bootTest()
     {
         // nothing
-    }
-
-    /**
-     * Gets the value of id.
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 }

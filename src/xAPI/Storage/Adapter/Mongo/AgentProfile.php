@@ -29,13 +29,13 @@ use API\Storage\Query\DocumentResult;
 use API\Util;
 use API\Controller;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class AgentProfile extends Base implements AgentProfileInterface
+class AgentProfile extends Provider implements AgentProfileInterface
 {
     const COLLECTION_NAME = 'agentProfiles';
 
-    public function getAgentProfilesFiltered($parameters)
+    public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
@@ -83,7 +83,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         return $documentResult;
     }
 
-    public function postAgentProfile($parameters, $profileObject)
+    public function post($parameters, $profileObject)
     {
         $profileObject = (string)$profileObject;
         $agent = $parameters['agent'];
@@ -149,7 +149,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         return $agentProfileDocument;
     }
 
-    public function putAgentProfile($parameters, $profileObject)
+    public function put($parameters, $profileObject)
     {
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
@@ -204,7 +204,7 @@ class AgentProfile extends Base implements AgentProfileInterface
         return $agentProfileDocument;
     }
 
-    public function deleteAgentProfile($parameters)
+    public function delete($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();

@@ -27,7 +27,7 @@ namespace API\Admin;
 use Symfony\Component\Yaml\Yaml;
 use API\Bootstrap;
 use API\Service\Auth\OAuth as OAuthService;
-use API\Storage\Adapter\Mongo\Mongo as Mongo;
+use API\Storage\Adapter\Mongo as Mongo;
 use API\Config;
 
 /**

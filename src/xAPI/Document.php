@@ -22,9 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Document;
+namespace API;
 
-abstract class Base implements DocumentInterface
+abstract class Document implements DocumentInterface
 {
     protected $data;
 

@@ -25,11 +25,12 @@
 namespace API\Admin;
 
 use API\Service\User as UserService;
+use API\Admin;
 
 /**
  * User managment
  */
-class User extends Base
+class User extends Admin
 {
     /**
      * Fetch all permissions from Mongo

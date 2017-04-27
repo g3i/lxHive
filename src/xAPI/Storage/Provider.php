@@ -22,10 +22,10 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter;
+namespace API\Storage;
 use API\BaseTrait;
 
-abstract class Base
+abstract class Provider implements AdapterInterface
 {
     use BaseTrait;
 

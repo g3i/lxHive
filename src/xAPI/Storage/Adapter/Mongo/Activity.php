@@ -27,13 +27,13 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\ActivityInterface;
 use API\Controller;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class Activity extends Base implements ActivityInterface
+class Activity extends Provider implements ActivityInterface
 {
     const COLLECTION_NAME = 'activities';
 
-    public function fetchActivityById($id)
+    public function fetchById($id)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();

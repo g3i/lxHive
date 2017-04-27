@@ -26,11 +26,11 @@ namespace API\Storage\Query;
 
 interface AgentProfileInterface
 {
-    public function getAgentProfilesFiltered($parameters);
+    public function get($parameters);
 
-    public function postAgentProfile($parameters, $profileObject);
+    public function post($parameters, $profileObject);
 
-    public function putAgentProfile($parameters, $profileObject);
+    public function put($parameters, $profileObject);
 
-    public function deleteAgentProfile($parameters);
+    public function delete($parameters);
 }

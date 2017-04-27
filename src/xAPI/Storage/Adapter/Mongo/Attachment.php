@@ -26,13 +26,13 @@ namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\AttachmentInterface;
 use API\Util;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class Attachment extends Base implements AttachmentInterface
+class Attachment extends Provider implements AttachmentInterface
 {
     const COLLECTION_NAME = 'attachments';
 
-    public function storeAttachment($hash, $contentType, $timestamp = null)
+    public function store($hash, $contentType, $timestamp = null)
     {
         $storage = $this->getContainer()['storage'];
 

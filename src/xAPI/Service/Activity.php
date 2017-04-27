@@ -56,7 +56,7 @@ class Activity extends Service
     {
         $params = new Collection($request->get());
 
-        $activity = $this->getStorage()->getActivityStorage()->fetchActivityById($params->get('activityId'));
+        $activity = $this->getStorage()->getActivityStorage()->fetchById($params->get('activityId'));
 
         $this->cursor = [$activity];
         $this->single = true;

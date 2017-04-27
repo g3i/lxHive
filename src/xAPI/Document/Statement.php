@@ -45,8 +45,9 @@ namespace API\Document;
 use Ramsey\Uuid\Uuid;
 use League\Url\Url;
 use API\Controller;
+use API\Document;
 
-class Statement extends Base implements DocumentInterface
+class Statement extends Document
 {
     public static function fromDatabase($document)
     {

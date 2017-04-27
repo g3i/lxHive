@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Document;
+namespace API;
 
 interface DocumentInterface extends \JsonSerializable
 {

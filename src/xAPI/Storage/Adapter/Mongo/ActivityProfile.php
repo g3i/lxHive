@@ -27,15 +27,15 @@ namespace API\Storage\Adapter\Mongo;
 use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Query\DocumentResult;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Storage\Query\ActivityProfileInterface;
 use API\Util;
 
-class ActivityProfile extends Base implements ActivityProfileInterface
+class ActivityProfile extends Provider implements ActivityProfileInterface
 {
     const COLLECTION_NAME = 'activityProfiles';
 
-    public function getActivityProfilesFiltered($parameters)
+    public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
@@ -75,7 +75,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         return $documentResult;
     }
 
-    public function postActivityProfile($parameters, $profileObject)
+    public function post($parameters, $profileObject)
     {
         $storage = $this->getContainer()['storage'];
 
@@ -130,7 +130,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         return $activityProfileDocument;
     }
 
-    public function putActivityProfile($parameters, $profileObject)
+    public function put($parameters, $profileObject)
     {
         $storage = $this->getContainer()['storage'];
 
@@ -187,7 +187,7 @@ class ActivityProfile extends Base implements ActivityProfileInterface
         return $activityProfileDocument;
     }
 
-    public function deleteActivityProfile($parameters)
+    public function delete($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();

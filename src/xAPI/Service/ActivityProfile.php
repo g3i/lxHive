@@ -56,7 +56,7 @@ class ActivityProfile extends Service
     {
         $params = new Collection($request->get());
 
-        $cursor = $this->getStorage()->getActivityProfileStorage()->getActivityProfilesFiltered($params);
+        $cursor = $this->getStorage()->getActivityProfileStorage()->getFiltered($params);
 
         $this->cursor = $cursor;
 
@@ -75,7 +75,7 @@ class ActivityProfile extends Service
 
         $params->set('headers', $request->headers());
 
-        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->postActivityProfile($params, $rawBody);
+        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->post($params, $rawBody);
 
         $this->single = true;
         $this->cursor = [$activityProfileDocument];
@@ -98,7 +98,7 @@ class ActivityProfile extends Service
 
         $params->set('headers', $request->headers());
 
-        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->putActivityProfile($params, $rawBody);
+        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->put($params, $rawBody);
 
         $this->single = true;
         $this->cursor = [$activityProfileDocument];
@@ -119,7 +119,7 @@ class ActivityProfile extends Service
 
         $params->set('headers', $request->headers());
 
-        $this->getStorage()->getActivityProfileStorage()->deleteActivityProfile($params);
+        $this->getStorage()->getActivityProfileStorage()->delete($params);
 
         return $this;
     }
