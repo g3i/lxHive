@@ -1,6 +1,6 @@
-# External test suites
+# Conformance Testing
 
-This folder prvovides space for installation of external test suites.
+This folder provides space for conformance docs and installation of external test suites.
 
 ## [ADL LRS Conformance Test Suite](https://github.com/adlnet/lrs-conformance-test-suite)
 
@@ -8,7 +8,6 @@ This folder prvovides space for installation of external test suites.
 * requires npm and nodejs
 
 ```bash
-cd tests/bdd
 git clone https://github.com/adlnet/lrs-conformance-test-suite.git
 cd lrs-conformance-test-suite && npm install
 ```
