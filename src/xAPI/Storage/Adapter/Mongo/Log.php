@@ -26,9 +26,9 @@ namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\LogInterface;
 use API\Util;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class Log extends Base implements LogInterface
+class Log extends Provider implements LogInterface
 {
     const COLLECTION_NAME = 'logs';
 

@@ -30,10 +30,10 @@ use API\Storage\Query\StatementInterface;
 use API\Util;
 use Ramsey\Uuid\Uuid;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Config;
 
-class Statement extends Base implements StatementInterface
+class Statement extends Provider implements StatementInterface
 {
     const COLLECTION_NAME = 'statements';
     /**
@@ -381,7 +381,7 @@ class Statement extends Base implements StatementInterface
         }
 
         $statementDocument = new \API\Document\Statement();
-        // TODO : Uncomment this!
+        // Uncomment this!
         // Overwrite authority - unless it's a super token and manual authority is set
         //if (!($this->getAccessToken()->isSuperToken() && isset($statementObject['authority'])) || !isset($statementObject['authority'])) {
         //    $statementObject['authority'] = $this->getAccessToken()->generateAuthority();

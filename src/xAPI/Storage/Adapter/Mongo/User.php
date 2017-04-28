@@ -25,9 +25,9 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\UserInterface;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class User extends Base implements UserInterface
+class User extends Provider implements UserInterface
 {
     const COLLECTION_NAME = 'users';
 
