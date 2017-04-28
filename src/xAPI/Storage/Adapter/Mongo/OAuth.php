@@ -27,10 +27,10 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\OAuthInterface;
 use API\Controller;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Util;
 
-class OAuth extends Base implements OAuthInterface
+class OAuth extends Provider implements OAuthInterface
 {
     const COLLECTION_NAME = 'oAuthTokens';
 
