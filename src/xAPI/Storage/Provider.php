@@ -22,30 +22,21 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Console;
+namespace API\Storage;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use API\Admin\Setup;
+use API\BaseTrait;
 
-class GenerateDocs extends SymfonyCommand
+abstract class Provider
 {
+    use BaseTrait;
 
-    protected function configure()
+    /**
+     * Constructor.
+     *
+     * @param PSR-11 Container
+     */
+    public function __construct($container)
     {
-        $this
-            ->setName('docs')
-            ->setDescription('generates lxHive code documentation')
-        ;
+        $this->setContainer($container);
     }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
-        $setup = new Setup();
-        $setup->download('http://get.sensiolabs.org/sami.phar', 'sami.phar');
-    }
-
 }

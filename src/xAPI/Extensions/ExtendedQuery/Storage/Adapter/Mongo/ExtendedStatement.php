@@ -25,7 +25,7 @@
 namespace API\Extensions\ExtendedQuery\Storage\Adapter\Mongo;
 
 use API\Extensions\ExtendedQuery\Storage\Query\ExtendedStatementInterface;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Storage\Query\StatementResult;
 use API\Controller;
 use API\Config;
@@ -33,7 +33,7 @@ use API\Config;
 /**
  * Mongo Adaptor for this extension
  */
-class ExtendedStatement extends Base implements ExtendedStatementInterface
+class ExtendedStatement extends Provider implements ExtendedStatementInterface
 {
     /**
      * Query statements collection
@@ -86,12 +86,12 @@ class ExtendedStatement extends Base implements ExtendedStatementInterface
 
         // Handle pagination
         if (isset($parameters['since_id'])) {
-            $id = new \MongoId($parameters['since_id']);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('since_id'));
             $expression->whereGreater('_id', $id);
         }
 
         if (isset($parameters['until_id'])) {
-            $id = new \MongoId($parameters['until_id']);
+            $id = new \MongoDB\BSON\ObjectID($parameters->get('until_id'));
             $expression->whereLess('_id', $id);
         }
 

@@ -27,10 +27,10 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\OAuthInterface;
 use API\Controller;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Util;
 
-class OAuth extends Base implements OAuthInterface
+class OAuth extends Provider implements OAuthInterface
 {
     const COLLECTION_NAME = 'oAuthTokens';
 
@@ -42,9 +42,9 @@ class OAuth extends Base implements OAuthInterface
 
         $expiresDate = new \DateTime();
         $expiresDate->setTimestamp($expiresAt);
-        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
+        $accessTokenDocument->setExpiresAt(Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
+        $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
         //$accessTokenDocument->addRelation('user', $user);
         //$accessTokenDocument->addRelation('client', $client);
         $scopeIds = [];

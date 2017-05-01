@@ -40,7 +40,7 @@
  *  etc..
  */
 
-namespace API\Document;
+namespace API;
 
 class DocumentState
 {

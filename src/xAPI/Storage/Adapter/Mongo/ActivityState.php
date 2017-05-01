@@ -29,12 +29,13 @@ use API\Storage\Query\DocumentResult;
 use API\Util;
 use API\Controller;
 use API\HttpException as Exception;
+use API\Storage\Provider;
 
-class ActivityState extends Base implements ActivityStateInterface
+class ActivityState extends Provider implements ActivityStateInterface
 {
     const COLLECTION_NAME = 'activityStates';
 
-    public function getActivityStatesFiltered($parameters)
+    public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
@@ -97,7 +98,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $documentResult;
     }
 
-    public function postActivityState($parameters, $stateObject)
+    public function post($parameters, $stateObject)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
@@ -172,7 +173,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $activityStateDocument;
     }
 
-    public function putActivityState($parameters, $stateObject)
+    public function put($parameters, $stateObject)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
@@ -222,7 +223,7 @@ class ActivityState extends Base implements ActivityStateInterface
         return $activityStateDocument;
     }
 
-    public function deleteActivityState($parameters)
+    public function delete($parameters)
     {
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];

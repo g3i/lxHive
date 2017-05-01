@@ -27,9 +27,9 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\Query\BasicAuthInterface;
 use API\Controller;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 
-class BasicAuth extends Base implements BasicAuthInterface
+class BasicAuth extends Provider implements BasicAuthInterface
 {
     const COLLECTION_NAME = 'basicTokens';
 

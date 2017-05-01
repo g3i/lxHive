@@ -33,6 +33,7 @@
   */
 
 namespace API\Util;
+
 use API\Util\ArrayableInterface as ArrayableInterface;
 
 interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable, ArrayableInterface

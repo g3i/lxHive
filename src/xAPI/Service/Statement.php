@@ -76,7 +76,7 @@ class Statement extends Service
                 $hash = $attachment->getHeaders()['x-experience-api-hash'][0];
                 $contentType = $attachment->getHeaders()['content-type'][0];
 
-                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
+                $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }
@@ -124,7 +124,7 @@ class Statement extends Service
                 $hash = $attachment->getHeaders()['X-Experience-API-Hash'];
                 $contentType = $part->getHeaders()['Content-Type'];
 
-                $this->getStorage()->getAttachmentStorage()->storeAttachment($hash, $contentType);
+                $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
                 $fsAdapter->put($hash, $attachmentBody);
             }

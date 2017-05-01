@@ -42,7 +42,8 @@
 
 namespace API\Document;
 
-class Generic extends Base implements DocumentInterface
-{
+use API\Document;
 
+class Generic extends Document
+{
 }

@@ -171,33 +171,35 @@ class Bootstrap
      */
     public function initConfig()
     {
-        // defaults
+        // Defaults
+        $appRoot = realpath(__DIR__.'/../../');
         $defaults = [
-            'appRoot' => realpath(__DIR__.'/../../')
+            'appRoot' => $appRoot
         ];
 
         Config::factory($defaults);
 
-        // load and merge config
-        $yml = '/src/xAPI/Config/Config.yml';
-        $contents = @file_get_contents($defaults['appRoot'].$yml);
+        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
+        
+        $yamlParser = new YamlParser();
 
-        if (!$contents) {
-            if (!self::$mode) {
+        try {
+            $contents = $filesystem->read('src/xAPI/Config/Config.yml');
+            $config = $yamlParser->parse($contents);
+        } catch (\League\Flysystem\FileNotFoundException $e) {
+            if (self::$mode === self::None) {
                 return;
+            } else {
+                // Rethrow exception
+                throw $e;
             }
-            $msg = ($contents === false) ? 'file not found' : 'file is empty';
-            throw new AppInitException('Bootstrap: Could not load '.$yml.' ['.$msg.']');
         }
 
-        $yamlParser = new YamlParser();
-        $config = $yamlParser->parse($contents);
-
-        // Load and merge settings based on mode
-        $yml = '/src/xAPI/Config/Config.' . $config['mode'] . '.yml';
-        $contents = file_get_contents($defaults['appRoot'].$yml);
-        if ($contents) {
+        try {
+            $contents = $filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml');
             $config = array_merge($config, $yamlParser->parse($contents));
+        } catch (\League\Flysystem\FileNotFoundException $e) {
+            // Ignore exception
         }
 
         Config::merge($config);
@@ -220,7 +222,7 @@ class Bootstrap
         // 3. Storage setup
         $container['storage'] = function ($container) {
             $storageInUse = Config::get(['storage', 'in_use']);
-            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse.'\\'.$storageInUse;
+            $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse;
             if (!class_exists($storageClass)) {
                 throw new AppInitException('Bootstrap: Storage type selected in config is invalid!');
             }
@@ -641,14 +643,5 @@ class Bootstrap
     public function bootTest()
     {
         // nothing
-    }
-
-    /**
-     * Gets the value of id.
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 }

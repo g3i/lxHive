@@ -26,7 +26,7 @@ namespace API\Admin;
 
 use Symfony\Component\Yaml\Yaml;
 use API\Service\Auth\OAuth as OAuthService;
-use API\Storage\Adapter\Mongo\Mongo as Mongo;
+use API\Storage\Adapter\Mongo as Mongo;
 
 use API\Bootstrap;
 use API\Config;
@@ -126,29 +126,4 @@ class Setup
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }
-
-    /**
-     * Download a remote file
-     * @param string $uri
-     * @param string $file path tho file
-     * @param string $mode fopen() mode, @see http://php.net/manual/en/function.fopen.php
-     * @return bool
-     * @throws \Exception on curl error
-     */
-    private function download($uri, $file, $mode = 'w+')
-    {
-        $ch = curl_init($uri);
-        $fp = fopen($file, $mode); //force latest
-        curl_setopt($ch, \CURLOPT_FILE, $fp);
-        curl_setopt($ch, \CURLOPT_HEADER, 0);
-
-        $success = curl_exec($ch);
-        if ($success === false) {
-            throw new \Exception( 'Setup::download returns curl error: ' . curl_error($ch));
-        }
-        curl_close($ch);
-        $success = fclose($fp);
-        return success;
-    }
-
 }

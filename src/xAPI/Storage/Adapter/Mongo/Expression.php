@@ -21,9 +21,9 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  *
- * This file was adapted from sokil/php-mongo. 
+ * This file was adapted from sokil/php-mongo.
  * License information is available at https://github.com/sokil/php-mongo/blob/master/LICENSE
- * 
+ *
  */
 
 namespace API\Storage\Adapter\Mongo;
@@ -59,10 +59,9 @@ class Expression implements ExpressionInterface
      */
     public function where($field, $value)
     {
-        if(!isset($this->expression[$field]) || !is_array($value) || !is_array($this->expression[$field])) {
+        if (!isset($this->expression[$field]) || !is_array($value) || !is_array($this->expression[$field])) {
             $this->expression[$field] = $value;
-        }
-        else {
+        } else {
             $this->expression[$field] = array_merge_recursive($this->expression[$field], $value);
         }
 
@@ -283,7 +282,7 @@ class Expression implements ExpressionInterface
 
         if ($expression instanceof Expression) {
             $expression = $expression->toArray();
-        } else if (!is_array($expression)) {
+        } elseif (!is_array($expression)) {
             throw new Exception('Wrong expression passed');
         }
 
@@ -323,11 +322,11 @@ class Expression implements ExpressionInterface
      */
     public function whereOr($expressions = null)
     {
-        if($expressions instanceof Expression) {
+        if ($expressions instanceof Expression) {
             $expressions = func_get_args();
         }
 
-        return $this->where('$or', array_map(function(Expression $expression) {
+        return $this->where('$or', array_map(function (Expression $expression) {
             return $expression->toArray();
         }, $expressions));
     }
@@ -340,11 +339,11 @@ class Expression implements ExpressionInterface
      */
     public function whereAnd($expressions = null)
     {
-        if($expressions instanceof Expression) {
+        if ($expressions instanceof Expression) {
             $expressions = func_get_args();
         }
 
-        return $this->where('$and', array_map(function(Expression $expression) {
+        return $this->where('$and', array_map(function (Expression $expression) {
             return $expression->toArray();
         }, $expressions));
     }
@@ -357,20 +356,20 @@ class Expression implements ExpressionInterface
      */
     public function whereNor($expressions = null)
     {
-        if($expressions instanceof Expression) {
+        if ($expressions instanceof Expression) {
             $expressions = func_get_args();
         }
 
-        return $this->where('$nor', array_map(function(Expression $expression) {
+        return $this->where('$nor', array_map(function (Expression $expression) {
             return $expression->toArray();
         }, $expressions));
     }
 
     public function whereNot(Expression $expression)
     {
-        foreach($expression->toArray() as $field => $value) {
+        foreach ($expression->toArray() as $field => $value) {
             // $not acceptable only for operators-expressions
-            if(is_array($value) && is_string(key($value))) {
+            if (is_array($value) && is_string(key($value))) {
                 $this->where($field, ['$not' => $value]);
             }
             // for single values use $ne
@@ -488,9 +487,9 @@ class Expression implements ExpressionInterface
         }
 
         // Get expression array
-        if($mixed instanceof self) {
+        if ($mixed instanceof self) {
             $mixed = $mixed->toArray();
-        } elseif(!is_array($mixed)) {
+        } elseif (!is_array($mixed)) {
             throw new Exception('Mixed must be instance of \Expression');
         }
 

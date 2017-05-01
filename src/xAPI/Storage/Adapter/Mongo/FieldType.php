@@ -21,9 +21,9 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  *
- * This file was adapted from sokil/php-mongo. 
+ * This file was adapted from sokil/php-mongo.
  * License information is available at https://github.com/sokil/php-mongo/blob/master/LICENSE
- * 
+ *
  */
 
 namespace API\Storage\Adapter\Mongo;

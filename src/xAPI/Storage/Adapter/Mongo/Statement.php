@@ -30,10 +30,10 @@ use API\Storage\Query\StatementInterface;
 use API\Util;
 use Ramsey\Uuid\Uuid;
 use API\HttpException as Exception;
-use API\Storage\Adapter\Base;
+use API\Storage\Provider;
 use API\Config;
 
-class Statement extends Base implements StatementInterface
+class Statement extends Provider implements StatementInterface
 {
     const COLLECTION_NAME = 'statements';
     /**

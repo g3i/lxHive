@@ -43,8 +43,9 @@
 namespace API\Document;
 
 use API\Controller;
+use API\Document;
 
-class AccessToken extends Base implements DocumentInterface
+class AccessToken extends Document
 {
     public function isSuperToken()
     {

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2017 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,21 +22,24 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter;
-use API\BaseTrait;
+namespace API;
 
-abstract class Base
+interface DocumentInterface extends \JsonSerializable
 {
-    use BaseTrait;
-
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param PSR-11 Container
+     * @param array $document The xAPI document to handle
+     * @param string $documentState EUNUM string of i/o state of the document (i.e 'TRUSTED', 'UNTRUSTED', etc..)
+     * @param string $version xAPI version
      */
-    public function __construct($container)
-    {
-        $this->setContainer($container);
-    }
+    public function __construct($data = [], $documentState = null, $version = null);
 
+    public function getData();
+
+    public function getState();
+    
+    public function getVersion();
+
+    public function toArray();
 }

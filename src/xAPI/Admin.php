@@ -22,12 +22,12 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Admin;
+namespace API;
 
 /**
  * Base Admin class
  */
-abstract class Base
+abstract class Admin
 {
     private $container;
 

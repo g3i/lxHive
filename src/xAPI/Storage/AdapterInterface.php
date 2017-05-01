@@ -22,7 +22,7 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Adapter;
+namespace API\Storage;
 
 interface AdapterInterface
 {
