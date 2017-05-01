@@ -106,7 +106,7 @@ class AgentProfile extends Provider implements AgentProfileInterface
             $result = new \API\Document\Generic($result);
         }
     
-        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-none-match'] : null;
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
         $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 

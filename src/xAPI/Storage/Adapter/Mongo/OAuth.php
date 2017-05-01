@@ -33,6 +33,7 @@ use API\Util;
 class OAuth extends Provider implements OAuthInterface
 {
     const COLLECTION_NAME = 'oAuthTokens';
+    const COLLECTION_NAME_SCOPES = 'authScopes';
 
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
@@ -45,8 +46,10 @@ class OAuth extends Provider implements OAuthInterface
         $accessTokenDocument->setExpiresAt(Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
-        //$accessTokenDocument->addRelation('user', $user);
-        //$accessTokenDocument->addRelation('client', $client);
+        
+        $accessTokenDocument->setUserId($user->getId());
+        $accessTokenDocument->setClientId($client->getId());
+
         $scopeIds = [];
         foreach ($scopes as $scope) {
             $scopeIds[] = $scope['id'];
@@ -158,7 +161,7 @@ class OAuth extends Provider implements OAuthInterface
 
         $scopeDocument->setDescription($description);
 
-        $storage->insertOne(self::COLLECTION_NAME, $scopeDocument);
+        $storage->insertOne(self::COLLECTION_NAME_SCOPES, $scopeDocument);
 
         return $scopeDocument;
     }
@@ -169,7 +172,7 @@ class OAuth extends Provider implements OAuthInterface
         $expression = $storage->createExpression();
 
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
+        $scopeDocument = $storage->findOne(self::COLLECTION_NAME_SCOPES, $expression);
 
         return $scopeDocument;
     }

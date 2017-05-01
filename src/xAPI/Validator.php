@@ -41,14 +41,12 @@ abstract class Validator
     protected $lastValidator = null;
     protected $lastSchema = null;
 
-    protected $container;
-
     /**
      * Constructor, creates and caches a  instance.
      */
     public function __construct($container)
     {
-        $this->container = $container;
+        $this->setContainer($container);
 
         if (!self::$schemaStorage) {
             self::$schemaStorage = new JsonSchema\SchemaStorage();

@@ -26,7 +26,7 @@ namespace API\Storage\Query;
 
 interface AgentProfileInterface
 {
-    public function get($parameters);
+    public function getFiltered($parameters);
 
     public function post($parameters, $profileObject);
 

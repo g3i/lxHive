@@ -32,6 +32,7 @@ use API\Storage\Provider;
 class BasicAuth extends Provider implements BasicAuthInterface
 {
     const COLLECTION_NAME = 'basicTokens';
+    const COLLECTION_NAME_SCOPES = 'authScopes';
 
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
@@ -41,7 +42,7 @@ class BasicAuth extends Provider implements BasicAuthInterface
 
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
-        //$accessTokenDocument->addRelation('user', $user);
+        $accessTokenDocument->setUserId($user->getId());
         $scopeIds = [];
         foreach ($scopes as $scope) {
             $scopeIds[] = $scope['id'];
@@ -130,7 +131,7 @@ class BasicAuth extends Provider implements BasicAuthInterface
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
+        $scopeDocument = $storage->findOne(self::COLLECTION_NAME_SCOPES, $expression);
 
         $this->validateScope($scopeDocument);
 

@@ -68,9 +68,13 @@ class User extends Provider implements UserInterface
         $passwordHash = sha1($password);
         $userDocument->setPasswordHash($passwordHash);
 
-        /*foreach ($permissions as $permission) {
-            $userDocument->addPermission($permission);
-        }*/
+        // Permission is of type Scope
+        $permissionIds = [];
+        foreach ($permissions as $permission) {
+            // Fetch the permission ID's and assign them
+            $permissionIds[] = $permission['_id'];
+            $userDocument->setPermissionIds($permissionIds);
+        }
 
         $storage->insertOne(self::COLLECTION_NAME, $userDocument);
 
