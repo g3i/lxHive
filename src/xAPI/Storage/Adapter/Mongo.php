@@ -306,30 +306,6 @@ class Mongo implements AdapterInterface
     }
 
     /**
-     * Gets the value of container.
-     *
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Sets the value of container.
-     *
-     * @param mixed $container the container
-     *
-     * @return self
-     */
-    protected function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
-    }
-
-    /**
      * Gets the value of client.
      *
      * @return mixed

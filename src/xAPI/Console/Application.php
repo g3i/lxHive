@@ -25,38 +25,15 @@
 namespace API\Console;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
+use API\BaseTrait;
 
 class Application extends SymfonyApplication
 {
-    private $container;
+    use BaseTrait;
 
     public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
     {
         $this->setContainer($container);
         parent::__construct($name, $version);
-    }
-
-    /**
-     * Gets the value of container.
-     *
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Sets the value of container.
-     *
-     * @param mixed $container the container
-     *
-     * @return self
-     */
-    private function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }

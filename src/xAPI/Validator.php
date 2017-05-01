@@ -26,9 +26,12 @@ namespace API;
 
 use JsonSchema;
 use API\HttpException as Exception;
+use API\BaseTrait;
 
 abstract class Validator
 {
+    use BaseTrait;
+
     /**
      * @var JsonSchema\SchemaStorage a persistent SchemaStorage instance
      *                               Note that a SchemaStorage instance has an internal cache which takes care of loading and caching files.
@@ -144,29 +147,5 @@ abstract class Validator
             }
         }
         throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
-    }
-
-    /**
-     * Gets the value of container.
-     *
-     * @return mixed
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Sets the value of container.
-     *
-     * @param mixed $container the container
-     *
-     * @return self
-     */
-    protected function setContainer($container)
-    {
-        $this->container = $container;
-
-        return $this;
     }
 }
