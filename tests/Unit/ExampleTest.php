@@ -3,7 +3,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class ExamplesTest extends TestCase
+class ExampleTest extends TestCase
 {
     /**
      * A basic test example.
@@ -13,5 +13,11 @@ class ExamplesTest extends TestCase
     public function testOK()
     {
         $this->assertTrue(true);
+    }
+
+    public static function check()
+    {
+        echo 'test';
+        die();
     }
 }

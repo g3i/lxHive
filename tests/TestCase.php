@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -20,9 +21,10 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  */
+namespace Tests;
 
-// require App autoloader
-$autoloader = require __DIR__.'/../../vendor/autoload.php';
+use PHPUnit_Framework_TestCase as BaseTestCase;
 
-// Register test classes
-$autoloader->addPsr4('Tests\\', __DIR__.'/');
+abstract class TestCase extends BaseTestCase
+{
+}

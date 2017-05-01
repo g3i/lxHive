@@ -1,19 +1,33 @@
-# Structure
+# Unit tests
 
-* Folder `tdd`: Contains lxHive PHPUnit tests
-* Folder `bdd`: You can safely load external BDD suites in this folder, they are excluded from commits by the local `.gitignore`
+lxHive supports testing with [PHPUnit](https://phpunit.de/).
+PHPunit is included as a `require-dev` dependency.
+A `phpunit.xml` file is setup in the project root folder of your lxHive app.
 
-## External test suites
+## Structure
 
-### [ADL LRS Conformance Test Suite](https://github.com/adlnet/lrs-conformance-test-suite)
+The `tests` directory contains two sub-directories directories:
 
-* tests the 'MUST' requirements of the xAPI Spec based on the ADL [testing requirements](https://github.com/adlnet/xapi-lrs-conformance-requirements)
-* requires npm and nodejs
+| namespace     | folder                     | notes |
+|---            |---                         |---    |
+| `\Tests\Unit` | `./Unit/*`                 | Assorted Unit tests, tests for issues, feature tests etc |
+| `\Tests\API`  | `./src/xAPI/*`             | Mirrors the app code's `\API` namespace and folder structure |
+
+Test files have to follow the [*Test.php](https://phpunit.de/manual/current/en/organizing-tests.html#organizing-tests.filesystem) suffix pattern, i.e. `FoobarTest.php`
+
+An ExampleTest.php file is provided in the `Unit` test directory.
+
+## Installation
+
+Some tests may require a http-like connection x to your LRS, including basic authentication and xAPI headers.
+
+* Copy `Config.template.php` to `Config.php`
+* Update `Config::$lrs` with your lrs data including valid authentication
+
+## Usage
 
 ```bash
-cd tests/bdd
-git clone https://github.com/adlnet/lrs-conformance-test-suite.git
-cd lrs-conformance-test-suite && npm install
+./vendor/bin/phpunit
 ```
 
-2. Follow the [setup and usage instructions](https://github.com/adlnet/lrs-conformance-test-suite)
+For more information and available command line options see the [PHPUnit](https://phpunit.de/manual/current/en/textui.html) documentation

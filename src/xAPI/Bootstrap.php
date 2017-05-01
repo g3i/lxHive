@@ -58,7 +58,7 @@ class Bootstrap
     /**
      * @vars Bootstrap Mode
      */
-    const None     = 0;
+    const None    = 0;
     const Web     = 1;
     const Console = 1;
     const Testing = 2;
@@ -69,7 +69,7 @@ class Bootstrap
     private static $mode = 0;
 
     /**
-     * constuructor
+     * constructor
      * Sets bootstrap mode
      * @param  int $mode Bootstrap mode constant
      */
@@ -83,13 +83,14 @@ class Bootstrap
      *
      * @param  int $mode Bootstrap mode constant
      * @return void
-     * @throws \RuntimeException
+     * @throw AppInitException
      */
     public static function factory($mode)
     {
         if (self::$containerInstantiated) {
-            if ($mode !== self::Testing) {
-                throw new \RuntimeException('You can only instantiate the Bootstrapper once!');
+            // modes test and none (admin,etc) shall pass
+            if ($mode !== self::Testing && $mode !== self::None) {
+                throw new AppInitException('Bootstrap: You can only instantiate the Bootstrapper once!');
             }
         }
 
@@ -125,9 +126,28 @@ class Bootstrap
                 break;
             }
             default: {
-                throw new \InvalidArgumentException('You must provide a valid mode when calling the Boostrapper factory!');
+                throw new AppInitException('Bootstrap: You must provide a valid mode when calling the Boostrapper factory!');
             }
         }
+    }
+
+    /**
+     * Reset Bootstrap
+     * @ignore do not compile to docs
+     * @return void
+     * @throw AppInitException if self::mode does not allow reboot
+     */
+    public static function reset()
+    {
+        if (self::$mode === self::Testing || self::$mode === self::None) {
+            self::$mode = self::None;
+            self::$containerInstantiated = false;
+            self::$containerInstance = false;
+            Config::reset();
+            return;
+        }
+
+        throw new AppInitException('Bootstrap: reset not allowed in this mode (' . self::$mode . ')');
     }
 
     /**
@@ -147,6 +167,7 @@ class Bootstrap
     /**
      * Initialize default configuration and load services
      * @return \Psr\Container\ContainerInterface service container
+     * @throws AppInitException if self::$mode > self::None
      */
     public function initConfig()
     {
@@ -187,18 +208,23 @@ class Bootstrap
     /**
      * Initialize default configuration and load services
      * @return \Psr\Container\ContainerInterface service container
+     * @throws AppInitException
      */
     public function initGenericContainer()
     {
         // 2. Create default container
-        $container = new Container();
+        if (self::$mode === self::Web) {
+            $container = new \Slim\Container();
+        } else {
+            $container = new Container();
+        }
 
         // 3. Storage setup
         $container['storage'] = function ($container) {
             $storageInUse = Config::get(['storage', 'in_use']);
             $storageClass = '\\API\\Storage\\Adapter\\'.$storageInUse;
             if (!class_exists($storageClass)) {
-                throw new \InvalidArgumentException('Storage type selected in config is invalid!');
+                throw new AppInitException('Bootstrap: Storage type selected in config is invalid!');
             }
             $storageAdapter = new $storageClass($container);
 
@@ -211,6 +237,8 @@ class Bootstrap
     /**
      * Initialize  web mode configuration and load services
      * @return \Psr\Container\ContainerInterface service container
+     * @throws AppInitException
+     * @throws HttpException on authentication denied or invalid request
      */
     public function initWebContainer($container = null)
     {
@@ -233,16 +261,17 @@ class Bootstrap
             *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
             *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
         */
-        $slimSettings = Config::get(['slim', 'settings']);
-        // Slim *requires* a 'settings' key in the container, no way to override this (so that Slim would use our Config class directly)
-        $container['settings'] = $slimSettings;
-        // Use Slim's default service provide to provide the required services
         $slimDefaultServiceProvider = new DefaultServicesProvider();
-        $slimDefaultServiceProvider->register($this);
+        $slimDefaultServiceProvider->register($container);
 
         // 5. Insert URL object
         // TODO: Remove this soon - use PSR-7 request's URI object
-        $container['url'] = Url::createFromServer($_SERVER);
+        // TODO: handle more efficiently than catching exceptions when running Unit tests
+        try {
+            $container['url'] = Url::createFromServer($_SERVER);
+        } catch (\RuntimeException $e) {
+            //noting
+        }
 
         $handlerConfig = Config::get(['log', 'handlers']);
         $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
@@ -340,7 +369,7 @@ class Bootstrap
                 }
 
                 if (null === $token) {
-                    throw new \Exception('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
+                    throw new HttpException('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
                 }
 
                 return $token;
@@ -368,16 +397,16 @@ class Bootstrap
             }
 
             if (!$versionString) {
-                throw new \Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
+                throw new HttpException('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
             } else {
                 try {
                     $version = Versioning::fromString($versionString);
                 } catch (\InvalidArgumentException $e) {
-                    throw new \Exception('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
+                    throw new HttpException('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
-                    throw new \Exception('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
+                    throw new HttpException('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
                 }
 
                 return $version;
@@ -411,11 +440,12 @@ class Bootstrap
     /**
      * Boot web application (Slim App), including all routes
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws AppInitException
      */
     public function bootWebApp()
     {
         if (!self::$containerInstantiated) {
-            throw new \InvalidArgumentException('You must initiate the Bootstrapper using the static factory!');
+            throw new AppInitException('Bootrstrap; You must initiate the Bootstrapper using the static factory!');
         }
 
         $container = self::$containerInstance;
