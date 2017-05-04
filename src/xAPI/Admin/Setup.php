@@ -72,7 +72,7 @@ class Setup
     /**
      * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
      *
-     * @param string $yaml      yaml file to be created from template
+     * @param string $yml      yaml file to be created from template
      * @param array  $mergeData associative array of config data to be merged in to the new config file
      * @throws \Exception
      */

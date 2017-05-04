@@ -29,8 +29,8 @@ interface AdapterInterface
     /**
      * Inserts the document into the specified collection.
      *
-     * @param API\Document\DocumentInterface $document   The document to be inserted
-     * @param string                         $collection Name of the collection to insert to
+     * @param array $documents array of API\Document\DocumentInterface Documents to be inserted
+     * @param string $collection name Mongo collection name
      *
      * @return DocumentResult The result of this query
      */
@@ -39,8 +39,8 @@ interface AdapterInterface
     /**
      * Inserts the document into the specified collection.
      *
-     * @param API\Document\DocumentInterface $document   The document to be inserted
-     * @param string                         $collection Name of the collection to insert to
+     * @param API\Document\DocumentInterface $document The document to be inserted
+     * @param string $collection Name of the collection to insert to
      *
      * @return DocumentResult The result of this query
      */
@@ -49,9 +49,9 @@ interface AdapterInterface
     /**
      * Updates documents matching the filter.
      *
-     * @param object|array $document   The document to be inserted
-     * @param array        $query      The query to update the documents
-     * @param string       $collection Name of collection
+     * @param object|array $newDocument The document to be inserted
+     * @param array $filter The query to update the documents
+     * @param string $collection Name of collection
      *
      * @return DocumentResult The result of this query
      */
@@ -60,9 +60,8 @@ interface AdapterInterface
     /**
      * Deletes documents.
      *
-     * @param array  $query      The query that matches documents the need to be deleted
+     * @param array $query The query that matches documents the need to be deleted
      * @param string $collection Name of collection
-     *
      * @return DeletionResult Result of deletion
      */
     public function delete($query, $collection);
@@ -70,9 +69,9 @@ interface AdapterInterface
     /**
      * Fetches documents.
      *
-     * @param array  $query      The query to fetch the documents by
+     * @param array $query The query to fetch the documents by
      * @param string $collection Name of collection
-     *
+     * @param array $options
      * @return DocumentResult Result of fetch
      */
     public function find($query, $collection, $options = []);
@@ -80,13 +79,18 @@ interface AdapterInterface
     /**
      * Fetches documents.
      *
-     * @param array  $query      The query to fetch the first document by
+     * @param array $query The query to fetch the first document by
      * @param string $collection Name of collection
-     *
+     * @param array $options
      * @return DocumentResult Result of fetch
      */
     public function findOne($query, $collection, $options = []);
 
+    /**
+     * Test Mongo Database connection
+     * @param string $uri Mongo database connection
+     * @return DocumentResult database info
+     */
     public static function testConnection($uri);
 
     public function getStatementStorage();
@@ -97,6 +101,11 @@ interface AdapterInterface
 
     public function getLogStorage();
 
+    /**
+     * Get activity Storage
+     *
+     * @return API\Storage\Query\ActivityInterface
+     */
     public function getActivityStorage();
 
     public function getActivityStateStorage();

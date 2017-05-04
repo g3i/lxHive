@@ -232,9 +232,9 @@ class OAuth extends Service implements AuthInterface
     }
 
     /**
-     * @param [type] $request [description]
+     * Validates and retrieves access token
      *
-     * @return [type] [description]
+     * @return array json document
      */
     public function accessTokenPost()
     {
@@ -255,7 +255,7 @@ class OAuth extends Service implements AuthInterface
     public function extractToken(Request $request)
     {
         $tokenHeader = $request->getHeaderLine('Authorization');
-        
+
         if ($tokenHeader && preg_match('/Bearer\s*([^\s]+)/', $tokenHeader, $matches)) {
             $tokenHeader = $matches[1];
         } else {

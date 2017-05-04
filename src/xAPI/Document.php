@@ -33,13 +33,7 @@ abstract class Document implements DocumentInterface
     protected $version;
 
     /**
-     * Constructor
-     *
-     * @param array $document The document to handle
-     * @param string $documentState EUNUM string of i/o state of the document (i.e 'TRUSTED', 'UNTRUSTED', etc..)
-     * @param string $version xAPI version
-     *
-     * @return void
+     * @inheritDoc
      */
     public function __construct($data = [], $documentState = DocumentState::TRUSTED, $version = null)
     {
@@ -49,9 +43,7 @@ abstract class Document implements DocumentInterface
     }
 
     /**
-     * Gets the value of data.
-     *
-     * @return mixed
+     * @inheritDoc
      */
     public function getData()
     {
@@ -59,9 +51,7 @@ abstract class Document implements DocumentInterface
     }
 
     /**
-     * Gets the value of state.
-     *
-     * @return mixed
+     * @inheritDoc
      */
     public function getState()
     {
@@ -69,19 +59,17 @@ abstract class Document implements DocumentInterface
     }
 
     /**
-     * Gets the value of version.
-     *
-     * @return mixed
+     * @inheritDoc
      */
     public function getVersion()
     {
         return $this->version;
     }
 
-        /**
-     * Sets the value of data.
+    /**
+     * Sets the value of xAPI data.
      *
-     * @param mixed $data the data
+     * @param array $data the data
      *
      * @return self
      */
@@ -95,10 +83,11 @@ abstract class Document implements DocumentInterface
     /**
      * Sets the value of state.
      *
-     * @param mixed $state the state
+     * @param string $state i/o state of the document
      *
      * @return self
      */
+     //TODO remove or protected
     protected function setState($state)
     {
         $this->state = $state;
@@ -113,6 +102,7 @@ abstract class Document implements DocumentInterface
      *
      * @return self
      */
+     //TODO remove or protected
     protected function setVersion($version)
     {
         $this->version = $version;
@@ -120,7 +110,12 @@ abstract class Document implements DocumentInterface
         return $this;
     }
 
-    // TODO: If needed, add dot notation getters and setters
+    /**
+     * Get the value of a specfier xAPI data property
+     *
+     * @param string $key
+     * @return mixed property value
+     */
     public function get($key)
     {
         if (isset($this->data[$key])) {
@@ -128,6 +123,13 @@ abstract class Document implements DocumentInterface
         }
     }
 
+    /**
+     * Get the value of a specfier xAPI data property
+     *
+     * @param string $key
+     * @return mixed property value
+     */
+    //TODO remove or protected
     public function set($key, $value)
     {
         $this->data[$key] = $value;
@@ -135,10 +137,11 @@ abstract class Document implements DocumentInterface
 
     /**
      * Handle getters and setters
-     * @param  [type] $name      [description]
-     * @param  [type] $arguments [description]
-     * @return [type]            [description]
+     * @param  string $name
+     * @param  array $arguments
+     * @return mixed
      */
+     //TODO remove
     public function __call($name, $arguments)
     {
         // Getter
@@ -154,11 +157,20 @@ abstract class Document implements DocumentInterface
         throw new \Exception('Document has no method "' . $name . '"');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function jsonSerialize()
     {
         return $this->getData();
     }
 
+    /**
+     * Get stored xAPI data as array
+     *
+     * @return array
+     */
+    //TODO remove
     public function toArray()
     {
         return $this->getData();

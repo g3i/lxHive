@@ -32,8 +32,6 @@ class AgentProfile extends Service
     /**
      * Fetches agent profiles according to the given parameters.
      *
-     * @param array $request The incoming HTTP request
-     *
      * @return array An array of agentProfile objects.
      */
     public function agentProfileGet()
@@ -85,8 +83,6 @@ class AgentProfile extends Service
 
     /**
      * Fetches activity states according to the given parameters.
-     *
-     * @param array $request The incoming HTTP request
      *
      * @return self Nothing.
      */

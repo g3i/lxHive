@@ -34,8 +34,6 @@ class Statement extends Service
     /**
      * Fetches statements according to the given parameters.
      *
-     * @param array $request The HTTP request object.
-     *
      * @return array An array of statement objects.
      */
     public function statementGet()
