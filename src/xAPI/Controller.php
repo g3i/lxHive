@@ -193,6 +193,8 @@ abstract class Controller
      *
      * @param int    $code    Error code
      * @param string $message Error message
+     * @param array|object $data extra data to display
+     * @return string
      */
     public function error($code, $message = '', $data = [])
     {
@@ -200,10 +202,15 @@ abstract class Controller
     }
 
     /**
-     * @param $resource The main resource
-     * @param $subResource An optional subresource
+     * Dynamically load a routing resource
+     * @param string $version xAPI version
+     * @param \Interop\Container\ContainerInterface service container
+     * @param \Psr\Http\Message\ServerRequestInterface $request Slim request instance
+     * @param \Psr\Http\Message\ResponseInterface $response Slim response instance
+     * @param string $resource the main resource
+     * @param string $subResource An optional subresource
      *
-     * @return mixed
+     * @return \API\ControllerInterface
      */
     public static function load($version, $container, $request, $response, $resource, $subResource = null)
     {

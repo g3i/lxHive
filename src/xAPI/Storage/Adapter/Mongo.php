@@ -50,9 +50,8 @@ class Mongo implements AdapterInterface
     /**
      * Inserts the document into the specified collection.
      *
-     * @param API\Document\DocumentInterface $document   The document to be inserted
-     * @param string                         $collection Name of the collection to insert to
-     *
+     * @param string$collection Name of the collection to insert to
+     * @param API\Document\DocumentInterface $document The document to be inserted
      * @return DocumentResult The result of this query
      */
     public function insertOne($collection, $document)
@@ -70,9 +69,8 @@ class Mongo implements AdapterInterface
     /**
      * Inserts the document into the specified collection.
      *
-     * @param API\Document\DocumentInterface $document   The document to be inserted
-     * @param string                         $collection Name of the collection to insert to
-     *
+     * @param string $collection Name of the collection to insert to
+     * @param array  $documents Collection of API\Document\DocumentInterface documents to be inserted
      * @return DocumentResult The result of this query
      */
     public function insertMultiple($collection, $documents)
@@ -97,10 +95,10 @@ class Mongo implements AdapterInterface
     /**
      * Updates documents matching the filter.
      *
-     * @param object|array $newDocument   The modified document to be written
-     * @param array        $filter      The filter that determines which documents to update
-     * @param string       $collection Name of collection
-     *
+     * @param string $collection Name of collection
+     * @param array $filter The filter that determines which documents to update
+     * @param object|array $newDocument The modified document to be written
+     * @param bool $upsert
      * @return DocumentResult The result of this query
      */
     public function update($collection, $filter, $newDocument, $upsert = false)
@@ -124,9 +122,8 @@ class Mongo implements AdapterInterface
     /**
      * Deletes documents.
      *
-     * @param array  $filter      The filter that matches documents the need to be deleted
      * @param string $collection Name of collection
-     *
+     * @param array $filter The filter that matches documents the need to be deleted
      * @return DeletionResult Result of deletion
      */
     public function delete($collection, $filter)
@@ -144,9 +141,9 @@ class Mongo implements AdapterInterface
     /**
      * Fetches documents.
      *
-     * @param array|Expression  $filter      The filter to fetch the documents by
      * @param string $collection Name of collection
-     *
+     * @param array|Expression $filter The filter to fetch the documents by
+     * @param array $options
      * @return DocumentResult Result of fetch
      */
     public function find($collection, $filter = [], $options = [])
@@ -165,9 +162,9 @@ class Mongo implements AdapterInterface
     /**
      * Fetches documents.
      *
-     * @param array|Expression  $filter      The filter to fetch the documents by
      * @param string $collection Name of collection
-     *
+     * @param array|Expression $filter The filter to fetch the documents by
+     * @param array $options
      * @return DocumentResult Result of fetch
      */
     public function findOne($collection, $filter, $options = [])

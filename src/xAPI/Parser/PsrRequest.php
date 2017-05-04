@@ -164,7 +164,7 @@ class PsrRequest
      * @param  RequestInterface $request
      * @return array|object of parsed request body
      */
-    private function parseSingleRequest($request, $reparseQuery = false)
+    private function parseSingleRequest($request)
     {
         $parserResult = new ParserResult();
 

@@ -29,17 +29,38 @@ interface DocumentInterface extends \JsonSerializable
     /**
      * Constructor
      *
-     * @param array $document The xAPI document to handle
+     * @param array $data xAPI data
      * @param string $documentState EUNUM string of i/o state of the document (i.e 'TRUSTED', 'UNTRUSTED', etc..)
      * @param string $version xAPI version
+     * @return void
      */
     public function __construct($data = [], $documentState = null, $version = null);
 
+    /**
+     * Get stored data
+     *
+     * @return array xAPI data
+     */
     public function getData();
 
+    /**
+     * Get stored document state
+     *
+     * @return string i/o state of the document
+     */
     public function getState();
-    
+
+    /**
+     * Get stored xAPI version
+     *
+     * @return string
+     */
     public function getVersion();
 
+    /**
+     * Get stored document state
+     *
+     * @return string i/o state of the document
+     */
     public function toArray();
 }

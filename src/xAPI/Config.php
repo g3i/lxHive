@@ -71,7 +71,8 @@ class Config
 
     /**
      * Get collection item
-     * @param  string $key The key to get
+     * @param string $key The key to get
+     * @param mixed $default optional return value
      * @return mixed The value at this key
      * @throws AppInitException
      */

@@ -32,8 +32,6 @@ class ActivityState extends Service
     /**
      * Fetches activity states according to the given parameters.
      *
-     * @param array $request The incoming HTTP request
-     *
      * @return array An array of statement objects.
      */
     public function activityStateGet()
@@ -82,8 +80,6 @@ class ActivityState extends Service
 
     /**
      * Fetches activity states according to the given parameters.
-     *
-     * @param array $request The incoming HTTP request
      *
      * @return array An array of statement objects.
      */

@@ -100,8 +100,8 @@ abstract class Validator
 
     /**
      * Performs general validation of the request.
-     *
-     * @param \Silex\Request $request The request
+     * @return void
+     * @throws Exception
      */
     public function validateRequest()
     {
