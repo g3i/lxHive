@@ -23,6 +23,7 @@
  */
 
 namespace API;
+use Interop\Container\ContainerInterface;
 
 trait BaseTrait
 {
@@ -32,46 +33,57 @@ trait BaseTrait
     private $container;
 
     /**
-     * Sets the value of container.
+     * Sets service container.
      *
-     * @param \Slim\Container $container the di container
-     *
+     * @param ContainerInterface $container
      * @return self
      */
-    public function setContainer(\Slim\Container $container)
+    public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
-
         return $this;
     }
 
-        /**
-     * Gets the value of diContainer.
+    /**
+     * Gets service ontainer.
      *
      * @return \Slim\Container
      */
     public function getContainer()
     {
+        if(!$this->container){
+            throw new \Exception('Basetrait: no container was set.');
+        }
         return $this->container;
     }
 
     /**
-     * Gets the value of storage.
+     * Gets storage service.
      *
      * @return \Storage\AdapterInterface
+     * @throws \Exception
+     * @throws \API\ContainerException
      */
     public function getStorage()
     {
-        return $this->container['storage'];
+        if(!$this->container){
+            throw new \Exception('Basetrait: no container was set.');
+        }
+        return $this->container->get('storage');
     }
 
     /**
-     * Gets the value of log.
+     * Gets log service.
      *
      * @return \Monolog\Monolog
+     * @throws \Exception
+     * @throws \API\ContainerException
      */
     public function getLog()
     {
-        return $this->container['log'];
+        if(!$this->container){
+            throw new \Exception('Basetrait: no container was set.');
+        }
+        return $this->container->get('log');
     }
 }
