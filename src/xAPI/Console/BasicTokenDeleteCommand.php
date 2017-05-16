@@ -65,6 +65,6 @@ class BasicTokenDeleteCommand extends Command
 
         $accessTokenService->deleteToken($clientId);
 
-        $output->writeln('<info>Supertoken successfully deleted!</info>');
+        $output->writeln('<info>Basic token successfully deleted!</info>');
     }
 }
