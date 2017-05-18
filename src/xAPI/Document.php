@@ -35,8 +35,11 @@ abstract class Document implements DocumentInterface
     /**
      * @inheritDoc
      */
-    public function __construct($data = [], $documentState = DocumentState::TRUSTED, $version = null)
+    public function __construct($data = null, $documentState = DocumentState::TRUSTED, $version = null)
     {
+        if (null === $data) {
+            $data = new \stdClass;
+        }
         $this->data = $data;
         $this->state = $documentState;
         $this->version = $version;

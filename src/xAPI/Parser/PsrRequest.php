@@ -144,11 +144,11 @@ class PsrRequest
             $parserResult->setRawPayload($content);
 
             if (strpos($headers['content-type'][0], 'application/json') === 0) {
-                $content = json_decode($content, true);
+                $content = json_decode($content);
 
                 // Some clients escape the JSON twice - handle them
                 if (is_string($content)) {
-                    $content = json_decode($content, true);
+                    $content = json_decode($content);
                 }
             }
             $parserResult->setPayload($content);
@@ -190,6 +190,7 @@ class PsrRequest
         $body = $request->getBody();
         $parserResult->setRawPayload($body);
 
+        // Slim3 application/json body parser parses this to associative array!
         $parsedBody = $request->getParsedBody();
         $parserResult->setPayload($parsedBody);
 

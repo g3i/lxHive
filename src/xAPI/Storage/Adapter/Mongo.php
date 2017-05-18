@@ -154,7 +154,6 @@ class Mongo implements AdapterInterface
 
         $query = new \MongoDB\Driver\Query($filter, $options);
         $cursor = $this->getClient()->executeQuery($this->databaseName . '.' . $collection, $query);
-        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
 
         return $cursor;
     }
@@ -175,7 +174,6 @@ class Mongo implements AdapterInterface
         $options = ['limit' => 1] + $options;
         $query = new \MongoDB\Driver\Query($filter, $options);
         $cursor = $this->getClient()->executeQuery($this->databaseName . '.' . $collection, $query);
-        $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
         $document = current($cursor->toArray());
         return ($document === false) ? null : $document;
     }
@@ -219,7 +217,6 @@ class Mongo implements AdapterInterface
         $client = new \MongoDB\Driver\Manager($uri);
         $buildInfoCommand = new \MongoDB\Driver\Command(['buildinfo' => 1]);
         $result = $client->executeCommand('admin', $buildInfoCommand);
-        $result->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
 
         if ($result) {
             $result = $result->toArray()[0];
