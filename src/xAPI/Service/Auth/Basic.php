@@ -132,13 +132,17 @@ class Basic extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function deleteToken($clientId)
+    public function deleteToken($key, $secret = null)
     {
         $collection  = $this->getDocumentManager()->getCollection('basicTokens');
 
         $expression = $collection->expression();
 
-        $expression->where('clientId', $clientId);
+        $expression->where('key', $key);
+
+        if (null != $secret) {
+            $expression->where('secret', $secret);
+        }
 
         $collection->deleteDocuments($expression);
 
