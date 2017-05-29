@@ -121,8 +121,8 @@ abstract class Document implements DocumentInterface
      */
     public function get($key)
     {
-        if (isset($this->data[$key])) {
-            return $this->data[$key];
+        if (isset($this->data->{"$key"})) {
+            return $this->data->{"$key"};
         }
     }
 
@@ -135,7 +135,7 @@ abstract class Document implements DocumentInterface
     //TODO remove or protected
     public function set($key, $value)
     {
-        $this->data[$key] = $value;
+        $this->data->{"$key"} = $value;
     }
 
     /**

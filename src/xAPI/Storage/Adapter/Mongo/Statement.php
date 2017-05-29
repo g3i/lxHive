@@ -368,7 +368,7 @@ class Statement extends Provider implements StatementInterface
 
         $attachmentBase = $this->getContainer()['url']->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
 
-        if (isset($statementObject['id'])) {
+        if (isset($statementObject->{'id'})) {
             $expression = $storage->createExpression();
             $expression->where('statement.id', $statementObject['id']);
 

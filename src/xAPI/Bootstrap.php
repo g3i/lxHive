@@ -495,6 +495,11 @@ class Bootstrap
                 //$container['parser']->parseRequest($request);
             }
 
+            // Register media type parser
+            $request->registerMediaTypeParser('application/json', function ($input) {
+               return json_decode($input);
+            });
+
             $response = $next($request, $response);
 
             return $response;

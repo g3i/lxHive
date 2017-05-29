@@ -61,7 +61,8 @@ class Statement extends Document
     public static function fromApi($document, $version)
     {
         $documentState = DocumentState::UNTRUSTED;
-        $data = ['statement' => $document];
+        $data = (object)[];
+        $data->statement = $document;
         $statement = new self($data, $documentState, $version);
         return $statement;
     }
@@ -115,63 +116,63 @@ class Statement extends Document
 
     public function getStatement()
     {
-        if (isset($this->data['statement'])) {
-            return $this->data['statement'];
+        if (isset($this->data['statement->)) {
+            return $this->data['statement->;
         }
     }
 
     public function getMetadata()
     {
-        if (isset($this->data['metadata'])) {
-            return $this->data['metadata'];
+        if (isset($this->data['metadata->)) {
+            return $this->data['metadata->;
         }
     }*/
 
     public function getId()
     {
-        return $this->data['_id'];
+        return $this->data->{'_id'};
     }
 
     public function setStored($timestamp)
     {
-        $this->data['statement']['stored'] = $timestamp;
+        $this->data->statement->stored = $timestamp;
     }
 
     public function getStored()
     {
-        return $this->data['statement']['stored'];
+        return $this->data->statement->stored;
     }
 
     public function setTimestamp($timestamp)
     {
-        $this->data['statement']['timestamp'] = $timestamp;
+        $this->data->statement->timestamp = $timestamp;
     }
 
     public function getTimestamp()
     {
-        return $this->data['statement']['timestamp'];
+        return $this->data->statement->timestamp;
     }
 
     public function setMongoTimestamp($timestamp)
     {
-        $this->data['mongo_timestamp'] = $timestamp;
+        $this->data->mongo_timestamp = $timestamp;
     }
 
     public function getMongoTimestamp()
     {
-        return $this->data['mongo_timestamp'];
+        return $this->data->mongo_timestamp;
     }
 
     public function renderExact()
     {
         $this->convertExtensionKeysFromUnicode();
 
-        return $this->data['statement'];
+        return $this->data->statement;
     }
 
     public function renderMeta()
     {
-        return $this->data['statement']['id'];
+        return $this->data->statement->id;
     }
 
     public function renderCanonical()
@@ -181,8 +182,8 @@ class Statement extends Document
 
     public function setDefaultTimestamp()
     {
-        if (!isset($this->data['statement']['timestamp']) || null === $this->data['statement']['timestamp']) {
-            $this->data['statement']['timestamp'] = $this->data['statement']['stored'];
+        if (!isset($this->data->statement->timestamp) || null ===  $this->data->statement->timestamp) {
+             $this->data->statement->timestamp =  $this->data->statement->stored;
         }
     }
 
@@ -192,26 +193,26 @@ class Statement extends Document
      */
     public function legacyContextActivities()
     {
-        if (!isset($this->data['statement']['context'])) {
+        if (!isset($this->data->statement->context)) {
             return;
         }
-        if (!isset($this->data['statement']['context']['contextActivities'])) {
+        if (!isset($this->data->statement->context->contextActivities)) {
             return;
         }
-        foreach ($this->data['statement']['context']['contextActivities'] as $type => $value) {
+        foreach ($this->data->statement->context->contextActivities as $type => $value) {
             // We are a bit rat-trapped because statement is an associative array, most efficient way to check if numeric array is here to check for required 'id' property
-            if (isset($value['id'])) {
-                $this->data['statement']['context']['contextActivities'][$type] = [$value];
+            if (isset($value->id)) {
+                $this->data->statement->context->contextActivities->{$type} = [$value];
             }
         }
     }
 
     public function isVoiding()
     {
-        if (isset($this->data['statement']['verb']['id'])
-            && ($this->data['statement']['verb']['id'] === 'http://adlnet.gov/expapi/verbs/voided')
-            && isset($this->data['statement']['object']['objectType'])
-            && ($this->data['statement']['object']['objectType'] === 'StatementRef')
+        if (isset($this->data->statement->verb->id)
+            && ($this->data->statement->verb->id === 'http://adlnet.gov/expapi/verbs/voided')
+            && isset($this->data->statement->object->objectType)
+            && ($this->data->statement->object->objectType === 'StatementRef')
         ) {
             return true;
         } else {
@@ -221,8 +222,8 @@ class Statement extends Document
 
     public function isReferencing()
     {
-        if (isset($this->data['statement']['object']['objectType'])
-            && ($this->data['statement']['object']['objectType'] === 'StatementRef')) {
+        if (isset($this->data->statement->object->objectType)
+            && ($this->data->statement->object->objectType === 'StatementRef')) {
             return true;
         } else {
             return false;
@@ -231,22 +232,22 @@ class Statement extends Document
 
     public function getReferencedStatementId()
     {
-        $referencedId = $this->data['statement']['object']['id'];
+        $referencedId = $this->data->statement->object->id;
 
         return $referencedId;
     }
 
     public function fixAttachmentLinks($baseUrl)
     {
-        if (isset($this->data['statement']['attachments'])) {
-            if (!is_array($this->data['statement']['attachments'])) {
+        if (isset($this->data->statement->attachments)) {
+            if (!is_array($this->data->statement->attachments)) {
                 return;
             }
-            foreach ($this->data['statement']['attachments'] as &$attachment) {
-                if (!isset($attachment['fileUrl'])) {
+            foreach ($this->data->statement->attachments as &$attachment) {
+                if (!isset($attachment->fileUrl)) {
                     $url = Url::createFromUrl($baseUrl);
-                    $url->getQuery()->modify(['sha2' => $attachment['sha2']]);
-                    $attachment['fileUrl'] = $url->__toString();
+                    $url->getQuery()->modify(['sha2' => $attachment->sha2]);
+                    $attachment->fileUrl = $url->__toString();
                 }
             }
         }
@@ -254,79 +255,81 @@ class Statement extends Document
 
     public function convertExtensionKeysToUnicode()
     {
-        if (isset($this->data['statement']['context']['extensions'])) {
-            if (!is_array($this->data['statement']['context']['extensions'])) {
+        if (isset($this->data->statement->context->extensions)) {
+            if (!is_array($this->data->statement->context->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->context->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
-                $this->data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['context']['extensions'][$extensionKey]);
+                $this->data->statement->context->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->context->extensions->{$extensionKey});
             }
         }
 
-        if (isset($this->data['statement']['result']['extensions'])) {
-            if (!is_array($this->data['statement']['result']['extensions'])) {
+        if (isset($this->data->statement->result->extensions)) {
+            if (!is_array($this->data->statement->result->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->result->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
-                $this->data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['result']['extensions'][$extensionKey]);
+                $this->data->statement->result->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->result->extensions->{$extensionKey});
             }
         }
 
-        if (isset($this->data['statement']['object']['definition']['extensions'])) {
-            if (!is_array($this->data['statement']['object']['definition']['extensions'])) {
+        if (isset($this->data->statement->object->definition->extensions)) {
+            if (!is_array($this->data->statement->object->definition->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->object->definition->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('.', '\uFF0E', $extensionKey);
-                $this->data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['object']['definition']['extensions'][$extensionKey]);
+                $this->data->statement->object->definition->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->object->definition->extensions->{$extensionKey});
             }
         }
     }
     public function setDefaultId()
     {
         // If no ID has been set, set it
-        if (empty($this->data['statement']['id']) || $this->data['statement']['id'] === null) {
-            $this->setStatement(['id' => Uuid::uuid4()->toString()] + $this->data['statement']);
+        if (empty($this->data->statement->id) || $this->data->statement->id === null) {
+            $this->data->statement->id = Uuid::uuid4()->toString();
+            // TODO: Fix order of this
+            //$this->setStatement(['id' => Uuid::uuid4()->toString()] + $this->data->statement);
         }
     }
 
     public function convertExtensionKeysFromUnicode()
     {
-        if (isset($this->data['statement']['context']['extensions'])) {
-            if (!is_array($this->data['statement']['context']['extensions'])) {
+        if (isset($this->data->statement->context->extensions)) {
+            if (!is_array($this->data->statement->context->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['context']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->context->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
-                $this->data['statement']['context']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['context']['extensions'][$extensionKey]);
+                $this->data->statement->context->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->context->extensions->{$extensionKey});
             }
         }
 
-        if (isset($this->data['statement']['result']['extensions'])) {
-            if (!is_array($this->data['statement']['result']['extensions'])) {
+        if (isset($this->data->statement->result->extensions)) {
+            if (!is_array($this->data->statement->result->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['result']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->result->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
-                $this->data['statement']['result']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['result']['extensions'][$extensionKey]);
+                $this->data->statement->result->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->result->extensions->{$extensionKey});
             }
         }
 
-        if (isset($this->data['statement']['object']['definition']['extensions'])) {
-            if (!is_array($this->data['statement']['object']['definition']['extensions'])) {
+        if (isset($this->data->statement->object->definition->extensions)) {
+            if (!is_array($this->data->statement->object->definition->extensions)) {
                 return;
             }
-            foreach ($this->data['statement']['object']['definition']['extensions'] as $extensionKey => $extensionValue) {
+            foreach ($this->data->statement->object->definition->extensions as $extensionKey => $extensionValue) {
                 $newExtensionKey = str_replace('\uFF0E', '.', $extensionKey);
-                $this->data['statement']['object']['definition']['extensions'][$newExtensionKey] = $extensionValue;
-                unset($this->data['statement']['object']['definition']['extensions'][$extensionKey]);
+                $this->data->statement->object->definition->extensions->{$newExtensionKey} = $extensionValue;
+                unset($this->data->statement->object->definition->extensions->{$extensionKey});
             }
         }
     }
@@ -334,27 +337,27 @@ class Statement extends Document
     public function renderIds()
     {
         $this->convertExtensionKeysFromUnicode();
-        $statement = $this->data['statement'];
+        $statement = $this->data->statement;
 
-        if ($statement['actor']['objectType'] === 'Group') {
-            $statement['actor'] = array_map(function ($singleMember) {
+        if ($statement->actor->objectType === 'Group') {
+            $statement->actor = array_map(function ($singleMember) {
                 return $this->simplifyObject($singleMember);
-            }, $statement['actor']);
+            }, $statement->actor);
         } else {
-            $statement['actor'] = $this->simplifyObject($statement['actor']);
+            $statement->actor = $this->simplifyObject($statement->actor);
         }
 
-        if ($statement['object']['objectType'] !== 'SubStatement') {
-            $statement['object'] = $this->simplifyObject($statement['object']);
+        if ($statement->object->objectType !== 'SubStatement') {
+            $statement->object = $this->simplifyObject($statement->object);
         } else {
-            if ($statement['object']['actor']['objectType'] === 'Group') {
-                $statement['object']['actor'] = array_map(function ($singleMember) {
+            if ($statement->object->actor->objectType === 'Group') {
+                $statement->object->actor = array_map(function ($singleMember) {
                     return $this->simplifyObject($singleMember);
-                }, $statement['object']['actor']);
+                }, $statement->object->actor);
             } else {
-                $statement['object']['actor'] = $this->simplifyObject($statement['object']['actor']);
+                $statement->object->actor = $this->simplifyObject($statement->object->actor);
             }
-            $statement['object']['object'] = $this->simplifyObject($statement['object']['object']);
+            $statement->object->object = $this->simplifyObject($statement->object->object);
         }
 
         return $statement;

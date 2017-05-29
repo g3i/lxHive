@@ -167,7 +167,6 @@ class PsrRequest
     private function parseSingleRequest($request)
     {
         $parserResult = new ParserResult();
-
         $parameters = $request->getQueryParams();
         // CORS override!
         if (isset($parameters['method'])) {
