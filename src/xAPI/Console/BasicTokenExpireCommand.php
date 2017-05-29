@@ -52,7 +52,7 @@ class BasicTokenExpireCommand extends Command
             $clientIds[] = $document->getClientId();
         }
 
-        $question = new Question('Please enter the the client ID of the token you wish to delete: ');
+        $question = new Question('Please enter the the client ID of the token you wish to expire: ');
         $question->setAutocompleterValues($clientIds);
 
         $clientId = $helper->ask($input, $output, $question);
