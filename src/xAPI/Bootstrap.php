@@ -454,6 +454,12 @@ class Bootstrap
 
         // CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
+
+            // Register media type parser
+            $request->registerMediaTypeParser('application/json', function ($input) {
+               return json_decode($input);
+            });
+            
             if ($request->isPost() && $request->getQueryParam('method')) {
                 $method = $request->getQueryParam('method');
                 $request = $request->withMethod($method);
@@ -494,11 +500,6 @@ class Bootstrap
                 $container->offsetSet('request', $request);
                 //$container['parser']->parseRequest($request);
             }
-
-            // Register media type parser
-            $request->registerMediaTypeParser('application/json', function ($input) {
-               return json_decode($input);
-            });
 
             $response = $next($request, $response);
 
