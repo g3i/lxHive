@@ -55,12 +55,13 @@ use API\Console\OAuthClientListCommand;
 use API\Console\AuthScopeCreateCommand;
 use API\Console\SetupCommand;
 use API\Console\SetupOAuthCommand;
+use API\AppInitException;
 
 // If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
 try {
     $bootstrapper = Bootstrap::factory(Bootstrap::Console);
     $application = $bootstrapper->bootCliApp();
-} catch (\RunTimeException $e) {
+} catch (AppInitException $e) {
     $application = new Application();
     $application->add(new SetupCommand());
     $application->run();

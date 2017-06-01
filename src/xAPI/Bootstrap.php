@@ -190,8 +190,8 @@ class Bootstrap
             if (self::$mode === self::None) {
                 return;
             } else {
-                // Rethrow exception
-                throw $e;
+                // throw AppInit exception
+                throw new AppInitException('Cannot load configuration: '.$e->getMessage());
             }
         }
 

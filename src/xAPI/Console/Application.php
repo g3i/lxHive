@@ -33,7 +33,9 @@ class Application extends SymfonyApplication
 
     public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
     {
-        $this->setContainer($container);
+        if($container){
+            $this->setContainer($container);
+        }
         parent::__construct($name, $version);
     }
 }
