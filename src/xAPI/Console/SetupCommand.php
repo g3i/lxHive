@@ -27,7 +27,10 @@ namespace API\Console;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+
+use API\Bootstrap;
 use API\Admin\Setup;
 
 class SetupCommand extends SymfonyCommand
@@ -35,9 +38,20 @@ class SetupCommand extends SymfonyCommand
     /**
      * Setup class.
      *
-     * @var API\Admin\Setup
+     * @var API\Admin\Setup $setup
      */
     private $setup;
+
+    /**
+     * @var array $sequence defines the setup task sequence
+     */
+    private $sequence = [
+        'io_setConfig'       => 'Install default configuration',
+        'io_setLrsInstance'  => 'Configure Lrs instance',
+        'io_setMongoStorage' => 'Configure Mongo DB',
+        'io_setFileStorage'  => 'Setup file storage',
+        'io_setAuthScopes'   => 'Setup oAuth scopes',
+    ];
 
     /**
      * Construct.
@@ -58,13 +72,13 @@ class SetupCommand extends SymfonyCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
+        $bootstrapper = Bootstrap::factory(Bootstrap::None);
 
         if ($this->getSetup()->checkYaml('Config.yml')) {
-            $output->writeln('<error>A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.</error>');
-
-            return;
+            throw new \Exception('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
+
+        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
 
         $helper = $this->getHelper('question');
         $question = new Question('Enter a name for this lxHive instance: ', 'Untitled');
@@ -96,6 +110,7 @@ class SetupCommand extends SymfonyCommand
 
         $output->writeln('<info>Setting up default OAuth scopes...</info>');
 
+        Bootstrap::reset();
         $this->getSetup()->initializeAuthScopes();
 
         $output->writeln('<info>OAuth scopes configured!</info>');
