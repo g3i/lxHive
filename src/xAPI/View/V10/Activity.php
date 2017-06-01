@@ -31,7 +31,9 @@ class Activity extends View
     public function renderGetSingle()
     {
         $document = $this->service->getCursor()->current();
-        $document->unsetField('_id');
+        if (isset($document->_id)) {
+        	unset($document->_id);
+        }
 
         return $document;
     }

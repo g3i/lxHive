@@ -53,7 +53,7 @@ class Statement extends Document
     public static function fromDatabase($document)
     {
         $documentState = DocumentState::TRUSTED;
-        $version = $document['version'];
+        $version = $document->version;
         $statement = new self($document, $documentState, $version);
         return $statement;
     }
