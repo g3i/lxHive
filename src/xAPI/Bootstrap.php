@@ -60,8 +60,8 @@ class Bootstrap
      */
     const None    = 0;
     const Web     = 1;
-    const Console = 1;
-    const Testing = 2;
+    const Console = 2;
+    const Testing = 3;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
@@ -180,7 +180,7 @@ class Bootstrap
         Config::factory($defaults);
 
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
-        
+
         $yamlParser = new YamlParser();
 
         try {
@@ -459,7 +459,7 @@ class Bootstrap
             $request->registerMediaTypeParser('application/json', function ($input) {
                return json_decode($input);
             });
-            
+
             if ($request->isPost() && $request->getQueryParam('method')) {
                 $method = $request->getQueryParam('method');
                 $request = $request->withMethod($method);
