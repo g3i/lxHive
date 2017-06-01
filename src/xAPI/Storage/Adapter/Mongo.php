@@ -220,7 +220,7 @@ class Mongo implements AdapterInterface
 
         if ($result) {
             $result = $result->toArray()[0];
-            $result = $result['version'];
+            $result = $result->version;
         } else {
             $result = false;
         }
