@@ -43,7 +43,7 @@ class User extends Admin
         $documentResult = $userService->fetchAvailablePermissions();
         $permissionsDictionary = [];
         foreach ($documentResult->getCursor() as $permission) {
-            $permissionsDictionary[$permission['name']] = $permission;
+            $permissionsDictionary[$permission->name] = $permission;
         }
 
         return $permissionsDictionary;
@@ -74,7 +74,7 @@ class User extends Admin
         $documentResult = $userService->fetchAll();
         $users = [];
         foreach ($documentResult->getCursor() as $user) {
-            $users[$user['email']] = $user;
+            $users[$user->email] = $user;
         }
 
         return $users;
