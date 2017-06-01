@@ -35,7 +35,6 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
-use Pimple\Container;
 use Slim\DefaultServicesProvider;
 use Slim\App as SlimApp;
 use API\Controller\Error;
