@@ -12,6 +12,14 @@ class StreamContextTest extends TestCase
 
     protected function setUp()
     {
+
+        if(!class_exists('\Tests\Config')){
+            $this->markTestIncomplete(
+              'class \Tests\Config does not exist or is invalid.'
+            );
+            return;
+        }
+
         $this->lrs = \Tests\Config::$lrs['production'];
 
         $this->stream = new \Stream(

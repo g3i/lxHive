@@ -31,6 +31,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+
+use API\Admin;
 use API\Admin\User as UserAdministration;
 
 class UserCreateCommand extends Command
@@ -53,44 +55,65 @@ class UserCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userAdmin = new UserAdministration($this->getContainer());
-
         $helper = $this->getHelper('question');
+        $admin = new Admin\Setup();
 
+        // 1. Email
         if (null === $input->getOption('email')) {
             $question = new Question('Please enter an e-mail: ', 'untitled');
+            $question->setMaxAttempts(null);
+            $question->setValidator(function ($answer) {
+                if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
+                    throw new \RuntimeException('Invalid email address!');
+                }
+
+                return $answer;
+            });
             $email = $helper->ask($input, $output, $question);
         } else {
             $email = $input->getOption('email');
         }
 
+        // 2. Password
         if (null === $input->getOption('password')) {
             $question = new Question('Please enter a password: ', '');
+            $question->setMaxAttempts(null);
+            $question->setValidator(function ($answer) use ($admin) {
+                $admin->validatePassword($answer);
+                return $answer;
+            });
             $password = $helper->ask($input, $output, $question);
         } else {
             $password = $input->getOption('password');
         }
 
+        // 3. Permissions
         $permissionsDictionary = $userAdmin->fetchAvailablePermissions();
+        $permissions = array_keys($permissionsDictionary);
 
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
                 'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                array_keys($permissionsDictionary),
+                $permissions,
                 '0'
             );
             $question->setMultiselect(true);
+            $question->setMaxAttempts(null);
+            $question->setValidator(function ($answer) use ($admin, $permissions) {
+                $admin->validatePermissionsInput($answer, $permissions);
+                return $answer;
+            });
 
-            $selectedPermissionNames = $helper->ask($input, $output, $question);
-        } else {
-            $selectedPermissionNames = explode(',', $input->getOption('permissions'));
+            $selectedIndexes = $helper->ask($input, $output, $question);
         }
 
-        $selectedPermissions = [];
-        foreach ($selectedPermissionNames as $selectedPermissionName) {
-            $selectedPermissions[] = $permissionsDictionary[$selectedPermissionName];
+        $selected = [];
+        foreach ($selectedIndexes as $index) {
+            $perm = $permissions[$index];
+            $selected[] = $permissionsDictionary[$perm];
         }
 
-        $user = $userAdmin->addUser($email, $password, $selectedPermissions);
+        $user = $userAdmin->addUser($email, $password, $selected);
         $text = json_encode($user, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>User successfully created!</info>');
