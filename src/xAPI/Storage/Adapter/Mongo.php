@@ -250,6 +250,13 @@ class Mongo implements AdapterInterface
         return $userStorage;
     }
 
+    public function getAuthScopesStorage()
+    {
+        $storage = new Mongo\AuthScopes($this->getContainer());
+
+        return $storage;
+    }
+
     public function getLogStorage()
     {
         $logStorage = new Mongo\Log($this->getContainer());

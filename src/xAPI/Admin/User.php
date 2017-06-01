@@ -41,6 +41,7 @@ class User extends Admin
         //TODO this method will be obsolete if we remove the authScopes collection
         $userService = new UserService($this->getContainer());
         $documentResult = $userService->fetchAvailablePermissions();
+
         $permissionsDictionary = [];
         foreach ($documentResult->getCursor() as $permission) {
             $permissionsDictionary[$permission->name] = $permission;
