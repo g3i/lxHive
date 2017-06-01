@@ -220,7 +220,7 @@ class Mongo implements AdapterInterface
 
         if ($result) {
             $result = $result->toArray()[0];
-            $result = $result['version'];
+            $result = $result->version;
         } else {
             $result = false;
         }
@@ -248,6 +248,13 @@ class Mongo implements AdapterInterface
         $userStorage = new Mongo\User($this->getContainer());
 
         return $userStorage;
+    }
+
+    public function getAuthScopesStorage()
+    {
+        $storage = new Mongo\AuthScopes($this->getContainer());
+
+        return $storage;
     }
 
     public function getLogStorage()

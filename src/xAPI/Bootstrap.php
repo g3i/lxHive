@@ -35,7 +35,6 @@ use API\Service\Log as LogService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
-use Pimple\Container;
 use Slim\DefaultServicesProvider;
 use Slim\App as SlimApp;
 use API\Controller\Error;
@@ -60,8 +59,8 @@ class Bootstrap
      */
     const None    = 0;
     const Web     = 1;
-    const Console = 1;
-    const Testing = 2;
+    const Console = 2;
+    const Testing = 3;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
@@ -180,7 +179,7 @@ class Bootstrap
         Config::factory($defaults);
 
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
-        
+
         $yamlParser = new YamlParser();
 
         try {
@@ -190,8 +189,8 @@ class Bootstrap
             if (self::$mode === self::None) {
                 return;
             } else {
-                // Rethrow exception
-                throw $e;
+                // throw AppInit exception
+                throw new AppInitException('Cannot load configuration: '.$e->getMessage());
             }
         }
 
@@ -459,7 +458,7 @@ class Bootstrap
             $request->registerMediaTypeParser('application/json', function ($input) {
                return json_decode($input);
             });
-            
+
             if ($request->isPost() && $request->getQueryParam('method')) {
                 $method = $request->getQueryParam('method');
                 $request = $request->withMethod($method);

@@ -27,7 +27,10 @@ namespace API\Console;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+
+use API\Bootstrap;
 use API\Admin\Setup;
 
 class SetupCommand extends SymfonyCommand
@@ -35,7 +38,7 @@ class SetupCommand extends SymfonyCommand
     /**
      * Setup class.
      *
-     * @var API\Admin\Setup
+     * @var API\Admin\Setup $setup
      */
     private $setup;
 
@@ -58,18 +61,20 @@ class SetupCommand extends SymfonyCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
-
+        // 1. check config
+        $bootstrapper = Bootstrap::factory(Bootstrap::None);
         if ($this->getSetup()->checkYaml('Config.yml')) {
-            $output->writeln('<error>A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.</error>');
-
-            return;
+            throw new \Exception('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 
+        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
+
+        // 2. LRS instance
         $helper = $this->getHelper('question');
         $question = new Question('Enter a name for this lxHive instance: ', 'Untitled');
         $name = $helper->ask($input, $output, $question);
 
+        // 3. Mongo connection
         $connectionSuccess = false;
         while (!$connectionSuccess) {
             $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
@@ -81,9 +86,11 @@ class SetupCommand extends SymfonyCommand
             }
         }
 
+        // 4. Database
         $question = new Question('Enter the name of your MongoDB database (default: "lxHive"): ', 'lxHive');
         $mongoDatabase = $helper->ask($input, $output, $question);
 
+        // 5. Create config
         $mergeConfig = ['name' => $name, 'storage' => ['in_use' => 'Mongo', 'Mongo' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]]];
         $this->getSetup()->installYaml('Config.yml', $mergeConfig);
 
@@ -94,12 +101,13 @@ class SetupCommand extends SymfonyCommand
             $this->getSetup()->installYaml('Config.development.yml');
         }
 
+        // 6. oAuth scopes
         $output->writeln('<info>Setting up default OAuth scopes...</info>');
-
+        Bootstrap::reset();
         $this->getSetup()->initializeAuthScopes();
-
         $output->writeln('<info>OAuth scopes configured!</info>');
 
+        // 7. finish
         $output->writeln('<info>Configuration saved!</info>');
         $output->writeln('<info>DB setup complete!</info>');
     }

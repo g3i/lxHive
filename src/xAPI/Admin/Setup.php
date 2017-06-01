@@ -126,4 +126,60 @@ class Setup
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
     }
+
+    /**
+     * Validate password
+     * @param string $str
+     *
+     * @return void
+     * @throws \RuntimeException
+     */
+    public function validatePassword(string $str)
+    {
+        $errors = [];
+        $length = 8;
+
+        if (strlen($str) < $length) {
+            $errors[] = 'Must have at least '.$length.' characters';
+        }
+
+        if (!preg_match('/[0-9]+/', $str)) {
+            $errors[] = 'Must include at least one number.';
+        }
+
+        if (!preg_match('/[a-zA-Z]+/', $str)) {
+            $errors[] = 'Must include at least one letter.';
+        }
+
+        if( !preg_match('/[A-Z]+/', $str) ) {
+            $errors[] = 'Must include at least one CAPS!';
+        }
+
+        if( !preg_match('/\W+/', $str) ) {
+            $errors[] = 'Must include at least one symbol!';
+        }
+
+        if(!empty($errors)) {
+            throw new \RuntimeException(json_encode($errors));
+        }
+
+    }
+
+    /**
+     * Validate password
+     * @return void
+     */
+    public function validatePermissionsInput(string $input, array $available)
+    {
+        $indexes = json_decode('['.$input.']');
+        if(json_last_error() !== \JSON_ERROR_NONE){
+            throw new \RuntimeException('Invalid input');
+        }
+
+        $diff = array_diff($indexes, array_keys($available));
+        if (!empty($diff)) {
+            throw new \RuntimeException('Input contains invalid permissons');
+        }
+    }
+
 }

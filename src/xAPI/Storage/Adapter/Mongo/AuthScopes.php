@@ -22,20 +22,35 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Console;
+namespace API\Storage\Adapter\Mongo;
 
-use Symfony\Component\Console\Application as SymfonyApplication;
-use API\BaseTrait;
+use API\Storage\Query\AuthScopesInterface;
+use API\Storage\Provider;
 
-class Application extends SymfonyApplication
+class AuthScopes extends Provider implements AuthScopesInterface
 {
-    use BaseTrait;
+    const COLLECTION_NAME = 'authScopes';
 
-    public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
+    public function findById($id)
     {
-        if($container){
-            $this->setContainer($container);
-        }
-        parent::__construct($name, $version);
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+
+        $expression->where('_id', $id);
+
+        $result = $storage->findOne($id);
+
+        return $result;
+    }
+
+    public function fetchAll()
+    {
+        $storage = $this->getContainer()['storage'];
+        $cursor = $storage->find(self::COLLECTION_NAME);
+
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
     }
 }

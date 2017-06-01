@@ -22,20 +22,11 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Console;
+namespace API\Storage\Query;
 
-use Symfony\Component\Console\Application as SymfonyApplication;
-use API\BaseTrait;
-
-class Application extends SymfonyApplication
+interface AuthScopesInterface
 {
-    use BaseTrait;
+    public function findById($id);
 
-    public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
-    {
-        if($container){
-            $this->setContainer($container);
-        }
-        parent::__construct($name, $version);
-    }
+    public function fetchAll();
 }
