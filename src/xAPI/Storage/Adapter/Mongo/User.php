@@ -96,7 +96,7 @@ class User extends Provider implements UserInterface
     {
         $storage = $this->getContainer()['storage'];
 
-        $cursor = $storage->find(self::COLLECTION_NAME);
+        $cursor = $storage->find(AuthScopes::COLLECTION_NAME);
 
         $documentResult = new \API\Storage\Query\DocumentResult();
         $documentResult->setCursor($cursor);

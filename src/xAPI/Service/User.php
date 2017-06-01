@@ -133,7 +133,7 @@ class User extends Service
 
     public function fetchAvailablePermissions()
     {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->fetchAll();
+        $documentResult = $this->getStorage()->getUserStorage()->fetchAvailablePermissions();
 
         return $documentResult;
     }
