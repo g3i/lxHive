@@ -58,7 +58,7 @@ class User extends Admin
      * @return stdClass Mongo user record
      */
     public function addUser($email, $password, $selectedPermissions)
-    {print_r($selectedPermissions);die();
+    {
         $userService = new UserService($this->getContainer());
         $user = $userService->addUser($email, $password, $selectedPermissions);
 

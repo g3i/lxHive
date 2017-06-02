@@ -61,6 +61,7 @@ class Bootstrap
     const Web     = 1;
     const Console = 2;
     const Testing = 3;
+    const Config  = 4;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
@@ -80,15 +81,28 @@ class Bootstrap
     /**
      * Factory for container contained within bootstrap, which is a base for various initializations
      *
+     * | Mode               | config   | services  | routes    | extensions | can reboot?   | scope                 |
+     * |--------------------|----------|-----------|-----------|------------|---------------| ----------------------|
+     * | Bootstrap::None    | -        | -         | -         | -          | yes           | n/a                   |
+     * | Bootstrap::Config  | x        | -         | -         | -          | yes           | load config only      |
+     * | Bootstrap::Testing | x        | x         | -         | -          | yes           | unit tests            |
+     * | Bootstrap::Console | x        | x         | -         | -          | no            | admin console         |
+     * | Bootstrap::Web     | x        | x         | x         | x          | no            | default: run web app  |
+     *
      * @param  int $mode Bootstrap mode constant
      * @return void
      * @throw AppInitException
      */
     public static function factory($mode)
     {
+
         if (self::$containerInstantiated) {
             // modes test and none (admin,etc) shall pass
-            if ($mode !== self::Testing && $mode !== self::None) {
+            if (
+                   $mode !== self::Testing
+                && $mode !== self::None
+                && $mode !== self::Config
+            ) {
                 throw new AppInitException('Bootstrap: You can only instantiate the Bootstrapper once!');
             }
         }
@@ -104,6 +118,7 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
             case self::Console: {
                 $config = $bootstrap->initConfig();
                 $container = $bootstrap->initCliContainer();
@@ -112,6 +127,7 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
             case self::Testing: {
                 $config = $bootstrap->initConfig();
                 $container = $bootstrap->initGenericContainer();
@@ -120,10 +136,18 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
+            case self::Config: {
+                $config = $bootstrap->initConfig();
+                return $bootstrap;
+                break;
+            }
+
             case self::None: {
                 return $bootstrap;
                 break;
             }
+
             default: {
                 throw new AppInitException('Bootstrap: You must provide a valid mode when calling the Boostrapper factory!');
             }
@@ -138,7 +162,11 @@ class Bootstrap
      */
     public static function reset()
     {
-        if (self::$mode === self::Testing || self::$mode === self::None) {
+        if (
+               self::$mode === self::Testing
+            || self::$mode === self::None
+            || self::$mode === self::Config
+        ) {
             self::$mode = self::None;
             self::$containerInstantiated = false;
             self::$containerInstance = false;

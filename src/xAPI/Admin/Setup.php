@@ -52,8 +52,7 @@ class Setup
     public function __construct()
     {
         if (!Bootstrap::mode()) {
-            $bootstrap = Bootstrap::factory(Bootstrap::None);
-            $config = $bootstrap->initConfig();
+            $bootstrap = Bootstrap::factory(Bootstrap::Config);
         }
         $this->configDir = Config::get('appRoot').'/src/xAPI/Config/';
     }
@@ -163,23 +162,6 @@ class Setup
             throw new \RuntimeException(json_encode($errors));
         }
 
-    }
-
-    /**
-     * Validate password
-     * @return void
-     */
-    public function validatePermissionsInput(string $input, array $available)
-    {
-        $indexes = json_decode('['.$input.']');
-        if(json_last_error() !== \JSON_ERROR_NONE){
-            throw new \RuntimeException('Invalid input');
-        }
-
-        $diff = array_diff($indexes, array_keys($available));
-        if (!empty($diff)) {
-            throw new \RuntimeException('Input contains invalid permissons');
-        }
     }
 
 }
