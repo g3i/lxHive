@@ -81,13 +81,13 @@ class Bootstrap
     /**
      * Factory for container contained within bootstrap, which is a base for various initializations
      *
-     * | Mode               | config   | services  | routes    | can reboot?   | scope                 |
-     * |--------------------|----------|-----------|-----------|---------------| ----------------------|
-     * | Bootstrap::None    | -        | -         | -         | yes           | n/a                   |
-     * | Bootstrap::Config  | x        | -         | -         | yes           | load config only      |
-     * | Bootstrap::Testing | x        | x         | -         | yes           | unit tests            |
-     * | Bootstrap::Console | x        | x         | -         | no            | admin console         |
-     * | Bootstrap::Web     | x        | x         | x         | no            | default: run web app  |
+     * | Mode               | config   | services  | routes    | extensions | can reboot?   | scope                 |
+     * |--------------------|----------|-----------|-----------|------------|---------------| ----------------------|
+     * | Bootstrap::None    | -        | -         | -         | -          | yes           | n/a                   |
+     * | Bootstrap::Config  | x        | -         | -         | -          | yes           | load config only      |
+     * | Bootstrap::Testing | x        | x         | -         | -          | yes           | unit tests            |
+     * | Bootstrap::Console | x        | x         | -         | -          | no            | admin console         |
+     * | Bootstrap::Web     | x        | x         | x         | x          | no            | default: run web app  |
      *
      * @param  int $mode Bootstrap mode constant
      * @return void
@@ -118,6 +118,7 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
             case self::Console: {
                 $config = $bootstrap->initConfig();
                 $container = $bootstrap->initCliContainer();
@@ -126,6 +127,7 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
             case self::Testing: {
                 $config = $bootstrap->initConfig();
                 $container = $bootstrap->initGenericContainer();
@@ -134,15 +136,18 @@ class Bootstrap
                 return $bootstrap;
                 break;
             }
+
             case self::Config: {
                 $config = $bootstrap->initConfig();
                 return $bootstrap;
                 break;
             }
+
             case self::None: {
                 return $bootstrap;
                 break;
             }
+
             default: {
                 throw new AppInitException('Bootstrap: You must provide a valid mode when calling the Boostrapper factory!');
             }

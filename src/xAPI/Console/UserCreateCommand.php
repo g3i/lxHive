@@ -99,18 +99,15 @@ class UserCreateCommand extends Command
             );
             $question->setMultiselect(true);
             $question->setMaxAttempts(null);
-            $question->setValidator(function ($answer) use ($admin, $permissions) {
-                $admin->validatePermissionsInput($answer, $permissions);
-                return $answer;
-            });
-
-            $selectedIndexes = $helper->ask($input, $output, $question);
+            // validation done by helper
+            $selectedPermissions = $helper->ask($input, $output, $question);
+        } else {
+            $selectedPermissions = explode(',', $input->getOption('permissions'));
         }
 
         $selected = [];
-        foreach ($selectedIndexes as $index) {
-            $perm = $permissions[$index];
-            $selected[] = $permissionsDictionary[$perm];
+        foreach ($selectedPermissions as $name) {
+            $selected[] = $permissionsDictionary[$name];
         }
 
         $user = $userAdmin->addUser($email, $password, $selected);
