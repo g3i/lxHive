@@ -162,7 +162,11 @@ class Bootstrap
      */
     public static function reset()
     {
-        if (self::$mode === self::Testing || self::$mode === self::None) {
+        if (
+               self::$mode === self::Testing
+            || self::$mode === self::None
+            || self::$mode === self::Config
+        ) {
             self::$mode = self::None;
             self::$containerInstantiated = false;
             self::$containerInstance = false;

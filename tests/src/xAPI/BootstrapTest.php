@@ -73,8 +73,51 @@ class BootstrapTest extends TestCase
         Config::set('test_'.time(), 123);
     }
 
+
     ////
-    // Bootstrap::None
+    // Bootstrap::Config
+    ////
+
+    public function testModeConfig()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Config);
+    }
+
+    public function testModeConfigInitializesConfig()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Web);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Web);
+
+        // 'Boostrap::factory(Bootstrap::Web) initializes config singleton
+        $now = time();
+        Config::set('test_'.$now, $now);
+        $this->assertEquals(Config::get('test_'.$now), $now);
+    }
+
+    public function testModeConfigMultiple()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Config);
+
+        $bootstrap = Bootstrap::factory(Bootstrap::None);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::None);
+        Bootstrap::reset();
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Config);
+    }
+
+    public function testModeConfigCannotBeCalledAfterModeWeb()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Web);
+        $this->expectException(AppInitException::class);
+        // You need to reset Bootstrap!
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+    }
+
+    ////
+    // Bootstrap::Web
     ////
 
     public function testModeWeb()
@@ -102,7 +145,7 @@ class BootstrapTest extends TestCase
     }
 
     ////
-    // Bootstrap::None
+    // Bootstrap::Testing
     ////
 
     public function testModeTesting()
@@ -116,9 +159,12 @@ class BootstrapTest extends TestCase
         $bootstrap = Bootstrap::factory(Bootstrap::Testing);
         $this->assertEquals(Bootstrap::mode(), Bootstrap::Testing);
 
-        // 'Boostrap::factory(Bootstrap::Testing) can be called multiple times
         $bootstrap = Bootstrap::factory(Bootstrap::None);
         $this->assertEquals(Bootstrap::mode(), Bootstrap::None);
+        Bootstrap::reset();
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Testing);
     }
 
     public function testModeTestingCannotBeCalledAfterModeWeb()
@@ -128,4 +174,58 @@ class BootstrapTest extends TestCase
         // You need to reset Bootstrap!
         $bootstrap = Bootstrap::factory(Bootstrap::Testing);
     }
+
+    ////
+    // Bootstrap::reset()
+    ////
+
+    public function testResetModeNone()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::None);
+        Bootstrap::reset();
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::None);
+    }
+
+    public function testResetModeConfig()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+        Bootstrap::reset();
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::None);
+    }
+
+    public function testResetModeTesting()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing);
+        Bootstrap::reset();
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::None);
+    }
+
+    public function testResetModeConsoleThrowsException()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Console);
+        $this->expectException(AppInitException::class);
+        Bootstrap::reset();
+    }
+
+    public function testResetModeWebThrowsException()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Web);
+        $this->expectException(AppInitException::class);
+        Bootstrap::reset();
+    }
+
+    public function testResetClearsConfig()
+    {
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing);
+        $this->assertEquals(Bootstrap::mode(), Bootstrap::Testing);
+
+        $now = time();
+        Config::set('test_'.$now, $now);
+        $this->assertEquals(Config::get('test_'.$now), $now);
+
+        Bootstrap::reset();
+        $this->expectException(AppInitException::class);
+        Config::all();
+    }
+
 }
