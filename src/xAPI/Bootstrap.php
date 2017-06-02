@@ -61,6 +61,7 @@ class Bootstrap
     const Web     = 1;
     const Console = 2;
     const Testing = 3;
+    const Config  = 4;
 
     private static $containerInstance;
     private static $containerInstantiated = false;
@@ -80,15 +81,28 @@ class Bootstrap
     /**
      * Factory for container contained within bootstrap, which is a base for various initializations
      *
+     * | Mode               | config   | services  | routes    | can reboot?   | scope                 |
+     * |--------------------|----------|-----------|-----------|---------------| ----------------------|
+     * | Bootstrap::None    | -        | -         | -         | yes           | n/a                   |
+     * | Bootstrap::Config  | x        | -         | -         | yes           | load config only      |
+     * | Bootstrap::Testing | x        | x         | -         | yes           | unit tests            |
+     * | Bootstrap::Console | x        | x         | -         | no            | admin console         |
+     * | Bootstrap::Web     | x        | x         | x         | no            | default: run web app  |
+     *
      * @param  int $mode Bootstrap mode constant
      * @return void
      * @throw AppInitException
      */
     public static function factory($mode)
     {
+
         if (self::$containerInstantiated) {
             // modes test and none (admin,etc) shall pass
-            if ($mode !== self::Testing && $mode !== self::None) {
+            if (
+                   $mode !== self::Testing
+                && $mode !== self::None
+                && $mode !== self::Config
+            ) {
                 throw new AppInitException('Bootstrap: You can only instantiate the Bootstrapper once!');
             }
         }
@@ -117,6 +131,11 @@ class Bootstrap
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
+                return $bootstrap;
+                break;
+            }
+            case self::Config: {
+                $config = $bootstrap->initConfig();
                 return $bootstrap;
                 break;
             }
