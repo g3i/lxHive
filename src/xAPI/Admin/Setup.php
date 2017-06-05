@@ -61,38 +61,98 @@ class Setup
      * Checks if a yaml config file exists already in /src/xAPI/Config/.
      *
      * @param string $configYML yaml file
-     * @return bool
+     *
+     * @return string|false
      */
-    public function checkYaml($configYML)
+    public function locateYaml($yml)
     {
-        return file_exists($configYML = $this->configDir.'/'.$configYML);
+        clearstatcache();
+        return realpath($this->configDir.'/'.$yml);
+    }
+
+    /**
+     * Loads a config yml file in /src/xAPI/Config/.
+     *
+     * @param string $yaml yaml file to be created from template
+     * @returns array $data associative array of parsed data
+     *
+     * @return array $data
+     * @throws AdminException
+     */
+    public function loadYaml($yml)
+    {
+        $file = $this->locateYaml($yml);
+        if(false === $file){
+            throw new AdminException('File `'.$yml.'` not found.');
+        }
+
+        $contents = file_get_contents($file);
+        if (false === $contents) {
+            throw new AdminException('Error reading file `'.$yml.'` Make sure the file exists and is readable.');
+        }
+
+        try {
+            $data = Yaml::parse($contents, true);
+        } catch (\Exception $e) {
+            // @see \Symfony\Component\Yaml\Yaml::parse()
+            throw new AdminException('Error parsing data from file `'.$yml.'`');
+        }
+
+        if(!$data){
+            throw new AdminException('Error parsing data from file `'.$yml.'`: Empty data.');
+        }
+
+        return $data;
+    }
+
+    /**
+     * Creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
+     *
+     * @param string $yml      yaml file to be created from template
+     * @param array $mergeData associative array of config data to be merged in to the new config file
+     * @return array $data
+     * @throws \Exception
+     */
+    public function installYaml($yml, array $mergeData = [])
+    {
+        if($this->locateYaml($yml)){
+            throw new AdminException('File `'.$yml.'` exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
+        }
+
+        $data = $this->loadYaml('Templates/'.$yml);
+        if (!empty($mergeData)) {
+            $data = array_merge($data, $mergeData);
+        }
+
+        $file = $this->configDir.'/'.$yml;
+        $contents = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
+        if (false === file_put_contents($file, $contents)) {
+            throw new AdminException('Error writing file `'.$file.'` Make sure the directory is writable.');
+        }
+
+        return $data;
     }
 
     /**
      * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
      *
-     * @param string $yml      yaml file to be created from template
-     * @param array  $mergeData associative array of config data to be merged in to the new config file
+     * @param string $yaml      yaml file to be created from template
+     * @param array  $update associative array of config data to be merged in to the new config file
+     *
+     * @return array $data
      * @throws \Exception
      */
-    public function installYaml($yml, array $mergeData = [])
+    public function updateYaml($yml, array $update)
     {
-        $configYML = $this->configDir.'/'.$yml;
-        $templateYML = $this->configDir.'/Templates/'.$yml;
+        $file = $this->locateYaml($yml);
+        $data = $this->loadYaml($yml);
 
-        $template = file_get_contents($templateYML);
-        if (false === $template) {
-            throw new \Exception('Error reading file `'.$templateYML.'` Make sure the file exists and is readable.');
+        $data = array_merge($data, $update);
+        $contents = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
+        if (false === file_put_contents($file, $contents)) {
+            throw new AdminException('Error updating file `'.$file.'` Make sure the directory is writable.');
         }
-        $data = Yaml::parse($template, true);// exceptionOnInvalidType
-        if (!empty($mergeData)) {
-            $data = array_merge($data, $mergeData);
-        }
-        $this->yamlData = $data;
-        $ymlData = Yaml::dump($data, 3, 4);// exceptionOnInvalidType
-        if (false === file_put_contents($configYML, $ymlData)) {
-            throw new \Exception('Error rwriting '.__DIR__.'/../Config/'.$configYML.' Make sure the directory is writable.');
-        }
+        return $data;
     }
 
     /**
