@@ -162,9 +162,16 @@ class Setup
      */
     public function testDbConnection($uri)
     {
+        // \MongoDB\Driver\Manager will use mongodb://127.0.0.1/ when no or empty uri was submitted
+        if(!$uri){
+            return false;
+        }
+
         try {
             $connectionTestResult = Mongo::testConnection($uri);
             return $connectionTestResult;
+        } catch (\MongoDB\Driver\Exception\InvalidArgumentException $e) {
+            return false;
         } catch (\MongoDB\Driver\Exception\ConnectionException $e) {
             return false;
         }
