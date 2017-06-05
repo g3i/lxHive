@@ -141,7 +141,7 @@ class LrsReport
     }
 
     /**
-     * run basic checks on Mongo connection
+     * run basic checks and stats on stored permissions, users, and tokens
      * @return bool indicator if tests were completed
      */
 
@@ -151,9 +151,9 @@ class LrsReport
 
         $count = $mongo->count(Mongo\AuthScopes::COLLECTION_NAME);
         if(!$count) {
-            $this->error('Collections', 'authScopes', 'No Authentication Scopes');
+            $this->error('Collections', 'authScopes', 'No Authentication Scopes', 'LRS setup is incomplete');
         } else {
-            $this->success('Collections', 'authScopes', $count, 'LRS setup is incomplete');
+            $this->success('Collections', 'authScopes', $count);
         }
 
         $count = $mongo->count(Mongo\User::COLLECTION_NAME);
@@ -178,11 +178,8 @@ class LrsReport
         }
 
         $count = $mongo->count(Mongo\OAuth::COLLECTION_NAME);
-        if(!$count) {
-            $this->notice('Collections', 'oAuthTokens', $count);
-        }
+        $this->notice('Collections', 'oAuthTokens', $count);
 
-        //TODO
         return true;
     }
 
