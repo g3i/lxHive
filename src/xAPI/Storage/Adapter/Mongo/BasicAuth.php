@@ -32,7 +32,6 @@ use API\Storage\Provider;
 class BasicAuth extends Provider implements BasicAuthInterface
 {
     const COLLECTION_NAME = 'basicTokens';
-    const COLLECTION_NAME_SCOPES = 'authScopes';
 
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
@@ -131,7 +130,7 @@ class BasicAuth extends Provider implements BasicAuthInterface
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(self::COLLECTION_NAME_SCOPES, $expression);
+        $scopeDocument = $storage->findOne(AuthScopes::COLLECTION_NAME, $expression);
 
         $this->validateScope($scopeDocument);
 

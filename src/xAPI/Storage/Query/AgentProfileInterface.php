@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface AgentProfileInterface
+interface AgentProfileInterface extends QueryInterface
 {
     public function getFiltered($parameters);
 

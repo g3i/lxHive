@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface UserInterface
+interface UserInterface extends QueryInterface
 {
     public function findByEmailAndPassword($username, $password);
 

@@ -22,19 +22,12 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Storage\Adapter\Mongo;
 
-interface BasicAuthInterface extends QueryInterface
+use API\Storage\Query\QueryInterface;
+use API\Storage\Provider;
+
+class OAuthClients extends Provider implements QueryInterface
 {
-    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null);
-
-    public function getToken($key, $secret);
-
-    public function deleteToken($clientId);
-
-    public function expireToken($clientId, $accessToken);
-
-    public function getTokens();
-
-    public function getScopeByName($name);
+    const COLLECTION_NAME = 'oAuthClients';
 }

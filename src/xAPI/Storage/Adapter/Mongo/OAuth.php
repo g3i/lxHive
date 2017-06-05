@@ -33,12 +33,11 @@ use API\Util;
 class OAuth extends Provider implements OAuthInterface
 {
     const COLLECTION_NAME = 'oAuthTokens';
-    const COLLECTION_NAME_SCOPES = 'authScopes';
 
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
         $storage = $this->getContainer()['storage'];
-        
+
         $accessTokenDocument = new \API\Document\Generic();
 
         $expiresDate = new \DateTime();
@@ -46,7 +45,7 @@ class OAuth extends Provider implements OAuthInterface
         $accessTokenDocument->setExpiresAt(Util\Date::dateTimeToMongoDate($expiresDate));
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
-        
+
         $accessTokenDocument->setUserId($user->getId());
         $accessTokenDocument->setClientId($client->getId());
 
@@ -161,7 +160,7 @@ class OAuth extends Provider implements OAuthInterface
 
         $scopeDocument->setDescription($description);
 
-        $storage->insertOne(self::COLLECTION_NAME_SCOPES, $scopeDocument);
+        $storage->insertOne(AuthScopes::COLLECTION_NAME, $scopeDocument);
 
         return $scopeDocument;
     }
@@ -172,7 +171,7 @@ class OAuth extends Provider implements OAuthInterface
         $expression = $storage->createExpression();
 
         $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(self::COLLECTION_NAME_SCOPES, $expression);
+        $scopeDocument = $storage->findOne(AuthScopes::COLLECTION_NAME, $expression);
 
         return $scopeDocument;
     }
@@ -183,7 +182,7 @@ class OAuth extends Provider implements OAuthInterface
         $expression = $storage->createExpression();
 
         $expression->where('code', $params['code']);
-        
+
         $tokenDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         $this->validateAccessTokenNotEmpty($tokenDocument);
@@ -197,7 +196,7 @@ class OAuth extends Provider implements OAuthInterface
         $this->validateRedirectUri($params, $clientDocument);
 
         //Remove one-time code
-        
+
         $tokenDocument->setCode(false);
 
         $storage->update(self::COLLECTION_NAME, $expression, $tokenDocument);

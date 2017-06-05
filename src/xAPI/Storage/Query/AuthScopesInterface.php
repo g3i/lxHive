@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface AuthScopesInterface
+interface AuthScopesInterface extends QueryInterface
 {
     public function findById($id);
 

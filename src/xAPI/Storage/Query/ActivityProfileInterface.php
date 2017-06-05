@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface ActivityProfileInterface
+interface ActivityProfileInterface extends QueryInterface
 {
     public function getFiltered($parameters);
 
