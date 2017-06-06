@@ -72,7 +72,7 @@ class User extends Provider implements UserInterface
         $permissionIds = [];
         foreach ($permissions as $permission) {
             // Fetch the permission ID's and assign them
-            $permissionIds[] = $permission['_id'];
+            $permissionIds[] = $permission->_id;
             $userDocument->setPermissionIds($permissionIds);
         }
 
