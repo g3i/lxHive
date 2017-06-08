@@ -159,6 +159,29 @@ class Mongo implements AdapterInterface
     }
 
     /**
+     * Fetches distinct documents.
+     *
+     * @param string $collection Name of collection
+     * @param array|Expression $filter The filter to fetch the documents by
+     * @param array $options
+     * @return DocumentResult Result of fetch
+     */
+    public function distinct($collection, $field, $filter = [], $options = [])
+    {
+        // query doesn't accept empty array: [MongoDB\Driver\Exception\RuntimeException] "query" had the wrong type. Expected object or null, found array
+        $command = new Command([
+            'distinct' => $collection,
+            'key' => $field,
+            'query' => (empty($filter)) ? null : $filter,
+            'options' => $options,
+        ]);
+
+        $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
+
+        return $cursor;
+    }
+
+    /**
      * Fetches documents.
      *
      * @param string $collection Name of collection

@@ -53,4 +53,29 @@ class AuthScopes extends Provider implements AuthScopesInterface
 
         return $documentResult;
     }
+
+    public function findByNames($names, $options = [])
+    {
+        $storage = $this->getContainer()['storage'];
+        $cursor = $storage->find(self::COLLECTION_NAME, [
+            'name' => ['$in' => $names]
+        ], $options);
+
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
+    }
+
+    public function getNames()
+    {
+        $storage = $this->getContainer()['storage'];
+        $cursor = $storage->distinct(self::COLLECTION_NAME, 'name');
+
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
+    }
+
 }
