@@ -159,19 +159,4 @@ class SetupTest extends TestCase
         $data = $admin->updateYaml('InvalidUnitTest.yml', ['now' => $now ]);
     }
 
-    ////
-    // Misc
-    ////
-
-    public function testvalidatePassword()
-    {
-        $admin = new Setup();
-        $admin->validatePassword('ValidPass999!');
-
-        $this->expectException(\RuntimeException::class);
-        $admin->validatePassword('Val'); // too short
-        $admin->validatePassword('ValidPass!'); // requires number
-        $admin->validatePassword('ValidPass999'); // requires non alphaNumeric
-    }
-
 }
