@@ -51,16 +51,42 @@ class User extends Admin
     }
 
     /**
+     * Fetch all permissions from Mongo
+     * @return array collection of permissions with their name as key
+     */
+    public function fetchAvailablePermissionNames()
+    {
+        //TODO this method will be obsolete if we remove the authScopes collection
+        $service = new UserService($this->getContainer());
+        $document = $service->fetchAvailablePermissionNames();
+        return current($document->getCursor()->toArray())->values;
+    }
+
+    /**
      * Add a user record
      * @param string $email
      * @param string $password
      * @param array $selectedPermissions selected scope permission records
      * @return stdClass Mongo user record
+     * @throws \API\RuntimeException
      */
     public function addUser($email, $password, $selectedPermissions)
     {
-        $userService = new UserService($this->getContainer());
-        $user = $userService->addUser($email, $password, $selectedPermissions);
+        $v = new Validator();
+        $v->validateEmail($email);
+        $v->validatePassword($password);
+
+        $service = new UserService($this->getContainer());
+
+        // fetch available permissions and compare
+        $result = $service->fetchPermissionsByNames($selectedPermissions);
+
+        $permissions = $result->getCursor()->toArray();
+        if (count($permissions) !== count($selectedPermissions)) {
+            throw new AdminException('Invalid permissions: '.json_encode($selectedPermissions));
+        }
+echo 'HERE';
+        $user = $service->addUser($email, $password, $permissions);
 
         return $user;
     }
