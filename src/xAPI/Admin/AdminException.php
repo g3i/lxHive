@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -21,18 +20,11 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  */
+namespace API\Admin;
 
-namespace API\Storage\Query;
-
-interface UserInterface
+/**
+ * Exceptions for Admin API
+ */
+class AdminException extends \RunTimeException
 {
-    public function findByEmailAndPassword($username, $password);
-
-    public function findById($id);
-
-    public function addUser($name, $user, $email, $password, $permissions);
-
-    public function fetchAll();
-
-    public function fetchAvailablePermissions();
 }

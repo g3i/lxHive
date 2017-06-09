@@ -63,7 +63,7 @@ class SetupCommand extends SymfonyCommand
     {
         // 1. check config
         $bootstrapper = Bootstrap::factory(Bootstrap::None);
-        if ($this->getSetup()->checkYaml('Config.yml')) {
+        if ($this->getSetup()->locateYaml('Config.yml')) {
             throw new \Exception('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 
@@ -94,10 +94,10 @@ class SetupCommand extends SymfonyCommand
         $mergeConfig = ['name' => $name, 'storage' => ['in_use' => 'Mongo', 'Mongo' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]]];
         $this->getSetup()->installYaml('Config.yml', $mergeConfig);
 
-        if (!$this->getSetup()->checkYaml('Config.production.yml')) {
+        if (!$this->getSetup()->locateYaml('Config.production.yml')) {
             $this->getSetup()->installYaml('Config.production.yml');
         }
-        if (!$this->getSetup()->checkYaml('Config.development.yml')) {
+        if (!$this->getSetup()->locateYaml('Config.development.yml')) {
             $this->getSetup()->installYaml('Config.development.yml');
         }
 

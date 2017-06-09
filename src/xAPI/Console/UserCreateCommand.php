@@ -56,65 +56,58 @@ class UserCreateCommand extends Command
     {
         $userAdmin = new UserAdministration($this->getContainer());
         $helper = $this->getHelper('question');
-        $admin = new Admin\Setup();
+        $validator = new Admin\Validator();
 
-        // 1. Email
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter an e-mail: ', 'untitled');
-            $question->setMaxAttempts(null);
-            $question->setValidator(function ($answer) {
-                if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                    throw new \RuntimeException('Invalid email address!');
-                }
+        // 1. Name
+        $question = new Question('Please enter a name: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateName($answer);
+            return $answer;
+        });
+        $name = $helper->ask($input, $output, $question);
 
-                return $answer;
-            });
-            $email = $helper->ask($input, $output, $question);
-        } else {
-            $email = $input->getOption('email');
-        }
+        // 2. Description
+        $question = new Question('Please enter a description: ', '');
+        $description = $helper->ask($input, $output, $question);
 
-        // 2. Password
-        if (null === $input->getOption('password')) {
-            $question = new Question('Please enter a password: ', '');
-            $question->setMaxAttempts(null);
-            $question->setValidator(function ($answer) use ($admin) {
-                $admin->validatePassword($answer);
-                return $answer;
-            });
-            $password = $helper->ask($input, $output, $question);
-        } else {
-            $password = $input->getOption('password');
-        }
+        // 3. Email
+        $question = new Question('Please enter an e-mail: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateEmail($answer);
+            return $answer;
+        });
+        $email = $helper->ask($input, $output, $question);
 
-        // 3. Permissions
-        $permissionsDictionary = $userAdmin->fetchAvailablePermissions();
-        $permissions = array_keys($permissionsDictionary);
+        // 4. Password
+        $question = new Question('Please enter a password: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validatePassword($answer);
+            return $answer;
+        });
+        $password = $helper->ask($input, $output, $question);
 
-        if (null === $input->getOption('permissions')) {
-            $question = new ChoiceQuestion(
-                'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                $permissions,
-                '0'
-            );
-            $question->setMultiselect(true);
-            $question->setMaxAttempts(null);
-            // validation done by helper
-            $selectedPermissions = $helper->ask($input, $output, $question);
-        } else {
-            $selectedPermissions = explode(',', $input->getOption('permissions'));
-        }
+        // 5. Permissions
+        $available = $userAdmin->fetchAvailablePermissionNames();
+        $question = new ChoiceQuestion(
+            'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
+            $available,
+            '0'
+        );
+        $question->setMultiselect(true);
+        $question->setMaxAttempts(null);
+        $permissions = $helper->ask($input, $output, $question);// validation by ChoiceQuestion
 
-        $selected = [];
-        foreach ($selectedPermissions as $name) {
-            $selected[] = $permissionsDictionary[$name];
-        }
-
-        $user = $userAdmin->addUser($email, $password, $selected);
+        // 6. add record
+        $permissions = array_unique($permissions);
+        $user = $userAdmin->addUser($name, $description, $email, $password, $permissions);
         $text = json_encode($user, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>User successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
+
 }

@@ -137,6 +137,8 @@ class Basic extends Service implements AuthInterface
 
         $defaultParams = new Util\Collection([
             'user' => [
+                'name' => 'anonymous',
+                'description' => '',
                 'password' => 'password',
                 'permissions' => [
                     'all',
@@ -177,7 +179,7 @@ class Basic extends Service implements AuthInterface
 
         // This is ugly, remove this!
         $userService = new UserService($this->getContainer());
-        $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
+        $user = $userService->addUser($params->get('user')['name'], $params->get('user')['description'], $params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
 
         $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 

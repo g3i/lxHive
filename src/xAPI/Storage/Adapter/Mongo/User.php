@@ -56,13 +56,15 @@ class User extends Provider implements UserInterface
         return $result;
     }
 
-    public function addUser($email, $password, $permissions)
+    public function addUser($name, $description, $email, $password, $permissions)
     {
         $storage = $this->getContainer()['storage'];
 
         // Set up the User to be saved
         $userDocument = new \API\Document\Generic();
 
+        $userDocument->setName($name);
+        $userDocument->setDescription($description);
         $userDocument->setEmail($email);
 
         $passwordHash = sha1($password);
@@ -75,6 +77,9 @@ class User extends Provider implements UserInterface
             $permissionIds[] = $permission->_id;
             $userDocument->setPermissionIds($permissionIds);
         }
+
+        $now = new \DateTime();
+        $userDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($now));
 
         $storage->insertOne(self::COLLECTION_NAME, $userDocument);
 

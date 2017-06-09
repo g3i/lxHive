@@ -12,8 +12,7 @@ class StreamContextTest extends TestCase
 
     protected function setUp()
     {
-
-        if(!class_exists('\Tests\Config')){
+        if (!class_exists('\Tests\Config')) {
             $this->markTestIncomplete(
               'class \Tests\Config does not exist or is invalid.'
             );
