@@ -82,7 +82,7 @@ class Setup
     public function loadYaml($yml)
     {
         $file = $this->locateYaml($yml);
-        if(false === $file){
+        if (false === $file) {
             throw new AdminException('File `'.$yml.'` not found.');
         }
 
@@ -98,7 +98,7 @@ class Setup
             throw new AdminException('Error parsing data from file `'.$yml.'`');
         }
 
-        if(!$data){
+        if (!$data) {
             throw new AdminException('Error parsing data from file `'.$yml.'`: Empty data.');
         }
 
@@ -115,7 +115,7 @@ class Setup
      */
     public function installYaml($yml, array $mergeData = [])
     {
-        if($this->locateYaml($yml)){
+        if ($this->locateYaml($yml)) {
             throw new AdminException('File `'.$yml.'` exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 

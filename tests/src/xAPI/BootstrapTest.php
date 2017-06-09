@@ -227,5 +227,4 @@ class BootstrapTest extends TestCase
         $this->expectException(AppInitException::class);
         Config::all();
     }
-
 }

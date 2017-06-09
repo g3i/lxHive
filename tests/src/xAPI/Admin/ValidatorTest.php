@@ -9,7 +9,6 @@ use API\Admin\AdminException;
 
 class ValidatorTest extends TestCase
 {
-
     public function testvalidateName()
     {
         $v = new Validator();
@@ -60,5 +59,4 @@ class ValidatorTest extends TestCase
         $v->validateXapiPermissions(['invalid'], $available);
         $v->validateXapiPermissions(['invalid', 'statements/read'], $available);
     }
-
 }

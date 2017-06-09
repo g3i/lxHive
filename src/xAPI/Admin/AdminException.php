@@ -27,5 +27,4 @@ namespace API\Admin;
  */
 class AdminException extends \RunTimeException
 {
-
 }

@@ -59,7 +59,7 @@ class Validator
             $errors[] = 'Must have at least '.$length.' characters';
         }
 
-        if(!empty($errors)) {
+        if (!empty($errors)) {
             throw new AdminException(json_encode($errors));
         }
     }
@@ -88,18 +88,17 @@ class Validator
             $errors[] = 'Must include at least one letter.';
         }
 
-        if( !preg_match('/[A-Z]+/', $str) ) {
+        if (!preg_match('/[A-Z]+/', $str)) {
             $errors[] = 'Must include at least one CAPS!';
         }
 
-        if( !preg_match('/\W+/', $str) ) {
+        if (!preg_match('/\W+/', $str)) {
             $errors[] = 'Must include at least one symbol!';
         }
 
-        if(!empty($errors)) {
+        if (!empty($errors)) {
             throw new AdminException(json_encode($errors));
         }
-
     }
 
     /**
@@ -126,16 +125,16 @@ class Validator
      */
     public function validateXapiPermissions(array $perms, array $available)
     {
-        if(empty($perms)) {
+        if (empty($perms)) {
             throw new AdminException('Permissions cannot be empty.');
         }
 
-        if(empty($available)) {
+        if (empty($available)) {
             throw new AdminException('Available permissions cannot be empty.');
         }
 
         foreach ($perms as $p) {
-            if(!in_array($p, $available)) {
+            if (!in_array($p, $available)) {
                 throw new AdminException('Invalid permission');
             }
         }

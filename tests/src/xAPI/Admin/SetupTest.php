@@ -13,7 +13,7 @@ class SetupTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        if(!is_writable(self::ConfigDir)) {
+        if (!is_writable(self::ConfigDir)) {
             throw new \RuntimeException(self::ConfigDir.' is not a writable directory.');
         }
     }
@@ -21,7 +21,7 @@ class SetupTest extends TestCase
     // cleanup after tests
     public function tearDown()
     {
-        if(file_exists(self::ConfigDir.'UnitTest.yml')) {
+        if (file_exists(self::ConfigDir.'UnitTest.yml')) {
             unlink(self::ConfigDir.'UnitTest.yml');
         }
     }
@@ -158,5 +158,4 @@ class SetupTest extends TestCase
         $this->expectException(AdminException::class);
         $data = $admin->updateYaml('InvalidUnitTest.yml', ['now' => $now ]);
     }
-
 }
