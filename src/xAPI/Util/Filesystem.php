@@ -24,10 +24,13 @@
 
 namespace API\Util;
 
-use League\Flysystem\Filesystem as Flysystem;
+use League\Flysystem\Filesystem as FS;
+use League\Flysystem\Adapter\Local;
 use Aws\S3\S3Client;
-use League\Flysystem\Adapter\AwsS3 as S3Adapter;
+use League\Flysystem\AwsS3v3\AwsS3Adapter as S3Adapter;
+
 use API\Controller;
+use API\Config;
 
 // Maybe move this to API/Service and remove ODM dependency on Services. Check out the semantics of this...
 class Filesystem
@@ -36,13 +39,31 @@ class Filesystem
     {
         $typeInUse = $config['in_use'];
         if ($typeInUse  === 'local') {
-            $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($config['local']['root_dir']));
+            $root = Config::get('publicRoot');
+            $filesystem = new FS(
+                new Local(
+                    $root.'/'.$config['local']['root_dir'],
+                    \LOCK_EX,
+                    Local::DISALLOW_LINKS,
+                    [
+                        'file' => [
+                            'public' => 0744,
+                            'private' => 0700,
+                        ],
+                        'dir' => [
+                            'public' => 0755,
+                            'private' => 0700,
+                        ]
+                    ]
+                )
+            );
+
         } elseif ($typeInUse === 's3') {
             $client = S3Client::factory(array(
                 'key' => $config['s3']['key'],
                 'secret' => $config['s3']['secret'],
             ));
-            $filesystem = new Flysystem(new S3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));
+            $filesystem = new FS(new S3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));
         } else {
             throw new \Exception('Server error.', Controller::STATUS_INTERNAL_SERVER_ERROR);
         }
