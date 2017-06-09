@@ -10,6 +10,20 @@ use API\Admin\AdminException;
 class ValidatorTest extends TestCase
 {
 
+    public function testvalidateName()
+    {
+        $v = new Validator();
+        $v->validateName('valid');
+        $v->validateName('valid whitespace');
+        $v->validateName('valid.chars');
+
+        $this->expectException(AdminException::class);
+        $v->validateName('');
+        $v->validateName(false); // empty space
+        $v->validateName(2);
+        $v->validateName('a');
+    }
+
     public function testValidateEmail()
     {
         $v = new Validator();

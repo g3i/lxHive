@@ -58,54 +58,56 @@ class UserCreateCommand extends Command
         $helper = $this->getHelper('question');
         $validator = new Admin\Validator();
 
-        // 1. Email
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter an e-mail: ', 'untitled');
-            $question->setMaxAttempts(null);
-            $question->setValidator(function ($answer) use ($validator) {
-                $validator->validateEmail($answer);
-                return $answer;
-            });
-            $email = $helper->ask($input, $output, $question);
-        } else {
-            $email = $input->getOption('email');
-        }
+        // 1. Name
+        $question = new Question('Please enter a name: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateName($answer);
+            return $answer;
+        });
+        $name = $helper->ask($input, $output, $question);
 
-        // 2. Password
-        if (null === $input->getOption('password')) {
-            $question = new Question('Please enter a password: ', '');
-            $question->setMaxAttempts(null);
-            $question->setValidator(function ($answer) use ($validator) {
-                $validator->validatePassword($answer);
-                return $answer;
-            });
-            $password = $helper->ask($input, $output, $question);
-        } else {
-            $password = $input->getOption('password');
-        }
+        // 2. Description
+        $question = new Question('Please enter a description: ', '');
+        $description = $helper->ask($input, $output, $question);
 
-        // 3. Permissions
+        // 3. Email
+        $question = new Question('Please enter an e-mail: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateEmail($answer);
+            return $answer;
+        });
+        $email = $helper->ask($input, $output, $question);
 
+        // 4. Password
+        $question = new Question('Please enter a password: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validatePassword($answer);
+            return $answer;
+        });
+        $password = $helper->ask($input, $output, $question);
+
+        // 5. Permissions
         $available = $userAdmin->fetchAvailablePermissionNames();
-        if (null === $input->getOption('permissions')) {
-            $question = new ChoiceQuestion(
-                'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                $available,
-                '0'
-            );
-            $question->setMultiselect(true);
-            $question->setMaxAttempts(null);
-            // validation done by helper
-            $selected = $helper->ask($input, $output, $question);
-        } else {
-            $selected = explode(',', $input->getOption('permissions'));
-        }
+        $question = new ChoiceQuestion(
+            'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
+            $available,
+            '0'
+        );
+        $question->setMultiselect(true);
+        $question->setMaxAttempts(null);
+        $permissions = $helper->ask($input, $output, $question);// validation by ChoiceQuestion
 
-        $user = $userAdmin->addUser($email, $password, array_unique($selected));
+        // 6. add record
+        $permissions = array_unique($permissions);
+        $user = $userAdmin->addUser($name, $description, $email, $password, $permissions);
         $text = json_encode($user, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>User successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
+
 }

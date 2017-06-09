@@ -44,6 +44,27 @@ class Validator
     }
 
     /**
+     * Validate name param
+     * @param string $str
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validateName(string $str)
+    {
+        $errors = [];
+        $length = 4;
+
+        if (!$str || strlen($str) < $length) {
+            $errors[] = 'Must have at least '.$length.' characters';
+        }
+
+        if(!empty($errors)) {
+            throw new AdminException(json_encode($errors));
+        }
+    }
+
+    /**
      * Validate password
      * @param string $str
      *

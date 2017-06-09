@@ -30,7 +30,7 @@ interface UserInterface
 
     public function findById($id);
 
-    public function addUser($email, $password, $permissions);
+    public function addUser($name, $user, $email, $password, $permissions);
 
     public function fetchAll();
 

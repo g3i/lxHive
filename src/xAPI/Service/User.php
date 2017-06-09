@@ -114,9 +114,9 @@ class User extends Service
         return $userDocument;
     }
 
-    public function addUser($email, $password, $permissions)
+    public function addUser($name, $description, $email, $password, $permissions)
     {
-        $userDocument = $this->getStorage()->getUserStorage()->addUser($email, $password, $permissions);
+        $userDocument = $this->getStorage()->getUserStorage()->addUser($name, $description, $email, $password, $permissions);
 
         $this->single = true;
         $this->cursor = [$userDocument];

@@ -70,23 +70,22 @@ class User extends Admin
      * @return stdClass Mongo user record
      * @throws \API\RuntimeException
      */
-    public function addUser($email, $password, $selectedPermissions)
+    public function addUser($name, $description, $email, $password, $selectedPermissions)
     {
         $v = new Validator();
+        $v->validateName($name);
         $v->validateEmail($email);
         $v->validatePassword($password);
 
-        $service = new UserService($this->getContainer());
-
         // fetch available permissions and compare
+        $service = new UserService($this->getContainer());
         $result = $service->fetchPermissionsByNames($selectedPermissions);
-
         $permissions = $result->getCursor()->toArray();
         if (count($permissions) !== count($selectedPermissions)) {
             throw new AdminException('Invalid permissions: '.json_encode($selectedPermissions));
         }
-echo 'HERE';
-        $user = $service->addUser($email, $password, $permissions);
+
+        $user = $service->addUser($name, $description, $email, $password, $permissions);
 
         return $user;
     }
