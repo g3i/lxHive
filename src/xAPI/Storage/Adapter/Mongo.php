@@ -26,10 +26,10 @@ namespace API\Storage\Adapter;
 
 use API\Storage\AdapterInterface;
 use MongoDB\Driver\Command;
+use MongoDB\Driver\Cursor;
 use API\DocumentInterface;
 use API\BaseTrait;
 use API\Config;
-use API\Storage\Adapter\Mongo;
 
 class Mongo implements AdapterInterface
 {
@@ -235,6 +235,21 @@ class Mongo implements AdapterInterface
         return $expression;
     }
 
+    /**
+     * Perform a Mongo command.
+     * @see http://php.net/manual/en/class.mongodb-driver-command.php
+     * @see http://php.net/manual/en/mongodb-driver-manager.executecommand.php
+     *
+     * @param array|object $args command document
+     * @return Cursor MondoDb cursor
+     */
+    public function executeCommand($args)
+    {
+        $command = new Command($args);
+        $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
+        return $cursor;
+    }
+
     public static function testConnection($uri)
     {
         $client = new \MongoDB\Driver\Manager($uri);
@@ -242,8 +257,7 @@ class Mongo implements AdapterInterface
         $result = $client->executeCommand('admin', $buildInfoCommand);
 
         if ($result) {
-            $result = $result->toArray()[0];
-            $result = $result->version;
+            $result = $result->toArray()[0]->version;
         } else {
             $result = false;
         }

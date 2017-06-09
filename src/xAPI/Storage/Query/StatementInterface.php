@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface StatementInterface
+interface StatementInterface extends QueryInterface
 {
     /**
      * Get statements using filters.

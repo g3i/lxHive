@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface BasicAuthInterface
+interface BasicAuthInterface extends QueryInterface
 {
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null);
 

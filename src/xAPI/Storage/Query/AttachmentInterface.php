@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface AttachmentInterface
+interface AttachmentInterface extends QueryInterface
 {
     public function store($hash, $contentType, $timestamp = null);
 

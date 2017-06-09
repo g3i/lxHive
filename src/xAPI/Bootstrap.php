@@ -201,7 +201,8 @@ class Bootstrap
         // Defaults
         $appRoot = realpath(__DIR__.'/../../');
         $defaults = [
-            'appRoot' => $appRoot
+            'appRoot' => $appRoot,
+            'publicRoot' => $appRoot.'/public',
         ];
 
         Config::factory($defaults);

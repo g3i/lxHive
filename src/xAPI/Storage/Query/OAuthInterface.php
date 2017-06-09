@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface OAuthInterface
+interface OAuthInterface extends QueryInterface
 {
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null);
 

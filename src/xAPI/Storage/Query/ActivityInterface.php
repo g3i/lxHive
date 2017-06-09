@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface ActivityInterface
+interface ActivityInterface extends QueryInterface
 {
     public function fetchById($id);
 }

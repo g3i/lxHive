@@ -24,15 +24,6 @@
 
 namespace API\Storage\Query;
 
-interface UserInterface extends QueryInterface
+interface QueryInterface
 {
-    public function findByEmailAndPassword($username, $password);
-
-    public function findById($id);
-
-    public function addUser($name, $user, $email, $password, $permissions);
-
-    public function fetchAll();
-
-    public function fetchAvailablePermissions();
 }

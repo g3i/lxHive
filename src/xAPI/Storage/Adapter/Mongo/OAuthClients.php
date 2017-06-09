@@ -22,17 +22,12 @@
  * file that was distributed with this source code.
  */
 
-namespace API\Storage\Query;
+namespace API\Storage\Adapter\Mongo;
 
-interface UserInterface extends QueryInterface
+use API\Storage\Query\QueryInterface;
+use API\Storage\Provider;
+
+class OAuthClients extends Provider implements QueryInterface
 {
-    public function findByEmailAndPassword($username, $password);
-
-    public function findById($id);
-
-    public function addUser($name, $user, $email, $password, $permissions);
-
-    public function fetchAll();
-
-    public function fetchAvailablePermissions();
+    const COLLECTION_NAME = 'oAuthClients';
 }
