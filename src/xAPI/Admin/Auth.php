@@ -89,12 +89,12 @@ class Auth extends Admin
         $accessTokenService = new BasicAuthService($this->getContainer());
 
         $accessTokenService->fetchTokens();
-        $clientIds = [];
+        $keys = [];
         foreach ($accessTokenService->getCursor() as $document) {
-            $clientIds[] = $document->getClientId();
+            $keys[] = $document->getKey();
         }
 
-        return $clientIds;
+        return $keys;
     }
 
     /**
@@ -102,11 +102,11 @@ class Auth extends Admin
      * @param string $clientId valid clientId
      * @return void
      */
-    public function expireBasicToken($clientId)
+    public function expireBasicToken($key)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
 
-        $accessTokenService->expireToken($clientId);
+        $accessTokenService->expireToken($key);
     }
 
     /**
@@ -114,11 +114,11 @@ class Auth extends Admin
      * @param string $clientId valid clientId
      * @return void
      */
-    public function deleteBasicToken($clientId)
+    public function deleteBasicToken($key)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
 
-        $accessTokenService->deleteToken($clientId);
+        $accessTokenService->deleteToken($key);
     }
 
     /**

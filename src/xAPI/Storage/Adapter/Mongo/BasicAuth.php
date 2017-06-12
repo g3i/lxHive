@@ -94,24 +94,25 @@ class BasicAuth extends Provider implements BasicAuthInterface
         return $accessTokenDocument;
     }
 
-    public function deleteToken($clientId)
+    public function deleteToken($key)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
-        $expression->where('clientId', $clientId);
+        $expression->where('key', $key);
 
         $deletionResult = $storage->delete($expression);
+        
         return $deletionResult;
     }
 
-    public function expireToken($clientId, $accessToken)
+    public function expireToken($key)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
-        $expression->where('token', $accessToken);
-        $expression->where('clientId', $clientId);
+        $expression->where('key', $key);
+        
         $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['expired' => true]);
 
         return $updateResult;

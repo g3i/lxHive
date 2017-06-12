@@ -46,12 +46,12 @@ class BasicTokenExpireCommand extends Command
         $authAdmin = new Auth($this->getContainer());
 
         $helper = $this->getHelper('question');
-        $clientIds = $authAdmin->listBasicTokenIds();
+        $keys = $authAdmin->listBasicTokenIds();
 
-        $question = new Question('Please enter the the client ID of the token you wish to delete: ');
-        $question->setAutocompleterValues($clientIds);
+        $question = new Question('Please enter the key of the token you wish to delete: ');
+        $question->setAutocompleterValues($keys);
 
-        $clientId = $helper->ask($input, $output, $question);
+        $key = $helper->ask($input, $output, $question);
 
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
 
@@ -59,7 +59,7 @@ class BasicTokenExpireCommand extends Command
             return;
         }
 
-        $authAdmin->expireBasicToken($clientId);
+        $authAdmin->expireBasicToken($key);
 
         $output->writeln('<info>Token successfully expired!</info>');
     }

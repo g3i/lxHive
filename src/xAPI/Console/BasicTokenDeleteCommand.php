@@ -49,12 +49,12 @@ class BasicTokenDeleteCommand extends Command
         $helper = $this->getHelper('question');
         $accessTokenService = new AccessTokenService($this->getContainer());
 
-        $clientIds = $authAdmin->listBasicTokenIds();
+        $keys = $authAdmin->listBasicTokenIds();
 
-        $question = new Question('Please enter the the client ID of the token you wish to delete: ');
-        $question->setAutocompleterValues($clientIds);
+        $question = new Question('Please enter the key of the token you wish to delete: ');
+        $question->setAutocompleterValues($keys);
 
-        $clientId = $helper->ask($input, $output, $question);
+        $key = $helper->ask($input, $output, $question);
 
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
 
@@ -62,7 +62,7 @@ class BasicTokenDeleteCommand extends Command
             return;
         }
 
-        $authAdmin->deleteBasicToken($clientId);
+        $authAdmin->deleteBasicToken($key);
 
         $output->writeln('<info>Supertoken successfully deleted!</info>');
     }
