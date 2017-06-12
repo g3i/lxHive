@@ -157,20 +157,19 @@ class Basic extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function expireToken($clientId, $accessToken)
+    public function expireToken($key)
     {
         $collection  = $this->getDocumentManager()->getCollection('basicTokens');
         $cursor      = $collection->find();
+        $cursor->where('key', $key);
 
-        $cursor->where('token', $accessToken);
-        $cursor->where('clientId', $clientId);
         $accessTokenDocument = $cursor->current();
         $accessTokenDocument->setExpired(true);
         $accessTokenDocument->save();
 
         $this->setAccessTokens([$accessTokenDocument]);
 
-        return $document;
+        return $accessTokenDocument;
     }
 
     /**
