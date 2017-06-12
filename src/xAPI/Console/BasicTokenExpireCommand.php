@@ -47,15 +47,15 @@ class BasicTokenExpireCommand extends Command
         $accessTokenService = new AccessTokenService($this->getSlim());
 
         $accessTokenService->fetchTokens();
-        $clientIds = [];
+        $keys = [];
         foreach ($accessTokenService->getCursor() as $document) {
-            $clientIds[] = $document->getClientId();
+            $keys[] = $document->getKey();
         }
 
-        $question = new Question('Please enter the the client ID of the token you wish to expire: ');
-        $question->setAutocompleterValues($clientIds);
+        $question = new Question('Please enter the key of the token you wish to expire: ');
+        $question->setAutocompleterValues($keys);
 
-        $clientId = $helper->ask($input, $output, $question);
+        $key = $helper->ask($input, $output, $question);
 
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
 
@@ -63,7 +63,7 @@ class BasicTokenExpireCommand extends Command
             return;
         }
 
-        $accessTokenService->expireToken($clientId);
+        $accessTokenService->expireToken($key);
 
         $output->writeln('<info>Token successfully expired!</info>');
     }
