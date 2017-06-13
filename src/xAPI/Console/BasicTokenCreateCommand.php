@@ -161,7 +161,7 @@ class BasicTokenCreateCommand extends Command
         }
 
         $scopesDictionary = [];
-        foreach ($userService->getCursor() as $scope) {
+        foreach ($user->permissions as $scope) {
             $scopesDictionary[$scope->getName()] = $scope;
         }
 
