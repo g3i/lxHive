@@ -30,9 +30,9 @@ interface BasicAuthInterface extends QueryInterface
 
     public function getToken($key, $secret);
 
-    public function deleteToken($clientId);
+    public function deleteToken($key);
 
-    public function expireToken($clientId, $accessToken);
+    public function expireToken($key);
 
     public function getTokens();
 

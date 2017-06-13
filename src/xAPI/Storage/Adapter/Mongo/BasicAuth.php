@@ -41,10 +41,10 @@ class BasicAuth extends Provider implements BasicAuthInterface
 
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
-        $accessTokenDocument->setUserId($user->getId());
+        $accessTokenDocument->setUserId($user->_id);
         $scopeIds = [];
         foreach ($scopes as $scope) {
-            $scopeIds[] = $scope['id'];
+            $scopeIds[] = $scope->_id;
         }
         $accessTokenDocument->setScopeIds($scopeIds);
 
@@ -101,8 +101,8 @@ class BasicAuth extends Provider implements BasicAuthInterface
 
         $expression->where('key', $key);
 
-        $deletionResult = $storage->delete($expression);
-        
+        $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
+
         return $deletionResult;
     }
 
@@ -113,7 +113,7 @@ class BasicAuth extends Provider implements BasicAuthInterface
 
         $expression->where('key', $key);
         
-        $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['expired' => true]);
+        $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['$set' => ['expired' => true]]);
 
         return $updateResult;
     }

@@ -66,9 +66,9 @@ class Basic extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function deleteToken($clientId)
+    public function deleteToken($key)
     {
-        $this->getStorage()->getBasicAuthStorage()->deleteToken($clientId);
+        $this->getStorage()->getBasicAuthStorage()->deleteToken($key);
     }
 
     /**
@@ -79,9 +79,9 @@ class Basic extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function expireToken($clientId, $accessToken)
+    public function expireToken($key)
     {
-        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->expireToken($clientId, $accessToken);
+        $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->expireToken($key);
 
         $this->setAccessTokens([$accessTokenDocument]);
 

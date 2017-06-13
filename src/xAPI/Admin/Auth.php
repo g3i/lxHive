@@ -74,7 +74,7 @@ class Auth extends Admin
 
         $textArray = [];
         foreach ($accessTokenService->getCursor() as $document) {
-            $textArray[] = $document->jsonSerialize();
+            $textArray[] = $document;
         }
 
         return $textArray;
@@ -91,7 +91,7 @@ class Auth extends Admin
         $accessTokenService->fetchTokens();
         $keys = [];
         foreach ($accessTokenService->getCursor() as $document) {
-            $keys[] = $document->getKey();
+            $keys[] = $document->key;
         }
 
         return $keys;
