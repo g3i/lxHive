@@ -174,6 +174,11 @@ class User extends Service
     {
         $collection  = $this->getDocumentManager()->getCollection('users');
 
+        // Ensure e-mail is unique
+        // This will fail if someone already has existing users with same email
+        // However, this should be rare, and they should be able to diagnose this from the error message
+        $collection->createIndex(['email' => 1], ['unique' => true]);
+
         // Set up the User to be saved
         $userDocument = $collection->createDocument();
 
