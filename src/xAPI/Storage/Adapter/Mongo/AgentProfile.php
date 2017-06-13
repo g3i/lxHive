@@ -120,7 +120,8 @@ class AgentProfile extends Provider implements AgentProfileInterface
 
         // ID exists, try to merge body if applicable
         if ($result) {
-            $this->validateDocumentType($result);
+            $this->validateSourceDocumentType($contentType);
+            $this->validateTargetDocumentType($result);
 
             $decodedExisting = json_decode($result->getContent(), true);
             $this->validateJsonDecodeErrors();
@@ -236,11 +237,13 @@ class AgentProfile extends Provider implements AgentProfileInterface
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)
     {
         // If-Match first
+        $ifMatch = isset($ifMatch[0]) ? $ifMatch[0] : [];
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
             throw new Exception('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
+        $ifMatch = isset($ifNoneMatch[0]) ? $ifNoneMatch[0] : [];
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
                 throw new Exception('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
@@ -258,12 +261,16 @@ class AgentProfile extends Provider implements AgentProfileInterface
         }
     }
 
-    private function validateDocumentType($document)
+    private function validateTargetDocumentType($document)
     {
         if ($document->getContentType() !== 'application/json') {
             throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
-        if ($document !== 'application/json') {
+    }
+
+    private function validateSourceDocumentType($documentType)
+    {
+        if ($documentType !== 'application/json') {
             throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
