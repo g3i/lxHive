@@ -480,7 +480,7 @@ class Bootstrap
 
         $app = new SlimApp($container);
 
-        // CORS compatibility layer (Internet Explorer)
+        // Slim parser override and CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
 
             // Register media type parser
@@ -676,6 +676,7 @@ class Bootstrap
      */
     public function bootTest()
     {
-        // nothing
+        // Expose container instance so Tests can inject it into services (or use it)
+        return self::$containerInstance;
     }
 }

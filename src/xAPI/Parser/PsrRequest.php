@@ -189,7 +189,6 @@ class PsrRequest
         $body = $request->getBody();
         $parserResult->setRawPayload($body);
 
-        // Slim3 application/json body parser parses this to associative array!
         $parsedBody = $request->getParsedBody();
         $parserResult->setPayload($parsedBody);
 
