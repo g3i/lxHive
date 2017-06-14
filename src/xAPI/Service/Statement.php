@@ -130,7 +130,11 @@ class Statement extends Service
             $cursor->whereOr(
                 // OAuth token - NOTE: This might be statement.authority.1.member.mbox or 
                 // statement.authority.{}.member.mbox
-                $collection->expression()->where('statement.authority.member.mbox', $this->getAccessToken()->user->getEmail()),
+                //$collection->expression()->where('statement.authority.member.mbox', $this->getAccessToken()->user->getEmail()),
+                $collection->expression()->whereElemMatch('statement.authority.member', 
+                    $collection->expression()
+                        ->where('mbox', 'mailto:' . $this->getAccessToken()->user->getEmail())
+                ),
                 // Basic token
                 $collection->expression()->where('statement.authority.account.name', $this->getAccessToken()->user->getEmail())
             );
