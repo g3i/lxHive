@@ -56,10 +56,10 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
 
     public function checkPermission($permissionName)
     {
+        $result = false;
         if (is_array($permissionName)) {
-            $result = false;
             foreach ($permissionName as $individualPermissionName) {
-                if ($this->hasPermission($permissionName)) {
+                if ($this->hasPermission($individualPermissionName)) {
                     $result = true;
                 }
             }
@@ -70,7 +70,7 @@ abstract class AbstractToken extends Document implements \JsonSerializable, Toke
         if ($result) {
             return true;
         } else {
-            return new \Exception('Permission denied.', Resource::STATUS_FORBIDDEN);
+            throw new \Exception('Permission denied.', Resource::STATUS_FORBIDDEN);
         }
     }
 
