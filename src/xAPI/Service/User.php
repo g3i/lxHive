@@ -165,7 +165,7 @@ class User extends Service
     public function findByEmail($email)
     {
         $collection = $this->getDocumentManager()->getCollection('users');
-
+        $cursor     = $collection->find();
         $cursor->where('email', $email);
 
         return $cursor;
@@ -174,7 +174,7 @@ class User extends Service
     public function getEmailCount($email)
     {
         $collection = $this->getDocumentManager()->getCollection('users');
-
+        $cursor     = $collection->find();
         $cursor->where('email', $email);
 
         $count = $cursor->count();
