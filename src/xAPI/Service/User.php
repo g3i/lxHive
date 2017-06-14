@@ -162,6 +162,26 @@ class User extends Service
         return $result;
     }
 
+    public function findByEmail($email)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+
+        $cursor->where('email', $email);
+
+        return $cursor;
+    }
+
+    public function getEmailCount($email)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+
+        $cursor->where('email', $email);
+
+        $count = $cursor->count();
+
+        return $count;
+    }
+
     public function getLoggedIn()
     {
         $userId = $_SESSION['userId'];
@@ -173,11 +193,6 @@ class User extends Service
     public function addUser($email, $password, $permissions)
     {
         $collection  = $this->getDocumentManager()->getCollection('users');
-
-        // Ensure e-mail is unique
-        // This will fail if someone already has existing users with same email
-        // However, this should be rare, and they should be able to diagnose this from the error message
-        $collection->createIndex(['email' => 1], ['unique' => true]);
 
         // Set up the User to be saved
         $userDocument = $collection->createDocument();
