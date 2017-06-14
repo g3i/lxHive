@@ -54,16 +54,35 @@ class LrsReportCommand extends Command
     {
         $report = new LrsReport();
         $result = $report->check();
+        $summary = $report->summary();
+
+        // 1. reports
 
         $table = new Table($output);
         $table->setHeaders([
             'item', 'status', 'message', 'notes'
         ]);
-        foreach($result as $title => $section){
+        foreach ($result as $title => $section) {
             $this->renderTableSection($title, $section, $output, $table);
         }
 
         $table->render();
+
+        // 2. summary
+
+        $s = [];
+
+        $s[] = ($summary['total'] > 0 && $summary['completed'] == $summary['total']) ? $this->style('success', 'Complete') : $this->style('error', 'Aborted');
+        $s[] = 'finished '. $this->style('bold', $summary['completed'].'/'.$summary['total']. ' sections');
+
+        $s[] = 'with '. $this->style('bold', $summary['reports']['total'].' checks');
+        foreach ($summary['reports'] as $status => $count) {
+            if ($status == 'total') {
+                continue;
+            }
+            $s[] = $status.': '.(($count > 0)  ? $this->style($status, $count) : $count);
+        }
+        $output->writeln(implode(', ', $s));
     }
 
     /**
@@ -85,7 +104,7 @@ class LrsReportCommand extends Command
         ]);
         $table->addRow(new TableSeparator());
 
-        foreach($result as $item => $data){
+        foreach ($result as $item => $data) {
             $table->addRow([
                 $item,
                 $this->style($data['status'], $data['status']),
@@ -105,8 +124,10 @@ class LrsReportCommand extends Command
      */
     protected function style($status, $message)
     {
-
         switch ($status) {
+            case 'bold': {
+                return '<options=bold>'.$message.'</>';
+            }
             case 'caption': {
                 return '<fg=cyan;options=bold>'.$message.'</>';
             }
@@ -122,6 +143,5 @@ class LrsReportCommand extends Command
         }
 
         return $message;
-
     }
 }

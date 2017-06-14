@@ -109,5 +109,4 @@ class UserCreateCommand extends Command
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
-
 }

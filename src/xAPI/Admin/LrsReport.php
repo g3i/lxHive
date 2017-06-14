@@ -36,6 +36,11 @@ class LrsReport
 {
     private $reports = [];
 
+    private $count = [
+        'total' => 0,
+        'completed' => 0,
+    ];
+
     /**
      * @constructor
      */
@@ -53,29 +58,74 @@ class LrsReport
     public function check()
     {
         $ok = $this->checkConfigYml();
+        $this->count($ok);
 
         if ($ok) {
             $ok = $this->checkConfigYml();
         }
+        $this->count($ok);
 
         if ($ok) {
             $ok = $this->checkMongo();
         }
+        $this->count($ok);
 
         if ($ok) {
             $ok = $this->checkDataBase();
         }
+        $this->count($ok);
 
         if ($ok) {
             $ok = $this->checkUsersAndPermissions();
         }
+        $this->count($ok);
 
         if ($ok) {
             $ok = $this->checkLocalFileStorage();
         }
+        $this->count($ok);
 
         //TODO: check statements and document stats
         return $this->reports;
+    }
+
+    /**
+     * compute summary of performed checks
+     * @return array summary
+     */
+    public function summary()
+    {
+        $summary = array_merge($this->count, [
+            'reports' => [
+                'success' => 0,
+                'error' => 0,
+                'warn' => 0,
+                'total' => 0,
+            ]
+        ]);
+
+        foreach ($this->reports as $section => $report) {
+            foreach ($report as $label => $item) {
+                switch ($item['status']) {
+                    case 'success': {
+                        $summary['reports']['success']++;
+                        break;
+                    }
+                    case 'error': {
+                        $summary['reports']['error']++;
+                        break;
+                    }
+                    case 'warn': {
+                        $summary['reports']['warn']++;
+                        break;
+                    }
+                }
+                $summary['reports']['total']++;
+            }
+        }
+
+        //TODO: check statements and document stats
+        return $summary;
     }
 
     /**
@@ -220,27 +270,37 @@ class LrsReport
         return true;
     }
 
-    private function notice($section, $label, $value, $note = null)
+    private function notice($section, $label, $value, $note = '')
     {
         $this->set($section, $label, 'notice', $value, $note);
     }
 
-    private function success($section, $label, $value = 'ok', $note = null)
+    private function success($section, $label, $value = 'ok', $note = '')
     {
         $this->set($section, $label, 'success', $value, $note);
     }
 
-    private function warn($section, $label, $value, $note = null)
+    private function warn($section, $label, $value, $note = '')
     {
         $this->set($section, $label, 'warn', $value, $note);
     }
 
-    private function error($section, $label, $value, $note = null)
+    private function error($section, $label, $value, $note = '')
     {
         $this->set($section, $label, 'error', $value, $note);
     }
 
-    private function set($section, $label, $status, $value, $note = null)
+    /**
+     * register a report
+     * @param string $section section
+     * @param string $label section label
+     * @param string $status  [success, error, warn, notice]
+     * @param string $value message
+     * @param string $note
+     *
+     * @return void
+     */
+    private function set($section, $label, $status, $value, $note = '')
     {
         if (!isset($this->reports[$section])) {
             $this->reports[$section] = [];
@@ -257,6 +317,18 @@ class LrsReport
     }
 
     /**
+     * count a report result
+     * @param bool $ok
+     *
+     * @return void
+     */
+    private function count($ok)
+    {
+        $this->count['total']++;
+        $this->count['completed'] += (int) $ok;
+    }
+
+    /**
      * formats a float number (english notation, 2 decimals)
      * @param mixed $val
      * @param string $unit suffix
@@ -268,6 +340,10 @@ class LrsReport
         return number_format((float)$val, 2, '.', '').$unit;
     }
 
+    /**
+     * compute directory size recursively
+     * @return int bytes
+     */
     public function dirSize($path)
     {
         $total = 0;
