@@ -279,8 +279,26 @@ class Basic extends Service implements AuthInterface
         }
 
         $userService = new UserService($this->getSlim());
-        $user = $userService->addUser($params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
-        $user->save();
+        $email = $params->get('user')['email'];
+        $password = $params->get('user')['password'];
+        // Account exists
+        if ($userService->getEmailCount($email) > 0) {
+            $correctUserFound = false;
+            $usersCursor = $userService->findByEmail($email);
+            foreach ($usersCursor as $matchedUser) {
+                if ($matchedUser->getPassword() === sha1($password)) {
+                    $correctUserFound = true;
+                    $user = $matchedUser;
+                    break;
+                }
+            }
+            if (!$correctUserFound) {
+                throw new \Exception('Invalid credentials.', Resource::STATUS_UNAUTHORIZED);
+            }
+        } else {
+            $user = $userService->addUser($email, $password, $permissionDocuments);
+            $user->save();
+        }
 
         $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 

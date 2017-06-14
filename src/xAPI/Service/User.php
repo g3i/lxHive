@@ -162,6 +162,26 @@ class User extends Service
         return $result;
     }
 
+    public function findByEmail($email)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+        $cursor     = $collection->find();
+        $cursor->where('email', $email);
+
+        return $cursor;
+    }
+
+    public function getEmailCount($email)
+    {
+        $collection = $this->getDocumentManager()->getCollection('users');
+        $cursor     = $collection->find();
+        $cursor->where('email', $email);
+
+        $count = $cursor->count();
+
+        return $count;
+    }
+
     public function getLoggedIn()
     {
         $userId = $_SESSION['userId'];

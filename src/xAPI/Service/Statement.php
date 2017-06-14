@@ -111,6 +111,37 @@ class Statement extends Service
         $collection  = $this->getDocumentManager()->getCollection('statements');
         $cursor      = $collection->find();
 
+        // Check if the user only has statements/read/mine permission and nothing more
+        // In which case we restrict him severely
+        if (
+            $this->getAccessToken()->hasPermission('statements/read/mine') 
+            && !$this->getAccessToken()->hasPermission('statements/read') 
+            && !$this->getAccessToken()->hasPermission('all') 
+            && !$this->getAccessToken()->hasPermission('all/read')
+            && !$this->getAccessToken()->hasPermission('super')) {
+            
+            // Check exact match for authority
+            //$cursor->where('statement.authority', $this->getAccessToken()->generateAuthority());
+
+            // Check that token belongs to same user (but can be different token)
+            // Example - user has a basic and OAuth token
+            // He writes statements with one of them and reads them with the other one
+            // However, e-mail uniqueness must be ensured for this to work
+            $cursor->whereOr(
+                // OAuth token - NOTE: This might be statement.authority.1.member.mbox or 
+                // statement.authority.{}.member.mbox
+                //$collection->expression()->where('statement.authority.member.mbox', $this->getAccessToken()->user->getEmail()),
+                $collection->expression()->whereElemMatch('statement.authority.member', 
+                    $collection->expression()
+                        ->where('mbox', 'mailto:' . $this->getAccessToken()->user->getEmail())
+                ),
+                // Basic token
+                $collection->expression()->where('statement.authority.account.name', $this->getAccessToken()->user->getEmail())
+            );
+
+            
+        }
+
         // Single statement
         if ($params->has('statementId')) {
             $cursor->where('statement.id', $params->get('statementId'));

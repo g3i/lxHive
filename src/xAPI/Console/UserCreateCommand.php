@@ -105,6 +105,11 @@ class UserCreateCommand extends Command
         $user = $userService->addUser($email, $password, $selectedPermissions);
         $text = json_encode($user, JSON_PRETTY_PRINT);
 
+        $userCount = $userService->getEmailCount($email);
+        if ($userCount > 1) {
+            $output->writeln('<comment>Note: there are ' . $userCount . ' duplicate accounts with the same email - ' . $email . '</comment>');
+        }
+
         $output->writeln('<info>User successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);

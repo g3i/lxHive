@@ -59,7 +59,7 @@ class Statements extends Resource
         $request = $this->getSlim()->request();
 
         // Check authentication
-        $this->getSlim()->auth->checkPermission('statements/read');
+        $this->getSlim()->auth->checkPermission(['statements/read', 'statements/read/mine']);
 
         // Do the validation
         $this->statementValidator->validateRequest($request);
