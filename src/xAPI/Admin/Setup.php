@@ -163,7 +163,7 @@ class Setup
     public function testDbConnection($uri)
     {
         // \MongoDB\Driver\Manager will use mongodb://127.0.0.1/ when no or empty uri was submitted
-        if(!$uri){
+        if (!$uri) {
             return false;
         }
 
