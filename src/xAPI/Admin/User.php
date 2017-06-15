@@ -74,8 +74,9 @@ class User extends Admin
     {
         $v = new Validator();
         $v->validateName($name);
-        $v->validateEmail($email);
         $v->validatePassword($password);
+
+        $this->validateEmail($email);
 
         // fetch available permissions and compare
         $service = new UserService($this->getContainer());
@@ -89,6 +90,7 @@ class User extends Admin
 
         return $user;
     }
+
     /**
      * Fetch all user email addresses
      * TODO, make scalable (search)
@@ -104,5 +106,21 @@ class User extends Admin
         }
 
         return $users;
+    }
+
+    /**
+     * Fetch all user email addresses
+     * TODO, make scalable (search)
+     * @return array collection of user records with email as key
+     */
+    public function validateEmail($email)
+    {
+        $v = new Validator();
+        $v->validateEmail($email);
+
+        $uservice = new UserService($this->getContainer());
+        if($uservice->hasEmail($email)){
+            throw new AdminException('User email exists already');
+        }
     }
 }

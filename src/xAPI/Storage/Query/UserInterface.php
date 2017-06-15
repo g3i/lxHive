@@ -35,4 +35,6 @@ interface UserInterface extends QueryInterface
     public function fetchAll();
 
     public function fetchAvailablePermissions();
+
+    public function hasEmail($email);
 }

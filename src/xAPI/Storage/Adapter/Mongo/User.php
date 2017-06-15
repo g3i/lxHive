@@ -26,6 +26,8 @@ namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\Query\UserInterface;
 use API\Storage\Provider;
+use API\Controller;
+use API\HttpException as Exception;
 
 class User extends Provider implements UserInterface
 {
@@ -56,9 +58,26 @@ class User extends Provider implements UserInterface
         return $result;
     }
 
+    /**
+     * Add a user
+     * The only validation we do at this level is ensuring that the email is unique
+     *
+     * @param string $name
+     * @param string $description
+     * @param string $email valid email address
+     * @param string $password
+     * @param array  $permissions valid array of permission records
+     *
+     * @throws Exception
+     */
     public function addUser($name, $description, $email, $password, $permissions)
     {
         $storage = $this->getContainer()['storage'];
+
+        // check if email is valid and unique
+        if ($this->hasEmail($email)) {
+            throw new Exception('User email exists already.', Controller::STATUS_BAD_REQUEST);
+        }
 
         // Set up the User to be saved
         $userDocument = new \API\Document\Generic();
@@ -107,5 +126,20 @@ class User extends Provider implements UserInterface
         $documentResult->setCursor($cursor);
 
         return $documentResult;
+    }
+
+    // TODO remove after indexing user.email as unique
+    public function hasEmail($email)
+    {
+        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        $storage = $this->getContainer()['storage'];
+        $count = $storage->count(self::COLLECTION_NAME, [
+            'email' => $email,
+        ]);
+
+        return ($count > 0);
     }
 }

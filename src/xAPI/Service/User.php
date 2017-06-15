@@ -152,6 +152,11 @@ class User extends Service
         return $documentResult;
     }
 
+    public function hasEmail($email)
+    {
+        return $this->getStorage()->getUserStorage()->hasEmail($email);
+    }
+
     private function validateCsrf($params)
     {
         // CSRF protection

@@ -74,8 +74,8 @@ class UserCreateCommand extends Command
         // 3. Email
         $question = new Question('Please enter an e-mail: ', '');
         $question->setMaxAttempts(null);
-        $question->setValidator(function ($answer) use ($validator) {
-            $validator->validateEmail($answer);
+        $question->setValidator(function ($answer) use ($userAdmin) {
+            $userAdmin->validateEmail($answer);
             return $answer;
         });
         $email = $helper->ask($input, $output, $question);
@@ -109,5 +109,4 @@ class UserCreateCommand extends Command
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
     }
-
 }
