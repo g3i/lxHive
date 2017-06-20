@@ -32,6 +32,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use API\Service\User as UserService;
+use API\Service\AuthScopes as AuthScopesService;
 
 class UserCreateCommand extends Command
 {
@@ -53,18 +54,17 @@ class UserCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userService = new UserService($this->getSlim());
+        $scopesService =  new AuthScopesService($this->getSlim());
+        $helper = $this->getHelper('question');
 
-        // get permissions from user service. Abort if no permissions set
-        $userService->fetchAvailablePermissions();
-        $hasPermissions = $userService->getCursor()->count();
-        if (!$hasPermissions) {
+        // abort if no permissions set
+        if (!$scopesService->count()) {
             throw new \RuntimeException(
                 'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
             );
         }
 
-        $helper = $this->getHelper('question');
-
+        // email
         $question = new Question('Please enter an e-mail: ', '');
         $question->setMaxAttempts(null);
         $question->setValidator(function ($answer) {
@@ -73,6 +73,7 @@ class UserCreateCommand extends Command
         });
         $email = $helper->ask($input, $output, $question);
 
+        // password
         $question = new Question('Please enter a password: ', '');
         $question->setMaxAttempts(null);
         $question->setValidator(function ($answer) {
@@ -81,11 +82,8 @@ class UserCreateCommand extends Command
         });
         $password = $helper->ask($input, $output, $question);
 
-        $permissionsDictionary = [];
-        foreach ($userService->getCursor() as $permission) {
-            $permissionsDictionary[$permission->getName()] = $permission;
-        }
-
+        // permissions
+        $permissionsDictionary = $scopesService->fetchAll(true);
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
                 'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
