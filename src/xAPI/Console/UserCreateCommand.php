@@ -65,19 +65,21 @@ class UserCreateCommand extends Command
 
         $helper = $this->getHelper('question');
 
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter an e-mail: ', 'untitled');
-            $email = $helper->ask($input, $output, $question);
-        } else {
-            $email = $input->getOption('email');
-        }
+        $question = new Question('Please enter an e-mail: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) {
+            $this->validateEmail($answer);
+            return $answer;
+        });
+        $email = $helper->ask($input, $output, $question);
 
-        if (null === $input->getOption('password')) {
-            $question = new Question('Please enter a password: ', '');
-            $password = $helper->ask($input, $output, $question);
-        } else {
-            $password = $input->getOption('password');
-        }
+        $question = new Question('Please enter a password: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) {
+            $this->validatePassword($answer);
+            return $answer;
+        });
+        $password = $helper->ask($input, $output, $question);
 
         $permissionsDictionary = [];
         foreach ($userService->getCursor() as $permission) {
@@ -113,5 +115,49 @@ class UserCreateCommand extends Command
         $output->writeln('<info>User successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+    }
+
+
+    /**
+     * Validate password
+     * @param string $str
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validatePassword($str)
+    {
+        $errors = [];
+        $length = 6;
+
+        if (strlen($str) < $length) {
+            $errors[] = 'Must have at least '.$length.' characters';
+        }
+
+        if (!preg_match('/[0-9]+/', $str)) {
+            $errors[] = 'Must include at least one number.';
+        }
+
+        if (!preg_match('/[a-zA-Z]+/', $str)) {
+            $errors[] = 'Must include at least one letter.';
+        }
+
+        if (!empty($errors)) {
+            throw new \RuntimeException(json_encode($errors));
+        }
+    }
+
+    /**
+     * Validate email address
+     * @param string $email
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validateEmail($email)
+    {
+        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            throw new \RuntimeException('Invalid email address!');
+        }
     }
 }
