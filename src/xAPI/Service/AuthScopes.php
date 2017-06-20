@@ -29,7 +29,6 @@ use API\Resource;
 
 class AuthScopes extends Service
 {
-
     private $matrix = [
         'super' => [
             'all'
@@ -71,12 +70,12 @@ class AuthScopes extends Service
      */
     public function getChildrenFor($name)
     {
-        if(!isset($this->matrix[$name])) {
+        if (!isset($this->matrix[$name])) {
             return [];
         }
 
         $children = $this->matrix[$name];
-        foreach($children as $c){
+        foreach ($children as $c) {
             if (in_array($name, $children)) {
                 continue;
             }
@@ -172,5 +171,4 @@ class AuthScopes extends Service
 
         return ($dictionary) ? $dictionary : array_values($dictionary);
     }
-
 }

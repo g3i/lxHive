@@ -59,7 +59,6 @@ class BasicTokenCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $basicAuthService = new BasicAuthService($this->getSlim());
         $scopesService =  new AuthScopesService($this->getSlim());
 
@@ -167,14 +166,14 @@ class BasicTokenCreateCommand extends Command
         }
 
         // permissions
-        $map = array_map(function($val) {
+        $map = array_map(function ($val) {
             return $val->getName();
         }, $user->permissions);
         $_scopes = array_values($map);
         $scopes = $_scopes;
 
         // Brightcookie/lxHive-Internal#125 fetch and merge child permissions for displaying options
-        foreach($_scopes as $scope) {
+        foreach ($_scopes as $scope) {
             $scopes += $scopesService->getChildrenFor($scope);
         }
         $scopesDictionary = $scopesService->findByNames($scopes, true);
