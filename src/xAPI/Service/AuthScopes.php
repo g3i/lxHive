@@ -30,6 +30,63 @@ use API\Resource;
 class AuthScopes extends Service
 {
 
+    private $matrix = [
+        'super' => [
+            'all'
+        ],
+        'all' => [
+            'statements/write',
+            'attachments',
+            'state',
+            'profile',
+            'define',
+            'all/read',
+        ],
+        'all/read' => [
+            'statements/read',
+            'attachments',
+            'state', //TODO limit to read (service)
+            'profile', //TODO limit to read (service)
+        ],
+        'statements/write' => [
+            'statements/read/mine'
+        ],
+        'statements/read' => [
+            'statements/read/mine'
+        ]
+    ];
+
+    /**
+     * return permission matrix
+     * @return int
+     */
+    public function getMatrix()
+    {
+        return $this->matrix;
+    }
+
+    /**
+     * return permission matrix
+     * @return int
+     */
+    public function getChildrenFor($name)
+    {
+        if(!isset($this->matrix[$name])) {
+            return [];
+        }
+
+        $children = $this->matrix[$name];
+        foreach($children as $c){
+            if (in_array($name, $children)) {
+                continue;
+            }
+            $children = array_merge($children, $this->getChildrenFor($c));
+        }
+
+        return array_unique($children);
+    }
+
+
     /**
      * counts permission doocuments
      * @return int
@@ -86,6 +143,34 @@ class AuthScopes extends Service
         $cursor->where('name', $name);
         $scopeDocument = $cursor->current();
         return $scopeDocument;
+    }
+
+    /**
+     * Gets a list permissions document by names
+     * Note: this function does NOT validate if a given permission name exists.
+     *
+     * @param array $names
+     * @return array of \Sokil\Mongo\Document
+     */
+    public function findByNames($names, $dictionary = false)
+    {
+        $collection = $this->getDocumentManager()->getCollection('authScopes');
+        $cursor     = $collection->find();
+
+
+        $cursor->where('name', ['$in' => $names]);
+        $documents = $cursor->findAll();
+
+        // Force dictionary mode for legacy LRS:
+        //   Deals with existing LRS suffering from #103: "./X setup:oauth - duplication of scopes when called multiple times"
+        //   TODO for future release: remove, collection indexing (unique), add migration script
+
+        $dictionary = [];
+        foreach ($cursor as $permission) {
+            $dictionary[$permission->getName()] = $permission;
+        }
+
+        return ($dictionary) ? $dictionary : array_values($dictionary);
     }
 
 }
