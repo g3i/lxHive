@@ -19,3 +19,5 @@ src/xAPI/Config/Config.yml
 sftp-config.json
 
 .DS_Store
+
+.php_cs.cache
