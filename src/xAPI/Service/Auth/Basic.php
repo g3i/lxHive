@@ -339,12 +339,10 @@ class Basic extends Service implements AuthInterface
         $authUser = $components[0];
         $authPass = (isset($components[1])) ? $components[1] : '';
 
-        if (isset($authUser) && isset($authPass)) {
-            try {
-                $token = $this->fetchToken($authUser, $authPass);
-            } catch (\Exception $e) {
-                throw new Exception('Authorization header invalid.');
-            }
+        try {
+            $token = $this->fetchToken($authUser, $authPass);
+        } catch (\Exception $e) {
+            throw new Exception('Authorization header invalid.');
         }
 
         return $token;
