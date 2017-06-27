@@ -388,16 +388,16 @@ class OAuth extends Service implements AuthInterface
 
     public function extractToken(Request $request)
     {
-        $tokenHeader = $request->headers('Authorization', false);
-        $rawTokenHeader = $request->rawHeaders('Authorization', false);
+        $tokenHeader = Resource::searchRequestHeaders($request, 'Authorization');
 
-        if ($tokenHeader && preg_match('/Bearer\s*([^\s]+)/', $tokenHeader, $matches)) {
-            $tokenHeader = $matches[1];
-        } elseif ($rawTokenHeader && preg_match('/Bearer\s*([^\s]+)/', $rawTokenHeader, $matches)) {
-            $tokenHeader = $matches[1];
-        } else {
-            $tokenHeader = false;
+        if(false === $tokenHeader){
+            throw new Exception('The request is missing a required parameter.', Resource::STATUS_BAD_REQUEST);
         }
+
+        if (preg_match('/Bearer\s*([^\s]+)/', $tokenHeader, $matches)) {
+            $tokenHeader = $matches[1];
+        }
+
         $tokenRequest = $request->post('access_token', false);
         $tokenQuery = $request->get('access_token', false);
         // At least one (and only one) of client credentials method required.

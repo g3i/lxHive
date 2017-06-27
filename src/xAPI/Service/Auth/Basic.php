@@ -319,13 +319,9 @@ class Basic extends Service implements AuthInterface
 
     public function extractToken(Request $request)
     {
-        $headers = $request->headers();
-        $rawHeaders = $request->rawHeaders();
-        if (isset($rawHeaders['Authorization'])) {
-            $header = $rawHeaders['Authorization'];
-        } elseif (isset($headers['Authorization'])) {
-            $header = $headers['Authorization'];
-        } else {
+        $header = Resource::searchRequestHeaders($request, 'Authorization');
+
+        if(false === $header){
             throw new Exception('Authorization header required.');
         }
 

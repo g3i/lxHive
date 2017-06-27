@@ -212,6 +212,42 @@ abstract class Resource
     }
 
     /**
+     * Tries to fetch a \Slim\Http\Request header in variants "Propercase", "lowercase" and UPPERCASE".
+     *
+     * @param \Slim\Http\Request $request collection to search
+     * @param string $search
+     *
+     * @return mixed|false value or false if not found
+     */
+    public static function searchRequestHeaders($request, $search)
+    {
+        // \Slim\Http\Request::headers
+        $return = $request->headers()->get($search, false);
+        if(!$return){
+            $return = $request->headers()->get(strtolower($search), false);
+        }
+        if(!$return){
+            $return = $request->headers()->get(strtoupper($search), false);
+        }
+        if(!$return){
+            $return = $request->headers()->get(ucfirst($search), false);
+        }
+
+        // \Slim\Http\Request::rawHeaders
+        if(!$return){
+            $return = $request->rawHeaders()->get(strtolower($search), false);
+        }
+        if(!$return){
+            $return = $request->rawHeaders()->get(strtoupper($search), false);
+        }
+        if(!$return){
+            $return = $request->rawHeaders()->get(ucfirst($search), false);
+        }
+
+        return $return;
+    }
+
+    /**
      * @return \Slim\Slim
      */
     public function getSlim()
