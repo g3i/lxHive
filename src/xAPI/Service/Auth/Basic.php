@@ -211,12 +211,15 @@ class Basic extends Service implements AuthInterface
             throw new AuthFailureException('Authorization header invalid.');
         }
 
-        if (isset($authUser) && isset($authPass)) {
-            try {
-                $token = $this->fetchToken($authUser, $authPass);
-            } catch (\Exception $e) {
-                throw new AuthFailureException('Authorization header invalid.');
-            }
+        $components = explode(':', $str);
+        $authUser = $components[0];
+        $authPass = (isset($components[1])) ? $components[1] : '';
+
+
+        try {
+            $token = $this->fetchToken($authUser, $authPass);
+        } catch (\Exception $e) {
+            throw new AuthFailureException('Authorization header invalid.');
         }
 
         return $this;

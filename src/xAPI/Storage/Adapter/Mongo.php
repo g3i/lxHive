@@ -39,6 +39,10 @@ class Mongo implements AdapterInterface
 
     private $databaseName;
 
+    /**
+     * Set up driver and database
+     * @constructor
+     */
     public function __construct($container)
     {
         $this->setContainer($container);
@@ -87,6 +91,14 @@ class Mongo implements AdapterInterface
         return $result;
     }
 
+    /**
+     * Update a document or create a new document when no document matches the query criteria.
+     *
+     * @param string $collection Name of the collection to insert to
+     * @param array $filter The filter that determines which documents to update
+     * @param object|array $newDocument The modified document to be written
+     * @return DocumentResult The result of this query
+     */
     public function upsert($collection, $filter, $newDocument)
     {
         return $this->update($collection, $filter, $newDocument, true);
@@ -201,6 +213,14 @@ class Mongo implements AdapterInterface
         return ($document === false) ? null : $document;
     }
 
+    /**
+     * Count
+     *
+     * @param string $collection Name of collection
+     * @param array|Expression $filter The filter to fetch the documents by
+     * @param array $options
+     * @return int
+     */
     public function count($collection, $filter = [], $options = [])
     {
         if ($filter instanceof Mongo\ExpressionInterface) {
@@ -229,6 +249,11 @@ class Mongo implements AdapterInterface
         return (integer) $result->n;
     }
 
+    /**
+     * Create a Mongo Expression
+     *
+     * @return Mongo\Expression
+     */
     public function createExpression()
     {
         $expression = new Mongo\Expression();
@@ -248,21 +273,6 @@ class Mongo implements AdapterInterface
         $command = new Command($args);
         $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
         return $cursor;
-    }
-
-    public static function testConnection($uri)
-    {
-        $client = new \MongoDB\Driver\Manager($uri);
-        $buildInfoCommand = new \MongoDB\Driver\Command(['buildinfo' => 1]);
-        $result = $client->executeCommand('admin', $buildInfoCommand);
-
-        if ($result) {
-            $result = $result->toArray()[0]->version;
-        } else {
-            $result = false;
-        }
-
-        return $result;
     }
 
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
@@ -351,5 +361,27 @@ class Mongo implements AdapterInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Test mongo connection and return buildinfo
+     * @see https://docs.mongodb.com/manual/reference/command/buildInfo/
+     *
+     * @param array|object $args command document
+     * @return array|false buildinfo hashmap or false if connection failed
+     */
+    public static function testConnection($uri)
+    {
+        $client = new \MongoDB\Driver\Manager($uri);
+        $buildInfoCommand = new \MongoDB\Driver\Command(['buildinfo' => 1]);
+        $result = $client->executeCommand('admin', $buildInfoCommand);
+
+        if ($result) {
+            $result = $result->toArray()[0]->version;
+        } else {
+            $result = false;
+        }
+
+        return $result;
     }
 }
