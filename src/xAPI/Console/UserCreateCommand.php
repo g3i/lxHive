@@ -32,6 +32,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use API\Service\User as UserService;
+use API\Service\AuthScopes as AuthScopesService;
 
 class UserCreateCommand extends Command
 {
@@ -53,37 +54,36 @@ class UserCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userService = new UserService($this->getSlim());
+        $scopesService =  new AuthScopesService($this->getSlim());
+        $helper = $this->getHelper('question');
 
-        // get permissions from user service. Abort if no permissions set
-        $userService->fetchAvailablePermissions();
-        $hasPermissions = $userService->getCursor()->count();
-        if (!$hasPermissions) {
+        // abort if no permissions set
+        if (!$scopesService->count()) {
             throw new \RuntimeException(
                 'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
             );
         }
 
-        $helper = $this->getHelper('question');
+        // email
+        $question = new Question('Please enter an e-mail: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) {
+            $this->validateEmail($answer);
+            return $answer;
+        });
+        $email = $helper->ask($input, $output, $question);
 
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter an e-mail: ', 'untitled');
-            $email = $helper->ask($input, $output, $question);
-        } else {
-            $email = $input->getOption('email');
-        }
+        // password
+        $question = new Question('Please enter a password: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) {
+            $this->validatePassword($answer);
+            return $answer;
+        });
+        $password = $helper->ask($input, $output, $question);
 
-        if (null === $input->getOption('password')) {
-            $question = new Question('Please enter a password: ', '');
-            $password = $helper->ask($input, $output, $question);
-        } else {
-            $password = $input->getOption('password');
-        }
-
-        $permissionsDictionary = [];
-        foreach ($userService->getCursor() as $permission) {
-            $permissionsDictionary[$permission->getName()] = $permission;
-        }
-
+        // permissions
+        $permissionsDictionary = $scopesService->fetchAll(true);
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
                 'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
@@ -113,5 +113,49 @@ class UserCreateCommand extends Command
         $output->writeln('<info>User successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+    }
+
+
+    /**
+     * Validate password
+     * @param string $str
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validatePassword($str)
+    {
+        $errors = [];
+        $length = 6;
+
+        if (strlen($str) < $length) {
+            $errors[] = 'Must have at least '.$length.' characters';
+        }
+
+        if (!preg_match('/[0-9]+/', $str)) {
+            $errors[] = 'Must include at least one number.';
+        }
+
+        if (!preg_match('/[a-zA-Z]+/', $str)) {
+            $errors[] = 'Must include at least one letter.';
+        }
+
+        if (!empty($errors)) {
+            throw new \RuntimeException(json_encode($errors));
+        }
+    }
+
+    /**
+     * Validate email address
+     * @param string $email
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validateEmail($email)
+    {
+        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            throw new \RuntimeException('Invalid email address!');
+        }
     }
 }

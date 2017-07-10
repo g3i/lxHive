@@ -34,6 +34,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\User as UserService;
+use API\Service\AuthScopes as AuthScopesService;
 
 class BasicTokenCreateCommand extends Command
 {
@@ -59,10 +60,12 @@ class BasicTokenCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $basicAuthService = new BasicAuthService($this->getSlim());
+        $scopesService =  new AuthScopesService($this->getSlim());
+
         $userService = new UserService($this->getSlim());
         $userService->fetchAll();
-        $users = [];
 
+        $users = [];
         foreach ($userService->getCursor() as $user) {
             $users[$user->get('email')] = $user;
         }
@@ -80,20 +83,20 @@ class BasicTokenCreateCommand extends Command
         ]);
 
         // get permissions from user service. Abort if no permissions set
-        $userService->fetchAvailablePermissions();
-        $hasPermissions = $userService->getCursor()->count();
-        if (!$hasPermissions) {
+        if (!$scopesService->count()) {
             throw new \RuntimeException(
                 'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
             );
         }
 
+        // intro
         $question = new ConfirmationQuestion('Continue? (y/n) ', false);
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('<error>Process aborted by user.</error>');
             return 0;
         }
 
+        // email
         if (null === $input->getOption('email')) {
             $question = new Question('Please enter the email of the associated user: ', '');
             $question->setAutocompleterValues(array_keys($users));
@@ -138,7 +141,7 @@ class BasicTokenCreateCommand extends Command
             $user = $users[$email];
         }
 
-
+        // name
         if (null === $input->getOption('name')) {
             $question = new Question('Please enter a name: ', 'untitled');
             $name = $helper->ask($input, $output, $question);
@@ -146,6 +149,7 @@ class BasicTokenCreateCommand extends Command
             $name = $input->getOption('name');
         }
 
+        // description
         if (null === $input->getOption('description')) {
             $question = new Question('Please enter a description: ', '');
             $description = $helper->ask($input, $output, $question);
@@ -153,6 +157,7 @@ class BasicTokenCreateCommand extends Command
             $description = $input->getOption('description');
         }
 
+        // expiration
         if (null === $input->getOption('expiration')) {
             $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
             $expiresAt = $helper->ask($input, $output, $question);
@@ -160,10 +165,18 @@ class BasicTokenCreateCommand extends Command
             $expiresAt = $input->getOption('expiration');
         }
 
-        $scopesDictionary = [];
-        foreach ($user->permissions as $scope) {
-            $scopesDictionary[$scope->getName()] = $scope;
+        // permissions
+        $map = array_map(function ($val) {
+            return $val->getName();
+        }, $user->permissions);
+        $_scopes = array_values($map);
+        $scopes = $_scopes;
+
+        // Brightcookie/lxHive-Internal#125 fetch and merge child permissions for displaying options
+        foreach ($_scopes as $scope) {
+            $scopes += $scopesService->getChildrenFor($scope);
         }
+        $scopesDictionary = $scopesService->findByNames($scopes, true);
 
         if (null === $input->getOption('scopes')) {
             $question = new ChoiceQuestion(
@@ -172,7 +185,6 @@ class BasicTokenCreateCommand extends Command
                 '0'
             );
             $question->setMultiselect(true);
-
             $selectedScopeNames = $helper->ask($input, $output, $question);
 
             $selectedScopes = [];
