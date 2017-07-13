@@ -24,16 +24,26 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
+use API\Storage\Query\ActivityProfileInterface;
+
 use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Query\DocumentResult;
 use API\Storage\Provider;
-use API\Storage\Query\ActivityProfileInterface;
+
 use API\Util;
 
-class ActivityProfile extends Provider implements ActivityProfileInterface
+class ActivityProfile extends Provider implements ActivityProfileInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activityProfiles';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function getFiltered($parameters)
     {

@@ -20,23 +20,20 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * This file was adapted from sokil/php-mongo.
+ * License information is available at https://github.com/sokil/php-mongo/blob/master/LICENSE
+ *
  */
 
-namespace API\Storage\Adapter\Mongo;
+namespace API\Storage;
 
-use API\Storage\SchemaInterface;
-use API\Storage\Query\QueryInterface;
-
-use API\Storage\Provider;
-
-class OAuthClients extends Provider implements QueryInterface, SchemaInterface
+interface SchemaInterface
 {
-    const COLLECTION_NAME = 'oAuthClients';
-
     /**
-     * @inherit
+     * Install hook for collection
+     * @return void
+     * @throws \Exception
      */
-    public function install()
-    {
-    }
+    public function install();
 }

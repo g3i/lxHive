@@ -24,13 +24,22 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\LogInterface;
+
 use API\Util;
 use API\Storage\Provider;
 
-class Log extends Provider implements LogInterface
+class Log extends Provider implements LogInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'logs';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function logRequest($ip, $method, $endpoint, $timestamp)
     {

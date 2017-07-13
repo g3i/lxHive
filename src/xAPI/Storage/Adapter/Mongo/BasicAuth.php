@@ -24,14 +24,23 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\BasicAuthInterface;
+
 use API\Controller;
 use API\HttpException as Exception;
 use API\Storage\Provider;
 
-class BasicAuth extends Provider implements BasicAuthInterface
+class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'basicTokens';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
@@ -112,7 +121,7 @@ class BasicAuth extends Provider implements BasicAuthInterface
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
-        
+
         $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['$set' => ['expired' => true]]);
 
         return $updateResult;
