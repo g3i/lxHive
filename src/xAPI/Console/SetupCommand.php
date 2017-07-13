@@ -100,16 +100,21 @@ class SetupCommand extends SymfonyCommand
         if (!$this->getSetup()->locateYaml('Config.development.yml')) {
             $this->getSetup()->installYaml('Config.development.yml');
         }
+        $output->writeln('<info>*</info> Configuration saved!');
 
-        // 6. oAuth scopes
-        $output->writeln('<info>Setting up default OAuth scopes...</info>');
+        // 7. DB Schema
+        Bootstrap::reset();
+        $this->getSetup()->installDb();
+        $output->writeln('<info>*</info> Database set up!');
+
+        // 8. oAuth scopes
         Bootstrap::reset();
         $this->getSetup()->initializeAuthScopes();
-        $output->writeln('<info>OAuth scopes configured!</info>');
+        $output->writeln('<info>*</info> OAuth scopes configured!');
 
-        // 7. finish
-        $output->writeln('<info>Configuration saved!</info>');
-        $output->writeln('<info>DB setup complete!</info>');
+        // 9. finish
+        $output->writeln('<info>*</info> Configuration saved!');
+        $output->writeln('<info>Setup complete!</info>');
     }
 
     /**
