@@ -13,4 +13,7 @@
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <const name="LXHIVE_UNITTEST" value="1"/>
+    </php>
 </phpunit>
