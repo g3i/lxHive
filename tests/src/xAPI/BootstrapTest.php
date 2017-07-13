@@ -17,9 +17,20 @@ class BootstrapTest extends TestCase
 
     public function testConstructorIsNotPublic()
     {
-        $this->expectException(\Error::class);
-        $bootstrap = new Bootstrap(Bootstrap::None);
-        $bootstrap = new Bootstrap(Bootstrap::Web);
+
+        $isPrivate = false;
+
+        $reflect = new \ReflectionClass('API\Bootstrap');
+        $privateMethods = $reflect->getMethods(\ReflectionMethod::IS_PRIVATE);
+
+        foreach($privateMethods as $method) {
+            if ($method->name === "__construct") {
+                $isPrivate = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($isPrivate);
     }
 
     ////

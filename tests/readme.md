@@ -8,10 +8,11 @@ A `phpunit.xml` file is setup in the project root folder of your lxHive app.
 
 The `tests` directory contains two sub-directories directories:
 
-| namespace     | folder                     | notes |
-|---            |---                         |---    |
-| `\Tests\Unit` | `./Unit/*`                 | Assorted Unit tests, tests for issues, feature tests etc |
-| `\Tests\API`  | `./src/xAPI/*`             | Mirrors the app code's `\API` namespace and folder structure |
+| namespace             | folder                     | notes |
+|---                    |---                         |---    |
+| `\Tests\Unit`         | `./Unit/*`                 | Assorted Unit tests, tests for issues, feature tests etc |
+| `\Tests\API`          | `./src/xAPI/*`             | Mirrors the app code's `\API` namespace and folder structure |
+| `\Tests\Integration`  | `./Integration/*`          | Integration tests, most notably for testing (mock) requests and request validation |
 
 Test files have to follow the [*Test.php](https://phpunit.de/manual/current/en/organizing-tests.html#organizing-tests.filesystem) suffix pattern, i.e. `FoobarTest.php`
 
