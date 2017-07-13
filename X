@@ -69,7 +69,6 @@ try {
     $application->run();
 }
 
-// TODO: Maybe move all of this into Bootstrapper?
 $application->add(new UserCreateCommand());
 $application->add(new BasicTokenListCommand());
 $application->add(new BasicTokenDeleteCommand());
@@ -81,5 +80,4 @@ $application->add(new AuthScopeCreateCommand());
 $application->add(new SetupCommand());
 $application->add(new LrsReportCommand());
 $application->run();
-
 ?>
