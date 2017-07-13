@@ -28,6 +28,7 @@ use API\Storage\Query\AttachmentInterface;
 
 use API\Util;
 use API\Storage\Provider;
+use API\HttpException as Exception;
 
 class Attachment extends Provider implements AttachmentInterface, SchemaInterface
 {

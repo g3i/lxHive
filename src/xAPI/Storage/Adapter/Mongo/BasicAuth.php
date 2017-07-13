@@ -28,8 +28,8 @@ use API\Storage\SchemaInterface;
 use API\Storage\Query\BasicAuthInterface;
 
 use API\Controller;
-use API\HttpException as Exception;
 use API\Storage\Provider;
+use API\HttpException as Exception;
 
 class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {

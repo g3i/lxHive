@@ -33,6 +33,7 @@ use API\Util;
 use API\Storage\Provider;
 use API\Storage\Query\StatementResult;
 use API\HttpException as Exception;
+
 use Ramsey\Uuid\Uuid;
 
 class Statement extends Provider implements StatementInterface, SchemaInterface

@@ -27,11 +27,11 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\SchemaInterface;
 use API\Storage\Query\AgentProfileInterface;
 
-use API\Storage\Query\DocumentResult;
 use API\Util;
 use API\Controller;
-use API\HttpException as Exception;
 use API\Storage\Provider;
+use API\Storage\Query\DocumentResult;
+use API\HttpException as Exception;
 
 class AgentProfile extends Provider implements AgentProfileInterface, SchemaInterface
 {

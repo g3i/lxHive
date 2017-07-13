@@ -28,11 +28,11 @@ use API\Storage\SchemaInterface;
 use API\Storage\Query\ActivityProfileInterface;
 
 use API\Controller;
-use API\HttpException as Exception;
+use API\Util;
 use API\Storage\Query\DocumentResult;
 use API\Storage\Provider;
 
-use API\Util;
+use API\HttpException as Exception;
 
 class ActivityProfile extends Provider implements ActivityProfileInterface, SchemaInterface
 {
