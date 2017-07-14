@@ -178,13 +178,31 @@ class Setup
     }
 
     /**
+     * Install Databse
+     * @return void
+     */
+    public function installDb()
+    {
+        //TODO this method will be obsolete if we remove the authScopes collection
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
+        $container = $bootstrap->initCliContainer();
+        $schema = new Mongo\Schema($container);
+
+        try {
+            $schema->install();
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            throw new AdminException('Error installing Database. Error: '. $e->getMessage());
+        }
+    }
+
+    /**
      * Load authscopes into Mongo
      * @return void
      */
     public function initializeAuthScopes()
     {
         //TODO this method will be obsolete if we remove the authScopes collection
-        $bootstrap = Bootstrap::factory(Bootstrap::Console);
+        $bootstrap = Bootstrap::factory(Bootstrap::Config);
         $container = $bootstrap->initCliContainer();
         $oAuthService = new OAuthService($container);
 

@@ -24,16 +24,25 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\ActivityStateInterface;
-use API\Storage\Query\DocumentResult;
+
 use API\Util;
 use API\Controller;
-use API\HttpException as Exception;
 use API\Storage\Provider;
+use API\Storage\Query\DocumentResult;
+use API\HttpException as Exception;
 
-class ActivityState extends Provider implements ActivityStateInterface
+class ActivityState extends Provider implements ActivityStateInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activityStates';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function getFiltered($parameters)
     {
@@ -58,7 +67,7 @@ class ActivityState extends Provider implements ActivityStateInterface
             }
 
             $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
-            
+
             $this->validateCursorCountValid($cursorCount);
             $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
@@ -163,7 +172,7 @@ class ActivityState extends Provider implements ActivityStateInterface
         $activityStateDocument->setStateId($parameters->get('stateId'));
         $activityStateDocument->setContentType($contentType);
         $activityStateDocument->setHash(sha1($stateObject));
-        
+
         $storage->upsert(self::COLLECTION_NAME, $expression, $activityStateDocument);
 
         // TODO: Abstract this away somehow!

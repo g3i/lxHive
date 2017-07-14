@@ -20,40 +20,20 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
+ *
+ * This file was adapted from sokil/php-mongo.
+ * License information is available at https://github.com/sokil/php-mongo/blob/master/LICENSE
+ *
  */
 
-namespace API\Storage\Adapter\Mongo;
+namespace API\Storage;
 
-use API\Storage\SchemaInterface;
-use API\Storage\Query\LogInterface;
-
-use API\Util;
-use API\Storage\Provider;
-use API\HttpException as Exception;
-
-class Log extends Provider implements LogInterface, SchemaInterface
+interface SchemaInterface
 {
-    const COLLECTION_NAME = 'logs';
-
     /**
-     * @inherit
+     * Install hook for collection
+     * @return void
+     * @throws \Exception
      */
-    public function install()
-    {
-    }
-
-    public function logRequest($ip, $method, $endpoint, $timestamp)
-    {
-        $storage = $this->getContainer()['storage'];
-        $document = new \API\Document\Generic();
-
-        $document->setIp($ip);
-        $document->setMethod($method);
-        $document->setEndpoint($endpoint);
-        $document->setTimestamp(Util\Date::dateTimeToMongoDate($timestamp));
-
-        $storage->insertOne(self::COLLECTION_NAME, $document);
-
-        return $document;
-    }
+    public function install();
 }

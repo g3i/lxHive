@@ -24,14 +24,23 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\ActivityInterface;
-use API\Controller;
-use API\HttpException as Exception;
-use API\Storage\Provider;
 
-class Activity extends Provider implements ActivityInterface
+use API\Controller;
+use API\Storage\Provider;
+use API\HttpException as Exception;
+
+class Activity extends Provider implements ActivityInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activities';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function fetchById($id)
     {

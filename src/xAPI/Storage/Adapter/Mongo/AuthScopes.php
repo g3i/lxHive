@@ -24,12 +24,22 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\AuthScopesInterface;
-use API\Storage\Provider;
 
-class AuthScopes extends Provider implements AuthScopesInterface
+use API\Storage\Provider;
+use API\HttpException as Exception;
+
+class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'authScopes';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function findById($id)
     {

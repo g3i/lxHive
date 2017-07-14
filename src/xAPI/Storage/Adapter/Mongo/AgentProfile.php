@@ -24,16 +24,25 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\AgentProfileInterface;
-use API\Storage\Query\DocumentResult;
+
 use API\Util;
 use API\Controller;
-use API\HttpException as Exception;
 use API\Storage\Provider;
+use API\Storage\Query\DocumentResult;
+use API\HttpException as Exception;
 
-class AgentProfile extends Provider implements AgentProfileInterface
+class AgentProfile extends Provider implements AgentProfileInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'agentProfiles';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function getFiltered($parameters)
     {
@@ -105,7 +114,7 @@ class AgentProfile extends Provider implements AgentProfileInterface
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
-    
+
         $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
         $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
@@ -141,7 +150,7 @@ class AgentProfile extends Provider implements AgentProfileInterface
         $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
-        
+
         $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
 
         // Add to log
@@ -171,7 +180,7 @@ class AgentProfile extends Provider implements AgentProfileInterface
         if ($result) {
             $result = new \API\Document\Generic($result);
         }
-        
+
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
         $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
@@ -196,7 +205,7 @@ class AgentProfile extends Provider implements AgentProfileInterface
         $agentProfileDocument->setProfileId($parameters['profileId']);
         $agentProfileDocument->setContentType($contentType);
         $agentProfileDocument->setHash(sha1($profileObject));
-        
+
         $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
 
         // Add to log

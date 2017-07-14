@@ -24,14 +24,23 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\UserInterface;
+
 use API\Storage\Provider;
 use API\Controller;
 use API\HttpException as Exception;
 
-class User extends Provider implements UserInterface
+class User extends Provider implements UserInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'users';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function findByEmailAndPassword($username, $password)
     {

@@ -24,18 +24,29 @@
 
 namespace API\Storage\Adapter\Mongo;
 
-use API\Controller;
-use API\Storage\Query\StatementResult;
+use API\Storage\SchemaInterface;
 use API\Storage\Query\StatementInterface;
-use API\Util;
-use Ramsey\Uuid\Uuid;
-use API\HttpException as Exception;
-use API\Storage\Provider;
-use API\Config;
 
-class Statement extends Provider implements StatementInterface
+use API\Config;
+use API\Controller;
+use API\Util;
+use API\Storage\Provider;
+use API\Storage\Query\StatementResult;
+use API\HttpException as Exception;
+
+use Ramsey\Uuid\Uuid;
+
+class Statement extends Provider implements StatementInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'statements';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
+
     /**
      * @param  $parameters parameters as per xAPI spec
      *
@@ -59,7 +70,7 @@ class Statement extends Provider implements StatementInterface
             $cursor = $storage->find(self::COLLECTION_NAME, $expression);
 
             $cursor = $this->validateCursorNotEmpty($cursor);
-            
+
             $statementResult = new StatementResult();
             $statementResult->setCursor($cursor);
             $statementResult->setRemainingCount(1);
@@ -332,7 +343,7 @@ class Statement extends Provider implements StatementInterface
         }
 
         $queryOptions['limit'] = (int)$limit;
-        
+
         $cursor = $storage->find(self::COLLECTION_NAME, $expression, $queryOptions);
 
         $statementResult->setCursor($cursor);
@@ -362,7 +373,7 @@ class Statement extends Provider implements StatementInterface
     public function insert($statementObject)
     {
         $storage = $this->getContainer()['storage'];
-        
+
         // TODO: This should be in Activity storage manager!
         //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
@@ -421,7 +432,7 @@ class Statement extends Provider implements StatementInterface
             $referencedStatement->setVoided(true);
             $expression = $storage->createExpression();
             $expression->where('statement.id', $referencedStatementId);
-        
+
             $storage->update(self::COLLECTION_NAME, $expression, $referencedStatement);
         }
         /*if ($this->getAccessToken()->hasPermission('define')) {

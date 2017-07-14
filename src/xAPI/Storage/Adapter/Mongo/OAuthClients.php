@@ -24,10 +24,20 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\QueryInterface;
-use API\Storage\Provider;
 
-class OAuthClients extends Provider implements QueryInterface
+use API\Storage\Provider;
+use API\HttpException as Exception;
+
+class OAuthClients extends Provider implements QueryInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'oAuthClients';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 }

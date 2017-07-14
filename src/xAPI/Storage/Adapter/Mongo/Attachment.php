@@ -21,16 +21,25 @@
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
  */
-
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\AttachmentInterface;
+
 use API\Util;
 use API\Storage\Provider;
+use API\HttpException as Exception;
 
-class Attachment extends Provider implements AttachmentInterface
+class Attachment extends Provider implements AttachmentInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'attachments';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function store($hash, $contentType, $timestamp = null)
     {

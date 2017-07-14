@@ -24,15 +24,24 @@
 
 namespace API\Storage\Adapter\Mongo;
 
+use API\Storage\SchemaInterface;
 use API\Storage\Query\OAuthInterface;
-use API\Controller;
-use API\HttpException as Exception;
-use API\Storage\Provider;
-use API\Util;
 
-class OAuth extends Provider implements OAuthInterface
+use API\Controller;
+use API\Util;
+use API\Storage\Provider;
+use API\HttpException as Exception;
+
+class OAuth extends Provider implements OAuthInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'oAuthTokens';
+
+    /**
+     * @inherit
+     */
+    public function install()
+    {
+    }
 
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
