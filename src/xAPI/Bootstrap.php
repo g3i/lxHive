@@ -230,6 +230,11 @@ class Bootstrap
             // Ignore exception
         }
 
+        // ad-hoc db for unit test @see phpunit.xml
+        if (defined('LXHIVE_UNITTEST')) {
+            $config['storage']['Mongo']['db_name'] = 'LXHIVE_UNITTEST';
+        }
+
         Config::merge($config);
     }
 

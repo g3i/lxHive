@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\API;
+namespace Tests\Integration\Parser;
 
 use Tests\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -14,11 +14,11 @@ use Slim\Http\UploadedFile;
 
 class PsrRequestParserTest extends TestCase
 {
-	const MOCK_STATEMENT = '{"actor":{"objectType":"Agent","name":"Buster Keaton","mbox":"mailto:buster@keaton.com"},"verb":{"id":"http://adlnet.gov/expapi/verbs/voided","display":{"en-US":"voided"}},"object":{"objectType":"StatementRef","id":"{{statementId}}"}}';
+    const MOCK_STATEMENT = '{"actor":{"objectType":"Agent","name":"Buster Keaton","mbox":"mailto:buster@keaton.com"},"verb":{"id":"http://adlnet.gov/expapi/verbs/voided","display":{"en-US":"voided"}},"object":{"objectType":"StatementRef","id":"{{statementId}}"}}';
 
     public function testSingleJsonRequest()
     {
-    	$mockRequest = $this->mockJsonRequest('/statements', 'POST', self::MOCK_STATEMENT);
+        $mockRequest = $this->mockJsonRequest('/statements', 'POST', self::MOCK_STATEMENT);
         $parser = new PsrRequest($mockRequest);
 
         $parserResult = $parser->getData();
@@ -30,10 +30,10 @@ class PsrRequestParserTest extends TestCase
 
     private function mockRequest($uri, $method)
     {
-    	$env = Environment::mock([
-    		'REQUEST_METHOD' => 'POST',
-    		'CONTENT_TYPE' => 'application/json;charset=utf8'
-    	]);
+        $env = Environment::mock([
+            'REQUEST_METHOD' => 'POST',
+            'CONTENT_TYPE' => 'application/json;charset=utf8'
+        ]);
         $uri = Uri::createFromString($uri);
         $headers = Headers::createFromEnvironment($env);
         $cookies = [];
@@ -45,18 +45,18 @@ class PsrRequestParserTest extends TestCase
            return json_decode($input);
         });
 
-		return $request;
+        return $request;
     }
 
     private function mockJsonRequest($uri, $method, $body)
     {
-    	$request = $this->mockRequest($uri, $method);
-    	// Write the string into the body
+        $request = $this->mockRequest($uri, $method);
+        // Write the string into the body
         $stream = fopen('php://memory', 'r+');
         fwrite($stream, $body);
         rewind($stream);
         $body = new \Slim\Http\Stream($stream);
         $request = $request->withBody($body)->reparseBody();
-		return $request;
+        return $request;
     }
 }

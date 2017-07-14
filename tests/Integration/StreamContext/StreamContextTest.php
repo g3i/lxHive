@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit\Issue91;
+namespace Tests\Integration\StreamContext;
 
 use Tests\TestCase;
 

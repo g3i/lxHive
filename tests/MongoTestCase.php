@@ -25,17 +25,18 @@ namespace Tests;
 
 use PHPUnit_Framework_TestCase as BaseTestCase;
 
-use API\Bootstrap;
+use Symfony\Component\Yaml\Yaml;
 
-abstract class TestCase extends BaseTestCase
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Command;
+use MongoDB\Driver\Cursor;
+use MongoDB\Driver\Query;
+use MongoDB\Driver\BulkWrite;
+use MongoDB\Client;
+
+use API\Bootstrap;
+use API\Config;
+
+abstract class MongoTestCase extends TestCase
 {
-    /**
-     * Called before the first test of the test case class is run
-     * Loads db config
-     */
-    public static function setUpBeforeClass()
-    {
-        Bootstrap::reset();
-        Bootstrap::factory(Bootstrap::Testing);
-    }
 }
