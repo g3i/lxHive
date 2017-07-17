@@ -35,17 +35,9 @@ class ExtendedQuery implements ExtensionInterface
 {
     use BaseTrait;
 
-    //private $routes = [
-    //    '/plus/statements/find' => [
-    //        'methods' => [
-    //            'OPTIONS'   => [ 'callable' => 'handleOptionsRoute'],
-    //            'GET'       => [ 'callable' => 'handleGetRoute'],
-    //            'HEAD'      => [ 'callable' => 'handleGetRoute'],
-    //            'POST'      => [ 'callable' => 'handlePostRoute'],
-    //        ],
-    //    ],
-    //];
-
+    /**
+     * @var array $routes
+     */
     private $routes = [
         ['pattern' => '/plus/statements/find', 'callable' => 'handleGetRoute', 'methods' => ['GET', 'HEAD']],
         ['pattern' => '/plus/statements/find', 'callable' => 'handlePostRoute', 'methods' => ['POST']],
