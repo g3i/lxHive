@@ -32,7 +32,10 @@ class About extends View
 {
     public function render()
     {
-        $object = ['version' => $this->versions];
+        $object = [
+            'version' => $this->versions,
+            'extensions' => $this->extensions
+        ];
 
         return $object;
     }

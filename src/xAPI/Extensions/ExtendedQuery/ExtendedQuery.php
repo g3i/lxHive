@@ -35,6 +35,23 @@ class ExtendedQuery implements ExtensionInterface
 {
     use BaseTrait;
 
+    //private $routes = [
+    //    '/plus/statements/find' => [
+    //        'methods' => [
+    //            'OPTIONS'   => [ 'callable' => 'handleOptionsRoute'],
+    //            'GET'       => [ 'callable' => 'handleGetRoute'],
+    //            'HEAD'      => [ 'callable' => 'handleGetRoute'],
+    //            'POST'      => [ 'callable' => 'handlePostRoute'],
+    //        ],
+    //    ],
+    //];
+
+    private $routes = [
+        ['pattern' => '/plus/statements/find', 'callable' => 'handleGetRoute', 'methods' => ['GET', 'HEAD']],
+        ['pattern' => '/plus/statements/find', 'callable' => 'handlePostRoute', 'methods' => ['POST']],
+        ['pattern' => '/plus/statements/find', 'callable' => 'handleOptionsRoute', 'methods' => ['OPTIONS']],
+    ];
+
     /**
      * constructor
      * Register services
@@ -43,6 +60,33 @@ class ExtendedQuery implements ExtensionInterface
     public function __construct($container)
     {
         $this->setContainer($container);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function about()
+    {
+
+        $routes = [];
+        foreach ($this->routes as $route) {
+            $pattern = $route['pattern'];
+            $methods = (isset($routes[$pattern])) ? array_merge($routes[$pattern], $route['methods']) : [];
+            $routes[$pattern] = $methods;
+        }
+
+        return [
+            'name' => 'ExtendedQuery',
+            'description' => 'Fragmented statement queries',
+            'endpoints' => $routes,
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function install()
+    {
     }
 
     /**
@@ -60,11 +104,7 @@ class ExtendedQuery implements ExtensionInterface
      */
     public function getRoutes()
     {
-        return [
-            ['pattern' => '/plus/statements/find', 'callable' => 'handleGetRoute', 'methods' => ['GET', 'HEAD']],
-            ['pattern' => '/plus/statements/find', 'callable' => 'handlePostRoute', 'methods' => ['POST']],
-            ['pattern' => '/plus/statements/find', 'callable' => 'handleOptionsRoute', 'methods' => ['OPTIONS']],
-        ];
+        return $this->routes;
     }
 
     /**
@@ -74,14 +114,6 @@ class ExtendedQuery implements ExtensionInterface
     public function getHooks()
     {
         return [];
-    }
-
-    /**
-     * Called by extension initializer, does nothing.
-     * @return void
-     */
-    public function install()
-    {
     }
 
     /**
