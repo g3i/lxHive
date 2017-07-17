@@ -71,7 +71,7 @@ class ExtendedQuery implements ExtensionInterface
         $routes = [];
         foreach ($this->routes as $route) {
             $pattern = $route['pattern'];
-            $methods = (isset($routes[$pattern])) ? array_merge($routes[$pattern], $route['methods']) : [];
+            $methods = (isset($routes[$pattern])) ? array_merge($routes[$pattern], $route['methods']) : $route['methods'];
             $routes[$pattern] = $methods;
         }
 
