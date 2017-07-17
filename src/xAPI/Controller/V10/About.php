@@ -30,20 +30,57 @@ use API\Config;
 
 class About extends Controller
 {
-    // Boilerplate code until this is figured out...
+    /**
+     * compile and render GET /about response
+     *
+     * @return void
+     */
     public function get()
     {
         $versions = Config::get(['xAPI', 'supported_versions']);
-        $view = new AboutView($this->getResponse(), $this->getContainer(), ['versions' => $versions]);
+        $extensions = $this->getExtensionInfo();
+
+        $view = new AboutView($this->getResponse(), $this->getContainer(), [
+            'versions' => $versions,
+            'extensions' => $extensions
+        ]);
         $view = $view->render();
 
         return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
+    /**
+     * Compile and render OPTIONS /about response
+     *
+     * @return void
+     */
     public function options()
     {
         //Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
         return $this->response(Controller::STATUS_OK);
+    }
+
+    /**
+     * Collect info about extensions
+     *
+     * @return array $info
+     */
+    public function getExtensionInfo()
+    {
+        $info = [];
+        $installed = Config::get(['extensions']);
+        foreach ($installed as $ext) {
+            try { // precaution in case of mis-configuration
+                if ($ext['enabled']) {
+                    $class_name = $ext['class_name'];
+                    $instance = new $class_name ($this->getContainer());
+                    $info[] = $instance->about();
+                }
+            } catch (\Exception $e) {
+                // nothing
+            }
+            return $info;
+        }
     }
 }

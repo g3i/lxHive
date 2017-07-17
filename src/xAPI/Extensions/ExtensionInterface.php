@@ -47,4 +47,11 @@ interface ExtensionInterface
      * @return void
     */
     public function install();
+
+    /**
+     * Provide information for /about endpoint
+     * @see https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#aboutresource
+     * @return array
+    */
+    public function about();
 }
