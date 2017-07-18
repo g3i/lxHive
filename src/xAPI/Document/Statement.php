@@ -48,6 +48,8 @@ use API\Controller;
 use API\Document;
 use API\DocumentState;
 
+// TODO 0.9.6
+
 class Statement extends Document
 {
     public static function fromDatabase($document)
@@ -96,7 +98,7 @@ class Statement extends Document
         // Actually there is something to do here - add metadata!
         // For example, adding the mongo_timestamp
         // Maybe also adding the version in a version key!
-        
+
         // nothing to do here sub modules take care
         // @Joerg: What are submodules?
         return $this;

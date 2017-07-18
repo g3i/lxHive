@@ -44,6 +44,8 @@ namespace API\Document;
 
 use API\Document;
 
+// TODO 0.9.6
+
 class Generic extends Document
 {
 }
