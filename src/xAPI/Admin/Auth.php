@@ -35,14 +35,13 @@ class Auth extends Admin
 {
     /**
      * Fetches a list of all oAuth Clients
+     *
      * @return array
      */
     public function listOAuthClients()
     {
         $oAuthService = new OAuthService($this->getContainer());
-
         $documentResult = $oAuthService->fetchClients();
-
         $textArray = $documentResult->getCursor()->toArray();
 
         return $textArray;
@@ -53,6 +52,8 @@ class Auth extends Admin
      * @param string $name
      * @param string $description
      * @param string $redirectUri
+     *
+     * @return \API\Document\Generic
      */
     public function addOAuthClient($name, $description, $redirectUri)
     {
@@ -64,14 +65,13 @@ class Auth extends Admin
 
     /**
      * Fetches a list of all basic tokens
+     *
      * @return array
      */
     public function listBasicTokens()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-
         $accessTokenService->fetchTokens();
-
         $textArray = [];
         foreach ($accessTokenService->getCursor() as $document) {
             $textArray[] = $document;
@@ -82,12 +82,12 @@ class Auth extends Admin
 
     /**
      * Fetches a list of all basic token id's
+     *
      * @return array
      */
     public function listBasicTokenIds()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-
         $accessTokenService->fetchTokens();
         $keys = [];
         foreach ($accessTokenService->getCursor() as $document) {
@@ -100,24 +100,24 @@ class Auth extends Admin
     /**
      * Expire a basic token
      * @param string $clientId valid clientId
+     *
      * @return void
      */
     public function expireBasicToken($key)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-
         $accessTokenService->expireToken($key);
     }
 
     /**
      * Deleta a basic token
      * @param string $clientId valid clientId
+     *
      * @return void
      */
     public function deleteBasicToken($key)
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-
         $accessTokenService->deleteToken($key);
     }
 
@@ -125,14 +125,13 @@ class Auth extends Admin
      * Create a new Authscope record
      * @param string $name scope name/identifier
      * @param string $description
-     * @return \stdClass Mongo entry
+     *
+     * @return \API\Document\Generic
      */
     public function createAuthScope($name, $description)
     {
         $oAuthService = new OAuthService($this->getContainer());
-
         $scope = $oAuthService->addScope($name, $description);
-
         return $scope;
     }
 
@@ -145,13 +144,13 @@ class Auth extends Admin
      * @param array $selectedScopes scope records
      * @param string $key
      * @param string $secret
+     *
+     * @return \API\Document\AccessToken
      */
     public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret)
     {
         $basicAuthService = new BasicAuthService($this->getContainer());
-
         $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
-
         return $token;
     }
 }

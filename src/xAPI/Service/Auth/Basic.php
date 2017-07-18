@@ -38,7 +38,6 @@ class Basic extends Service implements AuthInterface
     public function addToken($name, $description, $expiresAt, $user, array $scopes = [], $key = null, $secret = null)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->storeToken($name, $description, $expiresAt, $user, $scopes, $key, $secret);
-
         return $accessTokenDocument;
     }
 
@@ -53,7 +52,6 @@ class Basic extends Service implements AuthInterface
     public function fetchToken($key, $secret)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->getToken($key, $secret);
-
         $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
@@ -82,7 +80,6 @@ class Basic extends Service implements AuthInterface
     public function expireToken($key)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->expireToken($key);
-
         $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
@@ -96,7 +93,6 @@ class Basic extends Service implements AuthInterface
     public function fetchTokens()
     {
         $cursor = $this->getStorage()->getBasicAuthStorage()->getTokens();
-
         $this->setCursor($cursor);
 
         return $this;
@@ -106,7 +102,6 @@ class Basic extends Service implements AuthInterface
     public function getScopeByName($name)
     {
         $scope = $this->getStorage()->getBasicAuthStorage()->getScopeByName($name);
-
         return $scope;
     }
 
@@ -116,7 +111,6 @@ class Basic extends Service implements AuthInterface
     public function accessTokenGet($request)
     {
         $params = new Collection($request->get());
-
         $this->fetchToken($params->get('key'), $params->get('secret'));
 
         return $this;
@@ -128,11 +122,8 @@ class Basic extends Service implements AuthInterface
     public function accessTokenPost()
     {
         $body = $this->getContainer()['parser']->getData()->getPayload();
-
         $requestParams = new Util\Collection($body);
-
         $this->validateRequiredParams($requestParams);
-
         $currentDate = new \DateTime();
 
         $defaultParams = new Util\Collection([
@@ -180,7 +171,6 @@ class Basic extends Service implements AuthInterface
         // This is ugly, remove this!
         $userService = new UserService($this->getContainer());
         $user = $userService->addUser($params->get('user')['name'], $params->get('user')['description'], $params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
-
         $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
 
         return $accessTokenDocument;
@@ -192,7 +182,6 @@ class Basic extends Service implements AuthInterface
     public function accessTokenDelete($request)
     {
         $params = new Collection($request->get());
-
         $this->deleteToken($params->get('key'), $params->get('secret'));
 
         return $this;
@@ -214,7 +203,6 @@ class Basic extends Service implements AuthInterface
         $components = explode(':', $str);
         $authUser = $components[0];
         $authPass = (isset($components[1])) ? $components[1] : '';
-
 
         try {
             $token = $this->fetchToken($authUser, $authPass);

@@ -37,6 +37,9 @@ use API\Admin\User as UserAdministration;
 
 class UserCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -52,6 +55,9 @@ class UserCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userAdmin = new UserAdministration($this->getContainer());
@@ -75,7 +81,7 @@ class UserCreateCommand extends Command
         $question = new Question('Please enter an e-mail: ', '');
         $question->setMaxAttempts(null);
         $question->setValidator(function ($answer) use ($userAdmin) {
-            $userAdmin->validateEmail($answer);
+            $userAdmin->validateUserEmail($answer);
             return $answer;
         });
         $email = $helper->ask($input, $output, $question);

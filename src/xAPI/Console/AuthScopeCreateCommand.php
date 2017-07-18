@@ -30,8 +30,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use API\Admin\Auth;
 
+// TODO 0.9.6 inheritance
+
 class AuthScopeCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -40,21 +45,26 @@ class AuthScopeCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $authAdmin = new Auth($this->getContainer());
         $helper = $this->getHelper('question');
 
+        // 1. name
         $question = new Question('Please enter a name (scope identifier): ', 'untitled');
         $name = $helper->ask($input, $output, $question);
 
+        // 2. description
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
+        // 1. store document
         $scope = $authAdmin->createAuthScope($name, $description);
 
         $text = json_encode($scope, JSON_PRETTY_PRINT);
-
         $output->writeln('<info>Auth scope successfully created!</info>');
         $output->writeln('<info>Info:</info>');
     }

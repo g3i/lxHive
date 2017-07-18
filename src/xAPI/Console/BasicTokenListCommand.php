@@ -29,8 +29,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use API\Admin\Auth;
 
+// TODO 0.9.6 pretty useless in current state
+
 class BasicTokenListCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -39,6 +44,9 @@ class BasicTokenListCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $authAdmin = new Auth($this->getContainer());

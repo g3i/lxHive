@@ -76,7 +76,7 @@ class User extends Admin
         $v->validateName($name);
         $v->validatePassword($password);
 
-        $this->validateEmail($email);
+        $this->validateUserEmail($email);
 
         // fetch available permissions and compare
         $service = new UserService($this->getContainer());
@@ -109,11 +109,14 @@ class User extends Admin
     }
 
     /**
-     * Fetch all user email addresses
-     * TODO, make scalable (search)
-     * @return array collection of user records with email as key
+     * Validate email address by format and uniqueness
+     *  - validate format
+     *  - check if email already exists in users
+     *
+     * @return void
+     * @throws AdminException
      */
-    public function validateEmail($email)
+    public function validateUserEmail($email)
     {
         $v = new Validator();
         $v->validateEmail($email);

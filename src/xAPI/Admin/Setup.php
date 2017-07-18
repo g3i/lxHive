@@ -59,7 +59,6 @@ class Setup
 
     /**
      * Checks if a yaml config file exists already in /src/xAPI/Config/.
-     *
      * @param string $configYML yaml file
      *
      * @return string|false
@@ -72,7 +71,6 @@ class Setup
 
     /**
      * Loads a config yml file in /src/xAPI/Config/.
-     *
      * @param string $yaml yaml file to be created from template
      * @returns array $data associative array of parsed data
      *
@@ -107,9 +105,9 @@ class Setup
 
     /**
      * Creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
-     *
      * @param string $yml      yaml file to be created from template
      * @param array $mergeData associative array of config data to be merged in to the new config file
+     *
      * @return array $data
      * @throws \Exception
      */
@@ -135,7 +133,6 @@ class Setup
 
     /**
      * creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
-     *
      * @param string $yaml      yaml file to be created from template
      * @param array  $update associative array of config data to be merged in to the new config file
      *
@@ -158,6 +155,7 @@ class Setup
     /**
      * Test Mongo DB access
      * @param  string $uri connection uri
+     *
      * @return stdClass|false connection result (mongo.buildInfo)
      */
     public function testDbConnection($uri)
@@ -178,7 +176,8 @@ class Setup
     }
 
     /**
-     * Install Databse
+     * Install Database
+     *
      * @return void
      */
     public function installDb()
@@ -197,6 +196,7 @@ class Setup
 
     /**
      * Load authscopes into Mongo
+     *
      * @return void
      */
     public function initializeAuthScopes()

@@ -31,6 +31,9 @@ class Application extends SymfonyApplication
 {
     use BaseTrait;
 
+    /**
+     * {@inheritDoc}
+     */
     public function __construct($container = null, $name = 'UNKNOWN', $version = 'UNKNOWN')
     {
         if ($container) {

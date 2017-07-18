@@ -57,7 +57,6 @@ class LrsReportCommand extends Command
         $summary = $report->summary();
 
         // 1. reports
-
         $table = new Table($output);
         $table->setHeaders([
             'item', 'status', 'message', 'notes'
@@ -69,7 +68,6 @@ class LrsReportCommand extends Command
         $table->render();
 
         // 2. summary
-
         $s = [];
 
         $s[] = ($summary['total'] > 0 && $summary['completed'] == $summary['total']) ? $this->style('success', 'Complete') : $this->style('error', 'Aborted');
