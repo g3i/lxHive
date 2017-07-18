@@ -59,16 +59,16 @@ class ValidatorTest extends TestCase
         $v->validateXapiPermissions(['invalid', 'statements/read'], $available);
     }
 
-    public function testValidateRedirectURL()
+    public function testValidateRedirectUri()
     {
         $v = new Validator();
-        $v->validateRedirectUrl('http://test');
+        $v->validateRedirectUri('http://test');
 
         $this->expectException(AdminException::class);
-        $v->validateRedirectUrl('');
-        $v->validateRedirectUrl(true);
-        $v->validateRedirectUrl('invalid');
-        $v->validateRedirectUrl('//');
-        $v->validateRedirectUrl('//test');
+        $v->validateRedirectUri('');
+        $v->validateRedirectUri(true);
+        $v->validateRedirectUri('invalid');
+        $v->validateRedirectUri('//');
+        $v->validateRedirectUri('//test');
     }
 }

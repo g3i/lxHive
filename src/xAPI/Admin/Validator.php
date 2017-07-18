@@ -150,7 +150,7 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validateRedirectUrl(string $str)
+    public function validateRedirectUri(string $str)
     {
         $components = parse_url($str);
         if (false === $components) {
