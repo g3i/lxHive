@@ -1,0 +1,10 @@
+# ignore everything
+
+*
+
+# add interfaces
+!.gitignore
+!ExtensionInterface.php
+
+# add core extensions
+!ExtendedQuery
