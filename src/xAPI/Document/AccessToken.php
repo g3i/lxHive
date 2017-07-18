@@ -45,42 +45,57 @@ namespace API\Document;
 use API\Controller;
 use API\Document;
 
+// TODO 0.9.6
+
 class AccessToken extends Document
 {
-    public function isSuperToken()
+
+    ////
+    // Setters for new documents
+    ////
+
+    /**
+     * Sets document property: name
+     * @param string|null $name
+     */
+    public function setName($name)
     {
-        return $this->hasPermission('super');
+        $this->data->name = $name;
     }
 
-    public function hasPermission($permissionName)
+    /**
+     * Sets document property: description
+     * @param string|null $description
+     */
+    public function setDescription($description)
     {
-        foreach ($this->scopes as $scope) {
-            if ($scope->getName() === $permissionName || $scope->getName() === 'super') {
-                return true;
-            }
-
-            if ($permissionName !== 'super' && $scope->getName() === 'all') {
-                return true;
-            }
-        }
-
-        return false;
+        $this->data->description = $description;
     }
 
-    public function checkPermission($permissionName)
+    /**
+     * Sets document property: expiresIn
+     * @param int $expiresIn
+     */
+    public function setExpiresIn($expiresIn)
     {
-        if ($this->hasPermission($permissionName)) {
-            return true;
-        } else {
-            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
-        }
+        $until = \API\Util\Date::dateFromSeconds($expiresIn);
+        $until = \API\Util\Date::dateStringToMongoDate($until);
+        $this->setExpiresAt($until);
     }
 
+    ////
+    // Getters for stored documents
+    ////
+
+    /**
+     * Gets document property: expiresIn
+     * @return int period in seconds
+     */
     public function getExpiresIn()
     {
         $dateTime = new \DateTime();
         if ($this->getExpiresAt() === null) {
-            return;
+            return null;
         } else {
             $dateTime->setTimestamp($this->getExpiresAt()->sec);
             $until = \API\Util\Date::secondsUntil($dateTime);
@@ -89,23 +104,70 @@ class AccessToken extends Document
         }
     }
 
-    public function setExpiresIn($expiresIn)
-    {
-        $until = \API\Util\Date::dateFromSeconds($expiresIn);
-        $until = \API\Util\Date::dateStringToMongoDate($until);
-        $this->setExpiresAt($until);
-    }
+    ////
+    // Checks/Validaton for stored documents
+    ////
 
+    /**
+     * Check if fetched token document is expired
+     * @return bool
+     */
     public function isExpired()
     {
         if ($this->getExpired()) {
             return true;
         } elseif (null !== $this->getExpiresIn() && $this->getExpiresIn() <= 0) {
             $this->setExpired(true);
-
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Check if fetched token document is a super token document
+     * @return bool
+     */
+    public function isSuperToken()
+    {
+        return $this->hasPermission('super');
+    }
+
+    /**
+     * Loose check if fetched token document includes a specified permission
+     * @param string $permissionName
+     *
+     * @return bool
+     */
+    public function hasPermission(string $permissionName)
+    {
+        foreach ($this->scopes as $scope) {
+            if ($scope->getName() === $permissionName || $scope->getName() === 'super') {
+                return true;
+            }
+            if ($permissionName !== 'super' && $scope->getName() === 'all') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Strict check if fetched token document includes a specified permission
+     * @see self:: $permissionName()
+     *
+     * @param string $permissionName
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function checkPermission($permissionName)
+    {
+        if ($this->hasPermission($permissionName)) {
+            return true;
+        } else {
+            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
         }
     }
 }
