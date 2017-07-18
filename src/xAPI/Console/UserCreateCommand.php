@@ -75,7 +75,7 @@ class UserCreateCommand extends Command
         $question = new Question('Please enter an e-mail: ', '');
         $question->setMaxAttempts(null);
         $question->setValidator(function ($answer) use ($userAdmin) {
-            $userAdmin->validateEmail($answer);
+            $userAdmin->validateUserEmail($answer);
             return $answer;
         });
         $email = $helper->ask($input, $output, $question);
