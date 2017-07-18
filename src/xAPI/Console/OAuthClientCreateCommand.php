@@ -28,10 +28,15 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+
 use API\Admin\Auth;
+use API\Admin;
 
 class OAuthClientCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -40,20 +45,40 @@ class OAuthClientCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $authAdmin = new Auth($this->getContainer());
-        $helper = $this->getHelper('question');
+        $validator = new Admin\Validator();
 
-        $question = new Question('Please enter a name: ', 'untitled');
+        // 1. name
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter a name: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateName($answer);
+            return $answer;
+        });
         $name = $helper->ask($input, $output, $question);
 
+        // 2. description
+        $helper = $this->getHelper('question');
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
+        // 3. redirect Uri
+        $helper = $this->getHelper('question');
         $question = new Question('Please enter a redirect URI: ');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateRedirectUri($answer);
+            return $answer;
+        });
         $redirectUri = $helper->ask($input, $output, $question);
 
+        // 4. write record
         $client = $authAdmin->addOAuthClient($name, $description, $redirectUri);
         $text = json_encode($client, JSON_PRETTY_PRINT);
 

@@ -45,7 +45,7 @@ class ValidatorTest extends TestCase
         $v->validatePassword('ValidPass999'); // requires non alphaNumeric
     }
 
-    public function validateXapiPermissions()
+    public function testValidateXapiPermissions()
     {
         $available = Config::get(['xAPI', 'supported_auth_scopes'], []);
 
@@ -54,9 +54,21 @@ class ValidatorTest extends TestCase
         $v->validateXapiPermissions(['all', 'statements/read'], $available);
 
         $this->expectException(AdminException::class);
-        $v->validateXapiPermissions('not an array', $available);
         $v->validateXapiPermissions([], $available);
         $v->validateXapiPermissions(['invalid'], $available);
         $v->validateXapiPermissions(['invalid', 'statements/read'], $available);
+    }
+
+    public function testValidateRedirectURL()
+    {
+        $v = new Validator();
+        $v->validateRedirectUrl('http://test');
+
+        $this->expectException(AdminException::class);
+        $v->validateRedirectUrl('');
+        $v->validateRedirectUrl(true);
+        $v->validateRedirectUrl('invalid');
+        $v->validateRedirectUrl('//');
+        $v->validateRedirectUrl('//test');
     }
 }

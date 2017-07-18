@@ -133,10 +133,36 @@ class Validator
             throw new AdminException('Available permissions cannot be empty.');
         }
 
-        foreach ($perms as $p) {
-            if (!in_array($p, $available)) {
+        $aNames = array_map(function ($perm) {
+            return $perm['name'];
+        }, $available);
+
+        foreach ($perms as $name) {
+            if (!in_array($name, $aNames)) {
                 throw new AdminException('Invalid permission');
             }
+        }
+    }
+
+    /**
+     * Validate an absolute url, require at least scheme and host
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validateRedirectUrl(string $str)
+    {
+        $components = parse_url($str);
+        if (false === $components) {
+            throw new AdminException('Invalid url');
+        }
+
+        if (!isset($components['scheme'])) {
+            throw new AdminException('Redirect url requires a valid scheme');
+        }
+
+        if (!isset($components['host'])) {
+            throw new AdminException('Redirect url requires a valid host component');
         }
     }
 }
