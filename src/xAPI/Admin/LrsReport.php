@@ -51,8 +51,13 @@ class LrsReport
         }
     }
 
+    ////
+    // Report building
+    ////
+
     /**
-     * run comprehensive check
+     * Run comprehensive LRS check
+     *
      * @return array report
      */
     public function check()
@@ -90,7 +95,8 @@ class LrsReport
     }
 
     /**
-     * compute summary of performed checks
+     * Compute a summary of performed checks
+     *
      * @return array summary
      */
     public function summary()
@@ -129,7 +135,24 @@ class LrsReport
     }
 
     /**
-     * run basic checks on configuration yaml files
+     * count a report result
+     * @param bool $ok
+     *
+     * @return void
+     */
+    private function count($ok)
+    {
+        $this->count['total']++;
+        $this->count['completed'] += (int) $ok;
+    }
+
+    ////
+    // Checks
+    ////
+
+    /**
+     * Run basic checks on configuration yml files
+     *
      * @return bool indicator if tests were completed
      */
     private function checkConfigYml()
@@ -165,7 +188,8 @@ class LrsReport
     }
 
     /**
-     * run basic checks on Mongo connection
+     * Run basic checks on Mongo connection
+     *
      * @return bool indicator if tests were completed
      */
     private function checkMongo()
@@ -186,7 +210,8 @@ class LrsReport
     }
 
     /**
-     * run basic checks/stats on Mongo DB
+     * Run basic checks/stats on Mongo DB
+     *
      * @return bool indicator if tests were completed
      */
     private function checkDataBase()
@@ -207,7 +232,8 @@ class LrsReport
     }
 
     /**
-     * run basic checks and stats on stored permissions, users, and tokens
+     * Run basic checks and stats on stored permissions, users, and tokens
+     *
      * @return bool indicator if tests were completed
      */
     private function checkUsersAndPermissions()
@@ -249,7 +275,8 @@ class LrsReport
     }
 
     /**
-     * run basic checks and stats on local file storage
+     * Run basic checks and stats on local file storage
+     *
      * @return bool indicator if tests were completed
      */
     private function checkLocalFileStorage()
@@ -270,28 +297,12 @@ class LrsReport
         return true;
     }
 
-    private function notice($section, $label, $value, $note = '')
-    {
-        $this->set($section, $label, 'notice', $value, $note);
-    }
-
-    private function success($section, $label, $value = 'ok', $note = '')
-    {
-        $this->set($section, $label, 'success', $value, $note);
-    }
-
-    private function warn($section, $label, $value, $note = '')
-    {
-        $this->set($section, $label, 'warn', $value, $note);
-    }
-
-    private function error($section, $label, $value, $note = '')
-    {
-        $this->set($section, $label, 'error', $value, $note);
-    }
+    ////
+    // Notifications
+    ////
 
     /**
-     * register a report
+     * Register a report
      * @param string $section section
      * @param string $label section label
      * @param string $status  [success, error, warn, notice]
@@ -317,21 +328,54 @@ class LrsReport
     }
 
     /**
-     * count a report result
-     * @param bool $ok
+     * Add notification of serverity 'notice'
      *
      * @return void
      */
-    private function count($ok)
+    private function notice($section, $label, $value, $note = '')
     {
-        $this->count['total']++;
-        $this->count['completed'] += (int) $ok;
+        $this->set($section, $label, 'notice', $value, $note);
     }
 
     /**
-     * formats a float number (english notation, 2 decimals)
+     * Add notification of serverity 'success'
+     *
+     * @return void
+     */
+    private function success($section, $label, $value = 'ok', $note = '')
+    {
+        $this->set($section, $label, 'success', $value, $note);
+    }
+
+    /**
+     * Add notification of serverity 'warn'
+     *
+     * @return void
+     */
+    private function warn($section, $label, $value, $note = '')
+    {
+        $this->set($section, $label, 'warn', $value, $note);
+    }
+
+    /**
+     * Add notification of serverity 'error'
+     *
+     * @return void
+     */
+    private function error($section, $label, $value, $note = '')
+    {
+        $this->set($section, $label, 'error', $value, $note);
+    }
+
+    ////
+    // Helpers
+    ////
+
+    /**
+     * Formats a float number (english notation, 2 decimals)
      * @param mixed $val
      * @param string $unit suffix
+     *
      * @return string
      */
     public function numberFormat($val, $unit = null)
@@ -341,7 +385,8 @@ class LrsReport
     }
 
     /**
-     * compute directory size recursively
+     * Compute directory size recursively
+     *
      * @return int bytes
      */
     public function dirSize($path)
@@ -358,4 +403,5 @@ class LrsReport
         }
         return $total;
     }
+
 }
