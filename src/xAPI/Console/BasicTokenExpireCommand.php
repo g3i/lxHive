@@ -33,6 +33,9 @@ use API\Admin\Auth;
 
 class BasicTokenExpireCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -41,24 +44,27 @@ class BasicTokenExpireCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $authAdmin = new Auth($this->getContainer());
-
-        $helper = $this->getHelper('question');
         $keys = $authAdmin->listBasicTokenIds();
 
-        $question = new Question('Please enter the key of the token you wish to delete: ');
+        // 1. key
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter the key of the token you wish to expire: ');
         $question->setAutocompleterValues($keys);
-
         $key = $helper->ask($input, $output, $question);
 
+        // 2. confirm
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
-
         if (!$helper->ask($input, $output, $question)) {
             return;
         }
 
+        //3. expire document
         $authAdmin->expireBasicToken($key);
 
         $output->writeln('<info>Token successfully expired!</info>');

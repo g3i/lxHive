@@ -37,6 +37,9 @@ use API\Admin\User as UserAdministration;
 
 class UserCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -52,6 +55,9 @@ class UserCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userAdmin = new UserAdministration($this->getContainer());

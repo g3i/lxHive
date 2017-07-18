@@ -36,6 +36,9 @@ use API\Admin\User;
 
 class BasicTokenCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -55,85 +58,103 @@ class BasicTokenCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $authAdmin = new Auth($this->getContainer());
         $userAdmin = new User($this->getContainer());
 
-        if (null === $input->getOption('name')) {
-            $helper = $this->getHelper('question');
-            $question = new Question('Please enter a name: ', 'untitled');
-            $name = $helper->ask($input, $output, $question);
-        } else {
-            $name = $input->getOption('name');
-        }
-
-        if (null === $input->getOption('description')) {
-            $question = new Question('Please enter a description: ', '');
-            $description = $helper->ask($input, $output, $question);
-        } else {
-            $description = $input->getOption('description');
-        }
-
-        if (null === $input->getOption('expiration')) {
-            $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
-            $expiresAt = $helper->ask($input, $output, $question);
-        } else {
-            $expiresAt = $input->getOption('expiration');
-        }
-
+        //TODO paginated
         $users = $userAdmin->fetchAllUserEmails();
 
-        if (null === $input->getOption('email')) {
-            $question = new Question('Please enter enter the e-mail of the associated user: ', '');
-            $question->setAutocompleterValues(array_keys($users));
-            $email = $helper->ask($input, $output, $question);
-            $user = $users[$email];
-        } else {
-            $email = $input->getOption('email');
-            if (!isset($users[$email])) {
-                throw new \Exception('Invalid e-mail provided! User does not exist!');
-            }
-            $user = $users[$email];
+        $output->writeln([
+            '<info>==========================</>',
+            '<info>Create a Basic token</>',
+            '<info>==========================</>',
+            '',
+            '- Creating a basic tokens requires an already registered user (email address match).',
+            '- Use the <info>./X user:create</info> console command for creating users.',
+            '',
+        ]);
+
+        if (!count($users)) {
+            throw new \RuntimeException('No registered users found');
         }
 
+        // 1. email
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter the email of the associated user: ', '');
+        $question->setAutocompleterValues(array_keys($users));
+
+        $question->setNormalizer(function ($value) {
+            return $value ? trim(strtolower($value)) : '';
+        });
+        $question->setValidator(function ($answer) use ($users, $output) {
+            if (!is_string($answer) || empty($answer)) {
+                throw new \RuntimeException(
+                    'Invalid input!'
+                );
+            }
+            if ('exit' === $answer) {
+                return $answer;
+            }
+            if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
+                throw new \RuntimeException(
+                    'Invalid email address!'
+                );
+            }
+            if (!isset($users[$answer])) {
+                $output->writeln('  - Hint: Type <info>exit</info> to exit this dialog and return to the console.');
+                throw new \RuntimeException(
+                    'No user record for "'.$answer.'" found! '
+                );
+            }
+            return $answer;
+        });
+        $question->setMaxAttempts(null);
+
+        $email = $helper->ask($input, $output, $question);
+        if ('exit' === $email) {
+            $output->writeln('<error>Process aborted by user.</error>');
+            return 0;
+        }
+        $user = $users[$email];
+
+        // 2. Name
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter a name: ', 'untitled');
+        $name = $helper->ask($input, $output, $question);
+
+        // 3. description
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter a description: ', '');
+        $description = $helper->ask($input, $output, $question);
+
+        // 4. expiration period
+        $helper = $this->getHelper('question');
+        $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
+        $expiresAt = $helper->ask($input, $output, $question);
+
+        // 5. scopes
+        $helper = $this->getHelper('question');
         $scopesDictionary = $userAdmin->fetchAvailablePermissions();
-
-        if (null === $input->getOption('scopes')) {
-            $question = new ChoiceQuestion(
-                'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                array_keys($scopesDictionary),
-                '0'
-            );
-            $question->setMultiselect(true);
-
-            $selectedScopeNames = $helper->ask($input, $output, $question);
-
-            $selectedScopes = [];
-            foreach ($selectedScopeNames as $selectedScopeName) {
-                $selectedScopes[] = $scopesDictionary[$selectedScopeName];
-            }
-        } else {
-            $selectedScopeNames = explode(',', $input->getOption('scopes'));
-        }
-
+        $question = new ChoiceQuestion(
+            'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
+            array_keys($scopesDictionary),
+            '0'
+        );
+        $question->setMultiselect(true);
+        $selectedScopeNames = $helper->ask($input, $output, $question);
         $selectedScopes = [];
         foreach ($selectedScopeNames as $selectedScopeName) {
             $selectedScopes[] = $scopesDictionary[$selectedScopeName];
         }
 
-        if (null !== $input->getOption('key')) {
-            $key = $input->getOption('key');
-        } else {
-            $key = null;
-        }
-
-        if (null !== $input->getOption('secret')) {
-            $secret = $input->getOption('secret');
-        } else {
-            $secret = null;
-        }
-
+        // 6. store token
+        $key = null;
+        $secret = null;
         $token = $authAdmin->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
 
         $text = json_encode($token, JSON_PRETTY_PRINT);

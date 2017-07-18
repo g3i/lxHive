@@ -43,7 +43,7 @@ class SetupCommand extends SymfonyCommand
     private $setup;
 
     /**
-     * Construct.
+     * @constructor
      */
     public function __construct()
     {
@@ -51,6 +51,9 @@ class SetupCommand extends SymfonyCommand
         $this->setup = new Setup();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -59,12 +62,15 @@ class SetupCommand extends SymfonyCommand
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // 1. check config
         $bootstrapper = Bootstrap::factory(Bootstrap::None);
         if ($this->getSetup()->locateYaml('Config.yml')) {
-            throw new \Exception('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
+            throw new \RuntimeException('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 
         $output->writeln('<info>Welcome to the setup of lxHive!</info>');
