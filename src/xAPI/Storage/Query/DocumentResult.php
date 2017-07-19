@@ -31,42 +31,42 @@ class DocumentResult
      *
      * @var Traversable
      */
-    public $cursor;
+    protected $cursor;
 
     /**
      * Number of total documents that match in entire query.
      *
      * @var int
      */
-    public $totalCount;
+    protected $totalCount;
 
     /**
      * Number of documents remaining in query where the current skip and limit values are at.
      *
      * @var int
      */
-    public $remainingCount;
+    protected $remainingCount;
 
     /**
      * The number of documents requested in this query (the maximum that can be contained in $cursor).
      *
      * @var int
      */
-    public $requestedLimit;
+    protected $requestedLimit;
 
     /**
      * Whether this Result set definitely contains only one element.
      *
      * @var bool
      */
-    public $isSingle;
+    protected $isSingle;
 
     /**
      * Whether there are more results available, taking into account the number of results being limited.
      *
      * @var [type]
      */
-    public $hasMore;
+    protected $hasMore;
 
     /**
      * Gets the The Cursor with the result set - must implement ArrayAccess or be an array (foreachable).
