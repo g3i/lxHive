@@ -539,6 +539,16 @@ class Bootstrap
             return $response;
         });
 
+        ////
+        // ROUTER
+        ////
+
+        $router = new Routes();
+        $routes = $router->all();
+
+        ////
+        // Extensions
+        ////
 
         // Load extensions (event listeners and routes) that may exist
         $extensions = Config::get('extensions');
@@ -548,7 +558,6 @@ class Bootstrap
                 if ($extension['enabled'] === true) {
                     // Instantiate the extension class
                     $className = $extension['class_name'];
-
                     $extension = new $className($container);
 
                     // Load any xAPI event handlers added by the extension
@@ -558,21 +567,15 @@ class Bootstrap
                     }
 
                     // Load any routes added by extension
-                    $routes = $extension->getRoutes();
-                    foreach ($routes as $route) {
-                        $app->map($route['methods'], $route['pattern'], [$extension, $route['callable']]);
-                    }
+                    $_routes = $extension->getRoutes();
+                    $router->merge($_routes);
                 }
             }
         }
 
         ////
-        // ROUTING
-        // TODO: Move this chunk of code to a separate class like API\Router in future
+        // SlimApp
         ////
-
-        $routes = new Routes();
-        $routes = $routes->all();
 
         foreach ($routes as $pattern => $route){
             // register single route with methods and controller
@@ -583,6 +586,8 @@ class Bootstrap
             });
 
         }
+
+
 
         return $app;
     }
