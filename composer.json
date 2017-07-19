@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "slim/slim": "2.6.2.1",
+        "slim/slim": "2.6.2.3",
         "techsterx/slim-config-yaml": "1.0.6",
         "flynsarmy/slim-monolog": "1.0.*",
         "sokil/php-mongo": "1.13.*",
