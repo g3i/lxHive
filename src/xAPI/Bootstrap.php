@@ -567,8 +567,8 @@ class Bootstrap
                     }
 
                     // Load any routes added by extension
-                    $_routes = $extension->getRoutes();
-                    $router->merge($_routes);
+                    $extensionRoutes = $extension->getRoutes();
+                    $router->merge($extensionRoutes);
                 }
             }
         }
@@ -586,8 +586,6 @@ class Bootstrap
             });
 
         }
-
-
 
         return $app;
     }
