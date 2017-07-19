@@ -195,7 +195,7 @@ class Basic extends Service implements AuthInterface
         }
 
         if (preg_match('/Basic\s+(.*)$/i', $header, $matches)) {
-            list($authUser, $authPass) = explode(':', base64_decode($matches[1]));
+            $str =  base64_decode($matches[1]);
         } else {
             throw new AuthFailureException('Authorization header invalid.');
         }
