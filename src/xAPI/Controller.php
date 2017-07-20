@@ -212,23 +212,16 @@ abstract class Controller
      *
      * @return \API\ControllerInterface
      */
-    public static function load($version, $container, $request, $response, $resource, $subResource = null)
+    public static function load($container, $request, $response, $controllerClass)
     {
-        $versionNamespace = $version->generateClassNamespace();
-        if (null !== $subResource) {
-            $class = __NAMESPACE__.'\\Controller\\'.$versionNamespace.'\\'.ucfirst($resource).'\\'.ucfirst($subResource);
-        } else {
-            $class = __NAMESPACE__.'\\Controller\\'.$versionNamespace.'\\'.ucfirst($resource);
-        }
-
-        if (!class_exists($class)) {
+        if (!class_exists($controllerClass)) {
             $errorResource = new Error($container, $request, $response);
             $errorResource = $errorResource->error(self::STATUS_NOT_FOUND, 'Cannot find requested resource.');
 
             return $errorResource;
         }
 
-        return new $class($container, $request, $response);
+        return new $controllerClass($container, $request, $response);
     }
 
     /**
