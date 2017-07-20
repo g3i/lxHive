@@ -27,9 +27,9 @@ namespace API;
 abstract class Service
 {
     use BaseTrait;
-    
+
     /**
-     * Construct.
+     * @constructor
      */
     public function __construct($container)
     {

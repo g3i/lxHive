@@ -35,7 +35,7 @@ abstract class View extends Collection
     private $response;
 
     /**
-     * Construct.
+     * @constructor
      */
     public function __construct($response, $container, $items = [])
     {
@@ -46,7 +46,7 @@ abstract class View extends Collection
     }
 
     /**
-     * Gets the value of items.
+     * Gets items.
      *
      * @return mixed
      */
@@ -56,7 +56,7 @@ abstract class View extends Collection
     }
 
     /**
-     * Gets the value of response.
+     * Gets  response.
      *
      * @return mixed
      */
@@ -66,7 +66,7 @@ abstract class View extends Collection
     }
 
     /**
-     * Sets the value of items.
+     * Sets the items.
      *
      * @param mixed $items the items
      *
@@ -80,7 +80,7 @@ abstract class View extends Collection
     }
 
     /**
-     * Sets the value of response.
+     * Sets the response.
      *
      * @param mixed $response the response
      *

@@ -34,7 +34,7 @@ abstract class Validator
 
     /**
      * @var JsonSchema\SchemaStorage a persistent SchemaStorage instance
-     *                               Note that a SchemaStorage instance has an internal cache which takes care of loading and caching files.
+     * Note that a SchemaStorage instance has an internal cache which takes care of loading and caching files.
      */
     private static $schemaStorage = null;
 
@@ -84,6 +84,7 @@ abstract class Validator
      * @param JsonSchema\Validator $validator
      * @param object               $schema
      *
+     * @return void
      * @throws HttpException
      */
     public function debugSchema($data, $uri, $validator, $schema)
@@ -100,13 +101,13 @@ abstract class Validator
 
     /**
      * Performs general validation of the request.
+     *
      * @return void
      * @throws Exception
      */
     public function validateRequest()
     {
         $header = $this->getContainer()['parser']->getData()->getHeaders()['x-experience-api-version'];
-
         if ($header === null) {
             throw new Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
         }
@@ -118,6 +119,7 @@ abstract class Validator
      * @param string $message
      * @param mixed  $errors
      *
+     * @return void
      * @throws HttpException
      */
     protected function throwErrors($message, $errors)
@@ -132,6 +134,7 @@ abstract class Validator
      * @param string               $message
      * @param JsonSchema\Validator $validator validator instance, note that you must have validated at this stage
      *
+     * @return void
      * @throws HttpException
      */
     protected function throwSchemaErrors($message, $validator)

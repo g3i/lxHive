@@ -26,5 +26,33 @@ namespace API;
 
 interface ControllerInterface
 {
-    //TODO
+    /**
+     * Initializes Controller
+     */
+    public function init();
+
+    /**
+     * Http GET callback
+     */
+    public function get();
+
+    /**
+     * Http POST callback
+     */
+    public function post();
+
+    /**
+     * Http PUT callback
+     */
+    public function put();
+
+    /**
+     * Http DELETE callback
+     */
+    public function delete();
+
+    /**
+     * Http OPTIONS callback
+     */
+    public function options();
 }
