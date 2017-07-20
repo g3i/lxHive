@@ -35,7 +35,7 @@ class AccessToken extends View
             'key' => $accessTokenDocument->getKey(),
             'secret' => $accessTokenDocument->getSecret(),
             'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getExpiresAt()),
-            'expiresIn' => $accessTokenDocument->getExpiresIn(),
+            'expiresIn' => $accessTokenDocument->expiresIn(),
             'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : Util\Date::mongoDateToTimestamp($accessTokenDocument->getCreatedAt()),
             'expired' => $accessTokenDocument->isExpired(),
             //'scopes' => array_values($accessTokenDocument->scopes),

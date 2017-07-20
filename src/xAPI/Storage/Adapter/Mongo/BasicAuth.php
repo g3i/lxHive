@@ -55,12 +55,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
             $scopeIds[] = $scope->_id;
         }
         $accessTokenDocument->setScopeIds($scopeIds);
-
-        if (isset($expiresAt)) {
-            $expiresDate = new \DateTime();
-            $expiresDate->setTimestamp($expiresAt);
-            $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
-        }
+        $accessTokenDocument->setExpiresAt($expiresAt);
 
         if (null !== $key) {
             $accessTokenDocument->setKey($key);
@@ -95,7 +90,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
-        $expiresAt = $accessTokenDocument['expiresAt'];
+        $expiresAt = $accessTokenDocument->expiresAt;
 
         $this->validateExpiresAt($expiresAt);
 

@@ -37,7 +37,7 @@ class AccessToken extends View
         $view = [
             'token' => $accessTokenDocument->getToken(),
             'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
-            'expiresIn' => $accessTokenDocument->getExpiresIn(),
+            'expiresIn' => $accessTokenDocument->expiresIn(),
             'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
             'expired' => $accessTokenDocument->isExpired(),
             'scopes' => array_values($accessTokenDocument->scopes),
