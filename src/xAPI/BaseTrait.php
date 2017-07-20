@@ -28,7 +28,7 @@ use Interop\Container\ContainerInterface;
 trait BaseTrait
 {
     /**
-     * @var \Slim\Container
+     * @var ContainerInterface $container Holds service container
      */
     private $container;
 
@@ -47,7 +47,7 @@ trait BaseTrait
     /**
      * Gets service ontainer.
      *
-     * @return \Slim\Container
+     * @return ContainerInterface
      */
     public function getContainer()
     {

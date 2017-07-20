@@ -26,12 +26,10 @@ namespace API;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
-// TODO - Derive Resource.php and Command.php from the same parent base class!!!
-
 class Command extends SymfonyCommand
 {
     /**
-     * Construct.
+     * {@inheritDoc}
      */
     public function __construct()
     {
@@ -42,13 +40,16 @@ class Command extends SymfonyCommand
 
     /**
      * Default init, use for overwrite only.
+     * {@inheritDoc}
      */
     public function init()
     {
     }
 
     /**
-     * @return \Slim\Slim
+     * Get service container
+     *
+     * @return Interop\Container\ContainerInterface
      */
     public function getContainer()
     {
