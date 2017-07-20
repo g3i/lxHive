@@ -582,6 +582,11 @@ class Bootstrap
             $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {
                 $resource = Controller::load($container, $request, $response, $route['controller']);
                 $method = strtolower($request->getMethod());
+                // HEAD method needs to respond exactly the same as GET method (minus the body)
+                // Body will be removed automatically by Slim
+                if ($method === 'head') {
+                    $method === 'get';
+                }
                 return $resource->$method();
             });
 
