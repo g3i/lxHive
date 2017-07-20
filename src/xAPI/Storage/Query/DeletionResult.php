@@ -31,7 +31,7 @@ class DeletionResult
      *
      * @var bool
      */
-    public $success;
+    protected $success;
 
     /**
      * Gets the Whether the deletion was successful or not.

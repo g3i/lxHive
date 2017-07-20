@@ -81,7 +81,7 @@ class Routes
             'description' =>'Agent Profile Resource',
             'controller' => 'API\\Controller\\V10\\Profile',
         ],
-        'pattern: /statements' => [
+        '/statements' => [
             'module' => 'xAPI',
             'methods' => ['GET', 'PUT', 'POST', 'OPTIONS'],
             'description' =>'Statement Storage/Retrieval',
@@ -102,7 +102,7 @@ class Routes
             'description' =>'Resource Owner Login',
             'controller' => 'API\\Controller\\V10\\Oauth\\Login',
         ],
-        'pattern: /oauth/token' => [
+        '/oauth/token' => [
             'module' => 'oAuth',
             'methods' => ['POST', 'OPTIONS'],
             'description' =>'Token Request',

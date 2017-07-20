@@ -26,13 +26,13 @@ namespace API\Storage\Query;
 
 class StatementResult extends DocumentResult
 {
-    public $requestedFormat;
+    protected $requestedFormat;
 
-    public $sortDescending;
+    protected $sortDescending;
 
-    public $sortAscending;
+    protected $sortAscending;
 
-    public $singleStatementRequest;
+    protected $singleStatementRequest;
 
     /**
      * Gets the value of requestedFormat.
