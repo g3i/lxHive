@@ -28,42 +28,53 @@
 namespace API;
 
 use API\Util\Collection;
+use InvalidArgumentException;
 
 class Config
 {
     private static $collection = null;
-    private static $instantiated = false;
 
     /**
      * Initiate the Config (only callable once)
-     * @param  Collection|array  $data The data to initiate it with
+     *
+     * - A Config collection can only be factored once
+     *
+     * @param  array  $data The data to initiate it with
+     *
      * @return void
-     * @throws AppInitException
+     * @throws AppInitException if already initiated
+     * @throws InvalidArgumentException if $data is not an array (object instances would be mutable)
      */
     public static function factory($data = [])
     {
-        if (null === self::$collection && !self::$instantiated) {
-            if ($data instanceof Collection) {
-                self::$collection = $data;
-            } else {
-                // Data should be an array if it's not a Collection object
-                self::$collection = new Collection($data);
-            }
-            self::$instantiated = true;
-        } else {
+        if (self::$collection) {
             throw new AppInitException('Config: Cannot be reinitiated');
         }
+        if (!is_array($data)) {//PHP 5 & 7
+            throw new InvalidArgumentException('Config: $data must be an array');
+        }
+        self::$collection = new Collection($data);
     }
 
     /**
-     * Merege collection of items
+     * Merge collection of items
+     *
+     * - New config items can be added freely, @see sConfig::set()
      *
      * @param array $data collection (assoziative array) of items
-     * @throws \Exception if key alredy exists
-     * @see sConfig::set()
+     *
+     * @return void
+     * @throws AppInitException if one of the keys alredy exists
+     * @throws InvalidArgumentException if $data is not an array (object instances would be mutable)
      */
     public static function merge($data = [])
     {
+        if (!self::$collection) {
+            throw new AppInitException('Config: You must call the factory before being able to get and set values!');
+        }
+        if (!is_array($data)) {//PHP 5 & 7
+            throw new InvalidArgumentException('Config: $data must be an array');
+        }
         foreach ($data as $key => $value) {
             self::set($key, $value);
         }
@@ -71,14 +82,16 @@ class Config
 
     /**
      * Get collection item
-     * @param string $key The key to get
+     *
+     * @param string $key|array The key(s) to get
      * @param mixed $default optional return value
+     *
      * @return mixed The value at this key
      * @throws AppInitException
      */
     public static function get($key, $default = null)
     {
-        if (!self::$instantiated) {
+        if (!self::$collection) {
             throw new AppInitException('Config: You must call the factory before being able to get and set values!');
         }
         return self::$collection->get($key, $default);
@@ -92,7 +105,7 @@ class Config
      */
     public static function all()
     {
-        if (!self::$instantiated) {
+        if (!self::$collection) {
             throw new AppInitException('Config: You must call the factory before being able to get and set values!');
         }
         return self::$collection->all();
@@ -101,19 +114,21 @@ class Config
     /**
      * Set collection item
      *
-     * @param string $key   The data key
-     * @param mixed  $value The data value
+     * - New config items can be added freely, @see sConfig::set()
+     *
+     * @param array $data collection (assoziative array) of items
+     *
+     * @return void
      * @throws AppInitException
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException if key alredy exists
      */
     public static function set($key, $value)
     {
-        if (!self::$instantiated) {
-            throw new AppInitException('Config: You must call the Config factory before being able to get and set values!');
+        if (!self::$collection) {
+            throw new AppInitException('Config: You must call the factory before being able to get and set values!');
         }
-
         if (self::$collection->has($key)) {
-            throw new \InvalidArgumentException('Config: Cannot override existing Config property!');
+            throw new InvalidArgumentException('Config: Cannot override existing Config property!');
         }
         self::$collection->set($key, $value);
     }
@@ -131,7 +146,6 @@ class Config
 
         if ($class === 'API\\Bootstrap') {
             self::$collection = null;
-            self::$instantiated = false;
             return;
         }
 
