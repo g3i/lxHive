@@ -585,7 +585,7 @@ class Bootstrap
                 // HEAD method needs to respond exactly the same as GET method (minus the body)
                 // Body will be removed automatically by Slim
                 if ($method === 'head') {
-                    $method === 'get';
+                    $method = 'get';
                 }
                 return $resource->$method();
             });
