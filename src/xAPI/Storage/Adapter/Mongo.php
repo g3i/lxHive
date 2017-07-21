@@ -24,12 +24,17 @@
 
 namespace API\Storage\Adapter;
 
-use API\Storage\AdapterInterface;
+
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Cursor;
+use MongoDB\Driver\Exception\Exception as MongoException;
+
+use API\Storage\AdapterException;
+use API\Storage\AdapterInterface;
 use API\DocumentInterface;
 use API\BaseTrait;
 use API\Config;
+
 
 class Mongo implements AdapterInterface
 {
@@ -244,7 +249,7 @@ class Mongo implements AdapterInterface
 
         // Older server versions may return a float
         if (!isset($result->n) || ! (is_integer($result->n) || is_float($result->n))) {
-            throw new \Exception('Count command did not return a numeric "n" value');
+            throw new AdapterException('Count command did not return a numeric "n" value');
         }
         return (integer) $result->n;
     }
@@ -272,6 +277,23 @@ class Mongo implements AdapterInterface
     {
         $command = new Command($args);
         $cursor = $this->getClient()->executeCommand($this->databaseName, $command);
+        return $cursor;
+    }
+
+    /**
+     * Create indexes for a collection
+     * @param string $collection collection name, (will be autocreated)
+     * @param array|object $indexes indexes to be created
+     * @return Cursor MondoDb cursor
+     */
+    public function createIndexes($collection, $indexes)
+    {
+        $args = [
+            "createIndexes" => $collection,
+            "indexes"       => $indexes,
+        ];
+
+        $cursor = $this->executeCommand($args);
         return $cursor;
     }
 
