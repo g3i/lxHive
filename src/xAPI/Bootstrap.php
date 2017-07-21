@@ -63,7 +63,7 @@ class Bootstrap
     const Testing = 3;
     const Config  = 4;
 
-    private static $containerInstance;
+    private static $containerInstance = null;
     private static $containerInstantiated = false;
 
     private static $mode = 0;
@@ -189,6 +189,15 @@ class Bootstrap
     public static function mode()
     {
         return self::$mode;
+    }
+
+    /**
+     * Get service container
+     * @return \Interop\Container\ContainerInterface|null
+     */
+    public static function getContainer()
+    {
+        return self::$containerInstance;
     }
 
     /**
@@ -597,7 +606,7 @@ class Bootstrap
 
     /**
      * Boot php-cli application (Symfony Console), including all commands
-     * @return Symfony\Component\Console\Application instance
+     * @return \Symfony\Component\Console\Application instance
      */
     public function bootCliApp()
     {
@@ -614,4 +623,5 @@ class Bootstrap
         // Expose container instance so Tests can inject it into services (or use it)
         return self::$containerInstance;
     }
+
 }
