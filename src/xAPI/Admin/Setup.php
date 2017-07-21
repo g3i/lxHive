@@ -189,7 +189,7 @@ class Setup
 
         try {
             $schema->install();
-        } catch (MongoDB\Driver\Exception\Exception $e) {
+        } catch (\MongoDB\Driver\Exception\Exception $e) {
             throw new AdminException('Error installing Database. Error: '. $e->getMessage());
         }
     }
