@@ -25,11 +25,13 @@
 namespace API\Admin;
 
 use Symfony\Component\Yaml\Yaml;
-use API\Service\Auth\OAuth as OAuthService;
-use API\Storage\Adapter\Mongo as Mongo;
+use MongoDB\Driver\Exception\Exception as MongoException;
 
 use API\Bootstrap;
 use API\Config;
+use API\Storage\AdapterException;
+use API\Storage\Adapter\Mongo as Mongo;
+use API\Service\Auth\OAuth as OAuthService;
 
 /**
  * Scratch-Api for various Admin tasks who are not dependend on a bootstrapped application
@@ -182,14 +184,15 @@ class Setup
      */
     public function installDb()
     {
-        //TODO this method will be obsolete if we remove the authScopes collection
         $bootstrap = Bootstrap::factory(Bootstrap::Config);
         $container = $bootstrap->initCliContainer();
         $schema = new Mongo\Schema($container);
 
         try {
             $schema->install();
-        } catch (MongoDB\Driver\Exception\Exception $e) {
+        } catch (MongoException $e) {
+            throw new AdminException('Error installing Database. Error: '. $e->getMessage());
+        } catch (AdapterException $e) {
             throw new AdminException('Error installing Database. Error: '. $e->getMessage());
         }
     }
