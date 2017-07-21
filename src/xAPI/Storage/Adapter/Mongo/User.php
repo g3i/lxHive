@@ -35,11 +35,47 @@ class User extends Provider implements UserInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'users';
 
+
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [
+        [
+            'name' => 'email.unique',
+            'key'  => [
+                'email' => 1
+            ],
+            'unique' => true,
+        ]
+    ];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function findByEmailAndPassword($username, $password)

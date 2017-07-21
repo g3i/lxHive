@@ -69,7 +69,7 @@ class Schema implements SchemaInterface
     }
 
     /*
-     * @inherit
+     * {@inheritDoc}
      */
     public function install()
     {
@@ -85,6 +85,23 @@ class Schema implements SchemaInterface
                 throw new AdapterException('Unable to install collection "' .$collection. '": '.$e->getMessage());
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        $indexes = [];
+        $collections = $this->mapCollections();
+        $container = $this->getContainer();
+
+        foreach($collections as $collection => $className){
+            $instance = new $className($container);
+            $indexes[$collection] = $instance->getIndexes();
+        }
+
+        return $indexes;
     }
 
 }

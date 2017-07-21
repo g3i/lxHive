@@ -34,10 +34,39 @@ class OAuthClients extends Provider implements QueryInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'oAuthClients';
 
+
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
+    }
+
 }

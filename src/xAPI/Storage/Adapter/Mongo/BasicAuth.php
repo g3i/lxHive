@@ -35,11 +35,47 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'basicTokens';
 
+
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [
+        [
+            'name' => 'key.unique',
+            'key'  => [
+                'key' => 1
+            ],
+            'unique' => true,
+        ]
+    ];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)

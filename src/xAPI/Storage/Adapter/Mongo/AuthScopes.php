@@ -60,11 +60,19 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
     ];
 
     /**
-     * @inherit
+     * {@inheritDoc}
      */
     public function install()
     {
         $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function findById($id)

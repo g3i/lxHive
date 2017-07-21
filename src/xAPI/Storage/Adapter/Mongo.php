@@ -284,10 +284,15 @@ class Mongo implements AdapterInterface
      * Create indexes for a collection
      * @param string $collection collection name, (will be autocreated)
      * @param array|object $indexes indexes to be created
-     * @return Cursor MondoDb cursor
+     * @return Cursor|null MondoDb cursor
      */
     public function createIndexes($collection, $indexes)
     {
+
+        if(empty($indexes)) {
+            return null;
+        }
+
         $args = [
             "createIndexes" => $collection,
             "indexes"       => $indexes,

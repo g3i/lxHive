@@ -36,4 +36,11 @@ interface SchemaInterface
      * @throws \Exception
      */
     public function install();
+
+    /**
+     * Gets indexes configuration array
+     *
+     * @return array
+     */
+    public function getIndexes();
 }

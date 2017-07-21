@@ -38,10 +38,39 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
     const COLLECTION_NAME = 'activityStates';
 
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [
+        //stateId is not unique as per spec, only combination of stateId and activityId
+    ];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function getFiltered($parameters)
