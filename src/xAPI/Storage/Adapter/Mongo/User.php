@@ -67,7 +67,9 @@ class User extends Provider implements UserInterface, SchemaInterface
      */
     public function install()
     {
-        $storage = $this->getContainer()['storage']->createIndexes(self::COLLECTION_NAME, $this->indexes);
+        $container = $this->getContainer()['storage'];
+        $container->executeCommand(['create' => self::COLLECTION_NAME]);
+        $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
 
     /**
