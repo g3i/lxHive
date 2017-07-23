@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
@@ -20,27 +19,11 @@
  *
  * For authorship information, please view the AUTHORS
  * file that was distributed with this source code.
- *
- * This file was adapted from sokil/php-mongo.
- * License information is available at https://github.com/sokil/php-mongo/blob/master/LICENSE
- *
  */
-
 namespace API\Storage;
 
-interface SchemaInterface
-{
-    /**
-     * Install hook for collection
-     * @return void
-     * @throws \Exception
-     */
-    public function install();
+use API\HttpException;
 
-    /**
-     * Gets indexes configuration array
-     *
-     * @return array
-     */
-    public function getIndexes();
+class AdapterException extends HttpException
+{
 }

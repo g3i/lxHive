@@ -24,10 +24,11 @@
 
 namespace API\Storage\Adapter\Mongo;
 
-use API\Storage\SchemaInterface;
+use MongoDB\Driver\Exception\Exception as MongoException;
 
 use API\BaseTrait;
-use API\HttpException as Exception;
+use API\Storage\AdapterException;
+use API\Storage\SchemaInterface;
 
 class Schema implements SchemaInterface
 {
@@ -42,20 +43,6 @@ class Schema implements SchemaInterface
     public function __construct($container)
     {
         $this->setContainer($container);
-    }
-
-    /*
-     * @inherit
-     */
-    public function install()
-    {
-        $collections = array_values($this->mapCollections());
-        $container = $this->getContainer();
-
-        foreach($collections as $_class){
-            $instance = new $_class($container);
-            $instance->install();
-        }
     }
 
     /*
@@ -79,6 +66,42 @@ class Schema implements SchemaInterface
              Statement::COLLECTION_NAME         => __NAMESPACE__ . '\\Statement',
              User::COLLECTION_NAME              => __NAMESPACE__ . '\\User',
         ];
+    }
+
+    /*
+     * {@inheritDoc}
+     */
+    public function install()
+    {
+        $collections = $this->mapCollections();
+        $container = $this->getContainer();
+        // Unify Exceptions for installer
+
+        foreach($collections as $collection => $className){
+            $instance = new $className($container);
+            try {
+                $instance->install();
+            } catch (MongoException $e) {
+                throw new AdapterException('Unable to install collection "' .$collection. '": '.$e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        $indexes = [];
+        $collections = $this->mapCollections();
+        $container = $this->getContainer();
+
+        foreach($collections as $collection => $className){
+            $instance = new $className($container);
+            $indexes[$collection] = $instance->getIndexes();
+        }
+
+        return $indexes;
     }
 
 }

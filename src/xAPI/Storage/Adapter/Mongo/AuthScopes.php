@@ -28,17 +28,53 @@ use API\Storage\SchemaInterface;
 use API\Storage\Query\AuthScopesInterface;
 
 use API\Storage\Provider;
-use API\HttpException as Exception;
 
 class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'authScopes';
 
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [
+        [
+            'name' => 'name.unique',
+            'key'  => [
+                'name' => 1
+            ],
+            'unique' => true,
+        ]
+    ];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $container = $this->getContainer()['storage'];
+        $container->executeCommand(['create' => self::COLLECTION_NAME]);
+        $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function findById($id)

@@ -39,10 +39,41 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     const COLLECTION_NAME = 'activityProfiles';
 
     /**
-     * @inherit
+     * @var array $indexes
+     *
+     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+     *  [
+     *      name: <index_name>,
+     *      key: [
+     *          <key-value_pair>,
+     *          <key-value_pair>,
+     *          ...
+     *      ],
+     *      <option1-value_pair>,
+     *      <option1-value_pair>,
+     *      ...
+     *  ],
+     */
+    private $indexes = [
+        //profileId is not unique as per spec, only combination of profileId and activityId
+    ];
+
+    /**
+     * {@inheritDoc}
      */
     public function install()
     {
+        $container = $this->getContainer()['storage'];
+        $container->executeCommand(['create' => self::COLLECTION_NAME]);
+        $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIndexes()
+    {
+        return $this->indexes;
     }
 
     public function getFiltered($parameters)
