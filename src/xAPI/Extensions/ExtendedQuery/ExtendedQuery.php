@@ -39,9 +39,12 @@ class ExtendedQuery implements ExtensionInterface
      * @var array $routes
      */
     private $routes = [
-        ['pattern' => '/plus/statements/find', 'callable' => 'handleGetRoute', 'methods' => ['GET', 'HEAD']],
-        ['pattern' => '/plus/statements/find', 'callable' => 'handlePostRoute', 'methods' => ['POST']],
-        ['pattern' => '/plus/statements/find', 'callable' => 'handleOptionsRoute', 'methods' => ['OPTIONS']],
+        '/plus/statements/find' => [
+            'module' => 'ExtendedQuery',
+            'methods' => ['GET', 'HEAD', 'POST', 'OPTIONS'],
+            'description' =>'find statements',
+            'controller' => 'API\\Extensions\\ExtendedQuery\\Controller\\V10\\ExtendedQuery',
+        ]
     ];
 
     /**
@@ -59,18 +62,14 @@ class ExtendedQuery implements ExtensionInterface
      */
     public function about()
     {
-
-        $routes = [];
-        foreach ($this->routes as $route) {
-            $pattern = $route['pattern'];
-            $methods = (isset($routes[$pattern])) ? array_merge($routes[$pattern], $route['methods']) : $route['methods'];
-            $routes[$pattern] = $methods;
-        }
-
         return [
             'name' => 'ExtendedQuery',
             'description' => 'Fragmented statement queries',
-            'endpoints' => $routes,
+            'endpoints' => array_map(function ($route) {
+                return [
+                    'methods' => $route['methods']
+                ];
+            }, $this->routes),
         ];
     }
 
@@ -123,45 +122,4 @@ class ExtendedQuery implements ExtensionInterface
         return $resource;
     }
 
-    /**
-     * Process GET request
-     * @param \Psr\Http\Message\ResponseInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $args collection of extra arguments
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function handleGetRoute($request, $response, $args)
-    {
-        $response = $this->getResource($request, $response)->get();
-
-        return $response;
-    }
-
-    /**
-     * Process POST request
-     * @param \Psr\Http\Message\ResponseInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $args collection of extra arguments
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function handlePostRoute($request, $response, $args)
-    {
-        $response = $this->getResource($request, $response)->post();
-
-        return $response;
-    }
-
-    /**
-     * Process OPTIONS request
-     * @param \Psr\Http\Message\ResponseInterface $request
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $args collection of extra arguments
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function handleOptionsRoute($request, $response, $args)
-    {
-        $response = $this->getResource($request, $response)->options();
-
-        return $response;
-    }
 }
