@@ -97,7 +97,7 @@ class SetupCommand extends SymfonyCommand
         $io->title('<info>Welcome to the setup of lxHive!</info>');
         $io->newLine();
 
-        // 1. check config
+        // check config
         Bootstrap::factory(Bootstrap::None);
         if ($this->setup->locateYaml('Config.yml')) {
             throw new \RuntimeException('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
@@ -110,8 +110,10 @@ class SetupCommand extends SymfonyCommand
             call_user_func_array([$this, $callback], [$io]);
         }
 
-        // 9. finish
+        // finish
         $io->success('Setup complete!');
+        $next = $io->text('<info> --> </info> TIP: Create your first user with <comment>./X user:create</comment>');
+        $io->newLine();
     }
 
     /**
