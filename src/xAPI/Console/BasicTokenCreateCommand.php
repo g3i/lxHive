@@ -53,6 +53,7 @@ class BasicTokenCreateCommand extends Command
                     new InputOption('scopes', 's', InputOption::VALUE_OPTIONAL),
                     new InputOption('key', 'k', InputOption::VALUE_OPTIONAL),
                     new InputOption('secret', 'sc', InputOption::VALUE_OPTIONAL),
+                    new InputOption('userid', 'u', InputOption::VALUE_OPTIONAL),
                 ))
             )
         ;
