@@ -71,4 +71,35 @@ class ValidatorTest extends TestCase
         $v->validateRedirectUri('//');
         $v->validateRedirectUri('//test');
     }
+
+    /**
+     * @see https://docs.mongodb.com/manual/reference/limits/
+     */
+    public function testValidateMongoName()
+    {
+        $v = new Validator();
+        $v->validateMongoName('valid');
+        $v->validateMongoName('valid_underscore');
+        $v->validateMongoName('valid-dash');
+        $v->validateMongoName('valid999');
+
+        $this->expectException(AdminException::class);
+        $v->validateMongoName('');
+        $v->validateMongoName(true);
+        $v->validateMongoName('s');
+        $v->validateMongoName('IsLlongerThan64BgZEz7U1CDItpbSnnxYWP9pmKLIW46XGaWJau18sLwqUNgc8aLtCDlXCw9IwsKgx');
+        $v->validateMongoName('.noPointsAllowed');
+        $v->validateMongoName('$noDollarAllowed');
+        $v->validateMongoName('no WhitespaceAllowed');
+        $v->validateMongoName('/noSlashAllowed');
+        $v->validateMongoName('\\noBackSlashAllowd');
+        $v->validateMongoName('"noQuoteAllowed"');
+        $v->validateMongoName('*noStarAllowed"');
+        $v->validateMongoName('*noStarAllowed"');
+        $v->validateMongoName('>noTagAllowed');
+        $v->validateMongoName('<noTagAllowed');
+        $v->validateMongoName(':noColonAllowed');
+        $v->validateMongoName('|noPipeAllowed');
+        $v->validateMongoName('noQuestionmarkAllowed?');
+    }
 }
