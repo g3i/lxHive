@@ -104,7 +104,7 @@ class SetupCommand extends SymfonyCommand
         }
 
         $count = 0;
-        foreach($this->sequence as $callback => $title){
+        foreach ($this->sequence as $callback => $title) {
             $count++;
             $io->section('<info>['.$count.'/'.count($this->sequence).']</info> '.$title);
             call_user_func_array([$this, $callback], [$io]);
@@ -112,8 +112,6 @@ class SetupCommand extends SymfonyCommand
 
         // 9. finish
         $io->success('Setup complete!');
-
-
     }
 
     /**
@@ -123,7 +121,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AppInitException
      */
-    private function reboot($io){
+    private function reboot($io)
+    {
         //TODO
         Bootstrap::reset();
         Bootstrap::factory(Bootstrap::Console);
@@ -137,7 +136,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_checkConfig($io){
+    private function io_checkConfig($io)
+    {
         $msg = [];
 
         $this->setup->installYaml('Config.yml');
@@ -161,7 +161,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_setLrsInstance($io){
+    private function io_setLrsInstance($io)
+    {
         $name = $io->ask('Enter a name for this lxHive instance: ', 'lxHive', function ($answer) {
             $this->validator->validateName($answer);
             return $answer;
@@ -180,7 +181,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_setMongoStorage($io){
+    private function io_setMongoStorage($io)
+    {
         $msg = [];
 
         $host = $io->ask('Enter the URI of your MongoDB installation:', 'mongodb://127.0.0.1', function ($answer) use ($io) {
@@ -192,13 +194,13 @@ class SetupCommand extends SymfonyCommand
         });
         $msg[] = 'Mongo connection: '. $host;
 
-        $db = $io->ask('Enter the name of your MongoDB database:', 'lxHive', function($answer){
+        $db = $io->ask('Enter the name of your MongoDB database:', 'lxHive', function ($answer) {
             $this->validator->validateMongoName($answer);
             return $answer;
         });
         $msg[] = 'Mongo database: '. $db;
 
-        $this->setup->updateYaml('Config.yml',  [
+        $this->setup->updateYaml('Config.yml', [
             'storage' => [
                 'in_use' => 'Mongo',
                 'Mongo' => [
@@ -217,7 +219,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_installDatabaseSchema($io){
+    private function io_installDatabaseSchema($io)
+    {
         $this->setup->installDb(); // throws exception on fail
         $io->listing(['DB schema installed']);
     }
@@ -229,7 +232,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_installAuthScopes($io){
+    private function io_installAuthScopes($io)
+    {
         $this->setup->initializeAuthScopes(); // throws exception on fail
         $io->listing(['AuthScopes installed']);
     }
@@ -241,7 +245,8 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_setLocalFileStorage($io){
+    private function io_setLocalFileStorage($io)
+    {
         $msg = [];
 
         try {
@@ -262,5 +267,4 @@ class SetupCommand extends SymfonyCommand
         $io->listing($msg);
         $io->note('Please make sure your webserver has read/write access to the "storage" directories.');
     }
-
 }

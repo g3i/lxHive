@@ -244,7 +244,8 @@ class Setup
      * @return \SplFileInfo
      * @throws \Exception
      */
-    public function installFileStorage() {
+    public function installFileStorage()
+    {
         $root = realpath(Config::get('appRoot'));
         if (!$root) {
             throw new AdminException('Error installing local FS: Missing Config[appRoot]');
@@ -268,7 +269,14 @@ class Setup
         return new \SplFileInfo($root.'/storage');
     }
 
-    private function createStorageDir($dir) {
+    /**
+     * Creates Storage dir with approbiate permissions
+     * @param string $dir (real) path to dir to create
+     *
+     * @return bool
+     */
+    private function createStorageDir($dir)
+    {
         if (is_dir($dir)) {
             return true;
         }

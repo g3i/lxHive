@@ -188,7 +188,7 @@ class Validator
         }
 
         if (!preg_match('/^[a-z0-9_\-]+$/i', $str)) {
-           $errors[] = 'Can only contain letter, numbers, dashes and underscores';
+            $errors[] = 'Can only contain letter, numbers, dashes and underscores';
         }
 
         if (!empty($errors)) {
