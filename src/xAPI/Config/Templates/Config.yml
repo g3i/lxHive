@@ -10,10 +10,10 @@ extensions:
         class_name: '\API\Extensions\ExtendedQuery\ExtendedQuery'
         enabled: true
 xAPI:
-    latest_version: 1.0.2
+    latest_version: 1.0.3
     statement_get_limit: 100
     default_statement_get_format: exact
-    supported_versions: [1.0.2]
+    supported_versions: [1.0.0, 1.0.1, 1.0.2, 1.0.3]
     supported_auth_scopes:
         - name: super
           description: 'Administrate the LRS'
