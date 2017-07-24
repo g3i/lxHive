@@ -73,25 +73,31 @@ class AccessToken extends Document
     }
 
     /**
-     * Sets document property: expiresIn
-     * @param int $expiresIn
+     * Sets document property: expiresAt
+     * @param int|null $expiresAt unix dateTime timestamp
      */
-    public function setExpiresIn($expiresIn)
+    public function setExpiresAt($expiresAt)
     {
-        $until = \API\Util\Date::dateFromSeconds($expiresIn);
-        $until = \API\Util\Date::dateStringToMongoDate($until);
-        $this->setExpiresAt($until);
+        if(null === $expiresAt){
+            $this->data->expiresAt = null;
+            return;
+        }
+
+        $until = new \DateTime();
+        $until->setTimestamp($expiresAt);
+        $until = \API\Util\Date::dateTimeToMongoDate($until);
+        $this->data->expiresAt = $until;
     }
 
     ////
-    // Getters for stored documents
+    // Computed properites and checks/validaton for stored documents
     ////
 
     /**
-     * Gets document property: expiresIn
+     * Computes expiry period in seconds
      * @return int period in seconds
      */
-    public function getExpiresIn()
+    public function expiresIn()
     {
         $dateTime = new \DateTime();
         if ($this->getExpiresAt() === null) {
@@ -104,10 +110,6 @@ class AccessToken extends Document
         }
     }
 
-    ////
-    // Checks/Validaton for stored documents
-    ////
-
     /**
      * Check if fetched token document is expired
      * @return bool
@@ -116,7 +118,7 @@ class AccessToken extends Document
     {
         if ($this->getExpired()) {
             return true;
-        } elseif (null !== $this->getExpiresIn() && $this->getExpiresIn() <= 0) {
+        } elseif (null !== $this->expiresIn() && $this->expiresIn() <= 0) {
             $this->setExpired(true);
             return true;
         } else {
