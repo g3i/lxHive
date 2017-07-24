@@ -26,7 +26,6 @@ namespace API\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
@@ -42,12 +41,12 @@ use API\Admin\AdminException;
 class SetupCommand extends SymfonyCommand
 {
     /**
-     * @var API\Admin\Setup $setup
+     * @var Setup $setup
      */
     private $setup;
 
     /**
-     * @var API\Admin\Setup $setup
+     * @var Validator $validator
      */
     private $validator;
 
@@ -100,7 +99,7 @@ class SetupCommand extends SymfonyCommand
         // check config
         Bootstrap::factory(Bootstrap::None);
         if ($this->setup->locateYaml('Config.yml')) {
-            throw new \RuntimeException('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
+            throw new RuntimeException('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 
         $count = 0;
@@ -112,7 +111,7 @@ class SetupCommand extends SymfonyCommand
 
         // finish
         $io->success('Setup complete!');
-        $next = $io->text('<info> --> </info> TIP: Create your first user with <comment>./X user:create</comment>');
+        $io->text('<info> --> </info> NEXT: Create your first user with <comment>./X user:create</comment>');
         $io->newLine();
     }
 
