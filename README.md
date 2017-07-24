@@ -2,7 +2,7 @@
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
 * Current version: **v0.9.5**
-* Supports xAPI spec <= 1.0.2
+* Supports xAPI spec <= 1.0.3
 
 [![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/master.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
 
