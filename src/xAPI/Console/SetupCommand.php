@@ -30,17 +30,41 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
+use API\Config;
 use API\Bootstrap;
 use API\Admin\Setup;
+use API\Admin\Validator;
+
+use RunTimeException;
+use API\AppInitException;
+use API\Admin\AdminException;
 
 class SetupCommand extends SymfonyCommand
 {
     /**
-     * Setup class.
-     *
      * @var API\Admin\Setup $setup
      */
     private $setup;
+
+    /**
+     * @var API\Admin\Setup $setup
+     */
+    private $validator;
+
+    /**
+     * @var array $sequence
+     */
+    private $sequence = [
+        'io_checkConfig'            => 'Install default configuration',
+        'io_setLrsInstance'         => 'Configure Lrs instance',
+        'io_setMongoStorage'        => 'Configure Mongo database',
+
+        'reboot'                    => 'Reboot app with new configuration',
+
+        'io_installDatabaseSchema'  => 'Install lxHive database schemas',
+        'io_installAuthScopes'      => 'Setup oAuth scopes',
+        'io_setLocalFileStorage'    => 'Setup local file storage'
+    ];
 
     /**
      * @constructor
@@ -49,6 +73,7 @@ class SetupCommand extends SymfonyCommand
     {
         parent::__construct();
         $this->setup = new Setup();
+        $this->validator = new Validator();
     }
 
     /**
@@ -67,69 +92,181 @@ class SetupCommand extends SymfonyCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // 1. check config
-        $bootstrapper = Bootstrap::factory(Bootstrap::None);
-        if ($this->getSetup()->locateYaml('Config.yml')) {
+        $io = new SymfonyStyle($input, $output);
+
+        $io->title('<info>Welcome to the setup of lxHive!</info>');
+        $io->newLine();
+
+        // check config
+        Bootstrap::factory(Bootstrap::None);
+        if ($this->setup->locateYaml('Config.yml')) {
             throw new \RuntimeException('A `Config.yml` file exists already. The LRS configuration would be overwritten. To restore the defaults you must manually remove the file first.');
         }
 
-        $output->writeln('<info>Welcome to the setup of lxHive!</info>');
-
-        // 2. LRS instance
-        $helper = $this->getHelper('question');
-        $question = new Question('Enter a name for this lxHive instance: ', 'Untitled');
-        $name = $helper->ask($input, $output, $question);
-
-        // 3. Mongo connection
-        $connectionSuccess = false;
-        while (!$connectionSuccess) {
-            $question = new Question('Enter the URI of your MongoDB installation (default: "mongodb://127.0.0.1"): ', 'mongodb://127.0.0.1');
-            $mongoHostname = $helper->ask($input, $output, $question);
-
-            $connectionSuccess = $this->getSetup()->testDbConnection($mongoHostname);
-            if (!$connectionSuccess) {
-                $output->writeln('Connection unsuccessful, please try again.');
-            }
+        $count = 0;
+        foreach ($this->sequence as $callback => $title) {
+            $count++;
+            $io->section('<info>['.$count.'/'.count($this->sequence).']</info> '.$title);
+            call_user_func_array([$this, $callback], [$io]);
         }
 
-        // 4. Database
-        $question = new Question('Enter the name of your MongoDB database (default: "lxHive"): ', 'lxHive');
-        $mongoDatabase = $helper->ask($input, $output, $question);
-
-        // 5. Create config
-        $mergeConfig = ['name' => $name, 'storage' => ['in_use' => 'Mongo', 'Mongo' => ['host_uri' => $mongoHostname, 'db_name' => $mongoDatabase]]];
-        $this->getSetup()->installYaml('Config.yml', $mergeConfig);
-
-        if (!$this->getSetup()->locateYaml('Config.production.yml')) {
-            $this->getSetup()->installYaml('Config.production.yml');
-        }
-        if (!$this->getSetup()->locateYaml('Config.development.yml')) {
-            $this->getSetup()->installYaml('Config.development.yml');
-        }
-        $output->writeln('<info>*</info> Configuration saved!');
-
-        // 7. DB Schema
-        Bootstrap::reset();
-        $this->getSetup()->installDb();
-        $output->writeln('<info>*</info> Database set up!');
-
-        // 8. oAuth scopes
-        Bootstrap::reset();
-        $this->getSetup()->initializeAuthScopes();
-        $output->writeln('<info>*</info> OAuth scopes configured!');
-
-        // 9. finish
-        $output->writeln('<info>*</info> Configuration saved!');
-        $output->writeln('<info>Setup complete!</info>');
+        // finish
+        $io->success('Setup complete!');
+        $next = $io->text('<info> --> </info> TIP: Create your first user with <comment>./X user:create</comment>');
+        $io->newLine();
     }
 
     /**
-     * Gets the value of setup.
+     * Installs default configruation files from templates
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
      *
-     * @return mixed
+     * @return void
+     * @throws AppInitException
      */
-    public function getSetup()
+    private function reboot($io)
     {
-        return $this->setup;
+        //TODO
+        Bootstrap::reset();
+        Bootstrap::factory(Bootstrap::Console);
+        $io->listing(['Re-booted app']);
+    }
+
+    /**
+     * Installs default configruation files from templates
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws AdminException
+     */
+    private function io_checkConfig($io)
+    {
+        $msg = [];
+
+        $this->setup->installYaml('Config.yml');
+        $msg[] = 'Config.yml installed';
+
+        $this->setup->removeYaml('Config.production.yml');
+        $this->setup->installYaml('Config.production.yml');
+        $msg[] = 'Config.production.yml installed';
+
+        $this->setup->removeYaml('Config.development.yml');
+        $this->setup->installYaml('Config.development.yml');
+        $msg[] = 'Config.development.yml installed';
+
+        $io->listing($msg);
+    }
+
+    /**
+     * Installs default configruation files from templates
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws AdminException
+     */
+    private function io_setLrsInstance($io)
+    {
+        $name = $io->ask('Enter a name for this lxHive instance: ', 'lxHive', function ($answer) {
+            $this->validator->validateName($answer);
+            return $answer;
+        });
+
+        $this->setup->updateYaml('Config.yml', [
+            'name' => $name
+        ]);
+        $io->listing(['lxHive instance: '. $name]);
+    }
+
+    /**
+     * Set Mongo Databas connection
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws AdminException
+     */
+    private function io_setMongoStorage($io)
+    {
+        $msg = [];
+
+        $host = $io->ask('Enter the URI of your MongoDB installation:', 'mongodb://127.0.0.1', function ($answer) use ($io) {
+            $conn = $this->setup->testDbConnection($answer);
+            if (!$conn) {
+                throw new RuntimeException('Connection unsuccessful, please try again.');
+            }
+            return $answer;
+        });
+        $msg[] = 'Mongo connection: '. $host;
+
+        $db = $io->ask('Enter the name of your MongoDB database:', 'lxHive', function ($answer) {
+            $this->validator->validateMongoName($answer);
+            return $answer;
+        });
+        $msg[] = 'Mongo database: '. $db;
+
+        $this->setup->updateYaml('Config.yml', [
+            'storage' => [
+                'in_use' => 'Mongo',
+                'Mongo' => [
+                    'host_uri' => $host,
+                    'db_name'=> $db,
+                ]
+            ]
+        ]);
+        $io->listing($msg);
+    }
+
+    /**
+     * Installs Database schemas
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    private function io_installDatabaseSchema($io)
+    {
+        $this->setup->installDb(); // throws exception on fail
+        $io->listing(['DB schema installed']);
+    }
+
+    /**
+     * Installs AuthScopes
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    private function io_installAuthScopes($io)
+    {
+        $this->setup->initializeAuthScopes(); // throws exception on fail
+        $io->listing(['AuthScopes installed']);
+    }
+
+    /**
+     * Installs local files torage
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    private function io_setLocalFileStorage($io)
+    {
+        $msg = [];
+
+        try {
+            $info = $this->setup->installFileStorage();
+            $owner = posix_getpwuid($info->getOwner());
+            $group = posix_getgrgid($info->getGroup());
+
+            $msg[] = '' .$info->getPath();
+            $msg[] = 'permission: ' .substr(sprintf('%o', $info->getPerms()), -4);
+            $msg[] = 'path: '.$info->getRealPath();
+            $msg[] = 'owner: '.$owner['name'];
+            $msg[] = 'group: '.$group['name'];
+        } catch (AdminException $e) {
+            $io->warning('Unable to create Local file Storage. Please create manually.');
+            $io->text('<error>Error message:</error> '.$e->getMessage());
+        }
+
+        $io->listing($msg);
+        $io->note('Please make sure your webserver has read/write access to the "storage" directories.');
     }
 }

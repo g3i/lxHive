@@ -25,13 +25,14 @@
 namespace API\Admin;
 
 use Symfony\Component\Yaml\Yaml;
-use MongoDB\Driver\Exception\Exception as MongoException;
 
-use API\Bootstrap;
 use API\Config;
+use API\Bootstrap;
 use API\Storage\AdapterException;
 use API\Storage\Adapter\Mongo as Mongo;
 use API\Service\Auth\OAuth as OAuthService;
+
+use MongoDB\Driver\Exception\Exception as MongoException;
 
 /**
  * Scratch-Api for various Admin tasks who are not dependend on a bootstrapped application
@@ -88,7 +89,7 @@ class Setup
 
         $contents = file_get_contents($file);
         if (false === $contents) {
-            throw new AdminException('Error reading file `'.$yml.'` Make sure the file exists and is readable.');
+            throw new AdminException('Error reading file `'.$yml.'`. Make sure the file exists and is readable.');
         }
 
         try {
@@ -106,12 +107,31 @@ class Setup
     }
 
     /**
+     * Deletes a yaml file. Throws an Exception on failure
+     * @param string $yml      yaml file to be created from template
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function removeYaml($yml)
+    {
+        if (!$this->locateYaml($yml)) {
+            return;
+        }
+
+        $file = $this->configDir.'/'.$yml;
+        if (false === unlink($file)) {
+            throw new AdminException('Error deleting `'.$file.'`. Make sure the directory is writable.');
+        }
+    }
+
+    /**
      * Creates a config yml file in /src/xAPI/Config/ from an existing template, merges data with template data.
      * @param string $yml      yaml file to be created from template
      * @param array $mergeData associative array of config data to be merged in to the new config file
      *
      * @return array $data
-     * @throws \Exception
+     * @throws AdminException
      */
     public function installYaml($yml, array $mergeData = [])
     {
@@ -139,7 +159,7 @@ class Setup
      * @param array  $update associative array of config data to be merged in to the new config file
      *
      * @return array $data
-     * @throws \Exception
+     * @throws AdminException
      */
     public function updateYaml($yml, array $update)
     {
@@ -181,11 +201,14 @@ class Setup
      * Install Database
      *
      * @return void
+     * @throws AdminException
      */
-    public function installDb()
+    public function installDb($container = null)
     {
-        $bootstrap = Bootstrap::factory(Bootstrap::Config);
-        $container = $bootstrap->initCliContainer();
+        if (!$container) {
+            $container = Bootstrap::getContainer();
+        }
+
         $schema = new Mongo\Schema($container);
 
         try {
@@ -202,15 +225,61 @@ class Setup
      *
      * @return void
      */
-    public function initializeAuthScopes()
+    public function initializeAuthScopes($container = null)
     {
-        //TODO this method will be obsolete if we remove the authScopes collection
-        $bootstrap = Bootstrap::factory(Bootstrap::Config);
-        $container = $bootstrap->initCliContainer();
-        $oAuthService = new OAuthService($container);
+        if (!$container) {
+            $container = Bootstrap::getContainer();
+        }
 
+        $oAuthService = new OAuthService($container);
+        //TODO exception handling
         foreach (Config::get(['xAPI', 'supported_auth_scopes']) as $authScope) {
             $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
         }
+    }
+
+    /**
+     * Creates writable storage directories for files (attachments) and logs
+     *
+     * @return \SplFileInfo
+     * @throws \Exception
+     */
+    public function installFileStorage()
+    {
+        $root = realpath(Config::get('appRoot'));
+        if (!$root) {
+            throw new AdminException('Error installing local FS: Missing Config[appRoot]');
+        }
+
+        $dir = $root.'/storage';
+        if (false === $this->createStorageDir($dir)) {
+            throw new AdminException('Unable to create folder: '.$dir);
+        }
+
+        $dir = $root.'/storage/files';
+        if (false === $this->createStorageDir($dir)) {
+            throw new AdminException('Unable to create folder: '.$dir);
+        }
+
+        $dir = $root.'/storage/logs';
+        if (false === $this->createStorageDir($dir)) {
+            throw new AdminException('Unable to create folder: '.$dir);
+        }
+
+        return new \SplFileInfo($root.'/storage');
+    }
+
+    /**
+     * Creates Storage dir with approbiate permissions
+     * @param string $dir (real) path to dir to create
+     *
+     * @return bool
+     */
+    private function createStorageDir($dir)
+    {
+        if (is_dir($dir)) {
+            return true;
+        }
+        return @mkdir($dir, 755);// surpress PHP warning in console
     }
 }

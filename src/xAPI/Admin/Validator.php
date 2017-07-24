@@ -165,4 +165,34 @@ class Validator
             throw new AdminException('Redirect url requires a valid host component');
         }
     }
+
+    /**
+     * Validate Mongo Naming (database and collection name)
+     * @see https://docs.mongodb.com/manual/reference/limits/
+     *
+     * @return void
+     * @throws AdminException
+     */
+    public function validateMongoName(string $str)
+    {
+        $errors = [];
+        $minLength = 4;// mongo does only require a length > 0
+        $maxLength = 64;
+
+        if (!$str || strlen($str) < $minLength) {
+            $errors[] = 'Must have at least '.$minLength.' characters';
+        }
+
+        if (!$str || strlen($str) > $maxLength) {
+            $errors[] = 'Must less than '.$maxLength.' characters';
+        }
+
+        if (!preg_match('/^[a-z0-9_\-]+$/i', $str)) {
+            $errors[] = 'Can only contain letter, numbers, dashes and underscores';
+        }
+
+        if (!empty($errors)) {
+            throw new AdminException(json_encode($errors));
+        }
+    }
 }
