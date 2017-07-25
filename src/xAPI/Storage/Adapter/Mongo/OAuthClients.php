@@ -25,7 +25,7 @@
 namespace API\Storage\Adapter\Mongo;
 
 use API\Storage\SchemaInterface;
-use API\Storage\Query\QueryInterface;
+use API\Storage\Query\OAuthClientsInterface;
 
 use API\Util;
 use API\Storage\Provider;
