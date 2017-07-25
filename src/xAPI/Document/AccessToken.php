@@ -168,7 +168,7 @@ class AccessToken extends Document
         if (is_array($permissionName)) {
             $result = false;
             foreach ($permissionName as $individualPermissionName) {
-                if ($this->hasPermission($permissionName)) {
+                if ($this->hasPermission($individualPermissionName)) {
                     $result = true;
                 }
             }
