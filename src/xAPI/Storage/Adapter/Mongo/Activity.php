@@ -79,7 +79,9 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
         return $this->indexes;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function fetchById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -95,7 +97,5 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
 
         return $document;
     }
-
-
 
 }

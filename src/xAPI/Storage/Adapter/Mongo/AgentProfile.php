@@ -75,6 +75,9 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -123,8 +126,22 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function post($parameters, $profileObject)
     {
+        return $this->put($parameters, $profileObject);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function put($parameters, $profileObject)
+    {
+        // TODO optimise (upsert),
+        // TODO remove header dependency form this layer: put($data, $profileId, $agentIfi, array $options (contentType, if match))
+
         $profileObject = (string)$profileObject;
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
@@ -184,67 +201,12 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
 
         $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
 
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
-
         return $agentProfileDocument;
     }
 
-    public function put($parameters, $profileObject)
-    {
-        $agent = $parameters['agent'];
-        $agent = json_decode($agent, true);
-
-        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the body to be saved
-        $agentProfileDocument = new \API\Document\Generic();
-
-        // Check for existing state - then replace if applicable
-        $expression = $storage->createExpression();
-        $expression->where('profileId', $parameters['profileId']);
-        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
-        if ($result) {
-            $result = new \API\Document\Generic($result);
-        }
-
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
-        $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
-        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
-
-        // ID exists, replace body
-        if ($result) {
-            $agentProfileDocument = $result;
-        }
-
-        $contentType = $parameters['headers']['Content-Type'];
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        $agentProfileDocument->setContent($profileObject);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $agentProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-
-        $agentProfileDocument->setAgent($agent);
-        $agentProfileDocument->setProfileId($parameters['profileId']);
-        $agentProfileDocument->setContentType($contentType);
-        $agentProfileDocument->setHash(sha1($profileObject));
-
-        $storage->upsert(self::COLLECTION_NAME, $expression, $agentProfileDocument);
-
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('agentProfiles', $agentProfileDocument)->save();
-
-        return $agentProfileDocument;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function delete($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -267,9 +229,6 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
         $ifMatchHeader = $parameters['headers']['If-Match'];
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
-
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('agentProfiles', $result)->save();
 
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
     }
