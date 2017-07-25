@@ -30,9 +30,9 @@ abstract class View extends Collection
 {
     use BaseTrait;
 
-    private $items;
+    protected $items;
 
-    private $response;
+    protected $response;
 
     /**
      * @constructor
@@ -72,7 +72,7 @@ abstract class View extends Collection
      *
      * @return self
      */
-    private function setItems($items)
+    protected function setItems($items)
     {
         $this->items = $items;
 
@@ -86,7 +86,7 @@ abstract class View extends Collection
      *
      * @return self
      */
-    private function setResponse($response)
+    protected function setResponse($response)
     {
         $this->response = $response;
 

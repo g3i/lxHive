@@ -57,7 +57,7 @@ class ExtendedQuery extends Controller
         $request = $this->getRequest();
 
         // Check authentication
-        //$this->getContainer()->auth->checkPermission('statements/querybuilder');
+        $this->getContainer()->auth->checkPermission('statements/querybuilder');
 
         $documentResult = $this->getExtendedStatementService()->statementGet();
 

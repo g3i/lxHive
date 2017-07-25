@@ -382,6 +382,10 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $queryOptions['limit'] = (int)$limit;
 
+        if ($this->getAccessToken()->canOnlyReadMine()) {
+            $expression->where('userId', $this->getAccessToken()->userId);
+        }
+
         $cursor = $storage->find(self::COLLECTION_NAME, $expression, $queryOptions);
 
         $statementResult->setCursor($cursor);
@@ -408,18 +412,15 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return false;
     }
 
-    public function insert($statementObject)
+    public function transformForInsert($statementObject)
     {
         $storage = $this->getContainer()['storage'];
-
-        // TODO: This should be in Activity storage manager!
-        //$activityCollection = $this->getDocumentManager()->getCollection('activities');
 
         $attachmentBase = $this->getContainer()['url']->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
 
         if (isset($statementObject->{'id'})) {
             $expression = $storage->createExpression();
-            $expression->where('statement.id', $statementObject['id']);
+            $expression->where('statement.id', $statementObject->{'id'});
 
             $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
@@ -430,11 +431,10 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         }
 
         $statementDocument = new \API\Document\Statement();
-        // Uncomment this!
         // Overwrite authority - unless it's a super token and manual authority is set
-        //if (!($this->getAccessToken()->isSuperToken() && isset($statementObject['authority'])) || !isset($statementObject['authority'])) {
-        //    $statementObject['authority'] = $this->getAccessToken()->generateAuthority();
-        //}
+        if (!($this->getAccessToken()->isSuperToken() && isset($statementObject->{'authority'})) || !isset($statementObject->{'authority'})) {
+            $statementObject->{'authority'} = $this->getAccessToken()->generateAuthority();
+        }
         $statementDocument->setStatement($statementObject);
         // Dates
         $currentDate = Util\Date::dateTimeExact();
@@ -473,31 +473,26 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
             $storage->update(self::COLLECTION_NAME, $expression, $referencedStatement);
         }
-        /*if ($this->getAccessToken()->hasPermission('define')) {
+        if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
-                $activityCollection->insertMultiple($activities);
+                $storage->insertMultiple(Activity::COLLECTION_NAME, $activities);
             }
-        }*/
-        // TODO: Save this as a batch
-        // Save statement
-        $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
+        }
+
+        $statementDocument->setUserId($this->getAccessToken()->getUserId());
 
         // Add to log
         //$this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
-
-        // TODO: Batch insertion of statement upserts!!! - possible with new driver :)
-        // self::COLLECTION_NAME->insertMultiple($statements); // Batch operation is much faster ~600%
-        // However, because we add every single statement to the access log, we can't use it
-        // The only way to still use (fast) batch inserts would be to move the attachment of
-        // statements to their respective log entries in a async queue!
 
         return $statementDocument;
     }
 
     public function insertOne($statementObject)
     {
-        $statementDocument = $this->insert($statementObject);
+        $statementDocument = $this->transformForInsert($statementObject);
+        $storage = $this->getContainer()['storage'];
+        $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementDocument]);
         $statementResult->setRemainingCount(1);
@@ -510,8 +505,12 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     {
         $statementDocuments = [];
         foreach ($statementObjects as $statementObject) {
-            $statementDocuments[] = $this->insert($statementObject);
+            $statementDocuments[] = $this->transformForInsert($statementObject);
         }
+
+        $storage = $this->getContainer()['storage'];
+        $storage->insertMultiple(self::COLLECTION_NAME, $statementDocuments);
+
         $statementResult = new StatementResult();
         $statementResult->setCursor($statementDocuments);
         $statementResult->setRemainingCount(count($statementDocuments));

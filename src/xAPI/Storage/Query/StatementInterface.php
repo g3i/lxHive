@@ -51,7 +51,9 @@ interface StatementInterface extends QueryInterface
      */
     public function statementWithIdExists($statementId);
 
-    public function insert($statementObject);
+    public function insertOne($statementObject);
+
+    public function insertMultiple($statementObjects);
 
     public function put($parameters, $statementObject);
 

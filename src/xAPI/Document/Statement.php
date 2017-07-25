@@ -295,8 +295,6 @@ class Statement extends Document
         // If no ID has been set, set it
         if (empty($this->data->statement->id) || $this->data->statement->id === null) {
             $this->data->statement->id = Uuid::uuid4()->toString();
-            // TODO: Fix order of this
-            //$this->setStatement(['id' => Uuid::uuid4()->toString()] + $this->data->statement);
         }
     }
 
