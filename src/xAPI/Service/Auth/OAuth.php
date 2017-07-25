@@ -147,6 +147,15 @@ class OAuth extends Service implements AuthInterface
     }
 
     /**
+     * get scope document by scope name
+     */
+    public function getScopeByName($name)
+    {
+        $scope = $this->getStorage()->getAuthScopesStorage()->findByName($name);
+        return $scope;
+    }
+
+    /**
      * @param [type] $request [description]
      *
      * @return [type] [description]
@@ -175,9 +184,11 @@ class OAuth extends Service implements AuthInterface
         $scopes = explode(',', $params->get('scope'));
         foreach ($scopes as $scope) {
             // get scope by name
-            $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-            $this->validateScopeDocument($scopeDocument);
-            $scopeDocuments[] = $scopeDocument;
+            $scopeDocument = $this->getScopeByName($scope);
+            if (null !== $scopeDocument) {
+                $this->validateScopeDocument($scopeDocument);
+                $scopeDocuments[] = $scopeDocument;
+            }
         }
 
         $this->client = $clientDocument;
@@ -213,10 +224,11 @@ class OAuth extends Service implements AuthInterface
             $scopeDocuments = [];
             $scopes = explode(',', $params->get('scope'));
             foreach ($scopes as $scope) {
-                // getscopebyname
-                $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-                $this->validateScopeDocument($scopeDocument);
-                $scopeDocuments[] = $scopeDocument;
+                $scopeDocument = $this->getScopeByName($scope);
+                if (null !== $scopeDocument) {
+                    $this->validateScopeDocument($scopeDocument);
+                    $scopeDocuments[] = $scopeDocument;
+                }
             }
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);
