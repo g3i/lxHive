@@ -5,7 +5,7 @@ machine:
         version: 6.1.0
 dependencies:
     pre:
-        - pecl install mongo
+        - pecl install mongodb
     post:
         - npm install -g newman
         - git clone git@github.com:sraka1/xAPITests.git
