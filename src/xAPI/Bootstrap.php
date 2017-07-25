@@ -517,7 +517,7 @@ class Bootstrap
                 // Remove body, add headers
                 $parameters->remove('content');
                 // TODO: Allow more headers here
-                $allowedHeaders = ['content-type', 'authorization'];
+                $allowedHeaders = ['content-type', 'authorization', 'x-experience-api-version', 'content-length'];
                 foreach ($parameters as $key => $value) {
                     if (in_array(strtolower($key), $allowedHeaders)) {
                         $request = $request->withHeader($key, explode(',', $value));
