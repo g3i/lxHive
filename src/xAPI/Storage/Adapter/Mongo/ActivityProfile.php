@@ -132,6 +132,10 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function put($parameters, $profileObject)
     {
+
+        // TODO optimise (upsert),
+        // TODO remove header dependency form this layer: put($datas, $stateId, $profileId, array $options (if match))
+
         $storage = $this->getContainer()['storage'];
 
         // Set up the body to be saved
@@ -181,9 +185,6 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
 
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
         return $activityProfileDocument;
     }
 
@@ -209,8 +210,6 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
 
         return $deletionResult;
