@@ -45,7 +45,7 @@ interface UserInterface extends QueryInterface
      * @param string $password
      * @param array  $permissions valid array of permission records
      *
-     * @throws Exception
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function addUser($name, $user, $email, $password, $permissions);
 

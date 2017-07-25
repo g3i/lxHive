@@ -27,14 +27,14 @@ namespace API\Storage\Adapter;
 
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Cursor;
-use MongoDB\Driver\Exception\Exception as MongoException;
 
-use API\Storage\AdapterException;
-use API\Storage\AdapterInterface;
 use API\DocumentInterface;
 use API\BaseTrait;
 use API\Config;
+use API\Storage\AdapterInterface;
 
+use API\Storage\AdapterException;
+use MongoDB\Driver\Exception\Exception as MongoException;
 
 class Mongo implements AdapterInterface
 {

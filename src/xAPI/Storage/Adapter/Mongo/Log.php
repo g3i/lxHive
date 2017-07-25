@@ -29,7 +29,6 @@ use API\Storage\Query\LogInterface;
 
 use API\Util;
 use API\Storage\Provider;
-use API\HttpException as Exception;
 
 class Log extends Provider implements LogInterface, SchemaInterface
 {

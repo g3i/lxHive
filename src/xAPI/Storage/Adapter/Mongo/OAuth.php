@@ -30,7 +30,8 @@ use API\Storage\Query\OAuthInterface;
 use API\Controller;
 use API\Util;
 use API\Storage\Provider;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class OAuth extends Provider implements OAuthInterface, SchemaInterface
 {
@@ -196,7 +197,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     {
         if ($expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new Exception('Expired token.', Controller::STATUS_FORBIDDEN);
+                throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -204,21 +205,21 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
+            throw new AdapterException('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 
     private function validateClientSecret($params, $clientDocument)
     {
         if ($clientDocument->getClientId() !== $params['client_id'] || $clientDocument->getSecret() !== $params['client_secret']) {
-            throw new Exception('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRedirectUri($params, $clientDocument)
     {
         if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
-            throw new Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

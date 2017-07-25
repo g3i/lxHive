@@ -47,7 +47,8 @@ interface StatementInterface extends QueryInterface
      * @param array $parameters map of quer yparams
      *
      * @return StatementResult
-     * @thows API\Storage\AdapterException
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function put($parameters, $statementObject);
 
@@ -56,7 +57,8 @@ interface StatementInterface extends QueryInterface
      * @param object $statementObject
      *
      * @return StatementResult
-     * @thows API\Storage\AdapterException
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function insert($statementObject);
 
@@ -65,6 +67,7 @@ interface StatementInterface extends QueryInterface
      * @param object $statementObject
      *
      * @return StatementResult|null
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function insertOne($statementObject);
 
@@ -73,7 +76,8 @@ interface StatementInterface extends QueryInterface
      * @param array $statementObjects
      *
      * @return StatementResult
-     * @thows API\Storage\AdapterException
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function insertMultiple($statementObjects);
 
@@ -82,6 +86,7 @@ interface StatementInterface extends QueryInterface
      * Ensures that deletion of statements is impossible by throwing always an exception
      *
      * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function delete($parameters);
 }

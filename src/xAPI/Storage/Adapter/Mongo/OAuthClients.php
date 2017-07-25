@@ -29,7 +29,6 @@ use API\Storage\Query\QueryInterface;
 
 use API\Util;
 use API\Storage\Provider;
-use API\HttpException as Exception;
 
 class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInterface
 {

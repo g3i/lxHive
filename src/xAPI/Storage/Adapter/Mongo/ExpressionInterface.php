@@ -35,7 +35,7 @@ interface ExpressionInterface
      * @return \Expression
      */
     public function expression();
-    
+
     /**
      * Return a expression
      * @return \Cursor|\Expression
@@ -248,7 +248,7 @@ interface ExpressionInterface
      *
      * @param mixed $mixed
      * @return array
-     * @throws \Exception
+     * @throws \API\Storage\AdapterException
      */
     public static function convertToArray($mixed);
 }

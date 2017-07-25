@@ -29,7 +29,8 @@ use API\Storage\Query\UserInterface;
 
 use API\Storage\Provider;
 use API\Controller;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class User extends Provider implements UserInterface, SchemaInterface
 {
@@ -104,7 +105,7 @@ class User extends Provider implements UserInterface, SchemaInterface
 
         // check if email is valid and unique
         if ($this->hasEmail($email)) {
-            throw new Exception('User email exists already.', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('User email exists already.', Controller::STATUS_BAD_REQUEST);
         }
 
         // Set up the User to be saved

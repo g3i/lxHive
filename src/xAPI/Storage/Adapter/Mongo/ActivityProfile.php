@@ -32,7 +32,7 @@ use API\Util;
 use API\Storage\Query\DocumentResult;
 use API\Storage\Provider;
 
-use API\HttpException as Exception;
+use API\Storage\AdapterException;
 
 class ActivityProfile extends Provider implements ActivityProfileInterface, SchemaInterface
 {
@@ -218,15 +218,15 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // If-Match first
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
-            throw new Exception('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
+            throw new AdapterException('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
-                throw new Exception('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
+                throw new AdapterException('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
             } elseif ($result && $this->trimHeader($ifNoneMatch) === $result->getHash()) {
-                throw new Exception('If-None-Match header matches the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
+                throw new AdapterException('If-None-Match header matches the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
             }
         }
     }
@@ -235,31 +235,31 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // Check If-Match and If-None-Match here
         if (!$ifMatch && !$ifNoneMatch && $result) {
-            throw new Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Controller::STATUS_CONFLICT);
+            throw new AdapterException('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Controller::STATUS_CONFLICT);
         }
     }
 
     private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
-            throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
         if ($contentType !== 'application/json') {
-            throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new Exception('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 

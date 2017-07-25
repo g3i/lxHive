@@ -29,7 +29,8 @@ use API\Storage\Query\BasicAuthInterface;
 
 use API\Controller;
 use API\Storage\Provider;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {
@@ -190,7 +191,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     {
         if ($expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Controller::STATUS_FORBIDDEN);
+                throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -198,7 +199,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new \Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
+            throw new AdapterException('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 }
