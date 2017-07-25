@@ -26,6 +26,8 @@ namespace API\Console;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -65,7 +67,7 @@ class UserCreateCommand extends Command
             ->setDescription('Creates a new user')
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
+                    new InputOption('name', 'na', InputOption::VALUE_OPTIONAL),
                     new InputOption('description', 'd', InputOption::VALUE_OPTIONAL),
                     new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
                     new InputOption('password', 'p', InputOption::VALUE_OPTIONAL),
