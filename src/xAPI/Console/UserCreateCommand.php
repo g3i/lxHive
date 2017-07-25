@@ -97,7 +97,7 @@ class UserCreateCommand extends Command
                 return $answer;
             });
         } else {
-            $email = $input->getOption('name');
+            $name = $input->getOption('name');
         }
 
         // 2. Description
