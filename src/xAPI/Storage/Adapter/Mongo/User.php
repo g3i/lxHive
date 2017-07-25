@@ -80,6 +80,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByEmailAndPassword($username, $password)
     {
         $storage = $this->getContainer()['storage'];
@@ -93,6 +96,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $document;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -106,16 +112,7 @@ class User extends Provider implements UserInterface, SchemaInterface
     }
 
     /**
-     * Add a user
-     * The only validation we do at this level is ensuring that the email is unique
-     *
-     * @param string $name
-     * @param string $description
-     * @param string $email valid email address
-     * @param string $password
-     * @param array  $permissions valid array of permission records
-     *
-     * @throws Exception
+     * {@inheritDoc}
      */
     public function addUser($name, $description, $email, $password, $permissions)
     {
@@ -152,6 +149,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $userDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function fetchAll()
     {
         $storage = $this->getContainer()['storage'];
@@ -163,18 +163,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $documentResult;
     }
 
-    public function fetchAvailablePermissions()
-    {
-        $storage = $this->getContainer()['storage'];
-
-        $cursor = $storage->find(AuthScopes::COLLECTION_NAME);
-
-        $documentResult = new \API\Storage\Query\DocumentResult();
-        $documentResult->setCursor($cursor);
-
-        return $documentResult;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     // TODO remove after indexing user.email as unique
     public function hasEmail($email)
     {

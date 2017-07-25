@@ -30,11 +30,21 @@ interface UserInterface extends QueryInterface
 
     public function findById($id);
 
+    /**
+     * Add a user
+     * The only validation we do at this level is ensuring that the email is unique
+     *
+     * @param string $name
+     * @param string $description
+     * @param string $email valid email address
+     * @param string $password
+     * @param array  $permissions valid array of permission records
+     *
+     * @throws Exception
+     */
     public function addUser($name, $user, $email, $password, $permissions);
 
     public function fetchAll();
-
-    public function fetchAvailablePermissions();
 
     public function hasEmail($email);
 }
