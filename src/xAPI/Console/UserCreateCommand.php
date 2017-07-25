@@ -63,6 +63,15 @@ class UserCreateCommand extends Command
         $this
             ->setName('user:create')
             ->setDescription('Creates a new user')
+            ->setDefinition(
+                new InputDefinition([
+                    new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
+                    new InputOption('description', 'd', InputOption::VALUE_OPTIONAL),
+                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
+                    new InputOption('password', 'p', InputOption::VALUE_OPTIONAL),
+                    new InputOption('permissions', 'pm', InputOption::VALUE_OPTIONAL),
+                ])
+            )
         ;
     }
 
@@ -80,49 +89,73 @@ class UserCreateCommand extends Command
         $this->validator = new Validator();
 
         // 1. Name
-        $name = $io->ask('<comment>[1/6]</comment> Please enter a name', null, function ($answer) {
-            $this->validator->validateName($answer);
-            return $answer;
-        });
+        if (null === $input->getOption('name')) {
+            $name = $io->ask('<comment>[1/6]</comment> Please enter a name', null, function ($answer) {
+                $this->validator->validateName($answer);
+                return $answer;
+            });
+        } else {
+            $email = $input->getOption('name');
+        }
 
         // 2. Description
-        $description = $io->ask('<comment>[2/6]</comment> Please enter a description', false);
+        if (null === $input->getOption('description')) {
+            $description = $io->ask('<comment>[2/6]</comment> Please enter a description', false);
+        } else {
+            $description = $input->getOption('description');
+        }
 
         // 3. Email
-        $email = $io->ask('<comment>[3/6]</comment> Please enter an e-mail', null, function ($answer) {
-            $this->validator->validateEmail($answer);
-            return $answer;
-        });
+        if (null === $input->getOption('email')) {
+            $email = $io->ask('<comment>[3/6]</comment> Please enter an e-mail', null, function ($answer) {
+                $this->validator->validateEmail($answer);
+                return $answer;
+            });
+        } else {
+            $email = $input->getOption('email');
+        }
 
         // 4. Password
-        $password = $io->askHidden('<comment>[4/6]</comment> Please enter a password', function ($answer) {
-            $this->validator->validatePassword($answer);
-            return $answer;
-        });
+        if (null === $input->getOption('password')) {
+            $password = $io->askHidden('<comment>[4/6]</comment> Please enter a password', function ($answer) {
+                $this->validator->validatePassword($answer);
+                return $answer;
+            });
+        } else {
+            $password = $input->getOption('password');
+        }
 
-        $confirmed = $io->askHidden('<comment>[5/6]</comment> Please confirm password', function ($answer) use ($password) {
-            if ($answer !== $password) {
-                throw new RuntimeException('Passwords do not match');
-            }
-            return $answer;
-        });
+        if (null === $input->getOption('password')) {
+            $confirmed = $io->askHidden('<comment>[5/6]</comment> Please confirm password', function ($answer) use ($password) {
+                if ($answer !== $password) {
+                    throw new RuntimeException('Passwords do not match');
+                }
+                return $answer;
+            });
+        } else {
+            $confirmed = true;
+        }
 
         // 5. Permissions
         $available = $this->userAdmin->fetchAvailablePermissionNames();
 
-        $question = new ChoiceQuestion(
-            implode("\n", [
-                '<comment>[6/6]</comment> Please select which permissions you would like to enable.',
-                'Separate multiple values wit
-                h commas (without spaces).',
-               'If you select super, all other permissions are also inherited: ',
-            ]),
-            $available,
-            '0'
-        );
-        $question->setMultiselect(true);
-        $question->setMaxAttempts(null);
-        $permissions  = $io->askQuestion($question);// validation by ChoiceQuestion
+        if (null === $input->getOption('permissions')) {
+            $question = new ChoiceQuestion(
+                implode("\n", [
+                    '<comment>[6/6]</comment> Please select which permissions you would like to enable.',
+                    'Separate multiple values wit
+                    h commas (without spaces).',
+                   'If you select super, all other permissions are also inherited: ',
+                ]),
+                $available,
+                '0'
+            );
+            $question->setMultiselect(true);
+            $question->setMaxAttempts(null);
+            $permissions  = $io->askQuestion($question);// validation by ChoiceQuestion
+        } else {
+            $permissions = explode(',', $input->getOption('permissions'));
+        }
 
         // 6. add record
         $permissions = array_unique($permissions);
