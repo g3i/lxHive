@@ -138,7 +138,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addScope($name, $description)
     {
-        $scopeDocument = $this->getStorage()->getOAuthStorage()->addScope($name, $description);
+        $scopeDocument = $this->getStorage()->getAuthScopesStorage()->addScope($name, $description);
 
         $this->single = true;
         $this->scopes = [$scopeDocument];

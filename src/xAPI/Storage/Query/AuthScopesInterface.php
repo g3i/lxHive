@@ -26,7 +26,51 @@ namespace API\Storage\Query;
 
 interface AuthScopesInterface extends QueryInterface
 {
+    /**
+     * Find record by Mongo ObjectId
+     * @param string $id
+     *
+     * @return \API\DocumentInterface|null
+     */
     public function findById($id);
 
+    /**
+     * Find record by scope name
+     * @param string $name scope name
+     *
+     * @return \API\DocumentInterface|null
+     */
+    public function findByName($name);
+
+    /**
+     * Find all records
+     * @return \API\DocumentInterface
+     */
     public function fetchAll();
+
+    /**
+     * Find records by scope names
+     * @array $names array of scope names
+     * @array $options map of \MongoDB\Driver\Query options
+     *
+     * @return \API\DocumentInterface
+     */
+    public function findByNames($names, $options);
+
+    /**
+     * Get distinct record of scope names
+     *
+     * @return \API\DocumentInterface
+     */
+    public function getNames();
+
+
+    /**
+     * Adds a new record
+     * @param string $name
+     * @param string $description
+     *
+     * @return \API\DocumentInterface
+     */
+    public function addScope($name, $description);
 }

@@ -164,25 +164,6 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     /**
      * {@inheritDoc}
      */
-    public function addScope($name, $description)
-    {
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the Client to be saved
-        $scopeDocument = new \API\Document\Generic();
-
-        $scopeDocument->setName($name);
-
-        $scopeDocument->setDescription($description);
-
-        $storage->insertOne(AuthScopes::COLLECTION_NAME, $scopeDocument);
-
-        return $scopeDocument;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getTokenWithOneTimeCode($params)
     {
         $storage = $this->getContainer()['storage'];
