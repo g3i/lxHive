@@ -15,6 +15,14 @@ cache/*
 sami.phar
 docs/*
 
+# phpBench
+phpbench.json
+benchmarks/*
+
+!benchmarks/Example
+!benchmarks/*.md
+!benchmarks/autoload.php
+
 # development
 htrouter.phar
 sftp-config.json
