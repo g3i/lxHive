@@ -76,6 +76,9 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -116,61 +119,17 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function post($parameters, $profileObject)
     {
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the body to be saved
-        $activityProfileDocument = new \API\Document\Generic();
-
-        // Check for existing state - then merge if applicable
-        $expression = $storage->createExpression();
-        $expression->where('profileId', $parameters['profileId']);
-        $expression->where('activityId', $parameters['activityId']);
-
-        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
-        $result = new \API\Document\Generic($result);
-
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
-        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
-
-        $contentType = $parameters['headers']['Content-Type'];
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        // ID exists, try to merge body if applicable
-        if ($result) {
-            $this->validateDocumentType($result, $contentType);
-
-            $decodedExisting = json_decode($result->getContent(), true);
-            $this->validateJsonDecodeErrors();
-
-            $decodedPosted = json_decode($profileObject, true);
-            $this->validateJsonDecodeErrors();
-
-            $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
-            $activityProfileDocument = $result;
-        }
-
-        $activityProfileDocument->setContent($profileObject);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($parameters['activityId']);
-        $activityProfileDocument->setProfileId($parameters['profileId']);
-        $activityProfileDocument->setContentType($contentType);
-        $activityProfileDocument->setHash(sha1($profileObject));
-
-        $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
-
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
-        return $activityProfileDocument;
+        return $this->put($parameters, $profileObject);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function put($parameters, $profileObject)
     {
         $storage = $this->getContainer()['storage'];
@@ -228,6 +187,9 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         return $activityProfileDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete($parameters)
     {
         $storage = $this->getContainer()['storage'];
