@@ -13,9 +13,9 @@ dependencies:
 test:
     pre:
         - yes '' | ./X setup
-        - ./X user:create --name=test --description=test --email=test@test.com --password=test --permissions=super
+        - ./X user:create --name=test --description=test --email=test@test.com --password=Test123! --permissions=super
         - ./X auth:basic:create --name=test --description=test --expiration=1914156000 --email=test@test.com --scopes=super --key=test --secret=test
         - php -S localhost:8080 -t ./public/:
             background: true
     override:
-        - newman -c ./xAPITests/tests/1.0.3/xAPI.json -e ./xAPITests/environments/local.json -x
+        - newman -c ./xAPITests/tests/1.0.3/xAPI.json -e ./xAPITests/environments/local-enhanced.json -x
