@@ -132,9 +132,8 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function put($parameters, $profileObject)
     {
-
         // TODO optimise (upsert),
-        // TODO remove header dependency form this layer: put($datas, $stateId, $profileId, array $options (if match))
+        // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
 
         $storage = $this->getContainer()['storage'];
 
