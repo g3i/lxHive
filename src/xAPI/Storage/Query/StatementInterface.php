@@ -28,7 +28,6 @@ interface StatementInterface extends QueryInterface
 {
     /**
      * Get statements using filters.
-     *
      * @param array|ArrayAccess $parameters xAPI parameters that determine the statements to be returned
      *
      * @return StatementResult The StatementResult object pertaining to this query
@@ -37,19 +36,11 @@ interface StatementInterface extends QueryInterface
 
     /**
      * Get statement by ID.
-     *
      * @param string $statementId The Statement id
      *
      * @return StatementResult The StatementResult object pertaining to this query
      */
     public function getById($statementId);
-
-    /**
-     * @param  $statementId
-     *
-     * @return bool
-     */
-    public function statementWithIdExists($statementId);
 
     public function insert($statementObject);
 

@@ -403,11 +403,6 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $requestedStatement;
     }
 
-    public function statementWithIdExists($statementId)
-    {
-        return false;
-    }
-
     public function insert($statementObject)
     {
         $storage = $this->getContainer()['storage'];
