@@ -26,5 +26,11 @@ namespace API\Storage\Query;
 
 interface ActivityInterface extends QueryInterface
 {
+    /**
+     * Find record by Mongo ObjectId
+     * @param string $id
+     *
+     * @return \API\DocumentInterface|null
+     */
     public function fetchById($id);
 }

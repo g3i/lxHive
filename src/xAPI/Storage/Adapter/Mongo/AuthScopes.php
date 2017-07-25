@@ -77,18 +77,23 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
+
         $expression = $storage->createExpression();
-
         $expression->where('_id', $id);
-
         $result = $storage->findOne($id);
 
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function fetchAll()
     {
         $storage = $this->getContainer()['storage'];
@@ -100,6 +105,26 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function findByName($name)
+    {
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+        $expression->where('name', $name);
+        $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
+
+        if (null === $scope) {
+            throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
+        }
+
+        return $scopeDocument;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function findByNames($names, $options = [])
     {
         $storage = $this->getContainer()['storage'];
@@ -113,6 +138,9 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getNames()
     {
         $storage = $this->getContainer()['storage'];
@@ -122,6 +150,21 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
         $documentResult->setCursor($cursor);
 
         return $documentResult;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addScope($name, $description)
+    {
+        $storage = $this->getContainer()['storage'];
+
+        $scopeDocument = new \API\Document\Generic();
+        $scopeDocument->setName($name);
+        $scopeDocument->setDescription($description);
+        $storage->insertOne(self::COLLECTION_NAME, $scopeDocument);
+
+        return $scopeDocument;
     }
 
 }

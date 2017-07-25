@@ -26,11 +26,40 @@ namespace API\Storage\Query;
 
 interface ActivityProfileInterface extends QueryInterface
 {
+    /**
+     * Find single record by Mongo ObjectId
+     *
+     * @param array $parameters map of query params
+     *
+     * @return \API\DocumentInterface
+     */
     public function getFiltered($parameters);
 
+    /**
+     * Upsert a single record
+     *
+     * @param array $parameters map of query params
+     * @param stdClass $profileObject
+     *
+     * @return \API\DocumentInterface
+     */
     public function post($parameters, $profileObject);
 
+    /**
+     * Upsert a single record
+     *
+     * @param array $parameters map of query params
+     * @param stdClass $profileObject
+     *
+     * @return \API\DocumentInterface
+     */
     public function put($parameters, $profileObject);
 
+    /**
+     * Delete a single record
+     *
+     * @param array $parameters map of query params
+     * @return \API\Storage\Query\API\DeletionResult
+     */
     public function delete($parameters);
 }

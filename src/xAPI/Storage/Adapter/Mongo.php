@@ -303,72 +303,108 @@ class Mongo implements AdapterInterface
     }
 
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
+    /**
+     * {@inheritDoc}
+     */
     public function getStatementStorage()
     {
         $storage = new Mongo\Statement($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getAttachmentStorage()
     {
         $storage = new Mongo\Attachment($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getUserStorage()
     {
         $storage = new Mongo\User($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getAuthScopesStorage()
     {
         $storage = new Mongo\AuthScopes($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getLogStorage()
     {
         $storage = new Mongo\Log($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getActivityStorage()
     {
         $storage = new Mongo\Activity($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getActivityStateStorage()
     {
         $storage = new Mongo\ActivityState($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getActivityProfileStorage()
     {
         $storage = new Mongo\ActivityProfile($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getAgentProfileStorage()
     {
         $storage = new Mongo\AgentProfile($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getBasicAuthStorage()
     {
         $storage = new Mongo\BasicAuth($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getOAuthStorage()
     {
         $storage = new Mongo\OAuth($this->getContainer());
         return $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getOAuthClientsStorage()
     {
         $storage = new Mongo\OAuthClients($this->getContainer());
@@ -376,21 +412,7 @@ class Mongo implements AdapterInterface
     }
 
     /**
-     * Gets the value of client.
-     *
-     * @return mixed
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
-     * Test mongo connection and return buildinfo
-     * @see https://docs.mongodb.com/manual/reference/command/buildInfo/
-     *
-     * @param array|object $args command document
-     * @return array|false buildinfo hashmap or false if connection failed
+     * {@inheritDoc}
      */
     public static function testConnection($uri)
     {
@@ -406,4 +428,15 @@ class Mongo implements AdapterInterface
 
         return $result;
     }
+
+    /**
+     * Gets the value of client.
+     *
+     * @return mixed
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
 }

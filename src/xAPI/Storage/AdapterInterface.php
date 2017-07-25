@@ -87,9 +87,11 @@ interface AdapterInterface
     public function findOne($query, $collection, $options = []);
 
     /**
-     * Test Mongo Database connection
-     * @param string $uri Mongo database connection
-     * @return DocumentResult database info
+     * Test mongo connection and return buildinfo
+     * @see https://docs.mongodb.com/manual/reference/command/buildInfo/
+     *
+     * @param array|object $args command document
+     * @return object|false buildinfo or false if connection failed
      */
     public static function testConnection($uri);
 

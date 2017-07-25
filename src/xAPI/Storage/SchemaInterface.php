@@ -32,13 +32,15 @@ interface SchemaInterface
 {
     /**
      * Install hook for collection
+     *
      * @return void
-     * @throws \Exception
+     * @throws \API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function install();
 
     /**
-     * Gets indexes configuration array
+     * Gets model indexes configuration array
      *
      * @return array
      */

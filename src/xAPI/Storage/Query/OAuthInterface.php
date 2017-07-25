@@ -63,5 +63,11 @@ interface OAuthInterface extends QueryInterface
      */
     public function expireToken($accessToken);
 
+    /**
+     * Fetch a token with a time code (?)
+     * @param array map of query params
+     *
+     * @return \MongoDB\Driver\Cursor|null
+     */
     public function getTokenWithOneTimeCode($params);
 }

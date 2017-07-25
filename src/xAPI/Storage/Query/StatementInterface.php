@@ -28,23 +28,60 @@ interface StatementInterface extends QueryInterface
 {
     /**
      * Get statements using filters.
-     * @param array|ArrayAccess $parameters xAPI parameters that determine the statements to be returned
+     * @param array map of query params
      *
-     * @return StatementResult The StatementResult object pertaining to this query
+     * @return StatementResult
      */
     public function get($parameters);
 
     /**
-     * Get statement by ID.
-     * @param string $statementId The Statement id
+     * Find single statement by statementId (not ObjectId!)
+     * @param string $statementId
      *
-     * @return StatementResult The StatementResult object pertaining to this query
+     * @return StatementResult|null
      */
     public function getById($statementId);
 
-    public function insert($statementObject);
-
+    /**
+     * Insert single document with params[statementId]
+     * @param array $parameters map of quer yparams
+     *
+     * @return StatementResult
+     * @thows API\Storage\AdapterException
+     */
     public function put($parameters, $statementObject);
 
+    /**
+     * Insert single document
+     * @param object $statementObject
+     *
+     * @return StatementResult
+     * @thows API\Storage\AdapterException
+     */
+    public function insert($statementObject);
+
+    /**
+     * Insert single document
+     * @param object $statementObject
+     *
+     * @return StatementResult|null
+     */
+    public function insertOne($statementObject);
+
+    /**
+     * Insert collection of documents
+     * @param array $statementObjects
+     *
+     * @return StatementResult
+     * @thows API\Storage\AdapterException
+     */
+    public function insertMultiple($statementObjects);
+
+
+    /**
+     * Ensures that deletion of statements is impossible by throwing always an exception
+     *
+     * @throws API\Storage\AdapterException
+     */
     public function delete($parameters);
 }

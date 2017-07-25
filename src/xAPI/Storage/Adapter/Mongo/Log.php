@@ -71,6 +71,9 @@ class Log extends Provider implements LogInterface, SchemaInterface
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function logRequest($ip, $method, $endpoint, $timestamp)
     {
         $storage = $this->getContainer()['storage'];

@@ -26,7 +26,23 @@ namespace API\Storage\Query;
 
 interface AttachmentInterface extends QueryInterface
 {
-    public function store($hash, $contentType, $timestamp = null);
+    /**
+     * Store a record
+     *
+     * @param string $sha2 hash
+     * @param string $contentType
+     * @param int $timestamp
+     *
+     * @return \API\DocumentInterface
+     */
+    public function store($sha2, $contentType, $timestamp = null);
 
+    /**
+     * Fetch a record by sha2 hash
+     *
+     * @param string $sha2 hash
+     *
+     * @return \API\DocumentInterface
+     */
     public function fetchMetadataBySha2($sha2);
 }

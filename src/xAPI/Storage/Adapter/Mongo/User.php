@@ -83,22 +83,6 @@ class User extends Provider implements UserInterface, SchemaInterface
     /**
      * {@inheritDoc}
      */
-    public function findByEmailAndPassword($username, $password)
-    {
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-
-        $expression->where('email', $params->get('email'));
-        $expression->where('passwordHash', sha1($params->get('password')));
-
-        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
-
-        return $document;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -179,5 +163,21 @@ class User extends Provider implements UserInterface, SchemaInterface
         ]);
 
         return ($count > 0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByEmailAndPassword($username, $password)
+    {
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+
+        $expression->where('email', $params->get('email'));
+        $expression->where('passwordHash', sha1($params->get('password')));
+
+        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
+
+        return $document;
     }
 }

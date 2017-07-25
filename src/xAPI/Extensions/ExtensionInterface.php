@@ -41,10 +41,11 @@ interface ExtensionInterface
     public function getRoutes();
 
     /**
-     * Initial setup function
-     * This method can be called an indefinite amount of times
-     * It should check if installed already and only execute if not
+     * Install extension, apply models and configurations
+     *
      * @return void
+     * @throws \API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
     */
     public function install();
 

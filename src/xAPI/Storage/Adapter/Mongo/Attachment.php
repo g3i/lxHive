@@ -78,12 +78,15 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
         return $this->indexes;
     }
 
-    public function store($hash, $contentType, $timestamp = null)
+    /**
+     * {@inheritDoc}
+     */
+    public function store($sha2, $contentType, $timestamp = null)
     {
         $storage = $this->getContainer()['storage'];
 
         $attachmentDocument = new \API\Document\Generic();
-        $attachmentDocument->setSha2($hash);
+        $attachmentDocument->setSha2($sha2);
         $attachmentDocument->setContentType($contentType);
         if (null === $timestamp) {
             $timestamp = new \DateTime();
@@ -95,14 +98,15 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
         return $attachmentDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function fetchMetadataBySha2($sha2)
     {
         $storage = $this->getContainer()['storage'];
 
         $expression = $storage->createExpression();
-
         $expression->where('sha2', $sha2);
-
         $document = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $document;

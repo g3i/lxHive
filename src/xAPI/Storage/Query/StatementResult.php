@@ -36,7 +36,6 @@ class StatementResult extends DocumentResult
 
     /**
      * Gets the value of requestedFormat.
-     *
      * @return mixed
      */
     public function getRequestedFormat()
@@ -46,7 +45,6 @@ class StatementResult extends DocumentResult
 
     /**
      * Sets the value of requestedFormat.
-     *
      * @param mixed $requestedFormat the requested format
      *
      * @return self
@@ -70,7 +68,6 @@ class StatementResult extends DocumentResult
 
     /**
      * Sets the value of sortDescending.
-     *
      * @param mixed $sortDescending the sort descending
      *
      * @return self
@@ -94,7 +91,6 @@ class StatementResult extends DocumentResult
 
     /**
      * Sets the value of sortAscending.
-     *
      * @param mixed $sortAscending the sort ascending
      *
      * @return self
@@ -118,7 +114,6 @@ class StatementResult extends DocumentResult
 
     /**
      * Sets the value of singleStatementRequest.
-     *
      * @param mixed $singleStatementRequest the single statement request
      *
      * @return self
