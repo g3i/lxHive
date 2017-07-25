@@ -9,6 +9,16 @@ use API\Bootstrap;
 class BootstrapBench
 {
     /**
+    * @Revs(1)
+    * @Iterations(50)
+    */
+    public function benchFactoryNone()
+    {
+        Bootstrap::factory(Bootstrap::None);
+    }
+
+    /**
+    * @Revs(1)
     * @Iterations(50)
     */
     public function benchFactoryConfig()
@@ -17,6 +27,7 @@ class BootstrapBench
     }
 
     /**
+    * @Revs(1)
     * @Iterations(50)
     */
     public function benchFactoryWeb()

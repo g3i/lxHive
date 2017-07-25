@@ -7,7 +7,6 @@ A `phpbench.json.dist` file is setup in the project root folder of your lxHive a
 
 You can safely create a custom configuration file (`phpbench.json`) in the root folder. This file is excluded  via .gitignore
 
-
 ## Structure
 
 | namespace             | folder                     | notes |
