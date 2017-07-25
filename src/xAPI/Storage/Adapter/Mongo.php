@@ -110,7 +110,7 @@ class Mongo implements AdapterInterface
     }
 
     /**
-     * Updates documents matching the filter.
+     * Upserts documents matching the filter.
      *
      * @param string $collection Name of collection
      * @param array $filter The filter that determines which documents to update
@@ -305,79 +305,74 @@ class Mongo implements AdapterInterface
     // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
     public function getStatementStorage()
     {
-        $statementStorage = new Mongo\Statement($this->getContainer());
-
-        return $statementStorage;
+        $storage = new Mongo\Statement($this->getContainer());
+        return $storage;
     }
 
     public function getAttachmentStorage()
     {
-        $attachmentStorage = new Mongo\Attachment($this->getContainer());
-
-        return $attachmentStorage;
+        $storage = new Mongo\Attachment($this->getContainer());
+        return $storage;
     }
 
     public function getUserStorage()
     {
-        $userStorage = new Mongo\User($this->getContainer());
-
-        return $userStorage;
+        $storage = new Mongo\User($this->getContainer());
+        return $storage;
     }
 
     public function getAuthScopesStorage()
     {
         $storage = new Mongo\AuthScopes($this->getContainer());
-
         return $storage;
     }
 
     public function getLogStorage()
     {
-        $logStorage = new Mongo\Log($this->getContainer());
-
-        return $logStorage;
+        $storage = new Mongo\Log($this->getContainer());
+        return $storage;
     }
 
     public function getActivityStorage()
     {
-        $activityStorage = new Mongo\Activity($this->getContainer());
-
-        return $activityStorage;
+        $storage = new Mongo\Activity($this->getContainer());
+        return $storage;
     }
 
     public function getActivityStateStorage()
     {
-        $activityStateStorage = new Mongo\ActivityState($this->getContainer());
-
-        return $activityStateStorage;
+        $storage = new Mongo\ActivityState($this->getContainer());
+        return $storage;
     }
 
     public function getActivityProfileStorage()
     {
-        $activityProfileStorage = new Mongo\ActivityProfile($this->getContainer());
-
-        return $activityProfileStorage;
+        $storage = new Mongo\ActivityProfile($this->getContainer());
+        return $storage;
     }
 
     public function getAgentProfileStorage()
     {
-        $agentProfileStorage = new Mongo\AgentProfile($this->getContainer());
-
-        return $agentProfileStorage;
+        $storage = new Mongo\AgentProfile($this->getContainer());
+        return $storage;
     }
 
     public function getBasicAuthStorage()
     {
-        $agentProfileStorage = new Mongo\BasicAuth($this->getContainer());
-
-        return $agentProfileStorage;
+        $storage = new Mongo\BasicAuth($this->getContainer());
+        return $storage;
     }
 
     public function getOAuthStorage()
     {
-        $agentProfileStorage = new Mongo\OAuth($this->getContainer());
+        $storage = new Mongo\OAuth($this->getContainer());
+        return $storage;
+    }
 
-        return $agentProfileStorage;
+    public function getOAuthClientsStorage()
+    {
+        $storage = new Mongo\OAuthClients($this->getContainer());
+        return $storage;
     }
 
     /**

@@ -93,28 +93,87 @@ interface AdapterInterface
      */
     public static function testConnection($uri);
 
+    /**
+     * Get Statement storage
+     *
+     * @return API\Storage\Query\StatementInterface
+     */
     public function getStatementStorage();
 
+    /**
+     * Get Attachment storage
+     *
+     * @return API\Storage\Query\AttachmentInterface
+     */
     public function getAttachmentStorage();
 
+    /**
+     * Get User storage
+     *
+     * @return API\Storage\Query\UserInterface
+     */
     public function getUserStorage();
 
+    /**
+     * Get Log storage
+     *
+     * @return API\Storage\Query\LogInterface
+     */
     public function getLogStorage();
 
     /**
-     * Get activity Storage
+     * Get Activity storage
      *
      * @return API\Storage\Query\ActivityInterface
      */
     public function getActivityStorage();
 
+    /**
+     * Get ActivityState storage
+     *
+     * @return API\Storage\Query\ActivityStateInterface
+     */
     public function getActivityStateStorage();
 
+    /**
+     * Get ActivityProfile storage
+     *
+     * @return API\Storage\Query\ActivityProfile
+     */
     public function getActivityProfileStorage();
 
+    /**
+     * Get AgentProfile storage
+     *
+     * @return API\Storage\Query\AgentProfileInterface
+     */
     public function getAgentProfileStorage();
 
+    /**
+     * Get BasicAuth storage
+     *
+     * @return API\Storage\Query\BasicAuthInterface
+     */
     public function getBasicAuthStorage();
 
+    /**
+     * Get OAuth storage
+     *
+     * @return API\Storage\Query\OAuthInterface
+     */
     public function getOAuthStorage();
+
+    /**
+     * Get OAuthClients storage
+     *
+     * @return API\Storage\Query\OAuthClientsInterface
+     */
+    public function getOAuthClientsStorage();
+
+    /**
+     * Get AuthScopes storage
+     *
+     * @return API\Storage\Query\AuthScopesInterface
+     */
+    public function getAuthScopesStorage();
 }

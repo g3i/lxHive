@@ -121,7 +121,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addClient($name, $description, $redirectUri)
     {
-        $clientDocument = $this->getStorage()->getOAuthStorage()->addClient($name, $description, $redirectUri);
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->addClient($name, $description, $redirectUri);
 
         $this->single = true;
         $this->client = [$clientDocument];
@@ -131,7 +131,7 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $documentResult = $this->getStorage()->getOAuthStorage()->getClients();
+        $documentResult = $this->getStorage()->getOAuthClientsStorage()->getClients();
 
         return $documentResult;
     }
@@ -174,7 +174,7 @@ class OAuth extends Service implements AuthInterface
         $this->validateResponseType($params['responseType']);
 
         // get client by id
-        $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
 
         $this->validateClientDocument($clientDocument);
 
@@ -216,7 +216,7 @@ class OAuth extends Service implements AuthInterface
         if ($postParams->get('action') === 'accept') {
             $expiresAt = time() + 3600;
             // get client by id
-            $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
+            $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
 
             // getuserbyid --  $_SESSION['userId']
             $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
