@@ -31,13 +31,10 @@ class Authorize extends View
 {
     public function renderGet()
     {
-        $view = $this->getContainer()->view;
-        $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
+        $view = $this->getContainer()['view'];
         $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['settings', 'name']), 'branding' => Config::get(['settings', 'xAPI', 'oauth', 'branding'])]);
-        $output = $view->render('authorize.twig', $this->getItems());
-
-        // Set Content-Type to html
-        $this->getContainer()->response->headers->set('Content-Type', 'text/html');
+        $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
+        $output = $view->render($response, 'authorize.twig', $this->getItems());
 
         return $output;
     }

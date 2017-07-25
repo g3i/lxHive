@@ -62,18 +62,18 @@ class Login extends Controller
             $this->userService->loginGet();
 
             // Authorization is always requested
-            $view = new LoginView(['service' => $this->userService]);
+            $view = new LoginView($this->getResponse(), $this->getContainer());
 
             $view = $view->renderGet();
 
-            Controller::response(Controller::STATUS_OK, $view);
+            return $this->response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to authorization
             $redirectUrl = $this->getContainer()->getUrl();
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
-            $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Controller::response(Controller::STATUS_FOUND);
+            $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
+            return $this->response(Controller::STATUS_FOUND);
         }
     }
 
@@ -85,16 +85,17 @@ class Login extends Controller
 
         // Authorization is always requested
         try {
+            // This sets the session for the user, otherwise throws an exception!
             $this->userService->loginPost();
-            $redirectUrl = $this->getContainer()->getUrl();
+            $redirectUrl = $this->getContainer()['url'];
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
-            $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Controller::response(Controller::STATUS_FOUND);
+            $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
+            return $this->response(Controller::STATUS_FOUND);
         } catch (\Exception $e) {
-            $view = new LoginView(['service' => $this->userService]);
+            $view = new LoginView($this->getResponse(), $this->getContainer());
             $view = $view->renderGet();
-            Controller::response(Controller::STATUS_UNAUTHORIZED, $view);
+            return $this->response(Controller::STATUS_UNAUTHORIZED, $view);
         }
     }
 

@@ -133,11 +133,26 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 
         $this->validateAccessTokenNotEmpty($accessTokenDocument);
 
-        $expiresAt = $accessTokenDocument['expiresAt'];
+        $this->validateExpiration($accessTokenDocument);
 
-        $this->validateExpiresAt($expiresAt);
+        $accessTokenDocumentTransformed = new \API\Document\BasicToken($accessTokenDocument);
+        // Fetch scopes for this token - this is done here intentionally for performance reasons
+        // We could call $storage->getAuthScopesStorage() as well, but it'd be slower
+        $accessTokenScopes = $storage->find(AuthScopes::COLLECTION_NAME, [
+            '_id' => ['$in' => $accessTokenDocument->scopeIds]
+        ]);
+        $accessTokenDocumentTransformed->setScopes($accessTokenScopes->toArray());
+        // Fetch user for this token - this is done here intentionally for performance reasons
+        // We could call $storage->getUserStorage() as well, but it'd be slower
+        $accessTokenUser = $storage->findOne(User::COLLECTION_NAME, ['_id' => $accessTokenDocument->userId]);
 
-        return $accessTokenDocument;
+        $accessTokenDocumentTransformed->setUser($accessTokenUser);
+
+        // Set the host - needed for generation of access token authority
+        $host = $this->getContainer()['url']->getBaseUrl();
+        $accessTokenDocumentTransformed->setHost($host);
+
+        return $accessTokenDocumentTransformed;
     }
 
     public function deleteToken($key)
@@ -191,9 +206,9 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         }
     }
 
-    private function validateExpiresAt($expiresAt)
+    private function validateExpiration($token)
     {
-        if ($expiresAt !== null) {
+        if (isset($accessTokenDocument->expiresAt) && $accessTokenDocument->expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
                 throw new \Exception('Expired token.', Controller::STATUS_FORBIDDEN);
             }

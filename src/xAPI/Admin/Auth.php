@@ -71,9 +71,9 @@ class Auth extends Admin
     public function listBasicTokens()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-        $accessTokenService->fetchTokens();
+        $tokens = $accessTokenService->fetchTokens();
         $textArray = [];
-        foreach ($accessTokenService->getCursor() as $document) {
+        foreach ($tokens as $document) {
             $textArray[] = $document;
         }
 
@@ -88,9 +88,9 @@ class Auth extends Admin
     public function listBasicTokenIds()
     {
         $accessTokenService = new BasicAuthService($this->getContainer());
-        $accessTokenService->fetchTokens();
+        $tokens = $accessTokenService->fetchTokens();
         $keys = [];
-        foreach ($accessTokenService->getCursor() as $document) {
+        foreach ($tokens as $document) {
             $keys[] = $document->key;
         }
 

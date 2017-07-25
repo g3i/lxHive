@@ -52,7 +52,6 @@ class Basic extends Service implements AuthInterface
     public function fetchToken($key, $secret)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->getToken($key, $secret);
-        $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
     }
@@ -80,7 +79,6 @@ class Basic extends Service implements AuthInterface
     public function expireToken($key)
     {
         $accessTokenDocument = $this->getStorage()->getBasicAuthStorage()->expireToken($key);
-        $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
     }
@@ -93,9 +91,8 @@ class Basic extends Service implements AuthInterface
     public function fetchTokens()
     {
         $cursor = $this->getStorage()->getBasicAuthStorage()->getTokens();
-        $this->setCursor($cursor);
 
-        return $this;
+        return $cursor;
     }
 
     // REDUNDANT!
@@ -111,9 +108,9 @@ class Basic extends Service implements AuthInterface
     public function accessTokenGet($request)
     {
         $params = new Collection($request->get());
-        $this->fetchToken($params->get('key'), $params->get('secret'));
+        $token = $this->fetchToken($params->get('key'), $params->get('secret'));
 
-        return $this;
+        return $token;
     }
 
     /**
@@ -168,7 +165,7 @@ class Basic extends Service implements AuthInterface
             $expiresAt = $expiresAt->getTimestamp();
         }
 
-        // This is ugly, remove this!
+        // TODO: This is ugly, remove this!
         $userService = new UserService($this->getContainer());
         $user = $userService->addUser($params->get('user')['name'], $params->get('user')['description'], $params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
         $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
@@ -210,7 +207,7 @@ class Basic extends Service implements AuthInterface
             throw new AuthFailureException('Authorization header invalid.');
         }
 
-        return $this;
+        return $token;
     }
 
     private function validateJsonDecodeErrors()
@@ -225,77 +222,5 @@ class Basic extends Service implements AuthInterface
         if ($requestParams['user']['email'] === null) {
             throw new Exception('Invalid request, user.email property not present!', Controller::STATUS_BAD_REQUEST);
         }
-    }
-
-    /**
-     * Gets the Access tokens.
-     *
-     * @return array
-     */
-    public function getAccessTokens()
-    {
-        return $this->accessTokens;
-    }
-
-    /**
-     * Sets the Access tokens.
-     *
-     * @param array $accessTokens the access tokens
-     *
-     * @return self
-     */
-    public function setAccessTokens(array $accessTokens)
-    {
-        $this->accessTokens = $accessTokens;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor($cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Is this a single access token fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single access token fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
     }
 }
