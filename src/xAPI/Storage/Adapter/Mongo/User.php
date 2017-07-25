@@ -29,7 +29,8 @@ use API\Storage\Query\UserInterface;
 
 use API\Storage\Provider;
 use API\Controller;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class User extends Provider implements UserInterface, SchemaInterface
 {
@@ -80,19 +81,6 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $this->indexes;
     }
 
-    public function findByEmailAndPassword($username, $password)
-    {
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-
-        $expression->where('email', $username);
-        $expression->where('passwordHash', sha1($password));
-
-        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
-
-        return $document;
-    }
-
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -106,16 +94,7 @@ class User extends Provider implements UserInterface, SchemaInterface
     }
 
     /**
-     * Add a user
-     * The only validation we do at this level is ensuring that the email is unique
-     *
-     * @param string $name
-     * @param string $description
-     * @param string $email valid email address
-     * @param string $password
-     * @param array  $permissions valid array of permission records
-     *
-     * @throws Exception
+     * {@inheritDoc}
      */
     public function addUser($name, $description, $email, $password, $permissions)
     {
@@ -123,7 +102,7 @@ class User extends Provider implements UserInterface, SchemaInterface
 
         // check if email is valid and unique
         if ($this->hasEmail($email)) {
-            throw new Exception('User email exists already.', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('User email exists already.', Controller::STATUS_BAD_REQUEST);
         }
 
         // Set up the User to be saved
@@ -152,6 +131,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $userDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function fetchAll()
     {
         $storage = $this->getContainer()['storage'];
@@ -163,18 +145,9 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $documentResult;
     }
 
-    public function fetchAvailablePermissions()
-    {
-        $storage = $this->getContainer()['storage'];
-
-        $cursor = $storage->find(AuthScopes::COLLECTION_NAME);
-
-        $documentResult = new \API\Storage\Query\DocumentResult();
-        $documentResult->setCursor($cursor);
-
-        return $documentResult;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     // TODO remove after indexing user.email as unique
     public function hasEmail($email)
     {
@@ -188,5 +161,21 @@ class User extends Provider implements UserInterface, SchemaInterface
         ]);
 
         return ($count > 0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findByEmailAndPassword($username, $password)
+    {
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+
+        $expression->where('email', $username);
+        $expression->where('passwordHash', sha1($password));
+
+        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
+
+        return $document;
     }
 }

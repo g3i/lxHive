@@ -24,7 +24,7 @@
 
 namespace API\Storage\Query;
 
-interface UserInterface extends QueryInterface
+interface OAuthClientsInterface extends QueryInterface
 {
 
     /**
@@ -33,43 +33,22 @@ interface UserInterface extends QueryInterface
      *
      * @return \API\DocumentInterface|null
      */
-    public function findById($id);
-
-    /**
-     * Add a user
-     * The only validation we do at this level is ensuring that the email is unique
-     *
-     * @param string $name
-     * @param string $description
-     * @param string $email valid email address
-     * @param string $password
-     * @param array  $permissions valid array of permission records
-     *
-     * @throws \MongoDB\Driver\Exception\Exception
-     */
-    public function addUser($name, $user, $email, $password, $permissions);
+    public function getClientById($id);
 
     /**
      * Find all records
+     *
      * @return \API\DocumentInterface
      */
-    public function fetchAll();
+    public function getClients();
 
     /**
-     * Check if collection contains a user with a specified email
-     * @param string $email
+     * Adds a record
+     * @param string $name
+     * @param string $description
+     * @param string $redirectUri
      *
-     * @return bool
+     * @return \API\DocumentInterface
      */
-    public function hasEmail($email);
-
-    /**
-     * Fetch a user record for specified email and password
-     *
-     * @param string $username
-     * @param string $password
-     *
-     * @return \API\DocumentInterface|null
-     */
-    public function findByEmailAndPassword($username, $password);
+    public function addClient($name, $description, $redirectUri);
 }

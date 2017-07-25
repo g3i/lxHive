@@ -24,6 +24,8 @@
 
 namespace API\Storage\Query;
 
+use \MongoDB\Driver\Cursor;
+
 class DocumentResult
 {
     /**
@@ -64,14 +66,14 @@ class DocumentResult
     /**
      * Whether there are more results available, taking into account the number of results being limited.
      *
-     * @var [type]
+     * @var bool
      */
     protected $hasMore;
 
     /**
      * Gets the The Cursor with the result set - must implement ArrayAccess or be an array (foreachable).
      *
-     * @return ArrayAccess|array
+     * @return Cursor
      */
     public function getCursor()
     {
@@ -81,7 +83,7 @@ class DocumentResult
     /**
      * Sets the The Cursor with the result set - must implement ArrayAccess or be an array (foreachable).
      *
-     * @param ArrayAccess|array $cursor the cursor
+     * @param Cursor $cursor
      *
      * @return self
      */

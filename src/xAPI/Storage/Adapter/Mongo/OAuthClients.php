@@ -27,10 +27,10 @@ namespace API\Storage\Adapter\Mongo;
 use API\Storage\SchemaInterface;
 use API\Storage\Query\QueryInterface;
 
+use API\Util;
 use API\Storage\Provider;
-use API\HttpException as Exception;
 
-class OAuthClients extends Provider implements QueryInterface, SchemaInterface
+class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'oAuthClients';
 
@@ -69,6 +69,59 @@ class OAuthClients extends Provider implements QueryInterface, SchemaInterface
     public function getIndexes()
     {
         return $this->indexes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getClientById($id)
+    {
+        $storage = $this->getContainer()['storage'];
+        $expression = $storage->createExpression();
+
+        $expression->where('clientId', $id);
+        $clientDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
+
+        return $clientDocument;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getClients()
+    {
+        $storage = $this->getContainer()['storage'];
+
+        $cursor = $storage->find(self::COLLECTION_NAME);
+        $documentResult = new \API\Storage\Query\DocumentResult();
+        $documentResult->setCursor($cursor);
+
+        return $documentResult;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addClient($name, $description, $redirectUri)
+    {
+        $storage = $this->getContainer()['storage'];
+
+        // Set up the Client to be saved
+        $clientDocument = new \API\Document\Generic();
+
+        $clientDocument->setName($name);
+        $clientDocument->setDescription($description);
+        $clientDocument->setRedirectUri($redirectUri);
+
+        $clientId = Util\OAuth::generateToken();
+        $clientDocument->setClientId($clientId);
+
+        $secret = Util\OAuth::generateToken();
+        $clientDocument->setSecret($secret);
+
+        $storage->insertOne(self::COLLECTION_NAME, $clientDocument);
+
+        return $clientDocument;
     }
 
 }

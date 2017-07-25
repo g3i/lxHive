@@ -26,23 +26,48 @@ namespace API\Storage\Query;
 
 interface OAuthInterface extends QueryInterface
 {
+
+    /**
+     * Find record by Mongo ObjectId
+     * @param int $expiresAt unix timestamp
+     * @param object $user user storage record
+     * @param object $client oAuth client storage record
+     * @param array[object] $scopes
+     * @param string|null $code
+     *
+     * @return \API\DocumentInterface
+     */
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null);
 
+    /**
+     * Find record by token
+     * @param string $accessToken
+     *
+     * @return \API\DocumentInterface|null
+     */
     public function getToken($accessToken);
 
+    /**
+     * Delete record by token
+     * @param string $accessToken
+     *
+     * @return \API\Storage\Query\API\DeletionResult
+     */
     public function deleteToken($accessToken);
 
+    /**
+     * Expire record by token
+     * @param string $accessToken
+     *
+     * @return \MongoDB\Driver\Cursor
+     */
     public function expireToken($accessToken);
 
-    public function addClient($name, $description, $redirectUri);
-
-    public function getClients();
-
-    public function getClientById($id);
-
-    public function addScope($name, $description);
-
-    public function getScopeByName($name);
-
+    /**
+     * Fetch a token with a time code (?)
+     * @param array map of query params
+     *
+     * @return \MongoDB\Driver\Cursor|null
+     */
     public function getTokenWithOneTimeCode($params);
 }

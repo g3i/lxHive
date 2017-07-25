@@ -29,17 +29,34 @@
 namespace API\Storage\Adapter\Mongo;
 
 use FieldType;
-use Exception;
+use API\Storage\AdapterException;
 
 class Expression implements ExpressionInterface
 {
+    /**
+     * @var array $expression
+     */
     protected $expression = [];
 
+    /**
+     * @constructor
+     * @param array $array
+     */
     public function __construct($array = [])
     {
         $this->expression = $array;
     }
 
+    ////
+    // self::$expression management
+    ////
+
+    /**
+     * Create self::$expression from array
+     * @param array $array
+     *
+     * @return void
+     */
     public function fromArray($array)
     {
         $this->expression = $array;
@@ -47,15 +64,72 @@ class Expression implements ExpressionInterface
 
     /**
      * Create new instance of expression
-     * @return \Expression
+     * @return self
      */
     public function expression()
     {
         return new self;
     }
+
+
     /**
-     * Return a expression
-     * @return \Cursor|\Expression
+     * Helper method for fetching self::$expresssion
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->expression;
+    }
+
+    /**
+     * Merge expression into self::$expression
+     * @param Expression $expression
+     *
+     * @return self
+     */
+    public function merge(Expression $expression)
+    {
+        $this->expression = array_merge_recursive($this->expression, $expression->toArray());
+        return $this;
+    }
+
+    /**
+     * Transform expression in different formats to canonical array form
+     * @param mixed $mixed
+     *
+     * @return array
+     * @throws AdapterException
+     */
+    public static function convertToArray($mixed)
+    {
+        // Get expression from callable
+        if (is_callable($mixed)) {
+            $callable = $mixed;
+            $mixed = new self();
+            call_user_func($callable, $mixed);
+        }
+
+        // Get expression array
+        if ($mixed instanceof self) {
+            $mixed = $mixed->toArray();
+        } elseif (!is_array($mixed)) {
+            throw new AdapterException('Mixed must be instance of \Expression');
+        }
+
+        return $mixed;
+    }
+
+    ////
+    // where query
+    ////
+
+    /**
+     * Performs where search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
      */
     public function where($field, $value)
     {
@@ -68,6 +142,12 @@ class Expression implements ExpressionInterface
         return $this;
     }
 
+    /**
+     * Performs whereEmpty search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereEmpty($field)
     {
         return $this->where('$or', [
@@ -78,6 +158,12 @@ class Expression implements ExpressionInterface
         ]);
     }
 
+    /**
+     * Performs whereNotEmpty search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereNotEmpty($field)
     {
         return $this->where('$nor', [
@@ -88,26 +174,61 @@ class Expression implements ExpressionInterface
         ]);
     }
 
+    /**
+     * Performs whereGreater value search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
+     */
     public function whereGreater($field, $value)
     {
         return $this->where($field, ['$gt' => $value]);
     }
 
+    /**
+     * Performs whereGreaterOrEqual value search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
+     */
     public function whereGreaterOrEqual($field, $value)
     {
         return $this->where($field, ['$gte' => $value]);
     }
 
+    /**
+     * Performs whereLess value search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
+     */
     public function whereLess($field, $value)
     {
         return $this->where($field, ['$lt' => $value]);
     }
 
+    /**
+     * Performs whereLessOrEqual value search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
+     */
     public function whereLessOrEqual($field, $value)
     {
         return $this->where($field, ['$lte' => $value]);
     }
 
+    /**
+     * Performs whereNotEqual value search.
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return self
+     */
     public function whereNotEqual($field, $value)
     {
         return $this->where($field, ['$ne' => $value]);
@@ -126,76 +247,180 @@ class Expression implements ExpressionInterface
         return $this->where($field, ['$in' => $values]);
     }
 
+    /**
+     * Performs whereNotIn values search.
+     * @param string $field
+     * @param array $values
+     *
+     * @return self
+     */
     public function whereNotIn($field, array $values)
     {
         return $this->where($field, ['$nin' => $values]);
     }
 
+    /**
+     * Performs whereExists search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereExists($field)
     {
         return $this->where($field, ['$exists' => true]);
     }
 
+    /**
+     * Performs whereNotExists search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereNotExists($field)
     {
         return $this->where($field, ['$exists' => false]);
     }
 
+    /**
+     * Performs whereHasType search.
+     * @see API\Storage\Adapter\Mongo\FieldType
+     *
+     * @param string $field
+     * @param int $type
+     *
+     * @return self
+     */
     public function whereHasType($field, $type)
     {
         return $this->where($field, ['$type' => (int) $type]);
     }
 
+    ////
+    // where query: field types
+    ////
+
+    /**
+     * Performs whereDouble search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereDouble($field)
     {
         return $this->whereHasType($field, FieldType::DOUBLE);
     }
 
+    /**
+     * Performs whereString search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereString($field)
     {
         return $this->whereHasType($field, FieldType::STRING);
     }
 
+    /**
+     * Performs whereObject search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereObject($field)
     {
         return $this->whereHasType($field, FieldType::OBJECT);
     }
 
+    /**
+     * Performs whereBoolean search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereBoolean($field)
     {
         return $this->whereHasType($field, FieldType::BOOLEAN);
     }
 
+    /**
+     * Performs whereArray search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereArray($field)
     {
         return $this->whereJsCondition('Array.isArray(this.' . $field . ')');
     }
 
+    /**
+     * Performs whereArrayOfArrays search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereArrayOfArrays($field)
     {
         return $this->whereHasType($field, FieldType::ARRAY_TYPE);
     }
 
+    /**
+     * Performs whereObjectId search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereObjectId($field)
     {
         return $this->whereHasType($field, FieldType::OBJECT_ID);
     }
 
+    /**
+     * Performs whereDate search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereDate($field)
     {
         return $this->whereHasType($field, FieldType::DATE);
     }
 
+    /**
+     * Performs whereNul search.
+     * @param string $field
+     *
+     * @return self
+     */
     public function whereNull($field)
     {
         return $this->whereHasType($field, FieldType::NULL);
     }
 
+    /**
+     * Performs whereJsCondition search. Find documents with Mongos $where
+     * @param Expression $condition
+     *
+     * @return self
+     */
     public function whereJsCondition($condition)
     {
         return $this->where('$where', $condition);
     }
 
+    ////
+    // where query: like
+    ////
+
+    /**
+     * Performs whereLike search. Find documents where the value matches a regex pattern
+     * @param string $field point-delimited field name
+     * @param string $regex
+     * @param bool $caseInsensitive
+     *
+     * @return self
+     */
     public function whereLike($field, $regex, $caseInsensitive = true)
     {
         // Regex
@@ -216,16 +441,20 @@ class Expression implements ExpressionInterface
         return $this->where($field, $expression);
     }
 
+    ////
+    // where query: value matches
+    ////
+
     /**
-     * Find documents where the value of a field is an array
+     * Performs whereAll search.Find documents where the value of a field is an array
      * that contains all the specified elements.
      * This is equivalent of logical AND.
-     *
-     * @link http://docs.mongodb.org/manual/reference/operator/query/all/
+     * @see http://docs.mongodb.org/manual/reference/operator/query/all/
      *
      * @param string $field point-delimited field name
      * @param array $values
-     * @return \Expression
+     *
+     * @return self
      */
     public function whereAll($field, array $values)
     {
@@ -233,15 +462,15 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Find documents where the value of a field is an array
+     * Performs whereNoneOf search. Find documents where the value of a field is an array
      * that contains none of the specified elements.
      * This is equivalent of logical AND.
-     *
-     * @link http://docs.mongodb.org/manual/reference/operator/query/all/
+     * @see http://docs.mongodb.org/manual/reference/operator/query/all/
      *
      * @param string $field point-delimited field name
      * @param array $values
-     * @return \Expression
+     *
+     * @return self
      */
     public function whereNoneOf($field, array $values)
     {
@@ -253,13 +482,13 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Find documents where the value of a field is an array
+     * Performs whereAny search. Find documents where the value of a field is an array
      * that contains any of the specified elements.
      * This is equivalent of logical AND.
-     *
      * @param string $field point-delimited field name
      * @param array $values
-     * @return \Expression
+     *
+     * @return self
      */
     public function whereAny($field, array $values)
     {
@@ -267,12 +496,13 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Matches documents in a collection that contain an array field with at
+     * Performs whereElemMatch search.Matches documents in a collection that contain an array field with at
      * least one element that matches all the specified query criteria.
-     *
      * @param string $field point-delimited field name
-     * @param \Expression|callable|array $expression
-     * @return \Expression
+     * @param Expression|callable|array $expression
+     *
+     * @return self
+     * @throws AdapterException
      */
     public function whereElemMatch($field, $expression)
     {
@@ -283,19 +513,19 @@ class Expression implements ExpressionInterface
         if ($expression instanceof Expression) {
             $expression = $expression->toArray();
         } elseif (!is_array($expression)) {
-            throw new Exception('Wrong expression passed');
+            throw new AdapterException('Wrong expression passed');
         }
 
         return $this->where($field, ['$elemMatch' => $expression]);
     }
 
     /**
-     * Matches documents in a collection that contain an array field with elements
+     * Performs whereElemNotMatch search. Matches documents in a collection that contain an array field with elements
      * that do not matches all the specified query criteria.
-     *
      * @param type $field
-     * @param \Expression|callable|array $expression
-     * @return \Expression
+     * @param Expression|callable|array $expression
+     *
+     * @return self
      */
     public function whereElemNotMatch($field, $expression)
     {
@@ -303,22 +533,26 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Selects documents if the array field is a specified size.
-     *
+     * Performs whereArraySize search. Selects documents if the array field is a specified size.
      * @param string $field
      * @param integer $length
-     * @return \Expression
+     *
+     * @return self
      */
     public function whereArraySize($field, $length)
     {
         return $this->where($field, ['$size' => (int) $length]);
     }
 
+    ////
+    // where query: logical
+    ////
+
     /**
-     * Selects the documents that satisfy at least one of the expressions
+     * Performs whereOr search. Selects the documents that satisfy at least one of the expressions
+     * @param array|Expression $expressions Array of Expression instances
      *
-     * @param array|\Expression $expressions Array of Expression instances or comma delimited expression list
-     * @return \Expression
+     * @return self
      */
     public function whereOr($expressions = null)
     {
@@ -332,10 +566,10 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Select the documents that satisfy all the expressions in the array
+     * Performs whereAnd search. Select the documents that satisfy all the expressions in the array
+     * @param array|Expression $expressions Array of Expression instances
      *
-     * @param array|\Expression $expressions Array of Expression instances or comma delimited expression list
-     * @return \Expression
+     * @return self
      */
     public function whereAnd($expressions = null)
     {
@@ -349,10 +583,10 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Selects the documents that fail all the query expressions in the array
+     * Performs whereNor search. Selects the documents that fail all the query expressions in the array
+     * @param array[Expression]$expressions Array of Expression instances
      *
-     * @param array|\Expression $expressions Array of Expression instances or comma delimited expression list
-     * @return \Expression
+     * @return self
      */
     public function whereNor($expressions = null)
     {
@@ -365,6 +599,12 @@ class Expression implements ExpressionInterface
         }, $expressions));
     }
 
+    /**
+     * Performs where search
+     * @param Expression $expression
+     *
+     * @return self
+     */
     public function whereNot(Expression $expression)
     {
         foreach ($expression->toArray() as $field => $value) {
@@ -383,10 +623,11 @@ class Expression implements ExpressionInterface
 
     /**
      * Select documents where the value of a field divided by a divisor has the specified remainder (i.e. perform a modulo operation to select documents)
-     *
      * @param string $field
      * @param int $divisor
      * @param int $remainder
+     *
+     * @return self
      */
     public function whereMod($field, $divisor, $remainder)
     {
@@ -430,7 +671,8 @@ class Expression implements ExpressionInterface
      *  insensitivity of the text index. Text searches against earlier versions of the text index are inherently
      *  diacritic sensitive and cannot be diacritic insensitive. As such, the $diacriticSensitive option has no
      *  effect with earlier versions of the text index.
-     * @return $this
+     *
+     * @return self
      */
     public function whereText(
         $search,
@@ -459,40 +701,4 @@ class Expression implements ExpressionInterface
         return $this;
     }
 
-    public function toArray()
-    {
-        return $this->expression;
-    }
-
-    public function merge(Expression $expression)
-    {
-        $this->expression = array_merge_recursive($this->expression, $expression->toArray());
-        return $this;
-    }
-
-    /**
-     * Transform expression in different formats to canonical array form
-     *
-     * @param mixed $mixed
-     * @return array
-     * @throws \Exception
-     */
-    public static function convertToArray($mixed)
-    {
-        // Get expression from callable
-        if (is_callable($mixed)) {
-            $callable = $mixed;
-            $mixed = new self();
-            call_user_func($callable, $mixed);
-        }
-
-        // Get expression array
-        if ($mixed instanceof self) {
-            $mixed = $mixed->toArray();
-        } elseif (!is_array($mixed)) {
-            throw new Exception('Mixed must be instance of \Expression');
-        }
-
-        return $mixed;
-    }
 }

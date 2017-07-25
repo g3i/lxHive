@@ -28,34 +28,66 @@ interface StatementInterface extends QueryInterface
 {
     /**
      * Get statements using filters.
+     * @param array map of query params
      *
-     * @param array|ArrayAccess $parameters xAPI parameters that determine the statements to be returned
-     *
-     * @return StatementResult The StatementResult object pertaining to this query
+     * @return StatementResult
      */
     public function get($parameters);
 
     /**
-     * Get statement by ID.
+     * Find single statement by statementId (not ObjectId!)
+     * @param string $statementId
      *
-     * @param string $statementId The Statement id
-     *
-     * @return StatementResult The StatementResult object pertaining to this query
+     * @return StatementResult|null
      */
     public function getById($statementId);
 
     /**
-     * @param  $statementId
+     * Insert single document with params[statementId]
+     * @param array $parameters map of quer yparams
      *
-     * @return bool
+     * @return StatementResult
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function statementWithIdExists($statementId);
-
-    public function insertOne($statementObject);
-
-    public function insertMultiple($statementObjects);
-
     public function put($parameters, $statementObject);
 
+    /**
+     * Transforms statementObject (parser) into a statementDocument (storage)
+     * @param object $statementObject
+     *
+     * @return \API\DocumentInterface statement document
+     * @throws \API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public function transformForInsert($statementObject);
+
+
+    /**
+     * Insert single document
+     * @param object $statementObject
+     *
+     * @return StatementResult|null
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public function insertOne($statementObject);
+
+    /**
+     * Insert collection of documents
+     * @param array $statementObjects
+     *
+     * @return StatementResult
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public function insertMultiple($statementObjects);
+
+
+    /**
+     * Ensures that deletion of statements is impossible by throwing always an exception
+     *
+     * @throws API\Storage\AdapterException
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
     public function delete($parameters);
 }

@@ -95,10 +95,12 @@ class Basic extends Service implements AuthInterface
         return $cursor;
     }
 
-    // REDUNDANT!
+    /**
+     * get scope document by scope name
+     */
     public function getScopeByName($name)
     {
-        $scope = $this->getStorage()->getBasicAuthStorage()->getScopeByName($name);
+        $scope = $this->getStorage()->getAuthScopesStorage()->findByName($name);
         return $scope;
     }
 
@@ -146,14 +148,18 @@ class Basic extends Service implements AuthInterface
         $scopes = $params->get('scopes');
         foreach ($scopes as $scope) {
             $scopeDocument = $this->getScopeByName($scope);
-            $scopeDocuments[] = $scopeDocument;
+            if (null !== $scopeDocument) {
+                $scopeDocuments[] = $scopeDocument;
+            }
         }
 
         $permissionDocuments = [];
         $permissions = $params->get('user')['permissions'];
         foreach ($permissions as $permission) {
             $permissionDocument = $this->getScopeByName($permission);
-            $permissionDocuments[] = $permissionDocument;
+            if (null !== $permissionDocument) {
+                $permissionDocuments[] = $permissionDocument;
+            }
         }
 
         if (is_numeric($params->get('expiresAt'))) {

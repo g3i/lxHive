@@ -30,7 +30,8 @@ use API\Storage\Query\OAuthInterface;
 use API\Controller;
 use API\Util;
 use API\Storage\Provider;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class OAuth extends Provider implements OAuthInterface, SchemaInterface
 {
@@ -80,6 +81,9 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
         $storage = $this->getContainer()['storage'];
@@ -111,6 +115,9 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         return $accessTokenDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getToken($accessToken)
     {
         $storage = $this->getContainer()['storage'];
@@ -145,6 +152,9 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         return $accessTokenDocumentTransformed;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteToken($accessToken)
     {
         $storage = $this->getContainer()['storage'];
@@ -155,6 +165,9 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $storage->delete(self::COLLECTION_NAME, $expression);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function expireToken($accessToken)
     {
         $storage = $this->getContainer()['storage'];
@@ -164,79 +177,9 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $storage->update(self::COLLECTION_NAME, $expression, ['expired' => true]);
     }
 
-    public function addClient($name, $description, $redirectUri)
-    {
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the Client to be saved
-        $clientDocument = new \API\Document\Generic();
-
-        $clientDocument->setName($name);
-
-        $clientDocument->setDescription($description);
-
-        $clientDocument->setRedirectUri($redirectUri);
-
-        $clientId = Util\OAuth::generateToken();
-        $clientDocument->setClientId($clientId);
-
-        $secret = Util\OAuth::generateToken();
-        $clientDocument->setSecret($secret);
-
-        $storage->insertOne(self::COLLECTION_NAME, $clientDocument);
-
-        return $clientDocument;
-    }
-
-    public function getClients()
-    {
-        $storage = $this->getContainer()['storage'];
-
-        $cursor = $storage->find(self::COLLECTION_NAME);
-        $documentResult = new \API\Storage\Query\DocumentResult();
-        $documentResult->setCursor($cursor);
-
-        return $documentResult;
-    }
-
-    public function getClientById($id)
-    {
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-
-        $expression->where('clientId', $id);
-        $clientDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
-
-        return $clientDocument;
-    }
-
-    public function addScope($name, $description)
-    {
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the Client to be saved
-        $scopeDocument = new \API\Document\Generic();
-
-        $scopeDocument->setName($name);
-
-        $scopeDocument->setDescription($description);
-
-        $storage->insertOne(AuthScopes::COLLECTION_NAME, $scopeDocument);
-
-        return $scopeDocument;
-    }
-
-    public function getScopeByName($name)
-    {
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-
-        $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(AuthScopes::COLLECTION_NAME, $expression);
-
-        return $scopeDocument;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function getTokenWithOneTimeCode($params)
     {
         $storage = $this->getContainer()['storage'];
@@ -269,7 +212,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     {
         if (isset($accessTokenDocument->expiresAt) && $accessTokenDocument->expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Controller::STATUS_FORBIDDEN);
+                throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -277,21 +220,21 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
+            throw new AdapterException('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 
     private function validateClientSecret($params, $clientDocument)
     {
         if ($clientDocument->getClientId() !== $params['client_id'] || $clientDocument->getSecret() !== $params['client_secret']) {
-            throw new Exception('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRedirectUri($params, $clientDocument)
     {
         if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
-            throw new Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

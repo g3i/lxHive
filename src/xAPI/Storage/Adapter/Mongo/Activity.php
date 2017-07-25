@@ -29,7 +29,8 @@ use API\Storage\Query\ActivityInterface;
 
 use API\Controller;
 use API\Storage\Provider;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class Activity extends Provider implements ActivityInterface, SchemaInterface
 {
@@ -79,7 +80,9 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
         return $this->indexes;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function fetchById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -88,14 +91,12 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
         $expression->where('id', $id);
 
         if ($storage->count(self::COLLECTION_NAME, $expression) === 0) {
-            throw new Exception('Activity does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Activity does not exist.', Controller::STATUS_NOT_FOUND);
         }
 
         $document = $storage->findOne($collection, $expression);
 
         return $document;
     }
-
-
 
 }

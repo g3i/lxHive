@@ -29,7 +29,8 @@ use API\Storage\Query\BasicAuthInterface;
 
 use API\Controller;
 use API\Storage\Provider;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {
@@ -80,6 +81,9 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
     {
         $storage = $this->getContainer()['storage'];
@@ -122,6 +126,9 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $accessTokenDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getToken($key, $secret)
     {
         $storage = $this->getContainer()['storage'];
@@ -155,6 +162,9 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $accessTokenDocumentTransformed;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteToken($key)
     {
         $storage = $this->getContainer()['storage'];
@@ -167,18 +177,23 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $deletionResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function expireToken($key)
     {
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
-
         $updateResult = $storage->update(self::COLLECTION_NAME, $expression, ['$set' => ['expired' => true]]);
 
         return $updateResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getTokens()
     {
         $storage = $this->getContainer()['storage'];
@@ -187,30 +202,11 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $cursor;
     }
 
-    public function getScopeByName($name)
-    {
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-        $expression->where('name', $name);
-        $scopeDocument = $storage->findOne(AuthScopes::COLLECTION_NAME, $expression);
-
-        $this->validateScope($scopeDocument);
-
-        return $scopeDocument;
-    }
-
-    private function validateScope($scope)
-    {
-        if (null === $scope) {
-            throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
-        }
-    }
-
-    private function validateExpiration($token)
+    private function validateExpiresAt($expiresAt)
     {
         if (isset($accessTokenDocument->expiresAt) && $accessTokenDocument->expiresAt !== null) {
             if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Controller::STATUS_FORBIDDEN);
+                throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
     }
@@ -218,7 +214,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     private function validateAccessTokenNotEmpty($accessToken)
     {
         if ($accessToken === null) {
-            throw new \Exception('Invalid credentials.', Controller::STATUS_FORBIDDEN);
+            throw new AdapterException('Invalid credentials.', Controller::STATUS_FORBIDDEN);
         }
     }
 }

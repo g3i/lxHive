@@ -121,7 +121,7 @@ class OAuth extends Service implements AuthInterface
 
     public function addClient($name, $description, $redirectUri)
     {
-        $clientDocument = $this->getStorage()->getOAuthStorage()->addClient($name, $description, $redirectUri);
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->addClient($name, $description, $redirectUri);
 
         $this->single = true;
         $this->client = [$clientDocument];
@@ -131,19 +131,28 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchClients()
     {
-        $documentResult = $this->getStorage()->getOAuthStorage()->getClients();
+        $documentResult = $this->getStorage()->getOAuthClientsStorage()->getClients();
 
         return $documentResult;
     }
 
     public function addScope($name, $description)
     {
-        $scopeDocument = $this->getStorage()->getOAuthStorage()->addScope($name, $description);
+        $scopeDocument = $this->getStorage()->getAuthScopesStorage()->addScope($name, $description);
 
         $this->single = true;
         $this->scopes = [$scopeDocument];
 
         return $scopeDocument;
+    }
+
+    /**
+     * get scope document by scope name
+     */
+    public function getScopeByName($name)
+    {
+        $scope = $this->getStorage()->getAuthScopesStorage()->findByName($name);
+        return $scope;
     }
 
     /**
@@ -165,7 +174,7 @@ class OAuth extends Service implements AuthInterface
         $this->validateResponseType($params['responseType']);
 
         // get client by id
-        $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params['client_id']);
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
 
         $this->validateClientDocument($clientDocument);
 
@@ -175,9 +184,11 @@ class OAuth extends Service implements AuthInterface
         $scopes = explode(',', $params['scope']);
         foreach ($scopes as $scope) {
             // get scope by name
-            $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-            $this->validateScopeDocument($scopeDocument);
-            $scopeDocuments[] = $scopeDocument;
+            $scopeDocument = $this->getScopeByName($scope);
+            if (null !== $scopeDocument) {
+                $this->validateScopeDocument($scopeDocument);
+                $scopeDocuments[] = $scopeDocument;
+            }
         }
 
         $this->client = $clientDocument;
@@ -206,7 +217,7 @@ class OAuth extends Service implements AuthInterface
         if ($postParams->get('action') === 'accept') {
             $expiresAt = time() + 3600;
             // get client by id
-            $clientDocument = $this->getStorage()->getOAuthStorage()->getClientById($params->get('client_id'));
+            $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
 
             // getuserbyid --  $_SESSION['userId']
             $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
@@ -214,10 +225,11 @@ class OAuth extends Service implements AuthInterface
             $scopeDocuments = [];
             $scopes = explode(',', $params->get('scope'));
             foreach ($scopes as $scope) {
-                // getscopebyname
-                $scopeDocument = $this->getStorage()->getOAuthStorage()->getScopeByName($scope);
-                $this->validateScopeDocument($scopeDocument);
-                $scopeDocuments[] = $scopeDocument;
+                $scopeDocument = $this->getScopeByName($scope);
+                if (null !== $scopeDocument) {
+                    $this->validateScopeDocument($scopeDocument);
+                    $scopeDocuments[] = $scopeDocument;
+                }
             }
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);

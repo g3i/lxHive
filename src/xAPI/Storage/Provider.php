@@ -33,7 +33,7 @@ abstract class Provider
     /**
      * Constructor.
      *
-     * @param PSR-11 Container
+     * @param \Psr\Container\ContainerInterface $container
      */
     public function __construct($container)
     {

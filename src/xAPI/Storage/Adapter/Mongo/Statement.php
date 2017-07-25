@@ -32,7 +32,8 @@ use API\Controller;
 use API\Util;
 use API\Storage\Provider;
 use API\Storage\Query\StatementResult;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException as AdapterException;
 
 use Ramsey\Uuid\Uuid;
 
@@ -86,9 +87,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     }
 
     /**
-     * @param  $parameters parameters as per xAPI spec
-     *
-     * @return StatementResult object
+     * {@inheritDoc}
      */
     public function get($parameters)
     {
@@ -393,6 +392,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $statementResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getById($statementId)
     {
         $storage = $this->getContainer()['storage'];
@@ -401,17 +403,16 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         $requestedStatement = $storage->findOne('statements', $expression);
 
         if (null === $requestedStatement) {
-            throw new \InvalidArgumentException('Requested statement does not exist!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Requested statement does not exist!', Controller::STATUS_BAD_REQUEST);
         }
 
         return $requestedStatement;
     }
 
-    public function statementWithIdExists($statementId)
-    {
-        return false;
-    }
-
+    /**
+     * {@inheritDoc}
+     * //TODO make this rather private and remove from interface
+     */
     public function transformForInsert($statementObject)
     {
         $storage = $this->getContainer()['storage'];
@@ -488,6 +489,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $statementDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function insertOne($statementObject)
     {
         $statementDocument = $this->transformForInsert($statementObject);
@@ -501,6 +505,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $statementResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function insertMultiple($statementObjects)
     {
         $statementDocuments = [];
@@ -519,13 +526,16 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $statementResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function put($parameters, $statementObject)
     {
         $parameters = new Util\Collection($parameters);
 
         // Check statementId exists
         if (!$parameters->has('statementId')) {
-            throw new Exception('The statementId parameter is missing!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('The statementId parameter is missing!', Controller::STATUS_BAD_REQUEST);
         }
 
         $this->validateStatementId($parameters['statementId']);
@@ -547,9 +557,12 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $statementResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete($parameters)
     {
-        throw \InvalidArgumentException('Statements cannot be deleted, only voided!', Controller::STATUS_INTERNAL_SERVER_ERROR);
+        throw AdapterException('Statements cannot be deleted, only voided!', Controller::STATUS_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -567,14 +580,14 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         // Same - return 200
         if ($statementOne == $statementTwo) {
             // Mismatch - return 409 Conflict
-            throw new Exception('An existing statement already exists with the same ID and is different from the one provided.', Controller::STATUS_CONFLICT);
+            throw new AdapterException('An existing statement already exists with the same ID and is different from the one provided.', Controller::STATUS_CONFLICT);
         }
     }
 
     private function validateVoidedStatementNotVoiding($referencedStatement)
     {
         if ($referencedStatement->isVoiding()) {
-            throw new Exception('Voiding statements cannot be voided.', Controller::STATUS_CONFLICT);
+            throw new AdapterException('Voiding statements cannot be voided.', Controller::STATUS_CONFLICT);
         }
     }
 
@@ -582,14 +595,14 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     {
         // Check statementId is acutally valid
         if (!Uuid::isValid($id)) {
-            throw new Exception('The provided statement ID is invalid!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('The provided statement ID is invalid!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateStatementIdMatch($statementIdOne, $statementIdTwo)
     {
         if ($statementIdOne !== $statementIdTwo) {
-            throw new Exception('Statement ID query parameter doesn\'t match the given statement property', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Statement ID query parameter doesn\'t match the given statement property', Controller::STATUS_BAD_REQUEST);
         }
     }
 
@@ -597,7 +610,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     {
         $cursor = $cursor->toArray();
         if (empty($cursor)) {
-            throw new Exception('Statement does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Statement does not exist.', Controller::STATUS_NOT_FOUND);
         }
         return $cursor;
     }

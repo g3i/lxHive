@@ -31,7 +31,8 @@ use API\Util;
 use API\Controller;
 use API\Storage\Provider;
 use API\Storage\Query\DocumentResult;
-use API\HttpException as Exception;
+
+use API\Storage\AdapterException;
 
 class ActivityState extends Provider implements ActivityStateInterface, SchemaInterface
 {
@@ -75,6 +76,9 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -138,8 +142,23 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function post($parameters, $stateObject)
     {
+        return $this->put($parameters, $stateObject);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     */
+    public function put($parameters, $stateObject)
+    {
+        // TODO optimise (upsert),
+        // TODO remove header dependency form this layer: put($data, $stateId, $profileId, $agentIfi, array $options (contentType, if match))
+
         $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
@@ -206,63 +225,12 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
 
         $storage->upsert(self::COLLECTION_NAME, $expression, $activityStateDocument);
 
-        // TODO: Abstract this away somehow!
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
-
         return $activityStateDocument;
     }
 
-    public function put($parameters, $stateObject)
-    {
-        $parameters = new Util\Collection($parameters);
-        $storage = $this->getContainer()['storage'];
-        $expression = $storage->createExpression();
-
-        $activityStateDocument = new \API\Document\Generic();
-
-        // Check for existing state - then replace if applicable
-        $expression->where('stateId', $parameters->get('stateId'));
-        $expression->where('activityId', $parameters->get('activityId'));
-
-        $agent = $parameters->get('agent');
-        $agent = json_decode($agent, true);
-
-        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-
-        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        if ($parameters->has('registration')) {
-            $expression->where('registration', $parameters->get('registration'));
-        }
-
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        $activityStateDocument->setContent($stateObject);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityStateDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityStateDocument->setActivityId($parameters->get('activityId'));
-
-        $activityStateDocument->setAgent($agent);
-        if ($parameters->has('registration')) {
-            $activityStateDocument->setRegistration($parameters->get('registration'));
-        }
-        $activityStateDocument->setStateId($parameters->get('stateId'));
-        $activityStateDocument->setContentType($contentType);
-        $activityStateDocument->setHash(sha1($stateObject));
-        $storage->upsert(self::COLLECTION_NAME, $expression, $activityStateDocument);
-
-        // TODO: Abstract this away somehow!
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
-
-        return $activityStateDocument;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function delete($parameters)
     {
         $parameters = new Util\Collection($parameters);
@@ -293,24 +261,24 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new Exception('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
-            throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
         if ($contentType !== 'application/json') {
-            throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

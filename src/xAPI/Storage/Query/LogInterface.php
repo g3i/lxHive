@@ -26,5 +26,14 @@ namespace API\Storage\Query;
 
 interface LogInterface
 {
+    /**
+     * Find record by Mongo ObjectId
+     * @param string $ip ip address
+     * @param string $method request method
+     * @param string $endpoint request endpoint
+     * @param int $timestamp Unix timestamp
+     *
+     * @return \API\DocumentInterface
+     */
     public function logRequest($ip, $method, $endpoint, $timestamp);
 }

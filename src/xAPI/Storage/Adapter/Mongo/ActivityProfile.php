@@ -32,7 +32,7 @@ use API\Util;
 use API\Storage\Query\DocumentResult;
 use API\Storage\Provider;
 
-use API\HttpException as Exception;
+use API\Storage\AdapterException;
 
 class ActivityProfile extends Provider implements ActivityProfileInterface, SchemaInterface
 {
@@ -76,6 +76,9 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         return $this->indexes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFiltered($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -116,63 +119,22 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         return $documentResult;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function post($parameters, $profileObject)
     {
-        $storage = $this->getContainer()['storage'];
-
-        // Set up the body to be saved
-        $activityProfileDocument = new \API\Document\Generic();
-
-        // Check for existing state - then merge if applicable
-        $expression = $storage->createExpression();
-        $expression->where('profileId', $parameters['profileId']);
-        $expression->where('activityId', $parameters['activityId']);
-
-        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
-        $result = new \API\Document\Generic($result);
-
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
-        $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
-
-        $contentType = $parameters['headers']['Content-Type'];
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        // ID exists, try to merge body if applicable
-        if ($result) {
-            $this->validateDocumentType($result, $contentType);
-
-            $decodedExisting = json_decode($result->getContent(), true);
-            $this->validateJsonDecodeErrors();
-
-            $decodedPosted = json_decode($profileObject, true);
-            $this->validateJsonDecodeErrors();
-
-            $profileObject = json_encode(array_merge($decodedExisting, $decodedPosted));
-            $activityProfileDocument = $result;
-        }
-
-        $activityProfileDocument->setContent($profileObject);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($parameters['activityId']);
-        $activityProfileDocument->setProfileId($parameters['profileId']);
-        $activityProfileDocument->setContentType($contentType);
-        $activityProfileDocument->setHash(sha1($profileObject));
-
-        $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
-
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
-        return $activityProfileDocument;
+        return $this->put($parameters, $profileObject);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function put($parameters, $profileObject)
     {
+        // TODO optimise (upsert),
+        // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
+
         $storage = $this->getContainer()['storage'];
 
         // Set up the body to be saved
@@ -222,12 +184,12 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $storage->update(self::COLLECTION_NAME, $expression, $activityProfileDocument, true);
 
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
         return $activityProfileDocument;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete($parameters)
     {
         $storage = $this->getContainer()['storage'];
@@ -247,8 +209,6 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
-        // Add to log
-        //$this->getContainer()->requestLog->addRelation('activityProfiles', $result)->save();
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
 
         return $deletionResult;
@@ -258,15 +218,15 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // If-Match first
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
-            throw new Exception('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
+            throw new AdapterException('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
-                throw new Exception('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
+                throw new AdapterException('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
             } elseif ($result && $this->trimHeader($ifNoneMatch) === $result->getHash()) {
-                throw new Exception('If-None-Match header matches the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
+                throw new AdapterException('If-None-Match header matches the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
             }
         }
     }
@@ -275,31 +235,31 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // Check If-Match and If-None-Match here
         if (!$ifMatch && !$ifNoneMatch && $result) {
-            throw new Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Controller::STATUS_CONFLICT);
+            throw new AdapterException('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Controller::STATUS_CONFLICT);
         }
     }
 
     private function validateDocumentType($document, $contentType)
     {
         if ($document->getContentType() !== 'application/json') {
-            throw new Exception('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
         if ($contentType !== 'application/json') {
-            throw new Exception('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new Exception('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 
     private function validateJsonDecodeErrors()
     {
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid JSON in existing document. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
