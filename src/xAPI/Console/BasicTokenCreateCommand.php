@@ -166,7 +166,7 @@ class BasicTokenCreateCommand extends Command
             $question->setMultiselect(true);
             $selectedScopeNames = $helper->ask($input, $output, $question);
         } else {
-            $selectedScopeNames = $input->getOption('scopes');
+            $selectedScopeNames = explode(',', $input->getOption('scopes'));
         }
         $selectedScopes = [];
         foreach ($selectedScopeNames as $selectedScopeName) {
