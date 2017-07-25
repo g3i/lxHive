@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2016 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,11 +141,11 @@ class AccessToken extends Document
      */
     public function hasPermission(string $permissionName)
     {
-        foreach ($this->scopes as $scope) {
-            if ($scope->getName() === $permissionName || $scope->getName() === 'super') {
+        foreach ($this->getScopes() as $scope) {
+            if ($scope->name === $permissionName || $scope->name === 'super') {
                 return true;
             }
-            if ($permissionName !== 'super' && $scope->getName() === 'all') {
+            if ($permissionName !== 'super' && $scope->name === 'all') {
                 return true;
             }
         }
@@ -164,10 +164,45 @@ class AccessToken extends Document
      */
     public function checkPermission($permissionName)
     {
-        if ($this->hasPermission($permissionName)) {
+        // If an array is provided, an OR condition is applied to the elements
+        if (is_array($permissionName)) {
+            $result = false;
+            foreach ($permissionName as $individualPermissionName) {
+                if ($this->hasPermission($permissionName)) {
+                    $result = true;
+                }
+            }
+        } else {
+            $result = $this->hasPermission($permissionName);
+        }
+
+        if ($result) {
             return true;
         } else {
-            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
+            throw new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
         }
     }
+
+    /**
+     * Returns true only if the user only has access to their own statements
+     * @return boolean The result
+     */
+    // TODO @RoboSparrow: Please also remove this once lxHive-Internal/issues/125 is finished (0.9.5 permission matrix)
+    public function onlyReadMine()
+    {
+        if (
+            $this->hasPermission('statements/read/mine') 
+            && !$this->hasPermission('statements/read') 
+            && !$this->hasPermission('all') 
+            && !$this->hasPermission('all/read')
+            && !$this->hasPermission('super'))
+        {    
+            return true;
+            
+        } else {
+            return false;
+        }
+    }
+
+    
 }

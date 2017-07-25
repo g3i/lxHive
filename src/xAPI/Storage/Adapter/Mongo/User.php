@@ -81,9 +81,6 @@ class User extends Provider implements UserInterface, SchemaInterface
         return $this->indexes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function findById($id)
     {
         $storage = $this->getContainer()['storage'];
@@ -91,7 +88,7 @@ class User extends Provider implements UserInterface, SchemaInterface
 
         $expression->where('_id', $id);
 
-        $result = $storage->findOne($id);
+        $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $result;
     }
@@ -174,8 +171,8 @@ class User extends Provider implements UserInterface, SchemaInterface
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
-        $expression->where('email', $params->get('email'));
-        $expression->where('passwordHash', sha1($params->get('password')));
+        $expression->where('email', $username);
+        $expression->where('passwordHash', sha1($password));
 
         $document = $storage->findOne(self::COLLECTION_NAME, $expression);
 

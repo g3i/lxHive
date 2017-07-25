@@ -53,14 +53,15 @@ interface StatementInterface extends QueryInterface
     public function put($parameters, $statementObject);
 
     /**
-     * Insert single document
+     * Transforms statementObject (parser) into a statementDocument (storage)
      * @param object $statementObject
      *
-     * @return StatementResult
-     * @throws API\Storage\AdapterException
+     * @return \API\DocumentInterface statement document
+     * @throws \API\Storage\AdapterException
      * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function insert($statementObject);
+    public function transformForInsert($statementObject);
+
 
     /**
      * Insert single document

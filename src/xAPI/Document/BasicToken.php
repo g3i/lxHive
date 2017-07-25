@@ -22,21 +22,21 @@
  * file that was distributed with this source code.
  */
 
-namespace API\View\V10\OAuth;
+namespace API\Document;
 
-use API\View;
-use API\Config;
-
-class Login extends View
+class BasicToken extends AccessToken
 {
-    public function renderGet()
+    public function generateAuthority()
     {
-        $view = $this->getContainer()['view'];
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['settings', 'name']), 'branding' => Config::get(['settings', 'xAPI', 'oauth', 'branding'])]);
-        $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
-        $output = $view->render($response, 'login.twig', $this->getItems());
+        $host = $this->getHost();
+        $authority = [
+            'objectType' => 'Agent',
+            'account'    => [
+                'homePage' => $host,
+                'name'     => $this->getUser()->email,
+            ],
+        ];
 
-
-        return $output;
+        return $authority;
     }
 }

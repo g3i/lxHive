@@ -96,7 +96,7 @@ class OAuth extends Service implements AuthInterface
 
     public function fetchToken($accessToken)
     {
-        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->fetchToken($accessToken);
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->getToken($accessToken);
 
         $this->setAccessTokens([$accessTokenDocument]);
 
@@ -165,7 +165,7 @@ class OAuth extends Service implements AuthInterface
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
 
-        $params = new Collection($request->get());
+        $parameters = $this->getContainer()['parser']->getData()->getParameters();
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
 
@@ -181,7 +181,7 @@ class OAuth extends Service implements AuthInterface
         $this->validateRedirectUri($params['redirect_uri'], $clientDocument);
 
         $scopeDocuments = [];
-        $scopes = explode(',', $params->get('scope'));
+        $scopes = explode(',', $params['scope']);
         foreach ($scopes as $scope) {
             // get scope by name
             $scopeDocument = $this->getScopeByName($scope);
@@ -195,6 +195,7 @@ class OAuth extends Service implements AuthInterface
         $this->scopes = $scopeDocuments;
     }
 
+    // TODO Add AuthorizeResult or something like that!
     /**
      * POST authorize data.
      *

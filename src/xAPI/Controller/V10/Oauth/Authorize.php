@@ -61,16 +61,16 @@ class Authorize extends Controller
         if ($this->userService->loggedIn()) {
             $this->oAuthService->authorizeGet();
             // Authorization is always requested
-            $view = new OAuthAuthorizeView(['service' => $this->oAuthService, 'userService' => $this->userService]);
+            $view = new OAuthAuthorizeView($this->getResponse(), $this->getContainer());
             $view = $view->renderGet();
-            Controller::response(Controller::STATUS_OK, $view);
+            return $this->response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to login
-            $redirectUrl = $this->getContainer()->getUrl();
+            $redirectUrl = $this->getContainer()['url'];
             $redirectUrl->getPath()->remove('authorize');
             $redirectUrl->getPath()->append('login');
-            $this->getContainer()->response->headers->set('Location', $redirectUrl);
-            Controller::response(Controller::STATUS_FOUND);
+            $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
+            return $this->response(Controller::STATUS_FOUND);
         }
     }
 
@@ -84,11 +84,11 @@ class Authorize extends Controller
             // Authorization is always requested
             $this->oAuthService->authorizePost();
             $redirectUri = $this->oAuthService->getRedirectUri();
-            $this->getContainer()->response->headers->set('Location', $redirectUri);
-            Controller::response(Controller::STATUS_FOUND);
+            $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
+            $this->response(Controller::STATUS_FOUND);
         } else {
             // Unauthorized
-            Controller::response(Controller::STATUS_UNAUTHORIZED);
+            $this->response(Controller::STATUS_UNAUTHORIZED);
         }
     }
 

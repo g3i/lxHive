@@ -30,10 +30,8 @@ use API\View;
 
 class AccessToken extends View
 {
-    public function render()
+    public function render($accessTokenDocument)
     {
-        $accessTokenDocument = $this->service->getAccessTokens()[0];
-
         $view = [
             'token' => $accessTokenDocument->getToken(),
             'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,

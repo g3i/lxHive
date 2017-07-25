@@ -52,7 +52,7 @@ class User extends Service
      *
      * @return \API\Document\User The user document
      */
-    public function loginGet($request)
+    public function loginGet()
     {
         // CSRF protection
         $_SESSION['csrfToken'] = OAuth::generateCsrfToken();
@@ -63,15 +63,15 @@ class User extends Service
      *
      * @return \API\Document\User The user document
      */
-    public function loginPost($request)
+    public function loginPost()
     {
         // TODO: This will be fetched from Parser class in future!
-        $params = new Collection($request->post());
+        $parameters = $this->getContainer()['parser']->getData()->getPayload();
 
-        $this->validateCsrf($params);
-        $this->validateRequiredParameters($params);
+        $this->validateCsrf($parameters);
+        $this->validateRequiredParameters($parameters);
 
-        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($params->get('email'), $params->get('password'));
+        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($parameters['email'], $parameters['password']);
 
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';
@@ -79,11 +79,8 @@ class User extends Service
             throw new \Exception($errorMessage, Controller::STATUS_UNAUTHORIZED);
         }
 
-        $this->single = true;
-        $this->cursor = [$document];
-
         // Set the session
-        $_SESSION['userId'] = $document->getId();
+        $_SESSION['userId'] = (string)$document->_id;
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
 
         return $document;
