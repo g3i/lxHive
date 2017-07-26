@@ -202,10 +202,10 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         return $cursor;
     }
 
-    private function validateExpiresAt($expiresAt)
+    private function validateExpiration($accessTokenDocument)
     {
         if (isset($accessTokenDocument->expiresAt) && $accessTokenDocument->expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
+            if ($accessTokenDocument->expiresAt <= time()) {
                 throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }

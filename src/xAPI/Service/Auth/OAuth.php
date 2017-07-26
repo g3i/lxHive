@@ -174,7 +174,7 @@ class OAuth extends Service implements AuthInterface
         $this->validateResponseType($params['responseType']);
 
         // get client by id
-        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params['client_id']);
 
         $this->validateClientDocument($clientDocument);
 
