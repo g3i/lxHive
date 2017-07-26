@@ -545,14 +545,14 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         $this->validateStatementId($parameters['statementId']);
 
         // Check statementId
-        if (isset($statementObject['id'])) {
+        if (isset($statementObject->id)) {
             // Check for match
-            $this->validateStatementIdMatch($statementObject['id'], $parameters['statementId']);
+            $this->validateStatementIdMatch($statementObject->id, $parameters['statementId']);
         } else {
             $body['id'] = $parameters->get('statementId');
         }
 
-        $statementDocument = $this->insert($statementObject);
+        $statementDocument = $this->insertOne($statementObject);
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementDocument]);
         $statementResult->setRemainingCount(1);
