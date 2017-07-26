@@ -362,4 +362,45 @@ class Statement extends Document
 
         return $statement;
     }
+
+        public function extractActivities()
+    {
+        $activities = [];
+        // Main activity
+        if ((isset($this->data->statement->object->objectType) && $this->data->statement->object->objectType === 'Activity') || !isset($this->data->statement->object->objectType)) {
+            $activity = $this->data->statement->object;
+            $activities[] = $activity;
+        }
+        /* Commented out for now due to performance reasons
+        // Context activities
+        if (isset($this->_data['statement']['context']['contextActivities'])) {
+            if (isset($this->_data['statement']['context']['contextActivities']['parent'])) {
+                foreach ($this->_data['statement']['context']['contextActivities']['parent'] as $singleActivity) {
+                    $activities[] = $singleActivity;
+                }
+            }
+            if (isset($this->_data['statement']['context']['contextActivities']['category'])) {
+                foreach ($this->_data['statement']['context']['contextActivities']['category'] as $singleActivity) {
+                    $activities[] = $singleActivity;
+                }
+            }
+            if (isset($this->_data['statement']['context']['contextActivities']['grouping'])) {
+                foreach ($this->_data['statement']['context']['contextActivities']['grouping'] as $singleActivity) {
+                    $activities[] = $singleActivity;
+                }
+            }
+            if (isset($this->_data['statement']['context']['contextActivities']['other'])) {
+                foreach ($this->_data['statement']['context']['contextActivities']['other'] as $singleActivity) {
+                    $activities[] = $singleActivity;
+                }
+            }
+        }
+        // SubStatement activity check
+        if (isset($this->_data['statement']['object']['objectType']) && $this->_data['statement']['object']['objectType'] === 'SubStatement') {
+            if ((isset($this->_data['statement']['object']['object']['objectType']) && $this->_data['statement']['object']['object']['objectType'] === 'Activity') || !isset($this->_data['statement']['object']['object']['objectType']) {
+                $activities[] = $this->_data['statement']['object']['object'];
+            }
+        }*/
+        return $activities;
+    }
 }

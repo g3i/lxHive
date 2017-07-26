@@ -188,7 +188,7 @@ class AccessToken extends Document
      * @return boolean The result
      */
     // TODO @RoboSparrow: Please also remove this once lxHive-Internal/issues/125 is finished (0.9.5 permission matrix)
-    public function onlyReadMine()
+    public function canOnlyReadMine()
     {
         if (
             $this->hasPermission('statements/read/mine') 

@@ -477,7 +477,11 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
-                $storage->insertMultiple(Activity::COLLECTION_NAME, $activities);
+                // TODO: Possibly optimize this using a bulk update (using executeBulkWrite)
+                // TODO2: Create upsertMultiple and updateMultiple methods on CRUD layer!
+                foreach ($activities as $activity) {
+                    $storage->upsert(Activity::COLLECTION_NAME, ['id' => $activity->id], $activity);
+                }
             }
         }
 
