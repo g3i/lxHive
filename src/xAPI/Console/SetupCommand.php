@@ -60,6 +60,7 @@ class SetupCommand extends SymfonyCommand
 
         'reboot'                    => 'Reboot app with new configuration',
 
+        'io_verifyDatabaseVersion'   => 'Verify Database compatibility',
         'io_installDatabaseSchema'  => 'Install lxHive database schemas',
         'io_installAuthScopes'      => 'Setup oAuth scopes',
         'io_setLocalFileStorage'    => 'Setup local file storage'
@@ -211,6 +212,19 @@ class SetupCommand extends SymfonyCommand
             ]
         ]);
         $io->listing($msg);
+    }
+
+    /**
+     * Check Database compatibility
+     * @param Symfony\Component\Console\Style\SymfonyStyle $io
+     *
+     * @return void
+     * @throws RuntimeException
+     */
+    private function io_verifyDatabaseVersion($io)
+    {
+        $msg = $this->setup->verifyDbVersion(); // throws exception on fail
+        $io->listing(['DB is compatible: ' . $msg]);
     }
 
     /**

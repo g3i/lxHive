@@ -1,0 +1,20 @@
+{
+    "name": "super",
+    "description": "super",
+    "userId": {
+        "$oid": "597ec1e3c953ef32fa02a622"
+    },
+    "scopeIds": [
+        {
+            "$oid": "597ec1a8c953ef32ec073112"
+        }
+    ],
+    "key": "76ObJGXfyfdNSUFa9rrUslfd7726w152BztHZ09Y",
+    "secret": "Hcmf4WeUS5rtXpu8Z6oJPsUWaye1N3sWuLgoGcoc",
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1501479423379"
+        }
+    }
+}
+

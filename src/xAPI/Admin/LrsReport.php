@@ -76,6 +76,11 @@ class LrsReport
         $this->count($ok);
 
         if ($ok) {
+            $ok = $this->checkMongoversion();
+        }
+        $this->count($ok);
+
+        if ($ok) {
             $ok = $this->checkDataBase();
         }
         $this->count($ok);
@@ -197,13 +202,33 @@ class LrsReport
         $setup = new Setup();
 
         $conn = Config::get(['storage', 'Mongo', 'host_uri']);
-        $version = $setup->testDbConnection($conn);
+        $buildInfo = $setup->testDbConnection($conn);
 
-        if (false === $version) {
+        if (false === $buildInfo) {
             $this->error('Mongo', 'connection', $conn.' not a valid Mongo connection');
             return false;
         } else {
-            $this->success('Mongo', 'connection', $version);
+            $this->success('Mongo', 'connection', $buildInfo->version);
+        }
+
+        return true;
+    }
+
+    /**
+     * Check Mongo Database version requirements
+     *
+     * @return bool indicator if tests were completed
+     */
+    private function checkMongoversion()
+    {
+        $setup = new Setup();
+
+        try{
+            $msg = $setup->verifyDbVersion();
+            $this->success('Mongo', 'compatibility', $msg);
+        } catch (AdminException $e) {
+            $this->error('Mongo', 'compatibility', $e->getMessage());
+            return false;
         }
 
         return true;

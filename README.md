@@ -48,7 +48,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
-* [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
+* [Mongo DB](https://www.mongodb.org/) installed (requires version >= 3.0)
 * [OpenSSL](https://www.openssl.org/)
 
 #### Notes:

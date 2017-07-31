@@ -28,10 +28,10 @@ use Symfony\Component\Yaml\Yaml;
 
 use API\Config;
 use API\Bootstrap;
-use API\Storage\AdapterException;
 use API\Storage\Adapter\Mongo as Mongo;
 use API\Service\Auth\OAuth as OAuthService;
 
+use API\Storage\AdapterException;
 use MongoDB\Driver\Exception\Exception as MongoException;
 
 /**
@@ -188,13 +188,35 @@ class Setup
         }
 
         try {
-            $connectionTestResult = Mongo::testConnection($uri);
-            return $connectionTestResult;
+            $buildInfo = Mongo::testConnection($uri);
+            return $buildInfo;
         } catch (\MongoDB\Driver\Exception\InvalidArgumentException $e) {
             return false;
         } catch (\MongoDB\Driver\Exception\ConnectionException $e) {
             return false;
         }
+    }
+
+    /**
+     * Test Mongo DB access
+     * @param  string $uri connection uri
+     *
+     * @return string version info if versions are compatible
+     * @throws AdminException if installed version is lower than required
+     */
+    public function verifyDbVersion($container = null)
+    {
+        if (!$container) {
+            $container = Bootstrap::getContainer();
+        }
+        $mongo = new Mongo($container);
+
+        try {
+            $info = $mongo->verifyDatabaseVersion();
+        } catch (AdapterException $e) {
+            throw new AdminException($e->getMessage());
+        }
+        return sprintf('Available: "%s", Required: "%s"', $info['installed'], $info['required']);
     }
 
     /**
