@@ -70,12 +70,12 @@ class About extends Controller
     {
         $info = [];
         $installed = Config::get(['extensions']);
-        foreach ($installed as $ext) {
+        foreach ($installed as $name => $ext) {
             try { // precaution in case of mis-configuration
                 if ($ext['enabled']) {
                     $class_name = $ext['class_name'];
                     $instance = new $class_name ($this->getContainer());
-                    $info[] = $instance->about();
+                    $info[$name] = $instance->about();
                 }
             } catch (\Exception $e) {
                 // nothing
