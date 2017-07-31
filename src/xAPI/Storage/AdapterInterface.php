@@ -87,6 +87,13 @@ interface AdapterInterface
     public function findOne($query, $collection, $options = []);
 
     /**
+     * get database version string
+     *
+     * @return string database version (semver)
+     */
+    public function getDatabaseversion();
+
+    /**
      * Test mongo connection and return buildinfo
      * @see https://docs.mongodb.com/manual/reference/command/buildInfo/
      *

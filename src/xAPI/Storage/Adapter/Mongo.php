@@ -45,6 +45,12 @@ class Mongo implements AdapterInterface
     private $databaseName;
 
     /**
+     * @var self::REQUIRED_DB_VERSION minimal mongo version
+     * @see https://www.mongodb.com/support-policy
+     */
+    const REQUIRED_DB_VERSION = '3.0.0';
+
+    /**
      * Set up driver and database
      * @constructor
      */
@@ -265,6 +271,50 @@ class Mongo implements AdapterInterface
         return $expression;
     }
 
+    ////
+    // Admin Tools
+    ////
+
+    /**
+     * Checks if a Mongo Command exists.
+     * This operation is costly and shoudl only be called during admin/install routines
+     * @param string $search Mongo command name
+     *
+     * @return bool
+     */
+    public function supportsCommand($search)
+    {
+        $cursor = $this->executeCommand(['listCommands' => 1]);
+        $result = $cursor->toArray()[0];
+        $cmds = $result->commands;
+
+        return isset($cmds->{$search});
+    }
+
+    /**
+     * Check if minimum requred Mongo version is installed
+     * @param  string $available Use for unit tests only
+     *
+     * @return array with storage version info if compatible
+     * @throws AdapterException if installed version is lower than required
+     */
+    public function verifyDatabaseVersion($available = null)
+    {
+        $available = ($available) ? $available : $this->getDatabaseversion();
+        $required = self::REQUIRED_DB_VERSION;
+
+        $msg = [
+            'installed' => $available,
+            'required' => $required,
+        ];
+
+        if(version_compare($available, $required) < 0) {
+            throw new AdapterException('Database version mismatch: ' . json_encode($msg) . "\n".'Please upgrade your Database!');
+        }
+
+        return $msg;
+    }
+
     /**
      * Perform a Mongo command.
      * @see http://php.net/manual/en/class.mongodb-driver-command.php
@@ -414,14 +464,26 @@ class Mongo implements AdapterInterface
     /**
      * {@inheritDoc}
      */
+    public function getDatabaseversion()
+    {
+        $result = $this->executeCommand(['buildinfo' => 1]);
+
+        // another option would tbe 'buildinfo.versionArray' property
+        // however, it is not clear how widely this is supported
+        return $result->toArray()[0]->version;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public static function testConnection($uri)
     {
         $client = new \MongoDB\Driver\Manager($uri);
-        $buildInfoCommand = new \MongoDB\Driver\Command(['buildinfo' => 1]);
-        $result = $client->executeCommand('admin', $buildInfoCommand);
+        $command = new \MongoDB\Driver\Command(['buildinfo' => 1]);
+        $result = $client->executeCommand('admin', $command);
 
         if ($result) {
-            $result = $result->toArray()[0]->version;
+            $result = $result->toArray()[0];
         } else {
             $result = false;
         }

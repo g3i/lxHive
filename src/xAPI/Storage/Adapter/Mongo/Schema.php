@@ -29,6 +29,7 @@ use MongoDB\Driver\Exception\Exception as MongoException;
 use API\BaseTrait;
 use API\Storage\AdapterException;
 use API\Storage\SchemaInterface;
+use API\Storage\Adapter\Mongo as Mongo;
 
 class Schema implements SchemaInterface
 {
@@ -75,7 +76,10 @@ class Schema implements SchemaInterface
     {
         $collections = $this->mapCollections();
         $container = $this->getContainer();
-        // Unify Exceptions for installer
+
+        // Verify DB compatibility
+        $mongo = new Mongo($container);
+        $mongo->verifyDatabaseVersion();
 
         foreach($collections as $collection => $className){
             $instance = new $className($container);
