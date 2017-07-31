@@ -31,6 +31,7 @@ use API\Controller;
 use API\Storage\Provider;
 
 use API\Storage\AdapterException;
+use API\Util;
 
 class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
 {
@@ -205,7 +206,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     private function validateExpiration($accessTokenDocument)
     {
         if (isset($accessTokenDocument->expiresAt) && $accessTokenDocument->expiresAt !== null) {
-            if ($accessTokenDocument->expiresAt <= time()) {
+            if (Util\Date::mongoDateToTimestamp($accessTokenDocument->expiresAt) <= time()) {
                 throw new AdapterException('Expired token.', Controller::STATUS_FORBIDDEN);
             }
         }
