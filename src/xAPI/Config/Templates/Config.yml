@@ -1,5 +1,6 @@
 name: lxHive
 mode: production
+version: 0.9.5
 storage:
     in_use: Mongo
     Mongo:
