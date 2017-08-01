@@ -55,7 +55,12 @@ use API\Console\Application as CliApp;
 class Bootstrap
 {
     /**
-     * @vars Bootstrap Mode
+     * @var string VERSION phpversion() parable application version  string(SemVer), synchs with Config.yml version
+     */
+    const VERSION = '0.9.5';
+
+    /**
+     * @var Bootstrap Mode
      */
     const None    = 0;
     const Web     = 1;
@@ -217,7 +222,6 @@ class Bootstrap
         Config::factory($defaults);
 
         $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
-
         $yamlParser = new YamlParser();
 
         try {
