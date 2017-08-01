@@ -213,4 +213,15 @@ class DocumentResult
 
         return $this;
     }
+
+    /**
+     * Exports the cursor values as neares PHP data type
+     *
+     * @return object|array returns by default a stdClass if no other typeMap was set for cursor
+     */
+    public function toValues()
+    {
+        return $this->cursor->toArray();
+    }
+
 }
