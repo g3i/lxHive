@@ -29,22 +29,6 @@ use API\Util\Collection;
 
 class ActivityProfile extends Service
 {
-    // Will be deprecated with ActivityProfileResult class
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    // Will be deprecated with ActivityProfileResult class
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Fetches activity profiles according to the given parameters.
      *
@@ -52,35 +36,32 @@ class ActivityProfile extends Service
      *
      * @return array An array of activityProfile objects.
      */
-    public function activityProfileGet($request)
+    public function activityProfileGet()
     {
-        $params = new Collection($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
-        $cursor = $this->getStorage()->getActivityProfileStorage()->getFiltered($params);
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->getFiltered($params);
 
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Tries to save (merge) an activityProfile.
      */
-    public function activityProfilePost($request)
+    public function activityProfilePost()
     {
-        $params = new Collection($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
-        $rawBody = $request->getBody();
+        $rawBody = $request->getRawPayload();
 
-        $params->set('headers', $request->headers());
+        $params->set('headers', $request->getHeaders());
 
-        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->post($params, $rawBody);
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->post($params, $rawBody);
 
-        $this->single = true;
-        $this->cursor = [$activityProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -88,22 +69,19 @@ class ActivityProfile extends Service
      *
      * @return
      */
-    public function activityProfilePut($request)
+    public function activityProfilePut()
     {
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        $rawBody = $request->getBody();
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
-        // Single
-        $params = new Collection($request->get());
+        // Validation has been completed already - everything is assumed to be valid
+        $rawBody = $request->getRawPayload();
 
-        $params->set('headers', $request->headers());
+        $params->set('headers', $request->getHeaders());
 
-        $agentProfileDocument = $this->getStorage()->getActivityProfileStorage()->put($params, $rawBody);
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->put($params, $rawBody);
 
-        $this->single = true;
-        $this->cursor = [$activityProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -113,72 +91,13 @@ class ActivityProfile extends Service
      *
      * @return self Nothing.
      */
-    public function activityProfileDelete($request)
+    public function activityProfileDelete()
     {
-        $params = new Collection($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
-        $params->set('headers', $request->headers());
+        $deletionResult = $this->getStorage()->getActivityProfileStorage()->delete($params);
 
-        $this->getStorage()->getActivityProfileStorage()->delete($params);
-
-        return $this;
-    }
-
-    /**
-     * Gets the Activity states.
-     *
-     * @return array
-     */
-    public function getActivityProfiles()
-    {
-        return $this->activityProfiles;
-    }
-
-    /**
-     * Sets the Activity profiles.
-     *
-     * @param array $activityProfiles the activity profiles
-     *
-     * @return self
-     */
-    public function setActivityProfiles(array $activityProfiles)
-    {
-        $this->activityProfiles = $activityProfiles;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Gets the Is this a single activity state fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single activity state fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
+        return $deletionResult;
     }
 }

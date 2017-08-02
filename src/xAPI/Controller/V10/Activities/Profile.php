@@ -58,11 +58,11 @@ class Profile extends Controller
         $documentResult = $this->activityProfileService->activityProfileGet();
 
         // Render them
-        $view = new ActivityProfileView();
+        $view = new ActivityProfileView($this->getResponse(), $this->getContainer());
 
-        if ($this->activityProfileService->getSingle()) {
+        if ($documentResult->getIsSingle()) {
             $view = $view->renderGetSingle($documentResult);
-            Controller::response(Controller::STATUS_OK, $view);
+            return $this->response(Controller::STATUS_OK, $view);
         } else {
             $view = $view->renderGet($documentResult);
             return $this->jsonResponse(Controller::STATUS_OK, $view);
