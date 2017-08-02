@@ -13,6 +13,7 @@ dependencies:
 test:
     pre:
         - yes '' | ./X setup
+        - chmod -R 0770 storage
         - ./X user:create --name=test --description=test --email=test@test.com --password=Test123! --permissions=super
         - ./X auth:basic:create --name=test --description=test --expiration=1914156000 --email=test@test.com --scopes=super --key=test --secret=test
         - php -S localhost:8080 -t ./public/:
