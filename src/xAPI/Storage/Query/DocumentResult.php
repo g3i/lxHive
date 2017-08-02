@@ -215,7 +215,8 @@ class DocumentResult
     }
 
     /**
-     * Exports the cursor values as neares PHP data type
+     * Unserialize cursor into PHP values.
+     * @see http://php.net/manual/en/mongodb-driver-cursor.toarray.php
      *
      * @return object|array returns by default a stdClass if no other typeMap was set for cursor
      */
