@@ -28,5 +28,5 @@ use API\View;
 
 class AgentProfile extends BaseDocument
 {
-	const IDENTIFIER = 'profileId';
+    const IDENTIFIER = 'profileId';
 }

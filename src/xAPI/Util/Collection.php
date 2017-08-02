@@ -204,7 +204,7 @@ class Collection implements CollectionInterface
      * Method Overloading
      *******************************************************************************/
 
-        /**
+    /**
      * Handle getters and setters
      * @param  [type] $name      [description]
      * @param  [type] $arguments [description]

@@ -191,18 +191,14 @@ class AccessToken extends Document
     public function canOnlyReadMine()
     {
         if (
-            $this->hasPermission('statements/read/mine') 
-            && !$this->hasPermission('statements/read') 
-            && !$this->hasPermission('all') 
+            $this->hasPermission('statements/read/mine')
+            && !$this->hasPermission('statements/read')
+            && !$this->hasPermission('all')
             && !$this->hasPermission('all/read')
-            && !$this->hasPermission('super'))
-        {    
+            && !$this->hasPermission('super')) {
             return true;
-            
         } else {
             return false;
         }
     }
-
-    
 }

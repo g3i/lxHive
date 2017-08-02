@@ -123,5 +123,4 @@ class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInte
 
         return $clientDocument;
     }
-
 }

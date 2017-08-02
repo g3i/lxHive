@@ -122,7 +122,7 @@ class User extends Admin
         $v->validateEmail($email);
 
         $uservice = new UserService($this->getContainer());
-        if($uservice->hasEmail($email)){
+        if ($uservice->hasEmail($email)) {
             throw new AdminException('User email exists already');
         }
     }

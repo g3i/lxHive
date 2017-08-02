@@ -223,5 +223,4 @@ class DocumentResult
     {
         return $this->cursor->toArray();
     }
-
 }

@@ -27,5 +27,4 @@ namespace API;
  */
 class AppInitException extends \Exception
 {
-
 }

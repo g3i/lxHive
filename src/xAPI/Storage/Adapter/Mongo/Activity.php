@@ -36,22 +36,22 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activities';
 
-   /**
-     * @var array $indexes
-     *
-     * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
-     *  [
-     *      name: <index_name>,
-     *      key: [
-     *          <key-value_pair>,
-     *          <key-value_pair>,
-     *          ...
-     *      ],
-     *      <option1-value_pair>,
-     *      <option1-value_pair>,
-     *      ...
-     *  ],
-     */
+    /**
+      * @var array $indexes
+      *
+      * @see https://docs.mongodb.com/manual/reference/command/createIndexes/
+      *  [
+      *      name: <index_name>,
+      *      key: [
+      *          <key-value_pair>,
+      *          <key-value_pair>,
+      *          ...
+      *      ],
+      *      <option1-value_pair>,
+      *      <option1-value_pair>,
+      *      ...
+      *  ],
+      */
     private $indexes = [
         [
             'name' => 'id.unique',
@@ -98,5 +98,4 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
 
         return $document;
     }
-
 }

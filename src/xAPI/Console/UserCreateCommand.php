@@ -183,6 +183,5 @@ class UserCreateCommand extends Command
         $io->text('or');
         $io->text('<info> --> </info> NEXT: Create an oAuth token with <comment>./X oauth:client:create</comment>');
         $io->newLine();
-
     }
 }

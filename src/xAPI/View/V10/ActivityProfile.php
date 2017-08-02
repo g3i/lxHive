@@ -28,5 +28,5 @@ use API\View;
 
 class ActivityProfile extends BaseDocument
 {
-	const IDENTIFIER = 'profileId';
+    const IDENTIFIER = 'profileId';
 }

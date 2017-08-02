@@ -28,15 +28,15 @@ use API\View;
 
 class Activity extends View
 {
-	/**
-	 * Render the activity
-	 * @param  stdClass $activityDocument Activity as an object
-	 * @return stdClass Modified activity
-	 */
+    /**
+     * Render the activity
+     * @param  stdClass $activityDocument Activity as an object
+     * @return stdClass Modified activity
+     */
     public function renderGetSingle($activityDocument)
     {
         if (isset($activityDocument->_id)) {
-        	unset($activityDocument->_id);
+            unset($activityDocument->_id);
         }
 
         return $activityDocument;

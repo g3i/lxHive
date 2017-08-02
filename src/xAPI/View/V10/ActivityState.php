@@ -28,5 +28,5 @@ use API\View;
 
 class ActivityState extends BaseDocument
 {
-	const IDENTIFIER = 'stateId';
+    const IDENTIFIER = 'stateId';
 }

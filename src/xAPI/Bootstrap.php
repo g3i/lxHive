@@ -100,7 +100,6 @@ class Bootstrap
      */
     public static function factory($mode)
     {
-
         if (self::$containerInstantiated) {
             // modes test and none (admin,etc) shall pass
             if (
@@ -503,7 +502,7 @@ class Bootstrap
 
             // Register media type parser
             $request->registerMediaTypeParser('application/json', function ($input) {
-               return json_decode($input);
+                return json_decode($input);
             });
 
             if ($request->isPost() && $request->getQueryParam('method')) {
@@ -590,7 +589,7 @@ class Bootstrap
         // SlimApp
         ////
 
-        foreach ($routes as $pattern => $route){
+        foreach ($routes as $pattern => $route) {
             // register single route with methods and controller
             $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {
                 $resource = Controller::load($container, $request, $response, $route['controller']);
@@ -607,7 +606,6 @@ class Bootstrap
                     return $resource->$method();
                 }
             });
-
         }
 
         return $app;
@@ -632,5 +630,4 @@ class Bootstrap
         // Expose container instance so Tests can inject it into services (or use it)
         return self::$containerInstance;
     }
-
 }

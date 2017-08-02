@@ -167,5 +167,4 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
 
         return $scopeDocument;
     }
-
 }
