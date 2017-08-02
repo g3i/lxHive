@@ -55,16 +55,16 @@ class State extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->activityStateService->activityStateGet();
+        $documentResult = $this->activityStateService->activityStateGet();
 
         // Render them
-        $view = new ActivityStateView(['service' => $this->activityStateService]);
+        $view = new ActivityStateView();
 
-        if ($this->activityStateService->getSingle()) {
-            $view = $view->renderGetSingle();
+        if ($this->activityStateService->getIsSingle()) {
+            $view = $view->renderGetSingle($documentResult);
             Controller::response(Controller::STATUS_OK, $view);
         } else {
-            $view = $view->renderGet();
+            $view = $view->renderGet($documentResult);
             return $this->jsonResponse(Controller::STATUS_OK, $view);
         }
     }
@@ -78,8 +78,8 @@ class State extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->activityStateService->activityStatePut();
+        // Save the state
+        $documentResult = $this->activityStateService->activityStatePut();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -94,8 +94,8 @@ class State extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->activityStateService->activityStatePost();
+        // Save the state
+        $documentResult = $this->activityStateService->activityStatePost();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -110,8 +110,8 @@ class State extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->activityStateService->activityStateDelete();
+        // Save the state
+        $documentResult = $this->activityStateService->activityStateDelete();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);

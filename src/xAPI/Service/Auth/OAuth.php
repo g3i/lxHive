@@ -88,17 +88,12 @@ class OAuth extends Service implements AuthInterface
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->storeToken($expiresAt, $user, $client, $scopes, $code);
 
-        $this->single = true;
-        $this->setAccessTokens([$accessTokenDocument]);
-
         return $accessTokenDocument;
     }
 
     public function fetchToken($accessToken)
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->getToken($accessToken);
-
-        $this->setAccessTokens([$accessTokenDocument]);
 
         return $accessTokenDocument;
     }
@@ -107,24 +102,19 @@ class OAuth extends Service implements AuthInterface
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->deleteToken($accessToken);
 
-        return $this;
+        return $accessTokenDocument;
     }
 
     public function expireToken($accessToken)
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->expireToken($accessToken);
 
-        $this->setAccessTokens([$accessTokenDocument]);
-
-        return $document;
+        return $accessTokenDocument;
     }
 
     public function addClient($name, $description, $redirectUri)
     {
         $clientDocument = $this->getStorage()->getOAuthClientsStorage()->addClient($name, $description, $redirectUri);
-
-        $this->single = true;
-        $this->client = [$clientDocument];
 
         return $clientDocument;
     }
@@ -139,9 +129,6 @@ class OAuth extends Service implements AuthInterface
     public function addScope($name, $description)
     {
         $scopeDocument = $this->getStorage()->getAuthScopesStorage()->addScope($name, $description);
-
-        $this->single = true;
-        $this->scopes = [$scopeDocument];
 
         return $scopeDocument;
     }
