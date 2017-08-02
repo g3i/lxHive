@@ -91,7 +91,8 @@ abstract class Controller
     }
 
     /**
-     * Default get method.
+     * Default (empty) GET handler
+     * @return Psr\Http\Message\ResponseInterface A reponse
      */
     public function get()
     {
@@ -99,7 +100,8 @@ abstract class Controller
     }
 
     /**
-     * Default post method.
+     * Default (empty) POST handler
+     * @return Psr\Http\Message\ResponseInterface A reponse
      */
     public function post()
     {
@@ -107,7 +109,8 @@ abstract class Controller
     }
 
     /**
-     * Default put method.
+     * Default (empty) PUT handler
+     * @return Psr\Http\Message\ResponseInterface A reponse
      */
     public function put()
     {
@@ -115,7 +118,8 @@ abstract class Controller
     }
 
     /**
-     * Default delete method.
+     * Default (empty) DELETE handler
+     * @return Psr\Http\Message\ResponseInterface A reponse
      */
     public function delete()
     {
@@ -123,7 +127,8 @@ abstract class Controller
     }
 
     /**
-     * General options method.
+     * Default (empty) OPTIONS handler
+     * @return Psr\Http\Message\ResponseInterface A reponse
      */
     public function options()
     {

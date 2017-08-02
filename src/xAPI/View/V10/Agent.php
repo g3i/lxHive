@@ -29,9 +29,9 @@ use API\Util\Collection;
 
 class Agent extends View
 {
-    public function renderGet()
+    public function renderGet($agent)
     {
-        $agent = new Collection($this->getItems()['agent']);
+        $agent = new Collection($agent);
 
         $object = ['objectType' => 'Person'];
         if ($agent->has('name')) {

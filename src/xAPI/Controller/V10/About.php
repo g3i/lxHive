@@ -31,7 +31,7 @@ use API\Config;
 class About extends Controller
 {
     /**
-     * compile and render GET /about response
+     * Compile and render GET /about response
      *
      * @return void
      */
@@ -71,14 +71,15 @@ class About extends Controller
         $info = [];
         $installed = Config::get(['extensions']);
         foreach ($installed as $name => $ext) {
-            try { // precaution in case of mis-configuration
+            // Precaution in case of mis-configuration
+            try {
                 if ($ext['enabled']) {
-                    $class_name = $ext['class_name'];
-                    $instance = new $class_name ($this->getContainer());
+                    $className = $ext['class_name'];
+                    $instance = new $className($this->getContainer());
                     $info[$name] = $instance->about();
                 }
             } catch (\Exception $e) {
-                // nothing
+                // Do nothing
             }
             return $info;
         }

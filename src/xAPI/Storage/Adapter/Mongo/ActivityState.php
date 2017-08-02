@@ -84,8 +84,6 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
-        $parameters = new Util\Collection($parameters);
-
         // Single activity state
         if (isset($parameters['stateId'])) {
             $expression->where('stateId', $parameters->get('stateId'));
@@ -159,7 +157,6 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         // TODO optimise (upsert),
         // TODO remove header dependency form this layer: put($data, $stateId, $profileId, $agentIfi, array $options (contentType, if match))
 
-        $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 

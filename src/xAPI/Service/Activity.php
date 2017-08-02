@@ -29,22 +29,6 @@ use API\Util\Collection;
 
 class Activity extends Service
 {
-    // Will be deprecated with ActivityResult class
-    /**
-     * Cursor.
-     *
-     * @var array
-     */
-    protected $cursor;
-
-    // Will be deprecated with ActivityResult class
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Fetches activity profiles according to the given parameters.
      *
@@ -52,63 +36,13 @@ class Activity extends Service
      *
      * @return array An array of activityProfile objects.
      */
-    public function activityGet($request)
+    public function activityGet()
     {
-        $params = new Collection($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
-        $activity = $this->getStorage()->getActivityStorage()->fetchById($params->get('activityId'));
+        $activityDocument = $this->getStorage()->getActivityStorage()->fetchById($params->get('activityId'));
 
-        $this->cursor = [$activity];
-        $this->single = true;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return array
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param array $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor($cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Is this a single activity fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single activity fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
+        return $activityDocument;
     }
 }

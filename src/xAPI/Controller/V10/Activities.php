@@ -49,12 +49,12 @@ class Activities extends Controller
         // Check authentication
         $this->getContainer()->auth->checkPermission('profile');
 
-        $this->activityService->activityGet();
+        $activityDocument = $this->activityService->activityGet();
 
         // Render them
-        $view = new ActivityView(['service' => $this->activityService]);
+        $view = new ActivityView();
 
-        $view = $view->renderGetSingle();
+        $view = $view->renderGetSingle($activityDocument);
         return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 

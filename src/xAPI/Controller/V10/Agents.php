@@ -30,6 +30,10 @@ use API\Util\Collection;
 
 class Agents extends Controller
 {
+    /**
+     * Handler for GET call
+     * @return Psr\Http\Message\ResponseInterface
+     */
     public function get()
     {
         // Check authentication
@@ -41,18 +45,21 @@ class Agents extends Controller
         $params = new Collection($request->getParameters());
 
         $agent = $params->get('agent');
-
         $agent = json_decode($agent, true);
 
-        $view = new AgentView($this->getResponse(), $this->getContainer(), ['agent' => $agent]);
-        $view = $view->renderGet();
+        $view = new AgentView($this->getResponse(), $this->getContainer());
+        $view = $view->renderGet($agent);
 
         return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
+    /**
+     * Handler for OPTIONS call
+     * @return Psr\Http\Message\ResponseInterface
+     */
     public function options()
     {
-        //Handle options request
+        // Handle options request
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
         return $this->response(Controller::STATUS_OK);
     }
