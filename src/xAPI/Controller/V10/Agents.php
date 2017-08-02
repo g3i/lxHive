@@ -32,20 +32,19 @@ class Agents extends Controller
 {
     public function get()
     {
-        $request = $this->getContainer()->request();
-
         // Check authentication
         $this->getContainer()->auth->checkPermission('profile');
 
         // TODO: Validation.
 
-        $params = new Collection($request->get());
+        $request = $this->getContainer()['parser']->getData();
+        $params = new Collection($request->getParameters());
 
         $agent = $params->get('agent');
 
         $agent = json_decode($agent, true);
 
-        $view = new AgentView(['agent' => $agent]);
+        $view = new AgentView($this->getResponse(), $this->getContainer(), ['agent' => $agent]);
         $view = $view->renderGet();
 
         return $this->jsonResponse(Controller::STATUS_OK, $view);

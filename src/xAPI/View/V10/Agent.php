@@ -31,7 +31,7 @@ class Agent extends View
 {
     public function renderGet()
     {
-        $agent = new Collection($this->agent);
+        $agent = new Collection($this->getItems()['agent']);
 
         $object = ['objectType' => 'Person'];
         if ($agent->has('name')) {

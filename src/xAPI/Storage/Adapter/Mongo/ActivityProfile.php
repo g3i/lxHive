@@ -134,6 +134,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // TODO optimise (upsert),
         // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
+        $profileObject = (string)$profileObject;
 
         $storage = $this->getContainer()['storage'];
 
@@ -165,6 +166,8 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         if ($result) {
             $this->validateDocumentType($result, $contentType);
 
+            // This validation is still in arrays, which is why we decode to them
+            // Since a validation engine change is upcoming, this is currently left as is
             $decodedExisting = json_decode($result->getContent(), true);
             $this->validateJsonDecodeErrors();
 

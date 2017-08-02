@@ -26,7 +26,7 @@ namespace API\View\V10;
 
 use API\View;
 
-class BaseDocument extends View
+abstract class BaseDocument extends View
 {
     public function renderGet($documentResult)
     {
@@ -35,10 +35,12 @@ class BaseDocument extends View
         $cursor = $documentResult->getCursor();
 
         foreach ($cursor as $document) {
-            $document = new \API\Document\Generic($document);
-            // TODO: Implement check in Generic document for document type and fetch identifier accordingly
+            // This has been commented out for performance reasons
+            //$document = new \API\Document\Generic($document);
+            // Obsolete - TODO: Implement check in Generic document for document type and fetch identifier accordingly
+            // TODO: Maybe move identifier out of views? Might not be semantically correct place for it...
             //$idArray[] = $document->getIdentifier();
-            $idArray[] = $document->getProfileId();
+            $idArray[] = $document->{static::IDENTIFIER};
         }
 
         return $idArray;
