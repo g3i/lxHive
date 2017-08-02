@@ -79,7 +79,7 @@ class Routes
             'module' => 'xAPI',
             'methods' => ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
             'description' =>'Agent Profile Resource',
-            'controller' => 'API\\Controller\\V10\\Profile',
+            'controller' => 'API\\Controller\\V10\\Agents\\Profile',
         ],
         '/statements' => [
             'module' => 'xAPI',

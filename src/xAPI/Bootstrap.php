@@ -603,13 +603,18 @@ class Bootstrap
             // register single route with methods and controller
             $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {
                 $resource = Controller::load($container, $request, $response, $route['controller']);
-                $method = strtolower($request->getMethod());
-                // HEAD method needs to respond exactly the same as GET method (minus the body)
-                // Body will be removed automatically by Slim
-                if ($method === 'head') {
-                    $method = 'get';
+                // We could also throw an Exception on load and catch it here...but that might have a performance penalty? It is definitely a cleaner, more proper option.
+                if ($resource instanceof \Psr\Http\Message\ResponseInterface) {
+                    return $resource;
+                } else {
+                    $method = strtolower($request->getMethod());
+                    // HEAD method needs to respond exactly the same as GET method (minus the body)
+                    // Body will be removed automatically by Slim
+                    if ($method === 'head') {
+                        $method = 'get';
+                    }
+                    return $resource->$method();
                 }
-                return $resource->$method();
             });
 
         }

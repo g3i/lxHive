@@ -78,8 +78,8 @@ class Profile extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->agentProfileService->agentProfilePut();
+        // Save the profiles
+        $documentResult = $this->agentProfileService->agentProfilePut();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -94,8 +94,8 @@ class Profile extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->agentProfileService->agentProfilePost();
+        // Save the profiles
+        $documentResult = $this->agentProfileService->agentProfilePost();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -110,8 +110,8 @@ class Profile extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validatePutRequest($request);
 
-        // Save the statements
-        $this->agentProfileService->agentProfileDelete();
+        // Delete the profiles
+        $deletionResult = $this->agentProfileService->agentProfileDelete();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);

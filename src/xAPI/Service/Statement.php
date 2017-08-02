@@ -140,7 +140,8 @@ class Statement extends Service
     // Quickest solution for validateing 1D vs 2D assoc arrays
     private function areMultipleStatements(&$array)
     {
-        return $array === array_values($array);
+        // Is this an array of objects or a single object?
+        return is_array($array);
     }
 
     private function validateJsonMediaType($jsonRequest)

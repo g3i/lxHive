@@ -55,16 +55,16 @@ class Profile extends Controller
         //$this->statementValidator->validateRequest($request);
         //$this->statementValidator->validateGetRequest($request);
 
-        $this->activityProfileService->activityProfileGet();
+        $documentResult = $this->activityProfileService->activityProfileGet();
 
         // Render them
-        $view = new ActivityProfileView(['service' => $this->activityProfileService]);
+        $view = new ActivityProfileView();
 
         if ($this->activityProfileService->getSingle()) {
-            $view = $view->renderGetSingle();
+            $view = $view->renderGetSingle($documentResult);
             Controller::response(Controller::STATUS_OK, $view);
         } else {
-            $view = $view->renderGet();
+            $view = $view->renderGet($documentResult);
             return $this->jsonResponse(Controller::STATUS_OK, $view);
         }
     }
@@ -79,7 +79,7 @@ class Profile extends Controller
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfilePut();
+        $documentResult = $this->activityProfileService->activityProfilePut();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -95,7 +95,7 @@ class Profile extends Controller
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfilePost();
+        $documentResult = $this->activityProfileService->activityProfilePost();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
@@ -111,7 +111,7 @@ class Profile extends Controller
         //$this->statementValidator->validatePutRequest($request);
 
         // Save the statements
-        $this->activityProfileService->activityProfileDelete();
+        $deletionResult = $this->activityProfileService->activityProfileDelete();
 
         //Always an empty response, unless there was an Exception
         return $this->response(Controller::STATUS_NO_CONTENT);
