@@ -85,8 +85,8 @@ class Session extends Service
         // filter out token permissions who are not part of the current configuration
         $filtered = $this->filterPermissions($permissionNames);
 
-        // merge inheritance
-        $this->permissions = $this->mergeInheritance($filtered);
+        // we do not update inheritance here
+        // $this->permissions = $this->mergeInheritance($filtered);
     }
 
     /**
@@ -192,6 +192,18 @@ class Session extends Service
             throw new HttpException('Unauthorized', 401);
         }
 
+    }
+
+    /**
+     * Public alias for self::filterPermissions
+     * @param array $permissionNames
+     *
+     * @return array registered and valid permissions
+     *
+     */
+    public function sanitizePermissions(array $permissionNames)
+    {
+        return $this->filterPermissions($permissionNames);
     }
 
     /**
