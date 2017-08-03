@@ -128,27 +128,6 @@ class User extends Service
         return $documentResult;
     }
 
-    public function fetchPermissionsByNames($names)
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->findByNames($names);
-
-        return $documentResult;
-    }
-
-    public function fetchAvailablePermissionNames()
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->getNames();
-
-        return $documentResult;
-    }
-
-    public function fetchAvailablePermissions()
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->fetchAll();
-
-        return $documentResult;
-    }
-
     public function hasEmail($email)
     {
         return $this->getStorage()->getUserStorage()->hasEmail($email);

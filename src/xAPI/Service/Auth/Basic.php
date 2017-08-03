@@ -28,10 +28,13 @@ use API\Service;
 use API\Controller;
 use Slim\Http\Request;
 use API\Service\User as UserService;
+use API\Service\Session as SessionService;
 use API\Util;
+use API\Util\Collection;
+
 use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
-use API\Util\Collection;
+
 
 class Basic extends Service implements AuthInterface
 {
@@ -144,24 +147,17 @@ class Basic extends Service implements AuthInterface
         ]);
 
         $params = new Util\Collection(array_replace_recursive($defaultParams->all(), $requestParams->all()));
+        $permissionService = new SessionService($this->getContainer());
 
-        $scopeDocuments = [];
+        // sanitize submitted token permissions
         $scopes = $params->get('scopes');
-        foreach ($scopes as $scope) {
-            $scopeDocument = $this->getScopeByName($scope);
-            if (null !== $scopeDocument) {
-                $scopeDocuments[] = $scopeDocument;
-            }
-        }
+        $scopeDocuments = $permissionService->filterPermissions($scopes);
 
-        $permissionDocuments = [];
+        // sanitize submitted user permissions
         $permissions = $params->get('user')['permissions'];
-        foreach ($permissions as $permission) {
-            $permissionDocument = $this->getScopeByName($permission);
-            if (null !== $permissionDocument) {
-                $permissionDocuments[] = $permissionDocument;
-            }
-        }
+        $permissionDocuments = $permissionService->filterPermissions($scopes);
+
+        // TODO compare user vs token permissions. token permissions can be only a sub-set or equal user permissions
 
         if (is_numeric($params->get('expiresAt'))) {
             $expiresAt = $params->get('expiresAt');
@@ -172,7 +168,7 @@ class Basic extends Service implements AuthInterface
             $expiresAt = $expiresAt->getTimestamp();
         }
 
-        // TODO: This is ugly, remove this!
+        // TODO: This is ugly, remove this! @sraka, less ugly if separated in two functions, for user, for token :)
         $userService = new UserService($this->getContainer());
         $user = $userService->addUser($params->get('user')['name'], $params->get('user')['description'], $params->get('user')['email'], $params->get('user')['password'], $permissionDocuments);
         $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
