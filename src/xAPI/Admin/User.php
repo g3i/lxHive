@@ -25,6 +25,7 @@
 namespace API\Admin;
 
 use API\Service\User as UserService;
+use API\Service\Session as SessionService;
 use API\Admin;
 
 /**
@@ -38,28 +39,18 @@ class User extends Admin
      */
     public function fetchAvailablePermissions()
     {
-        //TODO this method will be obsolete if we remove the authScopes collection
-        $userService = new UserService($this->getContainer());
-        $documentResult = $userService->fetchAvailablePermissions();
-
-        $permissionsDictionary = [];
-        foreach ($documentResult->getCursor() as $permission) {
-            $permissionsDictionary[$permission->name] = $permission;
-        }
-
-        return $permissionsDictionary;
+        $service = new SessionService($this->getContainer());
+        return $service->getAuthScopes();
     }
 
     /**
      * Fetch all permissions from Mongo
      * @return array collection of permissions with their name as key
      */
-    public function fetchAvailablePermissionNames()
+    public function mergeInheritedPermissions($names)
     {
-        //TODO this method will be obsolete if we remove the authScopes collection
-        $service = new UserService($this->getContainer());
-        $document = $service->fetchAvailablePermissionNames();
-        return current($document->getCursor()->toArray())->values;
+        $service = new SessionService($this->getContainer());
+        return $service->mergeInheritance($names);
     }
 
     /**
@@ -70,7 +61,7 @@ class User extends Admin
      * @return stdClass Mongo user record
      * @throws \API\RuntimeException
      */
-    public function addUser($name, $description, $email, $password, $selectedPermissions)
+    public function addUser($name, $description, $email, $password, $permissions)
     {
         $v = new Validator();
         $v->validateName($name);
@@ -80,15 +71,20 @@ class User extends Admin
 
         // fetch available permissions and compare
         $service = new UserService($this->getContainer());
-        $result = $service->fetchPermissionsByNames($selectedPermissions);
-        $permissions = $result->getCursor()->toArray();
-        if (count($permissions) !== count($selectedPermissions)) {
-            throw new AdminException('Invalid permissions: '.json_encode($selectedPermissions));
-        }
-
         $user = $service->addUser($name, $description, $email, $password, $permissions);
 
         return $user;
+    }
+
+    /**
+     * Get user for objectId
+     * @param \MongoDB\BSON\ObjectID $objectId
+     * @return stdClass|null
+     */
+    public function getUser(\MongoDB\BSON\ObjectID $objectId)
+    {
+        $service = new UserService($this->getContainer());
+        return $service->findById($objectId);
     }
 
     /**

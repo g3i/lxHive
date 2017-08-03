@@ -242,23 +242,6 @@ class Setup
         }
     }
 
-    /**
-     * Load authscopes into Mongo
-     *
-     * @return void
-     */
-    public function initializeAuthScopes($container = null)
-    {
-        if (!$container) {
-            $container = Bootstrap::getContainer();
-        }
-
-        $oAuthService = new OAuthService($container);
-        //TODO exception handling
-        foreach (Config::get(['xAPI', 'supported_auth_scopes']) as $authScope) {
-            $scope = $oAuthService->addScope($authScope['name'], $authScope['description']);
-        }
-    }
 
     /**
      * Creates writable storage directories for files (attachments) and logs

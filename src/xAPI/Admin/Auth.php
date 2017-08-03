@@ -141,7 +141,7 @@ class Auth extends Admin
      * @param string $description
      * @param int $expiresAt Unix timestamp
      * @param string $user user id
-     * @param array $selectedScopes scope records
+     * @param array $selectedScopes scope names
      * @param string $key
      * @param string $secret
      *
