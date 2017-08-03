@@ -97,6 +97,7 @@ class SessionTest extends TestCase
         $this->assertEquals($uid, 'testuserid');
 
         $perms = $sess->getPermissions();
+        //TODO remove if discussed
         $this->assertTrue(in_array('super', $perms));
         $this->assertGreaterThan(1, count($perms), 'super should have merged inherited permissions');
     }

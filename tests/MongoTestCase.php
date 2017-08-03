@@ -88,7 +88,7 @@ class MongoTestCase extends TestCase
      * @return Cursor
      * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function query(string $collection, array $filter ,array $options = []) {
+    public function query(string $collection, array $filter, array $options = []) {
         $query = new Query($filter, $options);
         $cursor = self::$client->executeQuery(self::DB.'.'.$collection, $query);
         return $cursor;
