@@ -134,6 +134,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     {
         // TODO optimise (upsert),
         // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
+        $profileObject = (string)$profileObject;
 
         $storage = $this->getContainer()['storage'];
 
@@ -150,19 +151,23 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
             $result = new \API\Document\Generic($result);
         }
 
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
-        $contentType = $parameters['headers']['Content-Type'];
+        $contentType = $parameters['headers']['content-type'];
         if ($contentType === null) {
             $contentType = 'text/plain';
+        } else {
+            $contentType = $contentType[0];
         }
 
         // ID exists, try to merge body if applicable
         if ($result) {
             $this->validateDocumentType($result, $contentType);
 
+            // This validation is still in arrays, which is why we decode to them
+            // Since a validation engine change is upcoming, this is currently left as is
             $decodedExisting = json_decode($result->getContent(), true);
             $this->validateJsonDecodeErrors();
 
@@ -204,9 +209,9 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $this->validateCursorCountValid($cursorCount);
 
-        $ifMatchHeader = $parameters['headers']['If-Match'];
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
-
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
+        
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
@@ -217,11 +222,13 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)
     {
         // If-Match first
+        $ifMatch = isset($ifMatch[0]) ? $ifMatch[0] : [];
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
             throw new AdapterException('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
+        $ifMatch = isset($ifNoneMatch[0]) ? $ifNoneMatch[0] : [];
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
                 throw new AdapterException('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
@@ -249,10 +256,24 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         }
     }
 
+    private function validateTargetDocumentType($document)
+    {
+        if ($document->getContentType() !== 'application/json') {
+            throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateSourceDocumentType($documentType)
+    {
+        if ($documentType !== 'application/json') {
+            throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
+        }
+    }
+
     private function validateCursorCountValid($cursorCount)
     {
         if ($cursorCount === 0) {
-            throw new AdapterException('Activity state does not exist.', Controller::STATUS_NOT_FOUND);
+            throw new AdapterException('Agent profile does not exist.', Controller::STATUS_NOT_FOUND);
         }
     }
 

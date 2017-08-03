@@ -121,5 +121,4 @@ class ExtendedQuery implements ExtensionInterface
 
         return $resource;
     }
-
 }

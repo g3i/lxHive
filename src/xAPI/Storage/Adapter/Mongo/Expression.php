@@ -700,5 +700,4 @@ class Expression implements ExpressionInterface
 
         return $this;
     }
-
 }

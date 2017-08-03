@@ -28,13 +28,17 @@ use API\View;
 
 class Activity extends View
 {
-    public function renderGetSingle()
+    /**
+     * Render the activity
+     * @param  stdClass $activityDocument Activity as an object
+     * @return stdClass Modified activity
+     */
+    public function renderGetSingle($activityDocument)
     {
-        $document = $this->service->getCursor()->current();
-        if (isset($document->_id)) {
-        	unset($document->_id);
+        if (isset($activityDocument->_id)) {
+            unset($activityDocument->_id);
         }
 
-        return $document;
+        return $activityDocument;
     }
 }

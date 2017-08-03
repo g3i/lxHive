@@ -77,14 +77,4 @@ class Attachments extends Controller
         $this->setResponse($this->getResponse()->withHeader('Allow', 'GET'));
         return $this->response(Controller::STATUS_OK);
     }
-
-    /**
-     * Gets the value of attachmentService.
-     *
-     * @return \API\Service\Attachment
-     */
-    public function getAttachmentService()
-    {
-        return $this->attachmentService;
-    }
 }

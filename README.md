@@ -4,7 +4,13 @@
 * Current version: **v0.9.5**
 * Supports xAPI spec <= 1.0.3
 
-[![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/master.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/development.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
+[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-66.63%25-yellow.svg)](https://github.com/Brightcookie/lx-Test-Suite)
+[![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-74.20%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
+[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/network)
+[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/stargazers)
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
 
 ## <a name="introduction" />Introduction
 

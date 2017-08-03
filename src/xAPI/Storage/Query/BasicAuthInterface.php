@@ -72,5 +72,4 @@ interface BasicAuthInterface extends QueryInterface
      * @return \API\DocumentInterface
      */
     public function getTokens();
-
 }

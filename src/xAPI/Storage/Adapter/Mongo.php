@@ -24,7 +24,6 @@
 
 namespace API\Storage\Adapter;
 
-
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Cursor;
 
@@ -308,7 +307,7 @@ class Mongo implements AdapterInterface
             'required' => $required,
         ];
 
-        if(version_compare($available, $required) < 0) {
+        if (version_compare($available, $required) < 0) {
             throw new AdapterException('Database version mismatch: ' . json_encode($msg) . "\n".'Please upgrade your Database!');
         }
 
@@ -338,8 +337,7 @@ class Mongo implements AdapterInterface
      */
     public function createIndexes($collection, $indexes)
     {
-
-        if(empty($indexes)) {
+        if (empty($indexes)) {
             return null;
         }
 
@@ -500,5 +498,4 @@ class Mongo implements AdapterInterface
     {
         return $this->client;
     }
-
 }

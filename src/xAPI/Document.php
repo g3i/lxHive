@@ -92,7 +92,7 @@ abstract class Document implements DocumentInterface
      *
      * @return self
      */
-     //TODO remove or protected
+    //TODO remove or protected
     protected function setState($state)
     {
         $this->state = $state;
@@ -107,7 +107,7 @@ abstract class Document implements DocumentInterface
      *
      * @return self
      */
-     //TODO remove or protected
+    //TODO remove or protected
     protected function setVersion($version)
     {
         $this->version = $version;
@@ -146,7 +146,7 @@ abstract class Document implements DocumentInterface
      * @param  array $arguments
      * @return mixed
      */
-     //TODO remove
+    //TODO remove
     public function __call($name, $arguments)
     {
         // Getter

@@ -57,7 +57,6 @@ class Filesystem
                     ]
                 )
             );
-
         } elseif ($typeInUse === 's3') {
             $client = S3Client::factory(array(
                 'key' => $config['s3']['key'],

@@ -23,6 +23,7 @@
  */
 
 namespace API;
+
 use Interop\Container\ContainerInterface;
 
 trait BaseTrait
@@ -51,7 +52,7 @@ trait BaseTrait
      */
     public function getContainer()
     {
-        if(!$this->container){
+        if (!$this->container) {
             throw new \Exception('Basetrait: no container was set.');
         }
         return $this->container;
@@ -66,7 +67,7 @@ trait BaseTrait
      */
     public function getStorage()
     {
-        if(!$this->container){
+        if (!$this->container) {
             throw new \Exception('Basetrait: no container was set.');
         }
         return $this->container->get('storage');
@@ -81,7 +82,7 @@ trait BaseTrait
      */
     public function getLog()
     {
-        if(!$this->container){
+        if (!$this->container) {
             throw new \Exception('Basetrait: no container was set.');
         }
         return $this->container->get('log');

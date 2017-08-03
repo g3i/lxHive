@@ -33,7 +33,6 @@ use API\Storage\Adapter\Mongo as Mongo;
 
 class Schema implements SchemaInterface
 {
-
     use BaseTrait;
 
     /**
@@ -81,7 +80,7 @@ class Schema implements SchemaInterface
         $mongo = new Mongo($container);
         $mongo->verifyDatabaseVersion();
 
-        foreach($collections as $collection => $className){
+        foreach ($collections as $collection => $className) {
             $instance = new $className($container);
             try {
                 $instance->install();
@@ -100,12 +99,11 @@ class Schema implements SchemaInterface
         $collections = $this->mapCollections();
         $container = $this->getContainer();
 
-        foreach($collections as $collection => $className){
+        foreach ($collections as $collection => $className) {
             $instance = new $className($container);
             $indexes[$collection] = $instance->getIndexes();
         }
 
         return $indexes;
     }
-
 }

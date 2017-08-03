@@ -185,7 +185,7 @@ class Statement extends Document
     public function setDefaultTimestamp()
     {
         if (!isset($this->data->statement->timestamp) || null ===  $this->data->statement->timestamp) {
-             $this->data->statement->timestamp =  $this->data->statement->stored;
+            $this->data->statement->timestamp =  $this->data->statement->stored;
         }
     }
 
@@ -363,7 +363,7 @@ class Statement extends Document
         return $statement;
     }
 
-        public function extractActivities()
+    public function extractActivities()
     {
         $activities = [];
         // Main activity

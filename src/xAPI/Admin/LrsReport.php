@@ -223,7 +223,7 @@ class LrsReport
     {
         $setup = new Setup();
 
-        try{
+        try {
             $msg = $setup->verifyDbVersion();
             $this->success('Mongo', 'compatibility', $msg);
         } catch (AdminException $e) {
@@ -428,5 +428,4 @@ class LrsReport
         }
         return $total;
     }
-
 }
