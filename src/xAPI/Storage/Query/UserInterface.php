@@ -29,7 +29,7 @@ interface UserInterface extends QueryInterface
 
     /**
      * Find record by Mongo ObjectId
-     * @param string $id
+     * @param MongoDB\BSON\ObjectID $id
      *
      * @return \API\DocumentInterface|null
      */
@@ -43,7 +43,7 @@ interface UserInterface extends QueryInterface
      * @param string $description
      * @param string $email valid email address
      * @param string $password
-     * @param array  $permissions valid array of permission records
+     * @param array  $permissions valid array of permission names
      *
      * @throws \MongoDB\Driver\Exception\Exception
      */

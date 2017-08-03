@@ -33,13 +33,13 @@ interface BasicAuthInterface extends QueryInterface
      * @param string $description
      * @param int $expiresAt unix timestamp
      * @param object $user user storage record
-     * @param array[object] $scopes
+     * @param array[string] $permissions
      * @param string $key token key
      * @param string $secret token secret
      *
      * @return \API\DocumentInterface
      */
-    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null);
+    public function storeToken($name, $description, $expiresAt, $user, $permissions, $key = null, $secret = null);
 
     /**
      * Find record by token key and token secret

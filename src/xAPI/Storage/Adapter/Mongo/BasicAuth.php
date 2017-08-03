@@ -85,7 +85,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     /**
      * {@inheritDoc}
      */
-    public function storeToken($name, $description, $expiresAt, $user, $scopes, $key = null, $secret = null)
+    public function storeToken($name, $description, $expiresAt, $user, $permissions, $key = null, $secret = null)
     {
         $storage = $this->getContainer()['storage'];
         $accessTokenDocument = new \API\Document\AccessToken();
@@ -93,11 +93,8 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
         $accessTokenDocument->setUserId($user->_id);
-        $scopeIds = [];
-        foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->_id;
-        }
-        $accessTokenDocument->setScopeIds($scopeIds);
+
+        $accessTokenDocument->setPermissions($permissions);
 
         if (isset($expiresAt)) {
             $expiresDate = new \DateTime();
@@ -144,12 +141,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         $this->validateExpiration($accessTokenDocument);
 
         $accessTokenDocumentTransformed = new \API\Document\BasicToken($accessTokenDocument);
-        // Fetch scopes for this token - this is done here intentionally for performance reasons
-        // We could call $storage->getAuthScopesStorage() as well, but it'd be slower
-        $accessTokenScopes = $storage->find(AuthScopes::COLLECTION_NAME, [
-            '_id' => ['$in' => $accessTokenDocument->scopeIds]
-        ]);
-        $accessTokenDocumentTransformed->setScopes($accessTokenScopes->toArray());
+
         // Fetch user for this token - this is done here intentionally for performance reasons
         // We could call $storage->getUserStorage() as well, but it'd be slower
         $accessTokenUser = $storage->findOne(User::COLLECTION_NAME, ['_id' => $accessTokenDocument->userId]);

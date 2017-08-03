@@ -115,13 +115,7 @@ class User extends Provider implements UserInterface, SchemaInterface
         $passwordHash = sha1($password);
         $userDocument->setPasswordHash($passwordHash);
 
-        // Permission is of type Scope
-        $permissionIds = [];
-        foreach ($permissions as $permission) {
-            // Fetch the permission ID's and assign them
-            $permissionIds[] = $permission->_id;
-            $userDocument->setPermissionIds($permissionIds);
-        }
+        $userDocument->setPermissions($permissions);
 
         $now = new \DateTime();
         $userDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($now));
