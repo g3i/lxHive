@@ -249,7 +249,7 @@ class SetupCommand extends SymfonyCommand
      */
     private function io_installAuthScopes($io)
     {
-        $this->setup->initializeAuthScopes(); // throws exception on fail
+        // logic migrated to session service, left for notification
         $io->listing(['AuthScopes installed']);
     }
 
