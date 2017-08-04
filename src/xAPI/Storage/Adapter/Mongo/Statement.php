@@ -381,7 +381,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $queryOptions['limit'] = (int)$limit;
 
-        if ($this->getAccessToken()->canOnlyReadMine()) {
+        // TODO improve
+        $session =$this->getContainer()['session'];
+        if ($session->hasPermission['statements/read/mine'] && !$session->hasPermission['statements/read']) {
             $expression->where('userId', $this->getAccessToken()->userId);
         }
 

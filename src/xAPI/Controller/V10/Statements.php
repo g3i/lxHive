@@ -56,7 +56,8 @@ class Statements extends Controller
     public function get()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission(['statements/read', 'statements/read/mine']);
+        $this->getContainer()->auth->checkPermission('statements/read');
+        $this->getContainer()->auth->checkPermission('statements/read/mine');
 
         // Do the validation
         $this->statementValidator->validateRequest();

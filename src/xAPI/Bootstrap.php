@@ -118,6 +118,7 @@ class Bootstrap
             case self::Web: {
                 $config = $bootstrap->initConfig();
                 $container = $bootstrap->initWebContainer();
+                $container['auth']; //fire up auth on earliest point possible, TODO /Brightcookie/lxHive-Internal/issues/158
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
                 return $bootstrap;
@@ -424,7 +425,7 @@ class Bootstrap
 
                 // add user data to session
                 $raw = $token->toArray();
-                $container['session']->register($raw->userId, $raw->scopeIds);
+                $container['session']->register($raw->userId, $raw->permissions);
 
                 return $token;
             }

@@ -86,7 +86,7 @@ class Session extends Service
         $filtered = $this->filterPermissions($permissionNames);
 
         // we do not update inheritance here
-        // $this->permissions = $this->mergeInheritance($filtered);
+        $this->permissions = $this->mergeInheritance($filtered);
     }
 
     /**

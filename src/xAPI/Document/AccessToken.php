@@ -42,8 +42,9 @@
 
 namespace API\Document;
 
-use API\Controller;
+use API\Bootstrap;
 use API\Document;
+use API\Controller;
 
 // TODO 0.9.6
 
@@ -131,7 +132,8 @@ class AccessToken extends Document
      // TODO, this is legacy remove and change references!
     public function isSuperToken()
     {
-        return $this->getContainer()['session']->hasPermission('super');
+        $container = Bootstrap::getContainer();
+        return $container['session']->hasPermission('super');
     }
 
     /**
@@ -143,7 +145,8 @@ class AccessToken extends Document
      // TODO, this is legacy remove and change references!
     public function hasPermission(string $name)
     {
-        return $this->getContainer()['session']->hasPermission($name);
+        $container = Bootstrap::getContainer();
+        return $container['session']->hasPermission($name);
     }
 
     /**
@@ -158,7 +161,8 @@ class AccessToken extends Document
      // TODO, this is legacy remove and change references!
     public function checkPermission(string $name)
     {
-        return $this->getContainer()['session']->requirePermission($name);
+        $container = Bootstrap::getContainer();
+        return $container['session']->requirePermission($name);
     }
 
 }
