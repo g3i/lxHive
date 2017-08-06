@@ -32,7 +32,7 @@ class Login extends View
     public function renderGet()
     {
         $view = $this->getContainer()['view'];
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['settings', 'name']), 'branding' => Config::get(['settings', 'xAPI', 'oauth', 'branding'])]);
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding'])]);
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'login.twig', $this->getItems());
 
