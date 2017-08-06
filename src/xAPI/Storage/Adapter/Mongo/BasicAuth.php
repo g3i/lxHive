@@ -91,7 +91,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         $accessTokenDocument = new \API\Document\AccessToken();
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
-        $accessTokenDocument->setUserId($user->get('_id'));
+        $accessTokenDocument->setUserId($user->_id);
         $scopeIds = [];
         foreach ($scopes as $scope) {
             $scopeIds[] = $scope->_id;
