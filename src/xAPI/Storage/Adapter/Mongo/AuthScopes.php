@@ -29,6 +29,7 @@ use API\Storage\Query\AuthScopesInterface;
 
 use API\Storage\Provider;
 use API\Storage\AdapterException;
+use API\Controller;
 
 class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterface
 {
@@ -116,7 +117,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
         $expression->where('name', $name);
         $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
 
-        if (null === $scope) {
+        if (!$scopeDocument) {
             throw new AdapterException('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
         }
 

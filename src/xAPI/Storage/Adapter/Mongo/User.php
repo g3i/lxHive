@@ -108,6 +108,7 @@ class User extends Provider implements UserInterface, SchemaInterface
         // Set up the User to be saved
         $userDocument = new \API\Document\Generic();
 
+        $userDocument->set('_id', new \MongoDB\BSON\ObjectID());
         $userDocument->setName($name);
         $userDocument->setDescription($description);
         $userDocument->setEmail($email);

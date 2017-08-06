@@ -93,7 +93,7 @@ class Tokens extends Controller
         $this->accessTokenService->accessTokenPut();
 
         // Render them
-        $view = new AccessTokenView(['service' => $this->accessTokenService]);
+        $view = new AccessTokenView($this->getResponse(), $this->getContainer());
 
         $view = $view->render();
 

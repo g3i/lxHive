@@ -96,8 +96,8 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $currentDate = new \DateTime();
         $accessTokenDocument->setCreatedAt(Util\Date::dateTimeToMongoDate($currentDate));
 
-        $accessTokenDocument->setUserId($user->getId());
-        $accessTokenDocument->setClientId($client->getId());
+        $accessTokenDocument->setUserId($user->_id);
+        $accessTokenDocument->setClientId($client->_id);
 
         $scopeIds = [];
         foreach ($scopes as $scope) {
