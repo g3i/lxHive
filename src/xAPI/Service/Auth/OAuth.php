@@ -142,12 +142,13 @@ class OAuth extends Service implements AuthInterface
         return $scope;
     }
 
+    // TODO: This logic might be better suited for Controllers?
     /**
      * @param [type] $request [description]
      *
      * @return [type] [description]
      */
-    public function authorizeGet($request)
+    public function authorizeGet()
     {
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
@@ -156,19 +157,19 @@ class OAuth extends Service implements AuthInterface
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
 
-        $this->validateRequiredParams($params, $requiredParams);
+        $this->validateRequiredParams($parameters, $requiredParams);
 
-        $this->validateResponseType($params['responseType']);
+        $this->validateResponseType($parameters['response_type']);
 
         // get client by id
-        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params['client_id']);
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($parameters['client_id']);
 
         $this->validateClientDocument($clientDocument);
 
-        $this->validateRedirectUri($params['redirect_uri'], $clientDocument);
+        $this->validateRedirectUri($parameters['redirect_uri'], $clientDocument);
 
         $scopeDocuments = [];
-        $scopes = explode(',', $params['scope']);
+        $scopes = explode(',', $parameters['scope']);
         foreach ($scopes as $scope) {
             // get scope by name
             $scopeDocument = $this->getScopeByName($scope);
@@ -190,7 +191,7 @@ class OAuth extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function authorizePost($request)
+    public function authorizePost()
     {
         $params = $this->getContainer()['parser']->getData()->getParameters();
         $postParams = $this->getContainer()['parser']->getData()->getPayload();
@@ -354,7 +355,7 @@ class OAuth extends Service implements AuthInterface
 
     private function validateRedirectUri($redirectUri, $clientDocument)
     {
-        if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
+        if ($redirectUri !== $clientDocument->redirectUri) {
             throw new \Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }

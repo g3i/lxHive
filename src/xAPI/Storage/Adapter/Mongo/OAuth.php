@@ -101,7 +101,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
 
         $scopeIds = [];
         foreach ($scopes as $scope) {
-            $scopeIds[] = $scope['id'];
+            $scopeIds[] = $scope->_id;
         }
         $accessTokenDocument->setScopeIds($scopeIds);
 
@@ -193,14 +193,15 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $tokenDocument = new \API\Document\AccessToken($tokenDocument);
 
         // TODO: This will be removed soon
-        $clientDocument = $tokenDocument->client;
+        $clientExpression = $storage->createExpression();
+        $clientExpression->where('_id', $tokenDocument->getClientId());
+        $clientDocument = $storage->findOne(OAuthClients::COLLECTION_NAME, $clientExpression);
 
         $this->validateClientSecret($params, $clientDocument);
 
         $this->validateRedirectUri($params, $clientDocument);
 
-        //Remove one-time code
-
+        // Remove one-time code
         $tokenDocument->setCode(false);
 
         $storage->update(self::COLLECTION_NAME, $expression, $tokenDocument);
@@ -226,14 +227,14 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
 
     private function validateClientSecret($params, $clientDocument)
     {
-        if ($clientDocument->getClientId() !== $params['client_id'] || $clientDocument->getSecret() !== $params['client_secret']) {
+        if ($clientDocument->clientId !== $params['client_id'] || $clientDocument->secret !== $params['client_secret']) {
             throw new AdapterException('Invalid client_id/client_secret combination!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateRedirectUri($params, $clientDocument)
     {
-        if ($params['redirect_uri'] !== $clientDocument->getRedirectUri()) {
+        if ($params['redirect_uri'] !== $clientDocument->redirectUri) {
             throw new AdapterException('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
         }
     }

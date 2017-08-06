@@ -83,13 +83,15 @@ class User extends Provider implements UserInterface, SchemaInterface
 
     public function findById($id)
     {
+        if (is_string($id)) {
+            $id = new \MongoDB\BSON\ObjectID($id);
+        }
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('_id', $id);
 
         $result = $storage->findOne(self::COLLECTION_NAME, $expression);
-
         return $result;
     }
 
