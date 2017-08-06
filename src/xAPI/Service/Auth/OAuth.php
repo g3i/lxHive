@@ -193,9 +193,10 @@ class OAuth extends Service implements AuthInterface
     public function authorizePost($request)
     {
         $params = $this->getContainer()['parser']->getData()->getParameters();
+        $postParams = $this->getContainer()['parser']->getData()->getPayload();
 
-        $postParams = new Collection($request->post());
-        $params = new Collection($request->get());
+        $postParams = new Collection($postParams);
+        $params = new Collection($params);
 
         $this->validateCsrf($postParams);
         $this->validateAction($postParams);

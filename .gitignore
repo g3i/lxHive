@@ -32,3 +32,5 @@ dev/*
 # linting, code standards
 .php_cs.cache
 phplint.sh
+
+src/xAPI/View/V10/OAuth/Templates/*
