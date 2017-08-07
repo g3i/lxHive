@@ -56,6 +56,14 @@ class MongoTestCase extends TestCase
         Bootstrap::reset();
         Bootstrap::factory(Bootstrap::Testing);
         self::$client = new Manager(Config::get(['storage', 'Mongo', 'host_uri']));
+
+        // make sure db exists by creating and removing a dummy collection
+        $name = 'ping';
+        $cmd = new Command([ 'create' => $name ]);
+        $res = self::$client->executeCommand(self::DB, $cmd);
+
+        $cmd = new Command([ 'drop' => $name ]);
+        $res = self::$client->executeCommand(self::DB, $cmd);
     }
 
     ////
@@ -88,7 +96,7 @@ class MongoTestCase extends TestCase
      * @return Cursor
      * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function query(string $collection, array $filter ,array $options = []) {
+    public function query(string $collection, array $filter, array $options = []) {
         $query = new Query($filter, $options);
         $cursor = self::$client->executeQuery(self::DB.'.'.$collection, $query);
         return $cursor;
@@ -115,8 +123,14 @@ class MongoTestCase extends TestCase
      * @throws \MongoDB\Driver\Exception\Exception
      */
     public function dropCollection($name) {
-        $cursor = $this->command([ 'drop' => $name ]);
-        return $cursor;
+        try {
+            $cursor = $this->command([ 'drop' => $name ]);
+            return $cursor;
+        } catch(\MongoDB\Driver\Exception\RuntimeException $e) {
+            // MongoDB throws a very broad MongoDB\Driver\Exception\RuntimeException: "ns not found", if collection doesn't exist
+            // ...which is not nice as Mongo manual says that it returns "...false when collection to drop does not exist."
+            return false;
+        }
     }
 
     /**
