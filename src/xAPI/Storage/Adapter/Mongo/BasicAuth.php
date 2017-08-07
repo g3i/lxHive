@@ -89,7 +89,6 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
     {
         $storage = $this->getContainer()['storage'];
         $accessTokenDocument = new \API\Document\AccessToken();
-
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
         $accessTokenDocument->setUserId($user->_id);

@@ -83,13 +83,15 @@ class User extends Provider implements UserInterface, SchemaInterface
 
     public function findById($id)
     {
+        if (is_string($id)) {
+            $id = new \MongoDB\BSON\ObjectID($id);
+        }
         $storage = $this->getContainer()['storage'];
         $expression = $storage->createExpression();
 
         $expression->where('_id', $id);
 
         $result = $storage->findOne(self::COLLECTION_NAME, $expression);
-
         return $result;
     }
 
@@ -108,6 +110,7 @@ class User extends Provider implements UserInterface, SchemaInterface
         // Set up the User to be saved
         $userDocument = new \API\Document\Generic();
 
+        $userDocument->set('_id', new \MongoDB\BSON\ObjectID());
         $userDocument->setName($name);
         $userDocument->setDescription($description);
         $userDocument->setEmail($email);

@@ -62,7 +62,7 @@ class Login extends Controller
             $this->userService->loginGet();
 
             // Authorization is always requested
-            $view = new LoginView($this->getResponse(), $this->getContainer());
+            $view = new LoginView($this->getResponse(), $this->getContainer(), ['service' => $this->oAuthService]);
 
             $view = $view->renderGet();
 
@@ -93,8 +93,9 @@ class Login extends Controller
             $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
             return $this->response(Controller::STATUS_FOUND);
         } catch (\Exception $e) {
+            $errors = $this->userService->getErrors();
             $view = new LoginView($this->getResponse(), $this->getContainer());
-            $view = $view->renderGet();
+            $view = $view->renderGet($errors);
             return $this->response(Controller::STATUS_UNAUTHORIZED, $view);
         }
     }

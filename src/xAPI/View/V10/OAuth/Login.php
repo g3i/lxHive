@@ -29,10 +29,10 @@ use API\Config;
 
 class Login extends View
 {
-    public function renderGet()
+    public function renderGet($errors)
     {
         $view = $this->getContainer()['view'];
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['settings', 'name']), 'branding' => Config::get(['settings', 'xAPI', 'oauth', 'branding'])]);
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding']), 'errors' => $errors]);
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'login.twig', $this->getItems());
 

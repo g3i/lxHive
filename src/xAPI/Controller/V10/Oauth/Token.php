@@ -52,7 +52,7 @@ class Token extends Controller
         $accessTokenDocument = $this->oAuthService->accessTokenPost();
         // Authorization is always requested
         $view = new AccessTokenView($this->getResponse(), $this->getContainer());
-        $view = $view->renderGet($accessTokenDocument);
+        $view = $view->render($accessTokenDocument);
         return $this->jsonResponse(Controller::STATUS_OK, $view);
     }
 
