@@ -39,7 +39,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
 
         $response = $this->statementQuery($parameters);
 
@@ -55,8 +55,8 @@ class Statement extends Service
         }*/
 
         // Validation has been completed already - everyhing is assumed to be valid
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
-        $bodyParams = $this->getContainer()['parser']->getData()->getPayload();
+        $parameters = $this->getContainer()->get('parser']->getData()->getParameters();
+        $bodyParams = $this->getContainer()->get('parser']->getData()->getPayload();
 
         $allParams = array_merge($parameters, $bodyParams);
         $response = $this->statementQuery($parameters);

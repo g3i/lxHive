@@ -64,7 +64,7 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         // TODO: Enable attachment indexing - planned for 0.9.6
         // This will require checksum matching to check for existing attachments
@@ -84,7 +84,7 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
      */
     public function store($sha2, $contentType, $timestamp = null)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         $attachmentDocument = new \API\Document\Generic();
         $attachmentDocument->setSha2($sha2);
@@ -104,7 +104,7 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
      */
     public function fetchMetadataBySha2($sha2)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         $expression = $storage->createExpression();
         $expression->where('sha2', $sha2);

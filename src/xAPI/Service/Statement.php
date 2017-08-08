@@ -38,7 +38,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
 
         $statementResult = $this->getStorage()->getStatementStorage()->get($parameters);
 
@@ -52,12 +52,12 @@ class Statement extends Service
      */
     public function statementPost()
     {
-        $this->validateJsonMediaType($this->getContainer()['parser']->getData());
+        $this->validateJsonMediaType($this->getContainer()->get('parser')->getData());
 
-        if (count($this->getContainer()['parser']->getAttachments()) > 0) {
+        if (count($this->getContainer()->get('parser')->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
-            foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
+            foreach ($this->getContainer()->get('parser')->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -80,7 +80,7 @@ class Statement extends Service
             }
         }
 
-        $body = $this->getContainer()['parser']->getData()->getPayload();
+        $body = $this->getContainer()->get('parser')->getData()->getPayload();
 
         // Multiple statements
         if ($this->areMultipleStatements($body)) {
@@ -100,12 +100,12 @@ class Statement extends Service
      */
     public function statementPut()
     {
-        $this->validateJsonMediaType($this->getContainer()['parser']->getData());
+        $this->validateJsonMediaType($this->getContainer()->get('parser')->getData());
 
-        if (count($this->getContainer()['parser']->getAttachments()) > 0) {
+        if (count($this->getContainer()->get('parser')->getAttachments()) > 0) {
             $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
-            foreach ($this->getContainer()['parser']->getAttachments() as $attachment) {
+            foreach ($this->getContainer()->get('parser')->getAttachments() as $attachment) {
                 $attachmentBody = $attachment->getPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
@@ -129,8 +129,8 @@ class Statement extends Service
         }
 
         // Single
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
-        $body = $this->getContainer()['parser']->getData()->getPayload();
+        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $body = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $statementResult = $this->getStorage()->getStatementStorage()->put($parameters, $body);
 

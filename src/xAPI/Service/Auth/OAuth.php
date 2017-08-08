@@ -153,7 +153,7 @@ class OAuth extends Service implements AuthInterface
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
 
-        $parameters = $this->getContainer()['parser']->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
 
@@ -193,8 +193,8 @@ class OAuth extends Service implements AuthInterface
      */
     public function authorizePost()
     {
-        $params = $this->getContainer()['parser']->getData()->getParameters();
-        $postParams = $this->getContainer()['parser']->getData()->getPayload();
+        $params = $this->getContainer()->get('parser')->getData()->getParameters();
+        $postParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $postParams = new Collection($postParams);
         $params = new Collection($params);
@@ -240,7 +240,7 @@ class OAuth extends Service implements AuthInterface
      */
     public function accessTokenPost()
     {
-        $params = $this->getContainer()['parser']->getData()->getPayload();
+        $params = $this->getContainer()->get('parser')->getData()->getPayload();
         $params = new Util\Collection($params);
 
         $requiredParams = ['grant_type', 'client_id', 'client_secret', 'redirect_uri', 'code'];

@@ -38,7 +38,7 @@ class ActivityProfile extends Service
      */
     public function activityProfileGet()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $documentResult = $this->getStorage()->getActivityProfileStorage()->getFiltered($params);
@@ -51,7 +51,7 @@ class ActivityProfile extends Service
      */
     public function activityProfilePost()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
@@ -71,7 +71,7 @@ class ActivityProfile extends Service
      */
     public function activityProfilePut()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
@@ -93,7 +93,7 @@ class ActivityProfile extends Service
      */
     public function activityProfileDelete()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $deletionResult = $this->getStorage()->getActivityProfileStorage()->delete($params);

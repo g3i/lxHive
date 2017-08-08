@@ -31,7 +31,7 @@ class Authorize extends View
 {
     public function renderGet($user, $client, $scopes)
     {
-        $view = $this->getContainer()['view'];
+        $view = $this->getContainer()->get('view');
         $this->setItems(['csrfToken' => $_SESSION['csrfToken'],
         			     'name' => Config::get(['name']), 
         			     'branding' => Config::get(['xAPI', 'oauth', 'branding']),

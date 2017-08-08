@@ -36,7 +36,7 @@ class AgentProfile extends Service
      */
     public function agentProfileGet()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $documentResult = $this->getStorage()->getAgentProfileStorage()->getFiltered($params);
@@ -49,7 +49,7 @@ class AgentProfile extends Service
      */
     public function agentProfilePost()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
@@ -69,7 +69,7 @@ class AgentProfile extends Service
      */
     public function agentProfilePut()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $params->set('headers', $request->getHeaders());
@@ -88,7 +88,7 @@ class AgentProfile extends Service
      */
     public function agentProfileDelete()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $params->set('headers', $request->getHeaders());

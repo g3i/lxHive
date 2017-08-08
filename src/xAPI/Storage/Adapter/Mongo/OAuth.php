@@ -68,7 +68,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -86,7 +86,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         $accessTokenDocument = new \API\Document\Generic();
 
@@ -120,7 +120,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function getToken($accessToken)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
@@ -146,7 +146,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $accessTokenDocumentTransformed->setUser($accessTokenUser);
 
         // Set the host - needed for generation of access token authority
-        $host = $this->getContainer()['url']->getBaseUrl();
+        $host = $this->getContainer()->get('url')->getBaseUrl();
         $accessTokenDocumentTransformed->setHost($host);
 
         return $accessTokenDocumentTransformed;
@@ -157,7 +157,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function deleteToken($accessToken)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
@@ -170,7 +170,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function expireToken($accessToken)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('token', $accessToken);
@@ -182,7 +182,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
      */
     public function getTokenWithOneTimeCode($params)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('code', $params['code']);

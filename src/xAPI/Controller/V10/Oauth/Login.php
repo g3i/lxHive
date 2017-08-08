@@ -69,7 +69,7 @@ class Login extends Controller
             return $this->response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to authorization
-            $redirectUrl = $this->getContainer()->getUrl();
+            $redirectUrl = $this->getContainer()->get('url');
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
@@ -87,7 +87,7 @@ class Login extends Controller
         try {
             // This sets the session for the user, otherwise throws an exception!
             $this->userService->loginPost();
-            $redirectUrl = $this->getContainer()['url'];
+            $redirectUrl = $this->getContainer()->get('url');
             $redirectUrl->getPath()->remove('login');
             $redirectUrl->getPath()->append('authorize');
             $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));

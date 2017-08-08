@@ -58,7 +58,7 @@ class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInte
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage'];
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -76,7 +76,7 @@ class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInte
      */
     public function getClientById($id)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage'];
         $expression = $storage->createExpression();
 
         $expression->where('clientId', $id);
@@ -90,7 +90,7 @@ class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInte
      */
     public function getClients()
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage'];
 
         $cursor = $storage->find(self::COLLECTION_NAME);
         $documentResult = new \API\Storage\Query\DocumentResult();
@@ -104,7 +104,7 @@ class OAuthClients extends Provider implements OAuthClientsInterface, SchemaInte
      */
     public function addClient($name, $description, $redirectUri)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage'];
 
         // Set up the Client to be saved
         $clientDocument = new \API\Document\Generic();

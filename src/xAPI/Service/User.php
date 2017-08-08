@@ -58,7 +58,7 @@ class User extends Service
     public function loginPost()
     {
         // TODO: This will be fetched from Parser class in future!
-        $parameters = $this->getContainer()['parser']->getData()->getPayload();
+        $parameters = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $this->validateCsrf($parameters);
         $this->validateRequiredParameters($parameters);

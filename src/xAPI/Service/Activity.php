@@ -38,7 +38,7 @@ class Activity extends Service
      */
     public function activityGet()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $activityDocument = $this->getStorage()->getActivityStorage()->fetchById($params->get('activityId'));

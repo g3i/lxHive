@@ -63,7 +63,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -81,7 +81,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function getFiltered($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         // Single activity state
@@ -136,7 +136,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
         $profileObject = (string)$profileObject;
 
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         // Set up the body to be saved
         $activityProfileDocument = new \API\Document\Generic();
@@ -197,7 +197,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function delete($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('profileId', $parameters['profileId']);
