@@ -57,7 +57,7 @@ class Log extends Provider implements LogInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -75,7 +75,7 @@ class Log extends Provider implements LogInterface, SchemaInterface
      */
     public function logRequest($ip, $method, $endpoint, $timestamp)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $document = new \API\Document\Generic();
 
         $document->setIp($ip);

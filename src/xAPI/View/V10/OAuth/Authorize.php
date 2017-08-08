@@ -29,10 +29,16 @@ use API\Config;
 
 class Authorize extends View
 {
-    public function renderGet()
+    public function renderGet($user, $client, $scopes)
     {
-        $view = $this->getContainer()['view'];
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding'])]);
+        $view = $this->getContainer()->get('view');
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'],
+                         'name' => Config::get(['name']),
+                         'branding' => Config::get(['xAPI', 'oauth', 'branding']),
+                         'user' => $user,
+                         'client' => $client,
+                         'scopes' => $scopes
+                         ]);
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'authorize.twig', $this->getItems());
 

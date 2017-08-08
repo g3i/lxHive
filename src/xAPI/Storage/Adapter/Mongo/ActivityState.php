@@ -63,7 +63,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -81,7 +81,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
      */
     public function getFiltered($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         // Single activity state
@@ -157,7 +157,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         // TODO optimise (upsert),
         // TODO remove header dependency form this layer: put($data, $stateId, $profileId, $agentIfi, array $options (contentType, if match))
 
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         // Set up the body to be saved
@@ -231,7 +231,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
     public function delete($parameters)
     {
         $parameters = new Util\Collection($parameters);
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         if ($parameters->has('stateId')) {

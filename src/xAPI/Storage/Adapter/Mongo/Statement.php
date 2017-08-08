@@ -73,7 +73,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -91,7 +91,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     public function get($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
         $queryOptions = [];
 
@@ -397,7 +397,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     public function getById($statementId)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
         $expression->where('statement.id', $statementId);
         $requestedStatement = $storage->findOne('statements', $expression);
@@ -415,9 +415,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     public function transformForInsert($statementObject)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
-        $attachmentBase = $this->getContainer()['url']->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
+        $attachmentBase = $this->getContainer()->get('url')->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
 
         if (isset($statementObject->{'id'})) {
             $expression = $storage->createExpression();
@@ -488,7 +488,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         $statementDocument->setUserId($this->getAccessToken()->getUserId());
 
         // Add to log
-        //$this->getContainer()->requestLog->addRelation('statements', $statementDocument)->save();
+        //$this->getContainer()->get('requestLog')->addRelation('statements', $statementDocument)->save();
 
         return $statementDocument;
     }
@@ -499,7 +499,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     public function insertOne($statementObject)
     {
         $statementDocument = $this->transformForInsert($statementObject);
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementDocument]);
@@ -519,7 +519,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             $statementDocuments[] = $this->transformForInsert($statementObject);
         }
 
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $storage->insertMultiple(self::COLLECTION_NAME, $statementDocuments);
 
         $statementResult = new StatementResult();
@@ -576,7 +576,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     private function getAccessToken()
     {
-        return $this->getContainer()->auth;
+        return $this->getContainer()->get('auth');
     }
 
     private function validateStatementMatches($statementOne, $statementTwo)

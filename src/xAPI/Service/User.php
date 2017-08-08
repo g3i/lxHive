@@ -32,14 +32,6 @@ use API\Util\Collection;
 
 class User extends Service
 {
-    // Will be deprecated with UserResult class
-    /**
-     * Is this a single user fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Any errors that might've ocurred are stored here.
      *
@@ -66,7 +58,7 @@ class User extends Service
     public function loginPost()
     {
         // TODO: This will be fetched from Parser class in future!
-        $parameters = $this->getContainer()['parser']->getData()->getPayload();
+        $parameters = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $this->validateCsrf($parameters);
         $this->validateRequiredParameters($parameters);
@@ -107,16 +99,12 @@ class User extends Service
     {
         $userId = $_SESSION['userId'];
         $userDocument = $this->findById($userId);
-
         return $userDocument;
     }
 
     public function addUser($name, $description, $email, $password, $permissions)
     {
         $userDocument = $this->getStorage()->getUserStorage()->addUser($name, $description, $email, $password, $permissions);
-
-        $this->single = true;
-        $this->cursor = [$userDocument];
 
         return $userDocument;
     }
@@ -168,5 +156,13 @@ class User extends Service
         if (!isset($params['email']) || !isset($params['password'])) {
             throw new Exception('Username or password missing!', Controller::STATUS_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }

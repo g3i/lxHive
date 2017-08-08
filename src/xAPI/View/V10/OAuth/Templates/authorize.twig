@@ -19,25 +19,17 @@
                 {% endif %}
                 </h1>
 
-                {% if service.errors %}
-                <ul class="alert alert-error">
-                {% for error in service.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-
                 <form class="pure-form pure-form-aligned" action="" method="POST">
                     <fieldset>
-                        <h2>Authorize application <span>{{ service.client.name }}?</h2>
-                        <h5>Logged in as {{ userService.getLoggedIn().getEmail() }}</h5>
+                        <h2>Authorize application <span>{{ client.name }}?</h2>
+                        <h5>Logged in as {{ user.email }}</h5>
                         {% if branding.enabled and branding.header %}
                             {{ branding.header }}
                         {% endif %}
                         <div class="pure-control-group">
                             This application will be able to:</p>
                             <ul>
-                            {% for scope in service.scopes %}
+                            {% for scope in scopes %}
                                 <li><i class="icon-ok"></i>{{ scope.description }}</li>
                             {% else %}
                                 <li>Do nothing (you must specify a scope parameter!).</li>

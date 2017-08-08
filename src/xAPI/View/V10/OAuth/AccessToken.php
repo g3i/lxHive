@@ -34,27 +34,15 @@ class AccessToken extends View
     {
         $view = [
             'token' => $accessTokenDocument->getToken(),
-            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->toDateTime()->getTimestamp(),
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->toDateTime()->getTimestamp(),
             'expired' => $accessTokenDocument->isExpired(),
-            'scopes' => array_values($accessTokenDocument->scopes),
-            'user' => $accessTokenDocument->user->renderSummary(),
-            'client' => $accessTokenDocument->client->renderSummary(),
+            //'scopes' => array_values($accessTokenDocument->scopes),
+            //'user' => $accessTokenDocument->user->renderSummary(),
+            //'client' => $accessTokenDocument->client->renderSummary(),
         ];
 
         return $view;
-    }
-
-    public function renderGet()
-    {
-        // POST is same as GET
-        return $this->render();
-    }
-
-    public function renderPost()
-    {
-        // POST is same as GET
-        return $this->render();
     }
 }

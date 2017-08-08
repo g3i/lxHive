@@ -107,7 +107,7 @@ abstract class Validator
      */
     public function validateRequest()
     {
-        $header = $this->getContainer()['parser']->getData()->getHeaders()['x-experience-api-version'];
+        $header = $this->getContainer()->get('parser')->getData()->getHeaders()['x-experience-api-version'];
         if ($header === null) {
             throw new Exception('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
         }
