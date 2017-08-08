@@ -156,7 +156,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         $accessTokenDocumentTransformed->setUser($accessTokenUser);
 
         // Set the host - needed for generation of access token authority
-        $host = $this->getContainer()->get('url']->getBaseUrl();
+        $host = $this->getContainer()->get('url')->getBaseUrl();
         $accessTokenDocumentTransformed->setHost($host);
 
         return $accessTokenDocumentTransformed;

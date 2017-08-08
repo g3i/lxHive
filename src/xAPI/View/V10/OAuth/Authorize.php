@@ -33,12 +33,12 @@ class Authorize extends View
     {
         $view = $this->getContainer()->get('view');
         $this->setItems(['csrfToken' => $_SESSION['csrfToken'],
-        			     'name' => Config::get(['name']), 
-        			     'branding' => Config::get(['xAPI', 'oauth', 'branding']),
-        			     'user' => $user,
-        			     'client' => $client,
-        			     'scopes' => $scopes
-        			 	 ]);
+                         'name' => Config::get(['name']),
+                         'branding' => Config::get(['xAPI', 'oauth', 'branding']),
+                         'user' => $user,
+                         'client' => $client,
+                         'scopes' => $scopes
+                         ]);
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'authorize.twig', $this->getItems());
 
