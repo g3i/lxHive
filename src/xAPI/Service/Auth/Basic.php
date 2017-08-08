@@ -124,7 +124,7 @@ class Basic extends Service implements AuthInterface
     public function accessTokenPost()
     {
         // TODO: This isn't okay, as we are switching to objects everywhere. However, there is not nice way to "merge" objects in PHP...
-        $body = json_decode($this->getContainer()['parser']->getData()->getRawPayload(), true);
+        $body = json_decode($this->getContainer()->get('parser')->getData()->getRawPayload(), true);
         $requestParams = new Util\Collection($body);
         $this->validateRequiredParams($requestParams);
         $currentDate = new \DateTime();

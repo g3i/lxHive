@@ -68,7 +68,7 @@ class User extends Provider implements UserInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -86,7 +86,7 @@ class User extends Provider implements UserInterface, SchemaInterface
         if (is_string($id)) {
             $id = new \MongoDB\BSON\ObjectID($id);
         }
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('_id', $id);
@@ -100,7 +100,7 @@ class User extends Provider implements UserInterface, SchemaInterface
      */
     public function addUser($name, $description, $email, $password, $permissions)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         // check if email is valid and unique
         if ($this->hasEmail($email)) {
@@ -133,7 +133,7 @@ class User extends Provider implements UserInterface, SchemaInterface
      */
     public function fetchAll()
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $cursor = $storage->find(self::COLLECTION_NAME);
 
         $documentResult = new \API\Storage\Query\DocumentResult();
@@ -152,7 +152,7 @@ class User extends Provider implements UserInterface, SchemaInterface
             return false;
         }
 
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $count = $storage->count(self::COLLECTION_NAME, [
             'email' => $email,
         ]);
@@ -165,7 +165,7 @@ class User extends Provider implements UserInterface, SchemaInterface
      */
     public function findByEmailAndPassword($username, $password)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('email', $username);

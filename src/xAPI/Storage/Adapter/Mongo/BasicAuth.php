@@ -69,7 +69,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -87,7 +87,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function storeToken($name, $description, $expiresAt, $user, $permissions, $key = null, $secret = null)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $accessTokenDocument = new \API\Document\AccessToken();
         $accessTokenDocument->setName($name);
         $accessTokenDocument->setDescription($description);
@@ -128,7 +128,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function getToken($key, $secret)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
@@ -148,7 +148,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
         $accessTokenDocumentTransformed->setUser($accessTokenUser);
 
         // Set the host - needed for generation of access token authority
-        $host = $this->getContainer()['url']->getBaseUrl();
+        $host = $this->getContainer()->get('url')->getBaseUrl();
         $accessTokenDocumentTransformed->setHost($host);
 
         return $accessTokenDocumentTransformed;
@@ -159,7 +159,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function deleteToken($key)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
@@ -174,7 +174,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function expireToken($key)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('key', $key);
@@ -188,7 +188,7 @@ class BasicAuth extends Provider implements BasicAuthInterface, SchemaInterface
      */
     public function getTokens()
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $cursor = $storage->find(self::COLLECTION_NAME);
 
         return $cursor;

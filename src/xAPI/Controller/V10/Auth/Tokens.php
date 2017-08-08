@@ -46,7 +46,7 @@ class Tokens extends Controller
     public function get()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        $this->getContainer()->get('auth')->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -65,7 +65,7 @@ class Tokens extends Controller
     public function post()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        $this->getContainer()->get('auth')->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -84,7 +84,7 @@ class Tokens extends Controller
     public function put()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        $this->getContainer()->get('auth')->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -103,7 +103,7 @@ class Tokens extends Controller
     public function delete()
     {
         // Check authentication
-        $this->getContainer()->auth->checkPermission('super');
+        $this->getContainer()->get('auth')->checkPermission('super');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);

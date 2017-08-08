@@ -67,7 +67,7 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -85,7 +85,7 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
      */
     public function fetchById($id)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('id', $id);

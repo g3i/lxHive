@@ -31,7 +31,7 @@ class Login extends View
 {
     public function renderGet($errors)
     {
-        $view = $this->getContainer()['view'];
+        $view = $this->getContainer()->get('view');
         $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding']), 'errors' => $errors]);
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'login.twig', $this->getItems());
