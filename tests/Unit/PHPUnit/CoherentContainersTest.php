@@ -33,6 +33,7 @@ class CoherentContainersTest extends TestCase
 
     /**
      * @depends testSlimContainerInteropInterfaceHandle
+     * @expectedException PHPUnit_Framework_Error
      */
     public function testApiContainerObjectHandle()
     {
