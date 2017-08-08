@@ -38,7 +38,7 @@ class Auth extends Service
     private $userId = null;
 
     /**
-     * @var array $permissions current token/session permissions, not to be confused with global user permissions
+     * @var array $permissions current token/auth permissions, not to be confused with global user permissions
      */
     private $permissions = [];
 
@@ -71,7 +71,7 @@ class Auth extends Service
     }
 
     /**
-     * Register a user session, user Id and permissions
+     * Register a user auth, user Id and permissions
      * @param string|\MongoDB\BSON\ObjectID  $userId user record _id
      * @param array $scopeIds token names as string
      *
@@ -166,7 +166,7 @@ class Auth extends Service
     }
 
     /**
-     * Checks if a permission is set for the session
+     * Checks if a permission is set for the current user auth
      *
      * @return bool
      */
@@ -176,8 +176,8 @@ class Auth extends Service
     }
 
     /**
-     * Checks if a permission is set for the session and throws Exception
-     * if queried permission is not assigned to the user session
+     * Checks if a permission is set for the user auth and throws Exception
+     * if queried permission is not assigned to the user auth
      *
      * @return bool
      */
