@@ -1,11 +1,14 @@
 body{
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Raleway', sans-serif;
     background-color: #f9f9f9;
     color: rgb(85, 86, 90);
     padding-bottom: 2em;
 }
 .text-center{
     text-align: center;
+}
+.text-center{
+    margin-top: 1em;
 }
 
 /**
@@ -79,4 +82,22 @@ pure-button{
     background: #ffffff;
     padding: 2em 1em;
     border-radius: 5px;
+}
+.pure-form .pure-control-group input{
+   margin-left: auto;
+   margin-right: auto;
+   min-width: 200px;
+   max-width: 250px;
+}
+.pure-form .pure-control-group label{
+   margin-left: auto;
+   margin-right: auto;
+   min-width: 200px;
+   max-width: 250px;
+}
+.pure-form .pure-control-group button{
+   margin-left: auto;
+   margin-right: auto;
+   min-width: 200px;
+   max-width: 250px;
 }
