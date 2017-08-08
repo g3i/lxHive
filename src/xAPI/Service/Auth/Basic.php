@@ -28,7 +28,7 @@ use API\Service;
 use API\Controller;
 use Slim\Http\Request;
 use API\Service\User as UserService;
-use API\Service\Session as SessionService;
+use API\Service\Auth as AuthService;
 use API\Util;
 use API\Util\Collection;
 
@@ -147,7 +147,7 @@ class Basic extends Service implements AuthInterface
         ]);
 
         $params = new Util\Collection(array_replace_recursive($defaultParams->all(), $requestParams->all()));
-        $permissionService = new SessionService($this->getContainer());
+        $permissionService = new AuthService($this->getContainer());
 
         // sanitize submitted token permissions
         $scopes = $params->get('scopes');

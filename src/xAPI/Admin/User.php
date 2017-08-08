@@ -25,7 +25,7 @@
 namespace API\Admin;
 
 use API\Service\User as UserService;
-use API\Service\Session as SessionService;
+use API\Service\Auth as AuthService;
 use API\Admin;
 
 /**
@@ -39,7 +39,7 @@ class User extends Admin
      */
     public function fetchAvailablePermissions()
     {
-        $service = new SessionService($this->getContainer());
+        $service = new AuthService($this->getContainer());
         return $service->getAuthScopes();
     }
 
@@ -49,7 +49,7 @@ class User extends Admin
      */
     public function mergeInheritedPermissions($names)
     {
-        $service = new SessionService($this->getContainer());
+        $service = new  AuthService($this->getContainer());
         return $service->mergeInheritance($names);
     }
 

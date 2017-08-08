@@ -47,7 +47,6 @@ class OAuthTest extends MongoTestCase
         }
     }
 
-
     /**
      * @depends testInstall
      *
@@ -69,14 +68,16 @@ class OAuthTest extends MongoTestCase
         ];
 
         $service = new OAuth(Bootstrap::getContainer());
-        $service->storeToken($mock->expiresAt, $mock->user, $mock->client, $mock->permissions);
+        $res = $service->storeToken($mock->expiresAt, $mock->user, $mock->client, $mock->permissions);
 
-        // fetch record independently to rule out any side effects
-        $q = $this->query(BasicAuth::COLLECTION_NAME, ['name' => $mock->name]);
+        // fetch LAST record independently to rule out any side effects
+        $q = $this->query(OAuth::COLLECTION_NAME, [], [
+            'sort' => [
+                '_id' => 1
+            ]
+        ]);
         $t = $q->toArray()[0];
 
-        $this->assertEquals($t->name, $mock->name);
-        $this->assertEquals($t->description, $mock->description);
         $this->assertEquals($t->expiresAt->toDateTime()->getTimestamp(), $mock->expiresAt);
         $this->assertEquals((string) $t->userId, (string) $mock->user->_id);
         $this->assertEquals($t->permissions, $mock->permissions);

@@ -30,7 +30,7 @@ use API\Bootstrap;
 
 use API\HttpException;
 
-class Session extends Service
+class Auth extends Service
 {
     /**
      * @var string $userId user Mongo ObjectId

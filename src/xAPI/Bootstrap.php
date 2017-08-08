@@ -32,7 +32,7 @@ use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
-use API\Service\Session as SessionService;
+use API\Service\Auth as AuthService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
@@ -280,7 +280,7 @@ class Bootstrap
 
         // 4. create session (empty session at that stage)
         $container['session'] = function ($container) {
-            return new SessionService($container);
+            return new AuthService($container);
         };
 
         return $container;
@@ -423,7 +423,7 @@ class Bootstrap
                     throw new HttpException('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
                 }
 
-                // add user data to session
+                // add user data to user auth
                 $raw = $token->toArray();
                 $container['session']->register($raw->userId, $raw->permissions);
 

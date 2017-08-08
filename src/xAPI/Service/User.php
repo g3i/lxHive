@@ -71,7 +71,7 @@ class User extends Service
             throw new \Exception($errorMessage, Controller::STATUS_UNAUTHORIZED);
         }
 
-        // Set the session
+        // Set current user auth
         $_SESSION['userId'] = (string)$document->_id;
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
 
