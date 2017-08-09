@@ -83,7 +83,7 @@ pure-button{
     padding: 2em 1em;
     border-radius: 5px;
 }
-.pure-form .pure-control-group input{
+#id_username, #id_password, #id_remember_me, #id_login{
    margin-left: auto;
    margin-right: auto;
    min-width: 200px;
