@@ -1,0 +1,83 @@
+{
+  "statements\/write": {
+        "module": "xAPI",
+        "description": "Write statements",
+        "inherits": [
+            "attachments"
+        ]
+    },
+    "statements\/read": {
+        "module": "xAPI",
+        "description": "Read statements",
+        "inherits": [
+            "attachments"
+        ]
+    },
+    "statements\/read\/mine": {
+        "module": "xAPI",
+        "description": "Read own statements",
+        "inherits": [
+            "attachments"
+        ]
+    },
+    "state": {
+        "module": "xAPI",
+        "description": "Access the State API",
+        "inherits": []
+    },
+    "profile": {
+        "module": "xAPI",
+        "description": "Access the Profile API",
+        "inherits": []
+    },
+    "define": {
+        "module": "xAPI",
+        "description": "(Re)define new Activities",
+        "inherits": []
+    },
+    "all\/read": {
+        "module": "xAPI",
+        "description": "Full read-only access",
+        "inherits": [
+            "statements\/read\/mine",
+            "attachments",
+            "state",
+            "profile",
+            "attachments"
+        ]
+    },
+    "all": {
+        "module": "xAPI",
+        "description": "Full access",
+        "inherits": [
+            "statements\/write",
+            "statements\/read\/mine",
+            "statements\/read",
+            "state",
+            "define",
+            "profile",
+            "all\/read",
+            "attachments"
+        ]
+    },
+    "super": {
+        "module": "System",
+        "description": "Administrate the LRS",
+        "inherits": [
+            "statements\/write",
+            "statements\/read\/mine",
+            "statements\/read",
+            "state",
+            "define",
+            "profile",
+            "all\/read",
+            "all",
+            "attachments"
+        ]
+    },
+    "attachments": {
+        "module": "System",
+        "description": "Include attachments",
+        "inherits": []
+    }
+}

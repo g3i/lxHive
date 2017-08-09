@@ -32,6 +32,7 @@ use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
+use API\Service\Session as SessionService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
@@ -276,6 +277,11 @@ class Bootstrap
             return $storageAdapter;
         };
 
+        // 4. create session (empty session at that stage)
+        $container['session'] = function ($container) {
+            return new SessionService($container);
+        };
+
         return $container;
     }
 
@@ -401,7 +407,6 @@ class Bootstrap
 
                 try {
                     $token = $oAuthService->extractToken($container['request']);
-                    //$container['requestLog']->addRelation('oAuthToken', $token)->save();
                 } catch (AuthFailureException $e) {
                     // Ignore
                 }
@@ -416,6 +421,10 @@ class Bootstrap
                 if (null === $token) {
                     throw new HttpException('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
                 }
+
+                // add user data to session
+                $raw = $token->toArray();
+                $container['session']->register($raw->userId, $raw->scopeIds);
 
                 return $token;
             }
