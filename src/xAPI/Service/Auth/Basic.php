@@ -149,15 +149,15 @@ class Basic extends Service implements AuthInterface
         $params = new Util\Collection(array_replace_recursive($defaultParams->all(), $requestParams->all()));
         $permissionService = new AuthService($this->getContainer());
 
-        // sanitize submitted token permissions
+        // Sanitize submitted token permissions
         $scopes = $params->get('scopes');
-        $scopeDocuments = $permissionService->filterPermissions($scopes);
+        $scopeDocuments = $permissionService->sanitizePermissions($scopes);
 
-        // sanitize submitted user permissions
+        // Sanitize submitted user permissions
         $permissions = $params->get('user')['permissions'];
-        $permissionDocuments = $permissionService->filterPermissions($scopes);
+        $permissionDocuments = $permissionService->sanitizePermissions($scopes);
 
-        // TODO compare user vs token permissions. token permissions can be only a sub-set or equal user permissions
+        // TODO: Compare user vs token permissions. Token permissions can be only a sub-set or equal user permissions.
 
         if (is_numeric($params->get('expiresAt'))) {
             $expiresAt = $params->get('expiresAt');

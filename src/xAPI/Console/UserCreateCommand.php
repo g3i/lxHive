@@ -140,7 +140,6 @@ class UserCreateCommand extends Command
 
         // 5. Permissions
         $scopes = [];
-        $selected = [];
         $scopes = $this->userAdmin->fetchAvailablePermissions();
 
         if (null === $input->getOption('permissions')) {
@@ -156,7 +155,7 @@ class UserCreateCommand extends Command
             $question->setMaxAttempts(null);
             $permissions  = $io->askQuestion($question);// validation by ChoiceQuestion
         } else {
-            $selected = explode(',', $input->getOption('permissions'));
+            $permissions = explode(',', $input->getOption('permissions'));
         }
 
         $io->text('<info> * Selected permissions: </info>'. implode(', ', $permissions));

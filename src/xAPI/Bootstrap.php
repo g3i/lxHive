@@ -277,11 +277,6 @@ class Bootstrap
             return $storageAdapter;
         };
 
-        // 4. create session (empty session at that stage)
-        $container['auth'] = function ($container) {
-            return new AuthService($container);
-        };
-
         return $container;
     }
 
@@ -415,7 +410,7 @@ class Bootstrap
             if ($container['request']->isOptions()) {
                 return null;
             }
-            // public routes
+            // Public routes
             if ($container['request']->getUri()->getPath() === '/about') {
                 return null;
             }
@@ -445,12 +440,13 @@ class Bootstrap
             return $token;
         };
 
-        // instanciate token and auth containers
-        // TODO @0.9.6 separate authentication into extra unit for clarity
-        if($container['accessToken']) {
+        // Create Auth service (empty session at that stage)
+        $container['auth'] = function ($container) {
+            $authService = new AuthService($container);
             $token = $container['accessToken']->toArray();
-            $container['auth']->register($token->userId, $token->permissions);
-        }
+            $authService->register($token->userId, $token->permissions);
+            return $authService;
+        };
 
         // Version
         $container['version'] = function ($container) {
@@ -519,7 +515,6 @@ class Bootstrap
         // Slim parser override and CORS compatibility layer (Internet Explorer)
         $app->add(function ($request, $response, $next) use ($container) {
 
-            // Register media type parser
             $request->registerMediaTypeParser('application/json', function ($input) {
                 return json_decode($input);
             });
