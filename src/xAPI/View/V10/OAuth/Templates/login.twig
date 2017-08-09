@@ -27,7 +27,7 @@
                 </ul>
                 {% endif %}
 
-                <form class="pure-form pure-form-aligned" action="" method="POST">
+                <form class="pure-form pure-form-stacked" action="" method="POST">
                     <fieldset>
                         <h2> Log in to {{ name }}</h2>
                         {% if branding.enabled and branding.header %}
@@ -35,14 +35,12 @@
                         {% endif %}
                         <input type="hidden" name="csrfToken" value="{{ csrfToken }}"/>
                         <div class="pure-control-group">
-                            <label for="id_username">E-mail</label>
-                            <input id="id_username" autocorrect="off" autocapitalize="off" type="text" placeholder="email" name="email" maxlength="254" />
+                            <input id="id_username" autocorrect="off" autocapitalize="off" type="text" placeholder="Email" name="email" maxlength="254" />
                         </div>
                         <div class="pure-control-group">
-                            <label for="id_password">Password</label>
-                                <input type="password" placeholder="password" name="password" id="id_password"/>
+                                <input type="password" placeholder="Password" name="password" id="id_password"/>
                         </div>
-                        <div class="pure-controls">
+                        <div class="pure-control-group">
                             <label for="id_remember_me" class="pure-checkbox">
                                 <input type="checkbox" name="rememberMe" id="id_remember_me" />Remember me</label>
                             </label>
