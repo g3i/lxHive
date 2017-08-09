@@ -84,7 +84,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
     /**
      * {@inheritDoc}
      */
-    public function storeToken($expiresAt, $user, $client, array $scopes = [], $code = null)
+    public function storeToken($expiresAt, $user, $client, array $permissions = [], $code = null)
     {
         $storage = $this->getContainer()->get('storage');
 
@@ -99,12 +99,8 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $accessTokenDocument->setUserId($user->_id);
         $accessTokenDocument->setClientId($client->_id);
 
-        $scopeIds = [];
-        foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->_id;
-        }
-        $accessTokenDocument->setScopeIds($scopeIds);
 
+        $accessTokenDocument->setPermissions($permissions);
         $accessTokenDocument->setToken(Util\OAuth::generateToken());
         if (null !== $code) {
             $accessTokenDocument->setCode($code);
@@ -133,12 +129,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $this->validateExpiration($accessTokenDocument);
 
         $accessTokenDocumentTransformed = new \API\Document\OAuthToken($accessTokenDocument);
-        // Fetch scopes for this token - this is done here intentionally for performance reasons
-        // We could call $storage->getAuthScopesStorage() as well, but it'd be slower
-        $accessTokenScopes = $storage->find(AuthScopes::COLLECTION_NAME, [
-            'name' => ['$in' => $accessTokenDocument->scopeIds]
-        ]);
-        $accessTokenDocumentTransformed->setScopes($accessTokenScopes->toArray());
+
         // Fetch user for this token - this is done here intentionally for performance reasons
         // We could call $storage->getUserStorage() as well, but it'd be slower
         $accessTokenUser = $storage->findOne(User::COLLECTION_NAME, ['_id' => $accessTokenDocument->userId]);

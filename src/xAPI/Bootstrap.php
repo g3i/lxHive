@@ -32,6 +32,7 @@ use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
+use API\Service\Auth as AuthService;
 use API\Parser\PsrRequest as PsrRequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
@@ -115,7 +116,7 @@ class Bootstrap
 
         switch (self::$mode) {
             case self::Web: {
-                $config = $bootstrap->initConfig();
+                $bootstrap->initConfig();
                 $container = $bootstrap->initWebContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -124,7 +125,7 @@ class Bootstrap
             }
 
             case self::Console: {
-                $config = $bootstrap->initConfig();
+                $bootstrap->initConfig();
                 $container = $bootstrap->initCliContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -133,7 +134,7 @@ class Bootstrap
             }
 
             case self::Testing: {
-                $config = $bootstrap->initConfig();
+                $bootstrap->initConfig();
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -142,7 +143,7 @@ class Bootstrap
             }
 
             case self::Config: {
-                $config = $bootstrap->initConfig();
+                $bootstrap->initConfig();
                 return $bootstrap;
                 break;
             }
@@ -276,6 +277,11 @@ class Bootstrap
             return $storageAdapter;
         };
 
+        // 4. create session (empty session at that stage)
+        $container['auth'] = function ($container) {
+            return new AuthService($container);
+        };
+
         return $container;
     }
 
@@ -391,36 +397,6 @@ class Bootstrap
             return $logDocument;
         };
 
-        // Auth - token
-        $container['auth'] = function ($container) {
-            if (!$container['request']->isOptions() && !($container['request']->getUri()->getPath() === '/about')) {
-                $basicAuthService = new BasicAuthService($container);
-                $oAuthService = new OAuthService($container);
-
-                $token = null;
-
-                try {
-                    $token = $oAuthService->extractToken($container['request']);
-                    //$container['requestLog']->addRelation('oAuthToken', $token)->save();
-                } catch (AuthFailureException $e) {
-                    // Ignore
-                }
-
-                try {
-                    $token = $basicAuthService->extractToken($container['request']);
-                    //$container['requestLog']->addRelation('basicToken', $token)->save();
-                } catch (AuthFailureException $e) {
-                    // Ignore
-                }
-
-                if (null === $token) {
-                    throw new HttpException('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
-                }
-
-                return $token;
-            }
-        };
-
         // Merge in specific Web settings
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
@@ -432,6 +408,49 @@ class Bootstrap
 
             return $view;
         };
+
+        // Auth - token
+        $container['accessToken'] = function ($container) {
+            // CORS
+            if ($container['request']->isOptions()) {
+                return null;
+            }
+            // public routes
+            if ($container['request']->getUri()->getPath() === '/about') {
+                return null;
+            }
+
+            $basicAuthService = new BasicAuthService($container);
+            $oAuthService = new OAuthService($container);
+
+            $token = null;
+
+            try {
+                $token = $oAuthService->extractToken($container['request']);
+            } catch (AuthFailureException $e) {
+                // Ignore
+            }
+
+            try {
+                $token = $basicAuthService->extractToken($container['request']);
+                //$container['requestLog']->addRelation('basicToken', $token)->save();
+            } catch (AuthFailureException $e) {
+                // Ignore
+            }
+
+            if (null === $token) {
+                throw new HttpException('Credentials invalid!', Controller::STATUS_UNAUTHORIZED);
+            }
+
+            return $token;
+        };
+
+        // instanciate token and auth containers
+        // TODO @0.9.6 separate authentication into extra unit for clarity
+        if($container['accessToken']) {
+            $token = $container['accessToken']->toArray();
+            $container['auth']->register($token->userId, $token->permissions);
+        }
 
         // Version
         $container['version'] = function ($container) {

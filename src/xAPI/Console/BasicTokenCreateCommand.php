@@ -135,7 +135,7 @@ class BasicTokenCreateCommand extends Command
         } else {
             $name = $input->getOption('name');
         }
-        
+
         // 3. description
         if (null === $input->getOption('description')) {
             $helper = $this->getHelper('question');
@@ -155,22 +155,21 @@ class BasicTokenCreateCommand extends Command
         }
 
         // 5. scopes
-        $scopesDictionary = $userAdmin->fetchAvailablePermissions();
         if (null === $input->getOption('scopes')) {
             $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                array_keys($scopesDictionary),
+                implode("\n", [
+                    '<comment>Token Permissions:</comment>',
+                    ' * Please select which <comment>user</comment> permissions you would like to enable.',
+                    ' * Separate multiple values with commas (without spaces).',
+                ]),
+                $user->permissions, // USER permissions!
                 '0'
             );
             $question->setMultiselect(true);
-            $selectedScopeNames = $helper->ask($input, $output, $question);
+            $permissions = $helper->ask($input, $output, $question);
         } else {
-            $selectedScopeNames = explode(',', $input->getOption('scopes'));
-        }
-        $selectedScopes = [];
-        foreach ($selectedScopeNames as $selectedScopeName) {
-            $selectedScopes[] = $scopesDictionary[$selectedScopeName];
+            $permissions = explode(',', $input->getOption('scopes'));
         }
 
         // 6. store token
@@ -182,7 +181,7 @@ class BasicTokenCreateCommand extends Command
         if (null !== $input->getOption('secret')) {
             $secret = $input->getOption('secret');
         }
-        $token = $authAdmin->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
+        $token = $authAdmin->addToken($name, $description, $expiresAt, $user, $permissions, $key, $secret);
 
         $text = json_encode($token, JSON_PRETTY_PRINT);
 

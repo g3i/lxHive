@@ -292,28 +292,6 @@ class OAuth extends Service implements AuthInterface
         return $tokenDocument;
     }
 
-    public function hasPermission($permissionName)
-    {
-        foreach ($this->fetchScopes() as $scope) {
-            if ($scope['name'] === $permissionName || $scope['name'] === 'super') {
-                return true;
-            }
-            if ($permissionName !== 'super' && $scope['name'] === 'all') {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function checkPermission($permissionName)
-    {
-        if ($this->hasPermission($permissionName)) {
-            return true;
-        } else {
-            return new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
-        }
-    }
-
     private function validateScopeDocument($scopeDocument)
     {
         if (null === $scopeDocument) {

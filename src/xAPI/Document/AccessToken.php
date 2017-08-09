@@ -42,8 +42,9 @@
 
 namespace API\Document;
 
-use API\Controller;
+use API\Bootstrap;
 use API\Document;
+use API\Controller;
 
 // TODO 0.9.6
 
@@ -128,9 +129,11 @@ class AccessToken extends Document
      * Check if fetched token document is a super token document
      * @return bool
      */
+     // TODO, this is legacy remove and change references!
     public function isSuperToken()
     {
-        return $this->hasPermission('super');
+        $container = Bootstrap::getContainer();
+        return $container->get('auth')->hasPermission('super');
     }
 
     /**
@@ -139,66 +142,11 @@ class AccessToken extends Document
      *
      * @return bool
      */
-    public function hasPermission(string $permissionName)
+     // TODO, this is legacy remove and change references!
+    public function hasPermission(string $name)
     {
-        foreach ($this->getScopes() as $scope) {
-            if ($scope->name === $permissionName || $scope->name === 'super') {
-                return true;
-            }
-            if ($permissionName !== 'super' && $scope->name === 'all') {
-                return true;
-            }
-        }
-
-        return false;
+        $container = Bootstrap::getContainer();
+        return $container->get('auth')->hasPermission($name);
     }
 
-    /**
-     * Strict check if fetched token document includes a specified permission
-     * @see self:: $permissionName()
-     *
-     * @param string $permissionName
-     *
-     * @return bool
-     * @throws \Exception
-     */
-    public function checkPermission($permissionName)
-    {
-        // If an array is provided, an OR condition is applied to the elements
-        if (is_array($permissionName)) {
-            $result = false;
-            foreach ($permissionName as $individualPermissionName) {
-                if ($this->hasPermission($individualPermissionName)) {
-                    $result = true;
-                }
-            }
-        } else {
-            $result = $this->hasPermission($permissionName);
-        }
-
-        if ($result) {
-            return true;
-        } else {
-            throw new \Exception('Permission denied.', Controller::STATUS_FORBIDDEN);
-        }
-    }
-
-    /**
-     * Returns true only if the user only has access to their own statements
-     * @return boolean The result
-     */
-    // TODO @RoboSparrow: Please also remove this once lxHive-Internal/issues/125 is finished (0.9.5 permission matrix)
-    public function canOnlyReadMine()
-    {
-        if (
-            $this->hasPermission('statements/read/mine')
-            && !$this->hasPermission('statements/read')
-            && !$this->hasPermission('all')
-            && !$this->hasPermission('all/read')
-            && !$this->hasPermission('super')) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

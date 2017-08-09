@@ -28,7 +28,7 @@ interface AuthScopesInterface extends QueryInterface
 {
     /**
      * Find record by Mongo ObjectId
-     * @param string $id
+     * @param MongoDB\BSON\ObjectID $id
      *
      * @return \API\DocumentInterface|null
      */

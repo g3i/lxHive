@@ -56,7 +56,8 @@ class Statements extends Controller
     public function get()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission(['statements/read', 'statements/read/mine']);
+        $this->getContainer()->get('auth')->requirePermission('statements/read');
+        $this->getContainer()->get('auth')->requirePermission('statements/read/mine');
 
         // Do the validation
         $this->statementValidator->validateRequest();
@@ -80,7 +81,7 @@ class Statements extends Controller
     public function put()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('statements/write');
+        $this->getContainer()->get('auth')->requirePermission('statements/write');
 
         $request = $this->getContainer()->get('parser')->getData();
         // Do the validation
@@ -97,7 +98,7 @@ class Statements extends Controller
     public function post()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('statements/write');
+        $this->getContainer()->get('auth')->requirePermission('statements/write');
 
         // Do the validation and multipart splitting
         $this->statementValidator->validateRequest();

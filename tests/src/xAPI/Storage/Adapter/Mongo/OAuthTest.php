@@ -46,4 +46,40 @@ class OAuthTest extends MongoTestCase
             $this->assertContains($name, $installed);
         }
     }
+
+    /**
+     * @depends testInstall
+     *
+     * Note: we are NOT testing any user relations
+     */
+    public function testStoreToken()
+    {
+        //storeToken($expiresAt, $user, $client, array $permissions = [], $code = null)
+        $now = time();
+        $mock = (object)[
+            'expiresAt' => $now + 3600,
+            'user' => (object) [
+                '_id' => new \MongoDB\BSON\ObjectID()
+            ],
+            'client' => (object) [
+                '_id' => new \MongoDB\BSON\ObjectID()
+            ],
+            'permissions' => ['statement/write', 'statments/read/mine'],
+        ];
+
+        $service = new OAuth(Bootstrap::getContainer());
+        $res = $service->storeToken($mock->expiresAt, $mock->user, $mock->client, $mock->permissions);
+
+        // fetch LAST record independently to rule out any side effects
+        $q = $this->query(OAuth::COLLECTION_NAME, [], [
+            'sort' => [
+                '_id' => 1
+            ]
+        ]);
+        $t = $q->toArray()[0];
+
+        $this->assertEquals($t->expiresAt->toDateTime()->getTimestamp(), $mock->expiresAt);
+        $this->assertEquals((string) $t->userId, (string) $mock->user->_id);
+        $this->assertEquals($t->permissions, $mock->permissions);
+    }
 }

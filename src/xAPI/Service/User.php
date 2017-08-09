@@ -71,7 +71,7 @@ class User extends Service
             throw new \Exception($errorMessage, Controller::STATUS_UNAUTHORIZED);
         }
 
-        // Set the session
+        // Set current user auth
         $_SESSION['userId'] = (string)$document->_id;
         $_SESSION['expiresAt'] = time() + 3600; //1 hour
 
@@ -112,27 +112,6 @@ class User extends Service
     public function fetchAll()
     {
         $documentResult = $userDocument = $this->getStorage()->getUserStorage()->fetchAll();
-
-        return $documentResult;
-    }
-
-    public function fetchPermissionsByNames($names)
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->findByNames($names);
-
-        return $documentResult;
-    }
-
-    public function fetchAvailablePermissionNames()
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->getNames();
-
-        return $documentResult;
-    }
-
-    public function fetchAvailablePermissions()
-    {
-        $documentResult = $this->getStorage()->getAuthScopesStorage()->fetchAll();
 
         return $documentResult;
     }

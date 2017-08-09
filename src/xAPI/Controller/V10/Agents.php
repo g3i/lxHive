@@ -37,7 +37,7 @@ class Agents extends Controller
     public function get()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('profile');
+        $this->getContainer()->get('auth')->requirePermission('profile');
 
         // TODO: Validation.
 

@@ -139,28 +139,31 @@ class UserCreateCommand extends Command
         }
 
         // 5. Permissions
-        $available = $this->userAdmin->fetchAvailablePermissionNames();
+        $scopes = [];
+        $selected = [];
+        $scopes = $this->userAdmin->fetchAvailablePermissions();
 
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
                 implode("\n", [
                     '<comment>[6/6]</comment> Please select which permissions you would like to enable.',
-                    'Separate multiple values wit
-                    h commas (without spaces).',
-                   'If you select super, all other permissions are also inherited: ',
+                    ' * Separate multiple values with commas (without spaces).',
                 ]),
-                $available,
-                '0'
+                array_keys($scopes),
+                null
             );
             $question->setMultiselect(true);
             $question->setMaxAttempts(null);
             $permissions  = $io->askQuestion($question);// validation by ChoiceQuestion
         } else {
-            $permissions = explode(',', $input->getOption('permissions'));
+            $selected = explode(',', $input->getOption('permissions'));
         }
 
+        $io->text('<info> * Selected permissions: </info>'. implode(', ', $permissions));
+        $permissions = $this->userAdmin->mergeInheritedPermissions($permissions);
+        $io->text('<info> * with inherited permissions: </info>'. implode(', ', $permissions));
+
         // 6. add record
-        $permissions = array_unique($permissions);
         $cursor = $this->userAdmin->addUser($name, $description, $email, $password, $permissions);
 
         $io->success('User successfully created!');
