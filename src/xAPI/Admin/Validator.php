@@ -133,9 +133,7 @@ class Validator
             throw new AdminException('Available permissions cannot be empty.');
         }
 
-        $aNames = array_map(function ($perm) {
-            return $perm['name'];
-        }, $available);
+        $aNames = array_keys($available);
 
         foreach ($perms as $name) {
             if (!in_array($name, $aNames)) {
