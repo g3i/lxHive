@@ -66,7 +66,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -84,7 +84,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function findById($id)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         $expression = $storage->createExpression();
         $expression->where('_id', $id);
@@ -98,7 +98,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function fetchAll()
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $cursor = $storage->find(self::COLLECTION_NAME);
 
         $documentResult = new \API\Storage\Query\DocumentResult();
@@ -112,7 +112,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function findByName($name)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
         $expression->where('name', $name);
         $scopeDocument = $storage->findOne(self::COLLECTION_NAME, $expression);
@@ -129,7 +129,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function findByNames($names, $options = [])
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $cursor = $storage->find(self::COLLECTION_NAME, [
             'name' => ['$in' => $names]
         ], $options);
@@ -145,7 +145,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function getNames()
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $cursor = $storage->distinct(self::COLLECTION_NAME, 'name');
 
         $documentResult = new \API\Storage\Query\DocumentResult();
@@ -159,7 +159,7 @@ class AuthScopes extends Provider implements AuthScopesInterface, SchemaInterfac
      */
     public function addScope($name, $description)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         $scopeDocument = new \API\Document\Generic();
         $scopeDocument->setName($name);

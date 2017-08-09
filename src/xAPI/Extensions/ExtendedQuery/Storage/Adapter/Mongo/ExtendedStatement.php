@@ -42,7 +42,7 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
      */
     public function extendedQuery($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $collection = 'statements';
 
         $queryOptions = [];

@@ -63,7 +63,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
      */
     public function install()
     {
-        $container = $this->getContainer()['storage'];
+        $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
         $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
@@ -81,7 +81,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
      */
     public function getFiltered($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         // Single activity profile
@@ -149,7 +149,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
 
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
 
         // Set up the body to be saved
         $agentProfileDocument = new \API\Document\Generic();
@@ -210,7 +210,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
      */
     public function delete($parameters)
     {
-        $storage = $this->getContainer()['storage'];
+        $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         $expression->where('profileId', $parameters['profileId']);

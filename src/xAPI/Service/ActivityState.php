@@ -36,7 +36,7 @@ class ActivityState extends Service
      */
     public function activityStateGet()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $documentResult = $this->getStorage()->getActivityStateStorage()->getFiltered($params);
@@ -49,7 +49,7 @@ class ActivityState extends Service
      */
     public function activityStatePost()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
@@ -67,7 +67,7 @@ class ActivityState extends Service
      */
     public function activityStatePut()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
@@ -85,7 +85,7 @@ class ActivityState extends Service
      */
     public function activityStateDelete()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
         $this->getStorage()->getActivityStateStorage()->delete($params);

@@ -45,10 +45,10 @@ class Attachments extends Controller
 
     public function get()
     {
-        $request = $this->getContainer()['parser']->getData();
+        $request = $this->getContainer()->get('parser')->getData();
 
         // Check authentication
-        $this->getContainer()->auth->checkPermission('attachments');
+        $this->getContainer()->get('auth')->checkPermission('attachments');
 
         $params = new Util\Collection($request->getParameters());
         if (!$params->has('sha2')) {

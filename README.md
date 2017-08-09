@@ -21,10 +21,10 @@ The Experience API (also referred to as 'xAPI') is a learning software specifica
 
 The results of learning experiences are stored in a Learning Record Store (LRS). The LRS is defined as part of the Experience API Specification and controls at its core the following functions:
 
-1. authentication of authorised users
-2. validation of compliance to the xAPI Standard
-3. the storage of learning related data
-4. retrieval of learning related data
+1. Authentication of authorised users
+2. Validation of compliance to the xAPI Standard
+3. The storage of learning related data
+4. Retrieval of learning related data
 
 The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.net/) and should be easy to install on any web server. It supports Basic Authentication, OAuth 2.0 (Authorization Code Grant) and supports pluggable file storage mechanisms.
 
@@ -65,11 +65,11 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
-* see also our Wiki for a comprehensive [step-bystep guide](https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)
+* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
 
 #### 1. Application install and set-up
 
-1. Install dependencies via `composer install`.
+1. Install dependencies via `composer install --no-dev -o`.
 2. Point your server's `DocumentRoot` directive to the `public` folder
 3. Set up your database & client account:
 
