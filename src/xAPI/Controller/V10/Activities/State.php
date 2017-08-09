@@ -49,7 +49,7 @@ class State extends Controller
     public function get()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('state');
+        $this->getContainer()->get('auth')->requirePermission('state');
 
         // Do the validation - TODO!!!!!!
         //$this->statementValidator->validateRequest($request);
@@ -72,7 +72,7 @@ class State extends Controller
     public function put()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('state');
+        $this->getContainer()->get('auth')->requirePermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -88,7 +88,7 @@ class State extends Controller
     public function post()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('state');
+        $this->getContainer()->get('auth')->requirePermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);
@@ -104,7 +104,7 @@ class State extends Controller
     public function delete()
     {
         // Check authentication
-        $this->getContainer()->get('auth')->checkPermission('state');
+        $this->getContainer()->get('auth')->requirePermission('state');
 
         // Do the validation - TODO!!!
         //$this->statementValidator->validateRequest($request);

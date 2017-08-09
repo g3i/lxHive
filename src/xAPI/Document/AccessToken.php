@@ -133,7 +133,7 @@ class AccessToken extends Document
     public function isSuperToken()
     {
         $container = Bootstrap::getContainer();
-        return $container['session']->hasPermission('super');
+        return $container->get('auth')->hasPermission('super');
     }
 
     /**
@@ -146,23 +146,7 @@ class AccessToken extends Document
     public function hasPermission(string $name)
     {
         $container = Bootstrap::getContainer();
-        return $container['session']->hasPermission($name);
-    }
-
-    /**
-     * Strict check if fetched token document includes a specified permission
-     * @see self:: $permissionName()
-     *
-     * @param string $permissionName
-     *
-     * @return bool
-     * @throws \Exception
-     */
-     // TODO, this is legacy remove and change references!
-    public function checkPermission(string $name)
-    {
-        $container = Bootstrap::getContainer();
-        return $container['session']->requirePermission($name);
+        return $container->get('auth')->hasPermission($name);
     }
 
 }

@@ -578,7 +578,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     private function getAccessToken()
     {
-        return $this->getContainer()->get('auth');
+        return $this->getContainer()->get('accessToken');
     }
 
     private function validateStatementMatches($statementOne, $statementTwo)
