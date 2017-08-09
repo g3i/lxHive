@@ -31,9 +31,9 @@ class OAuthToken extends AccessToken
         $host = $this->getHost();
         $authority = [
             'objectType' => 'Group',
-            'member' => [
+            'member' => (object)[
                 [
-                    'account' => [
+                    'account' => (object)[
                         'homePage' => $host.'/oauth/token',
                         'name' => 'oauth_consumer_'.$this->getClientId(),
                     ],

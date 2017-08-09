@@ -29,7 +29,7 @@ class BasicToken extends AccessToken
     public function generateAuthority()
     {
         $host = $this->getHost();
-        $authority = [
+        $authority = (object)[
             'objectType' => 'Agent',
             'account'    => [
                 'homePage' => $host,
