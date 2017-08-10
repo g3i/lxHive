@@ -27,6 +27,7 @@ namespace API\Admin;
 use API\Bootstrap;
 use API\Config;
 use API\Container;
+use API\Service\Auth as Auth;
 use API\Storage\Adapter\Mongo as Mongo;
 
 /**
@@ -264,8 +265,9 @@ class LrsReport
     private function checkUsersAndPermissions()
     {
         $mongo = new Mongo(new Container());
+        $auth = new Auth(new Container());
 
-        $count = $mongo->count(Mongo\AuthScopes::COLLECTION_NAME);
+        $count = count(array_keys($auth->getAuthScopes()));
         if (!$count) {
             $this->error('Collections', 'authScopes', 'No Authentication Scopes', 'LRS setup is incomplete');
         } else {

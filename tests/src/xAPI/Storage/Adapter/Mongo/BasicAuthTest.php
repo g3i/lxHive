@@ -80,5 +80,10 @@ class BasicAuthTest extends MongoTestCase
         $this->assertEquals($t->expiresAt->toDateTime()->getTimestamp(), $mock->expiresAt);
         $this->assertEquals((string) $t->userId, (string) $mock->user->_id);
         $this->assertEquals($t->permissions, $mock->permissions);
+
+        $this->assertTrue(isset($t->key), 'a default key was created');
+        $this->assertTrue(isset($t->secret), 'a default secret was created');
+        $this->assertGreaterThan(3, strlen($t->key));
+        $this->assertGreaterThan(3, strlen($t->secret));
     }
 }

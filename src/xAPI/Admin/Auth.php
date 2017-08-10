@@ -122,20 +122,6 @@ class Auth extends Admin
     }
 
     /**
-     * Create a new Authscope record
-     * @param string $name scope name/identifier
-     * @param string $description
-     *
-     * @return \API\Document\Generic
-     */
-    public function createAuthScope($name, $description)
-    {
-        $oAuthService = new OAuthService($this->getContainer());
-        $scope = $oAuthService->addScope($name, $description);
-        return $scope;
-    }
-
-    /**
      * Add a new basic Token
      * @param string $name
      * @param string $description
@@ -147,7 +133,7 @@ class Auth extends Admin
      *
      * @return \API\Document\AccessToken
      */
-    public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret)
+    public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key = null, $secret = null)
     {
         $basicAuthService = new BasicAuthService($this->getContainer());
         $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
