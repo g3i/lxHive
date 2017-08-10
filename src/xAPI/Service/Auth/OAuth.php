@@ -255,15 +255,6 @@ class OAuth extends Service implements AuthInterface
         return $this;
     }
 
-    public function fetchScopes()
-    {
-        $accessToken = current($this->accessTokens);
-        // Fetch scopes for access token
-        $tokenDocument = $this->getStorage()->getOAuthStorage()->getTokenWithOneTimeCode($params);
-
-        return $tokenDocument;
-    }
-
     /**
      * Validates and compiles a document of given scopes
      * @return array collection of mapo
