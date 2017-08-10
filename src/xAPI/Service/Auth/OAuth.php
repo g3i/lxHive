@@ -126,22 +126,6 @@ class OAuth extends Service implements AuthInterface
         return $documentResult;
     }
 
-    public function addScope($name, $description)
-    {
-        $scopeDocument = $this->getStorage()->getAuthScopesStorage()->addScope($name, $description);
-
-        return $scopeDocument;
-    }
-
-    /**
-     * get scope document by scope name
-     */
-    public function getScopeByName($name)
-    {
-        $scope = $this->getStorage()->getAuthScopesStorage()->findByName($name);
-        return $scope;
-    }
-
     // TODO: This logic might be better suited for Controllers?
     /**
      * @param [type] $request [description]
@@ -170,14 +154,7 @@ class OAuth extends Service implements AuthInterface
 
         $scopeDocuments = [];
         $scopes = explode(',', $parameters['scope']);
-        foreach ($scopes as $scope) {
-            // get scope by name
-            $scopeDocument = $this->getScopeByName($scope);
-            if (null !== $scopeDocument) {
-                $this->validateScopeDocument($scopeDocument);
-                $scopeDocuments[] = $scopeDocument;
-            }
-        }
+        $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
 
         $this->client = $clientDocument;
         $this->scopes = $scopeDocuments;
@@ -212,14 +189,9 @@ class OAuth extends Service implements AuthInterface
             $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
 
             $scopeDocuments = [];
-            $scopes = explode(',', $params->get('scope'));
-            foreach ($scopes as $scope) {
-                $scopeDocument = $this->getScopeByName($scope);
-                if (null !== $scopeDocument) {
-                    $this->validateScopeDocument($scopeDocument);
-                    $scopeDocuments[] = $scopeDocument;
-                }
-            }
+            $scopes = explode(',', $parameters['scope']);
+            $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
+
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);
             $this->token = $token;
@@ -292,11 +264,26 @@ class OAuth extends Service implements AuthInterface
         return $tokenDocument;
     }
 
-    private function validateScopeDocument($scopeDocument)
+    /**
+     * Validates and compiles a document of given scopes
+     * @return array collection of mapo
+     */
+    private function validateAndMapScopes($scopes)
     {
-        if (null === $scopeDocument) {
-            throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
+        $auth = $this->getContainer()->get('auth');
+        $scopeDocuments = [];
+
+        foreach ($scopes as $scope) {
+            // get scope by name
+            $scopeDocument = $auth->getAuthScope($scope);
+
+            if (!$scopeDocument) {
+                throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
+            }
+            $scopeDocuments[$scope] = $scopeDocument;
         }
+
+        return $scopeDocuments;
     }
 
     private function validateCsrf($params)
@@ -456,20 +443,6 @@ class OAuth extends Service implements AuthInterface
     public function getScopes()
     {
         return $this->scopes;
-    }
-
-    /**
-     * Sets the The relevant scopes.
-     *
-     * @param array $scopes the scopes
-     *
-     * @return self
-     */
-    public function setScopes(array $scopes)
-    {
-        $this->scopes = $scopes;
-
-        return $this;
     }
 
     /**
