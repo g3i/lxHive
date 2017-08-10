@@ -99,15 +99,6 @@ class Basic extends Service implements AuthInterface
     }
 
     /**
-     * get scope document by scope name
-     */
-    public function getScopeByName($name)
-    {
-        $scope = $this->getStorage()->getAuthScopesStorage()->findByName($name);
-        return $scope;
-    }
-
-    /**
      * Tries to get an access token.
      */
     public function accessTokenGet($request)
