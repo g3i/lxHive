@@ -58,7 +58,6 @@ class Schema implements SchemaInterface
              ActivityState::COLLECTION_NAME     => __NAMESPACE__ . '\\ActivityState',
              AgentProfile::COLLECTION_NAME      => __NAMESPACE__ . '\\AgentProfile',
              Attachment::COLLECTION_NAME        => __NAMESPACE__ . '\\Attachment',
-             AuthScopes::COLLECTION_NAME        => __NAMESPACE__ . '\\AuthScopes',
              BasicAuth::COLLECTION_NAME         => __NAMESPACE__ . '\\BasicAuth',
              Log::COLLECTION_NAME               => __NAMESPACE__ . '\\Log',
              OAuth::COLLECTION_NAME             => __NAMESPACE__ . '\\OAuth',

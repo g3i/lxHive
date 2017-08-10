@@ -178,11 +178,4 @@ interface AdapterInterface
      * @return API\Storage\Query\OAuthClientsInterface
      */
     public function getOAuthClientsStorage();
-
-    /**
-     * Get AuthScopes storage
-     *
-     * @return API\Storage\Query\AuthScopesInterface
-     */
-    public function getAuthScopesStorage();
 }

@@ -381,15 +381,6 @@ class Mongo implements AdapterInterface
     /**
      * {@inheritDoc}
      */
-    public function getAuthScopesStorage()
-    {
-        $storage = new Mongo\AuthScopes($this->getContainer());
-        return $storage;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getLogStorage()
     {
         $storage = new Mongo\Log($this->getContainer());
