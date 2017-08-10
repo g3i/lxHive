@@ -147,7 +147,7 @@ class Auth extends Admin
      *
      * @return \API\Document\AccessToken
      */
-    public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret)
+    public function addToken($name, $description, $expiresAt, $user, $selectedScopes, $key = null, $secret = null)
     {
         $basicAuthService = new BasicAuthService($this->getContainer());
         $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes, $key, $secret);
