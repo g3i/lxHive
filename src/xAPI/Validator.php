@@ -24,6 +24,7 @@
 
 namespace API;
 
+use API\Config;
 use JsonSchema;
 use API\HttpException as Exception;
 use API\BaseTrait;
@@ -41,6 +42,9 @@ abstract class Validator
     protected $lastValidator = null;
     protected $lastSchema = null;
 
+    protected $debug;
+    private $debugData = null;
+
     /**
      * Constructor, creates and caches a  instance.
      */
@@ -51,6 +55,7 @@ abstract class Validator
         if (!self::$schemaStorage) {
             self::$schemaStorage = new JsonSchema\SchemaStorage();
         }
+        $this->debug = Config::get('debug', false);
     }
 
     /**
@@ -59,18 +64,17 @@ abstract class Validator
      *
      * @param object|array $data
      * @param string       $uri   (with fragment)
-     * @param bool         $debug
      *
      * @return JsonSchema\Validator
      */
-    public function validateSchema($data, $uri, $debug = false)
+    public function validateSchema($data, $uri)
     {
         $schema = self::$schemaStorage->getSchema($uri);
         $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage, null, JsonSchema\Constraints\Constraint::CHECK_MODE_TYPE_CAST));
         $validator->check($data, $schema);
 
-        if ($debug) {
-            return $this->debugSchema($data, $uri, $validator, $schema);
+        if ($this->debug) {
+            $this->debugData = $this->debugSchema($data, $uri, $validator, $schema);
         }
 
         return $validator;
@@ -89,14 +93,13 @@ abstract class Validator
      */
     public function debugSchema($data, $uri, $validator, $schema)
     {
-        $debug = new \StdClass();
-        $debug->hasErrors = count($validator->getErrors());
-        $debug->errors = ($data) ? $validator->getErrors() : [];
-        $debug->uri = $uri;
-        $debug->schema = $schema;
-        $debug->data = $data;
-
-        throw new Exception('DEBUG: ', (($validator->isValid()) ? 200 : 400), $debug);
+        return [
+            'hasErrors' => count($validator->getErrors()),
+            'errors' => ($data) ? $validator->getErrors() : [],
+            'uri' => $uri,
+            'schema' => $schema,
+            'data' => $data,
+        ];
     }
 
     /**
@@ -146,6 +149,9 @@ abstract class Validator
             } else {
                 $errors[$key] = sprintf($error['message']);
             }
+        }
+        if ($this->debug) {
+            $errors['debug'] = $this->debugData;
         }
         throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
     }

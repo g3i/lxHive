@@ -142,7 +142,8 @@ class Auth extends Service
         if(empty($this->scopes[$name]['inherits'])){
             return [];
         }
-        return $this->scopes[$name]['inherits'];
+        // yaml parses empty arrays to {}
+        return (array) $this->scopes[$name]['inherits'];
     }
 
     /**
