@@ -58,7 +58,7 @@ class Bootstrap
     /**
      * @var string VERSION phpversion() parable application version  string(SemVer), synchs with Config.yml version
      */
-    const VERSION = '0.9.5';
+    const VERSION = '0.10.0';
 
     /**
      * @var Bootstrap Mode
