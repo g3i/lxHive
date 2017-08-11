@@ -66,7 +66,7 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
     {
         $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
-        // TODO: Enable attachment indexing - planned for 0.9.6
+        // TODO: Enable attachment indexing - planned for 0.11.x
         // This will require checksum matching to check for existing attachments
         //$container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }

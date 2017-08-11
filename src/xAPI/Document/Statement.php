@@ -48,7 +48,7 @@ use API\Controller;
 use API\Document;
 use API\DocumentState;
 
-// TODO 0.9.6
+// TODO 0.11.x
 
 class Statement extends Document
 {
