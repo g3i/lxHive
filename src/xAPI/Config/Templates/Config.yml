@@ -56,6 +56,13 @@ xAPI:
             module: System
             description: 'Include attachments'
             inherits: []
+        ####
+        # Extension permissions - TODO: Refactor extension permissions in 0.11.0
+        ####
+        'ext/extendedquery/statements':
+            module: Extension
+            description: 'Extended statement querying'
+            inherits: []
     oauth:
         reauthorize_time: 0
         reauthenticate_time: 2592000

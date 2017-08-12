@@ -57,7 +57,7 @@ class ExtendedQuery extends Controller
         $request = $this->getRequest();
 
         // Check authentication
-        $this->getContainer()->get('auth')->requirePermission('statements/querybuilder');
+        $this->getContainer()->get('auth')->requirePermission('ext/extendedquery/statements');
 
         $documentResult = $this->getExtendedStatementService()->statementGet();
 
@@ -78,7 +78,7 @@ class ExtendedQuery extends Controller
         $request = $this->getRequest();
 
         // Check authentication
-        $this->getContainer()->get('auth')->requirePermission('statements/querybuilder');
+        $this->getContainer()->get('auth')->requirePermission('ext/extendedquery/statements');
 
         // Load the statements - this needs to change, drastically, as it's garbage
         $documentResult = $this->getExtendedStatementService()->statementPost();
