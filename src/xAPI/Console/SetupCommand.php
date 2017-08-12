@@ -54,16 +54,16 @@ class SetupCommand extends SymfonyCommand
      * @var array $sequence
      */
     private $sequence = [
-        'io_checkConfig'            => 'Install default configuration',
-        'io_setLrsInstance'         => 'Configure Lrs instance',
-        'io_setMongoStorage'        => 'Configure Mongo database',
+        'ioCheckConfig'            => 'Install default configuration',
+        'ioSetLrsInstance'         => 'Configure Lrs instance',
+        'ioSetMongoStorage'        => 'Configure Mongo database',
 
         'reboot'                    => 'Reboot app with new configuration',
 
-        'io_verifyDatabaseVersion'   => 'Verify Database compatibility',
-        'io_installDatabaseSchema'  => 'Install lxHive database schemas',
-        'io_installAuthScopes'      => 'Setup oAuth scopes',
-        'io_setLocalFileStorage'    => 'Setup local file storage'
+        'ioVerifyDatabaseVersion'   => 'Verify Database compatibility',
+        'ioInstallDatabaseSchema'  => 'Install lxHive database schemas',
+        'ioInstallAuthScopes'      => 'Setup oAuth scopes',
+        'ioSetLocalFileStorage'    => 'Setup local file storage'
     ];
 
     /**
@@ -138,7 +138,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_checkConfig($io)
+    private function ioCheckConfig($io)
     {
         $msg = [];
 
@@ -163,7 +163,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_setLrsInstance($io)
+    private function ioSetLrsInstance($io)
     {
         $name = $io->ask('Enter a name for this lxHive instance: ', 'lxHive', function ($answer) {
             $this->validator->validateName($answer);
@@ -183,7 +183,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws AdminException
      */
-    private function io_setMongoStorage($io)
+    private function ioSetMongoStorage($io)
     {
         $msg = [];
 
@@ -221,7 +221,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_verifyDatabaseVersion($io)
+    private function ioVerifyDatabaseVersion($io)
     {
         $msg = $this->setup->verifyDbVersion(); // throws exception on fail
         $io->listing(['DB is compatible: ' . $msg]);
@@ -234,7 +234,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_installDatabaseSchema($io)
+    private function ioInstallDatabaseSchema($io)
     {
         $this->setup->installDb(); // throws exception on fail
         $io->listing(['DB schema installed']);
@@ -247,7 +247,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_installAuthScopes($io)
+    private function ioInstallAuthScopes($io)
     {
         // logic migrated to Auth service, left for notification
         $io->listing(['AuthScopes installed']);
@@ -260,7 +260,7 @@ class SetupCommand extends SymfonyCommand
      * @return void
      * @throws RuntimeException
      */
-    private function io_setLocalFileStorage($io)
+    private function ioSetLocalFileStorage($io)
     {
         $msg = [];
 
