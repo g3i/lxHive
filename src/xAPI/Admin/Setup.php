@@ -285,6 +285,6 @@ class Setup
         if (is_dir($dir)) {
             return true;
         }
-        return @mkdir($dir, 755);// surpress PHP warning in console
+        return @mkdir($dir, 0755);// surpress PHP warning in console output
     }
 }
