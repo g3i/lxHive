@@ -24,9 +24,10 @@
 
 namespace API\Controller\V10;
 
+use API\Config;
+use API\Bootstrap;
 use API\Controller;
 use API\View\V10\About as AboutView;
-use API\Config;
 
 class About extends Controller
 {
@@ -39,10 +40,17 @@ class About extends Controller
     {
         $versions = Config::get(['xAPI', 'supported_versions']);
         $extensions = $this->getExtensionInfo();
+        $core = [
+            'lrs' => [
+                'name' => Config::get('name'),
+                'mode' => Config::get('mode'),
+                'version' => Bootstrap::VERSION,
+            ]
+        ];
 
         $view = new AboutView($this->getResponse(), $this->getContainer(), [
             'versions' => $versions,
-            'extensions' => $extensions
+            'extensions' => array_merge($core, $extensions),
         ]);
         $view = $view->render();
 

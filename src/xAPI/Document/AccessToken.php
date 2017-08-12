@@ -46,7 +46,7 @@ use API\Bootstrap;
 use API\Document;
 use API\Controller;
 
-// TODO 0.9.6
+// TODO 0.11.x
 
 class AccessToken extends Document
 {

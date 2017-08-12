@@ -24,7 +24,7 @@
 
 namespace API;
 
-// TODO 0.9.6
+// TODO 0.11.x
 
 abstract class Document implements DocumentInterface
 {

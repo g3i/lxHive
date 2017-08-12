@@ -1,7 +1,7 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* Current version: **v0.9.5**
+* Current release: **0.10.0**
 * Supports xAPI spec <= 1.0.3
 
 [![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/development.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
@@ -61,8 +61,8 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 #### Notes:
 
 * Make sure you have set the `date.timezone` setting in your php.ini
-* lxHive >= 0.9.5 supports **PHP 7.x**
-* since lxHive 0.9.5 we switched the PHP Mongo driver from `mongo` (deprecated) to `mongodb`
+* lxHive >= 0.10.0 supports **PHP 7.x**
+* since lxHive 0.10.0 we switched the PHP Mongo driver from `mongo` (deprecated) to `mongodb`
 
 ### Setup
 
