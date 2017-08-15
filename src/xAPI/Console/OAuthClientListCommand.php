@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use API\Admin\Auth;
 
-// TODO 0.11.x pretty useless in current state
+// TODO 0.11.x review, command seems to have no real use
 
 class OAuthClientListCommand extends Command
 {
