@@ -48,9 +48,7 @@ class Tokens extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('super');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         $this->accessTokenService->accessTokenGet();
 
@@ -67,9 +65,7 @@ class Tokens extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('super');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         $accessTokenDocument = $this->accessTokenService->accessTokenPost();
 
@@ -86,9 +82,7 @@ class Tokens extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('super');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         $this->accessTokenService->accessTokenPut();
 
@@ -105,9 +99,7 @@ class Tokens extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('super');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         $this->accessTokenService->accessTokenDelete();
 

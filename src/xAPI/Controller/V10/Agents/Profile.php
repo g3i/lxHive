@@ -51,9 +51,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validateGetRequest($request);
+        // TODO 0.11.x request validation
 
         $documentResult = $this->agentProfileService->agentProfileGet();
 
@@ -74,9 +72,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the profiles
         $documentResult = $this->agentProfileService->agentProfilePut();
@@ -90,9 +86,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the profiles
         $documentResult = $this->agentProfileService->agentProfilePost();
@@ -106,9 +100,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Delete the profiles
         $deletionResult = $this->agentProfileService->agentProfileDelete();

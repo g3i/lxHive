@@ -39,7 +39,7 @@ class Agents extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // TODO: Validation.
+        // TODO 0.11.x request validation
 
         $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());

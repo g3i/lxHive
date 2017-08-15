@@ -54,9 +54,7 @@ class Login extends Controller
 
     public function get()
     {
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         if (!$this->userService->loggedIn()) {
             $this->userService->loginGet();
@@ -79,9 +77,7 @@ class Login extends Controller
 
     public function post()
     {
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Authorization is always requested
         try {

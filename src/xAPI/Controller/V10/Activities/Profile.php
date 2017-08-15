@@ -51,13 +51,10 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validateGetRequest($request);
-
+        // TODO 0.11.x request validation
         $documentResult = $this->activityProfileService->activityProfileGet();
 
-        // Render them
+        // Render
         $view = new ActivityProfileView($this->getResponse(), $this->getContainer());
 
         if ($documentResult->getIsSingle()) {
@@ -74,9 +71,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the statements
         $documentResult = $this->activityProfileService->activityProfilePut();
@@ -90,9 +85,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the statements
         $documentResult = $this->activityProfileService->activityProfilePost();
@@ -106,9 +99,7 @@ class Profile extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('profile');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the statements
         $deletionResult = $this->activityProfileService->activityProfileDelete();
