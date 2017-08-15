@@ -131,10 +131,9 @@ run `sh generate-docs.sh` from project root (file must be executable)
 
 ## Contributors
 
-The Brightcookie team
+The [Brightcookie](https://www.brightcookie.com/) team
 
 * Jakob Murko - systems architect, lead developer
-* Leo Gaggl - creator, mentor, specs
-* Kien Vu - legacy support, application development
-* Matthew Smith - initial alpha prototype development & spec
-* Joerg Boeselt - tests, development, specs, pm
+* Leo Gaggl - creator, mentor, conformance
+* Joerg Boeselt - development, tests, conformance, project management
+* Matthew Smith - alpha prototype
