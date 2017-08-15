@@ -1,2 +1,2 @@
-Jakob Murko - @sraka1
-Joerg Boeselt - @RoboSparrow
+* Jakob Murko - @sraka1
+* Joerg Boeselt - @RoboSparrow
