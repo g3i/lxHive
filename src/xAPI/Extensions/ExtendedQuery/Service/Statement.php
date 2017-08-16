@@ -75,7 +75,7 @@ class Statement extends Service
 
     /**
      * Multiple storage support
-     * TODO may be obsolete
+     *
      * @return string class name
      */
     protected function resolveStorageClass()

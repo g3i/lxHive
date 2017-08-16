@@ -79,7 +79,7 @@ class ExtendedQuery extends Controller
     {
         $request = $this->getRequest();
 
-        // TODO: Move header validation in a json-schema
+        // // TODO 0.11.x, Move header validation in a json-schema
         if ($request->getMediaType() !== 'application/json') {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }
