@@ -5,6 +5,7 @@
 # add interfaces
 !.gitignore
 !ExtensionInterface.php
+!ExtensionException.php
 
 # add core extensions
 !ExtendedQuery

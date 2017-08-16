@@ -30,6 +30,8 @@ use API\Storage\Query\StatementResult;
 use API\Controller;
 use API\Config;
 
+use API\Extensions\ExtensionException as Exception;
+
 /**
  * Mongo Adaptor for this extension
  */
@@ -71,7 +73,7 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
             }
             foreach ($fields as $field => $value) {
                 if (strpos($field, 'statement.') !== 0) {
-                    throw new \Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
+                    throw new Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
                 }
             }
             $fields = ['_id' => 1] + $fields;
