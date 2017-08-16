@@ -56,7 +56,6 @@ class ProjectedStatement extends View
             }
         }
 
-        // TODO: Abstract this away somewhere...
         if ($statementResult->getHasMore()) {
             $latestId = end($idArray);
             if ($statementResult->getSortDescending()) {

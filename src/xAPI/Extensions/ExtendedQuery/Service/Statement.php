@@ -28,6 +28,8 @@ use API\Controller;
 use Slim\Helper\Set;
 use API\Config;
 
+use API\Extensions\ExtensionException as Exception;
+
 /**
  * Statements Service
  */
@@ -46,14 +48,8 @@ class Statement extends Service
         return $response;
     }
 
-    //TODO Brightcookie/lxHive-Internal/#108
     public function statementPost()
     {
-        // TODO: Move header validation in a json-schema
-        /*if ($request->getMediaType() !== 'application/json') {
-            throw new \Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
-        }*/
-
         // Validation has been completed already - everyhing is assumed to be valid
         $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
         $bodyParams = $this->getContainer()->get('parser')->getData()->getPayload();
@@ -79,7 +75,7 @@ class Statement extends Service
 
     /**
      * Multiple storage support
-     * TODO may be obsolete
+     *
      * @return string class name
      */
     protected function resolveStorageClass()
@@ -87,7 +83,7 @@ class Statement extends Service
         $storageInUse = Config::get(['storage', 'in_use']);
         $storageClass = '\\API\\Extensions\\ExtendedQuery\\Storage\\Adapter\\'.$storageInUse.'\\ExtendedStatement';
         if (!class_exists($storageClass)) {
-            throw new \InvalidArgumentException('Storage type selected in config is incompatible with ExtendedQuery extension!');
+            throw new Exception('Storage type selected in config is incompatible with ExtendedQuery extension!', Controller::STATUS_INTERNAL_SERVER_ERROR);
         }
 
         return $storageClass;

@@ -28,6 +28,8 @@ use API\Controller;
 use API\Extensions\ExtendedQuery\Service\Statement as ExtendedStatementService;
 use API\Extensions\ExtendedQuery\View\V10\ProjectedStatement as ProjectedStatementView;
 
+use API\Extensions\ExtensionException as Exception;
+
 /**
  * Extension Controller class
  * @see \API\ControllerInterface
@@ -76,6 +78,11 @@ class ExtendedQuery extends Controller
     public function post()
     {
         $request = $this->getRequest();
+
+        // TODO 0.11.x, Move header validation in a json-schema
+        if ($request->getMediaType() !== 'application/json') {
+            throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
+        }
 
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('ext/extendedquery/statements');
