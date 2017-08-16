@@ -51,9 +51,7 @@ class State extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('state');
 
-        // Do the validation - TODO!!!!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validateGetRequest($request);
+        // TODO 0.11.x request validation
 
         $documentResult = $this->activityStateService->activityStateGet();
 
@@ -74,9 +72,7 @@ class State extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('state');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the state
         $documentResult = $this->activityStateService->activityStatePut();
@@ -106,9 +102,7 @@ class State extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('state');
 
-        // Do the validation - TODO!!!
-        //$this->statementValidator->validateRequest($request);
-        //$this->statementValidator->validatePutRequest($request);
+        // TODO 0.11.x request validation
 
         // Save the state
         $documentResult = $this->activityStateService->activityStateDelete();

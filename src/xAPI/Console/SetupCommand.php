@@ -125,7 +125,6 @@ class SetupCommand extends SymfonyCommand
      */
     private function reboot($io)
     {
-        //TODO
         Bootstrap::reset();
         Bootstrap::factory(Bootstrap::Console);
         $io->listing(['Re-booted app']);

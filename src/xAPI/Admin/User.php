@@ -89,11 +89,12 @@ class User extends Admin
 
     /**
      * Fetch all user email addresses
-     * TODO, make scalable (search)
+     *
      * @return array collection of user records with email as key
      */
     public function fetchAllUserEmails()
     {
+        // // TODO 0.11.x paginated query
         $userService = new UserService($this->getContainer());
         $documentResult = $userService->fetchAll();
         $users = [];

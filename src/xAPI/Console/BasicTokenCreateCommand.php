@@ -67,7 +67,7 @@ class BasicTokenCreateCommand extends Command
         $authAdmin = new Auth($this->getContainer());
         $userAdmin = new User($this->getContainer());
 
-        //TODO paginated
+        // TODO 0.11.x paginated query
         $users = $userAdmin->fetchAllUserEmails();
 
         $output->writeln([

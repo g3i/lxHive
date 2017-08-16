@@ -92,11 +92,15 @@ class LrsReport
         $this->count($ok);
 
         if ($ok) {
+            $ok = $this->checkXapiDocumentStats();
+        }
+        $this->count($ok);
+
+        if ($ok) {
             $ok = $this->checkLocalFileStorage();
         }
         $this->count($ok);
 
-        //TODO: check statements and document stats
         return $this->reports;
     }
 
@@ -136,7 +140,6 @@ class LrsReport
             }
         }
 
-        //TODO: check statements and document stats
         return $summary;
     }
 
@@ -302,6 +305,33 @@ class LrsReport
     }
 
     /**
+     * Return counts for xapi document storage
+     *
+     * @return bool indicator if tests were completed
+     */
+    private function checkXapiDocumentStats()
+    {
+        $mongo = new Mongo(new Container());
+
+        $count = $mongo->count(Mongo\Statement::COLLECTION_NAME);
+        $this->info('xAPI Documents', 'Statements', $count);
+
+        $count = $mongo->count(Mongo\Activity::COLLECTION_NAME);
+        $this->info('xAPI Documents', 'Activities', $count);
+
+        $count = $mongo->count(Mongo\ActivityProfile::COLLECTION_NAME);
+        $this->info('xAPI Documents', 'Activity Profiles', $count);
+
+        $count = $mongo->count(Mongo\ActivityState::COLLECTION_NAME);
+        $this->info('xAPI Documents', 'Activity States', $count);
+
+        $count = $mongo->count(Mongo\Attachment::COLLECTION_NAME);
+        $this->info('xAPI Documents', 'Activity States', $count);
+
+        return true;
+    }
+
+    /**
      * Run basic checks and stats on local file storage
      *
      * @return bool indicator if tests were completed
@@ -352,6 +382,16 @@ class LrsReport
             'value' => $value,
             'note' => $note,
         ];
+    }
+
+    /**
+     * Add notification of serverity 'info'
+     *
+     * @return void
+     */
+    private function info($section, $label, $value, $note = '')
+    {
+        $this->set($section, $label, 'info', $value, $note);
     }
 
     /**
