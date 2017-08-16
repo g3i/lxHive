@@ -569,7 +569,6 @@ class Bootstrap
         ////
 
         $router = new Routes();
-        $routes = $router->all();
 
         ////
         // Extensions
@@ -601,6 +600,9 @@ class Bootstrap
         ////
         // SlimApp
         ////
+
+        // fetch routes after extensions have merged theirs
+        $routes = $router->all();
 
         foreach ($routes as $pattern => $route) {
             // register single route with methods and controller
