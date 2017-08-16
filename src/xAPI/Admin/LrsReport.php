@@ -140,7 +140,6 @@ class LrsReport
             }
         }
 
-        //TODO: check statements and document stats
         return $summary;
     }
 
