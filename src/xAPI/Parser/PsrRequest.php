@@ -129,16 +129,7 @@ class PsrRequest
             $parameters = $request->getQueryParams();
             $parserResult->setParameters($parameters);
 
-            $requestHeaders = $request->getHeaders();
-            $parsedHeaders = [];
-            // TODO: I hate this, there must be a better way!
-            foreach ($requestHeaders as $key => $value) {
-                $key = strtr(strtolower($key), '_', '-');
-                if (strpos($key, 'http-') === 0) {
-                    $key = substr($key, 5);
-                }
-                $parsedHeaders[$key] = $value;
-            }
+            $parsedHeaders = $this->parseRequestHeaders($request);
             $parserResult->setHeaders($headers + $parsedHeaders);
 
             $parserResult->setRawPayload($content);
@@ -156,43 +147,8 @@ class PsrRequest
             // Create request from mock
             $requestParts[] = $parserResult;
         }
+
         return $requestParts;
-    }
-
-    /**
-     * Parses request body
-     * @param  RequestInterface $request
-     * @return array|object of parsed request body
-     */
-    private function parseSingleRequest($request)
-    {
-        $parserResult = new ParserResult();
-        $parameters = $request->getQueryParams();
-        // CORS override!
-        if (isset($parameters['method'])) {
-            mb_parse_str($request->getUri()->getQuery(), $parameters);
-        }
-        $parserResult->setParameters($parameters);
-
-        $headers = $request->getHeaders();
-        $parsedHeaders = [];
-        // TODO: I hate this, there must be a better way!
-        foreach ($headers as $key => $value) {
-            $key = strtr(strtolower($key), '_', '-');
-            if (strpos($key, 'http-') === 0) {
-                $key = substr($key, 5);
-            }
-            $parsedHeaders[$key] = $value;
-        }
-        $parserResult->setHeaders($parsedHeaders);
-
-        $body = $request->getBody();
-        $parserResult->setRawPayload($body);
-
-        $parsedBody = $request->getParsedBody();
-        $parserResult->setPayload($parsedBody);
-
-        return $parserResult;
     }
 
     /**
@@ -223,5 +179,57 @@ class PsrRequest
     public function getParts()
     {
         return $this->parts;
+    }
+
+
+    /**
+     * Parses request body
+     * @param  RequestInterface $request
+     * @return array|object of parsed request body
+     */
+    private function parseSingleRequest($request)
+    {
+        $parserResult = new ParserResult();
+        $parameters = $request->getQueryParams();
+        // CORS override!
+        if (isset($parameters['method'])) {
+            mb_parse_str($request->getUri()->getQuery(), $parameters);
+        }
+        $parserResult->setParameters($parameters);
+
+        $headers = $request->getHeaders();
+
+        $parsedHeaders = $this->parseRequestHeaders($request);
+        $parserResult->setHeaders($parsedHeaders);
+
+        $body = $request->getBody();
+        $parserResult->setRawPayload($body);
+
+        $parsedBody = $request->getParsedBody();
+        $parserResult->setPayload($parsedBody);
+
+        return $parserResult;
+    }
+
+    /**
+     * Parses and transforms request Headers
+     * @param  RequestInterface $request
+     *
+     * @return array selection of parsed request header
+     */
+    private function parseRequestHeaders($request)
+    {
+        $requestHeaders = $request->getHeaders();
+        $parsedHeaders = [];
+
+            // TODO 0.11.x cumbersome logic, improve this, do we really need to strip http- prefix?
+            foreach ($requestHeaders as $key => $value) {
+                $key = strtr(strtolower($key), '_', '-');
+                if (strpos($key, 'http-') === 0) {
+                    $key = substr($key, 5);
+                }
+                $parsedHeaders[$key] = $value;
+            }
+        return $parsedHeaders;
     }
 }
