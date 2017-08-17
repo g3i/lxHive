@@ -381,7 +381,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $queryOptions['limit'] = (int)$limit;
 
-        // TODO improve
+        // TODO 0.11.x improve following or abstract it into method
         $auth = $this->getContainer()->get('auth');
         if ($auth->hasPermission('statements/read/mine') && !$auth->hasPermission('statements/read')) {
             $expression->where('userId', $this->getAccessToken()->userId);
@@ -413,7 +413,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
     /**
      * {@inheritDoc}
-     * //TODO make this rather private and remove from interface
+     * // TODO 0.11.x make this rather private and remove from interface
      */
     public function transformForInsert($statementObject)
     {
@@ -479,8 +479,8 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         if ($this->getAccessToken()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
-                // TODO: Possibly optimize this using a bulk update (using executeBulkWrite)
-                // TODO2: Create upsertMultiple and updateMultiple methods on CRUD layer!
+                // TODO 0.11.x  Possibly optimize this using a bulk update (using executeBulkWrite)
+                // TODO 0.11.x Create upsertMultiple and updateMultiple methods on CRUD layer!
                 foreach ($activities as $activity) {
                     $storage->upsert(Activity::COLLECTION_NAME, ['id' => $activity->id], $activity);
                 }
@@ -489,8 +489,8 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $statementDocument->setUserId($this->getAccessToken()->getUserId());
 
-        // Add to log
-        //$this->getContainer()->get('requestLog')->addRelation('statements', $statementDocument)->save();
+        // Add to log (disabled)
+        // $this->getContainer()->get('requestLog')->addRelation('statements', $statementDocument)->save();
 
         return $statementDocument;
     }

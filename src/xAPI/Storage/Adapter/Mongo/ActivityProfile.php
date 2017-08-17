@@ -34,6 +34,8 @@ use API\Storage\Provider;
 
 use API\Storage\AdapterException;
 
+// TODO 0.11.x remove header dependency from this layer into parser and submit abstract args from there, like an array of options: put($data, $profileId, $agentIfi, array $options (contentType, if match))
+
 class ActivityProfile extends Provider implements ActivityProfileInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activityProfiles';
@@ -133,7 +135,6 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     public function put($parameters, $profileObject)
     {
         // TODO optimise (upsert),
-        // TODO remove header dependency form this layer: put($data, $stateId, $profileId, array $options (if match))
         $profileObject = (string)$profileObject;
 
         $storage = $this->getContainer()->get('storage');
@@ -211,7 +212,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
         $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
         $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
-        
+
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
