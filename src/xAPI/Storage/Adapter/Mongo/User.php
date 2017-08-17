@@ -145,7 +145,7 @@ class User extends Provider implements UserInterface, SchemaInterface
     /**
      * {@inheritDoc}
      */
-    // TODO remove after indexing user.email as unique
+    // TODO 0.11.x remove this method and references across the code as it is obsolete after indexing user.email as unique
     public function hasEmail($email)
     {
         if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {

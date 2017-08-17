@@ -350,7 +350,9 @@ class Mongo implements AdapterInterface
         return $cursor;
     }
 
-    // TODO: Maybe remove these methods and call them in their respective Service classes - these helpers are worthless here and only add extra complexity!
+    // TODO 0.11.xMaybe remove these methods and call them in their respective Service classes
+    //      These helpers only add extra complexity and lookups
+
     /**
      * {@inheritDoc}
      */
