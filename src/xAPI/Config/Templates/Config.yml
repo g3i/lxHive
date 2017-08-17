@@ -23,11 +23,11 @@ xAPI:
         'statements/read':
             module: xAPI
             description: 'Read statements'
-            inherits: ['attachments', 'ext/extendedquery/statements']
+            inherits: ['attachments']
         'statements/read/mine':
             module: xAPI
             description: 'Read own statements'
-            inherits: ['attachments', 'ext/extendedquery/statements']
+            inherits: ['attachments']
         'state':
             module: xAPI
             description: 'Access the State API'
