@@ -66,6 +66,7 @@ xAPI:
     oauth:
         reauthorize_time: 0
         reauthenticate_time: 2592000
+        token_expiry_time: 3600
         branding:
             enabled: false
             logo_path: null

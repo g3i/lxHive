@@ -311,12 +311,12 @@ class Bootstrap
         $slimDefaultServiceProvider->register($container);
 
         // 5. Insert URL object
-        // TODO: Remove this soon - use PSR-7 request's URI object
-        // TODO: handle more efficiently than catching exceptions when running Unit tests
+        // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
+        // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
         try {
             $container['url'] = Url::createFromServer($_SERVER);
         } catch (\RuntimeException $e) {
-            //noting
+            // See comment above
         }
 
         $handlerConfig = Config::get(['log', 'handlers']);

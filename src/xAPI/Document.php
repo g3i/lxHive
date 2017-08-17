@@ -24,7 +24,7 @@
 
 namespace API;
 
-// TODO 0.11.x
+// TODO 0.11.x: Remove magic getters and setters (strictness)
 
 abstract class Document implements DocumentInterface
 {
@@ -92,7 +92,6 @@ abstract class Document implements DocumentInterface
      *
      * @return self
      */
-    //TODO remove or protected
     protected function setState($state)
     {
         $this->state = $state;
@@ -107,7 +106,6 @@ abstract class Document implements DocumentInterface
      *
      * @return self
      */
-    //TODO remove or protected
     protected function setVersion($version)
     {
         $this->version = $version;
@@ -134,7 +132,6 @@ abstract class Document implements DocumentInterface
      * @param string $key
      * @return mixed property value
      */
-    //TODO remove or protected
     public function set($key, $value)
     {
         $this->data->{"$key"} = $value;
@@ -146,7 +143,7 @@ abstract class Document implements DocumentInterface
      * @param  array $arguments
      * @return mixed
      */
-    //TODO remove
+    // TODO 0.11.x: Most likely remove the magic
     public function __call($name, $arguments)
     {
         // Getter
@@ -175,7 +172,6 @@ abstract class Document implements DocumentInterface
      *
      * @return array
      */
-    //TODO remove
     public function toArray()
     {
         return $this->getData();

@@ -435,7 +435,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $statementDocument = new \API\Document\Statement();
         // Overwrite authority - unless it's a super token and manual authority is set
-        if (!($this->getAccessToken()->isSuperToken() && isset($statementObject->{'authority'})) || !isset($statementObject->{'authority'})) {
+        if (!($this->getAuth()->hasPermission('super') && isset($statementObject->{'authority'})) || !isset($statementObject->{'authority'})) {
             $statementObject->{'authority'} = $this->getAccessToken()->generateAuthority();
         }
         $statementDocument->setStatement($statementObject);
@@ -476,7 +476,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
             $storage->update(self::COLLECTION_NAME, $expression, $referencedStatement);
         }
-        if ($this->getAccessToken()->hasPermission('define')) {
+        if ($this->getAuth()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
                 // TODO 0.11.x  Possibly optimize this using a bulk update (using executeBulkWrite)
@@ -569,6 +569,16 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     public function delete($parameters)
     {
         throw AdapterException('Statements cannot be deleted, only voided!', Controller::STATUS_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Gets the Auth to validate for permissions.
+     *
+     * @return API\Document\Auth\AbstractToken
+     */
+    private function getAuth()
+    {
+        return $this->getContainer()->get('auth');
     }
 
     /**

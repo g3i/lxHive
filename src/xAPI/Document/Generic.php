@@ -44,7 +44,8 @@ namespace API\Document;
 
 use API\Document;
 
-// TODO 0.11.x
+// TODO 0.11.x: Define interface for normalize, validate, etc. (GraphQL)
+
 
 class Generic extends Document
 {

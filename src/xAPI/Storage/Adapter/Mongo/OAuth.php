@@ -183,7 +183,7 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $this->validateAccessTokenNotEmpty($tokenDocument);
         $tokenDocument = new \API\Document\AccessToken($tokenDocument);
 
-        // TODO 0.11.x: Add CRUD method findById to simplify snippets such as this one
+        // TODO 0.11.x: Add CRUD somewhere method findById to simplify snippets such as this one, or call getClientById on OAuthClients instead...
         $clientExpression = $storage->createExpression();
         $clientExpression->where('_id', $tokenDocument->getClientId());
         $clientDocument = $storage->findOne(OAuthClients::COLLECTION_NAME, $clientExpression);

@@ -32,6 +32,7 @@ use League\Url\Url;
 use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Collection;
+use API\Config;
 
 class OAuth extends Service implements AuthInterface
 {
@@ -126,7 +127,7 @@ class OAuth extends Service implements AuthInterface
         return $documentResult;
     }
 
-    // TODO: This logic might be better suited for Controllers?
+    // TODO 0.12.x: Move this logic a level higher, into Controllers (low-priority)
     /**
      * @param [type] $request [description]
      *
@@ -143,17 +144,17 @@ class OAuth extends Service implements AuthInterface
 
         $this->validateRequiredParams($parameters, $requiredParams);
 
-        $this->validateResponseType($parameters['response_type']);
+        $this->validateResponseType($parameters->response_type);
 
         // get client by id
-        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($parameters['client_id']);
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($parameters->client_id);
 
         $this->validateClientDocument($clientDocument);
 
-        $this->validateRedirectUri($parameters['redirect_uri'], $clientDocument);
+        $this->validateRedirectUri($parameters->redirect_uri, $clientDocument);
 
         $scopeDocuments = [];
-        $scopes = explode(',', $parameters['scope']);
+        $scopes = explode(',', $parameters->scope);
         $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
 
         $this->client = $clientDocument;
@@ -173,23 +174,19 @@ class OAuth extends Service implements AuthInterface
         $params = $this->getContainer()->get('parser')->getData()->getParameters();
         $postParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
-        $postParams = new Collection($postParams);
-        $params = new Collection($params);
-
         $this->validateCsrf($postParams);
         $this->validateAction($postParams);
 
-        // TODO: Improve this, load stuff from config, add documented error codes, separate stuff into functions, etc.
         if ($postParams->get('action') === 'accept') {
-            $expiresAt = time() + 3600;
-            // get client by id
-            $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->get('client_id'));
+            $expiresAt = time() + Config::get(['xAPI', 'oauth', 'token_expiry_time']);
+            // getClientById
+            $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->client_id);
 
-            // getuserbyid --  $_SESSION['userId']
+            // getUserById --  $_SESSION['userId']
             $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
 
             $scopeDocuments = [];
-            $scopes = explode(',', $parameters['scope']);
+            $scopes = explode(',', $params->scope);
             $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
 
             $code = Util\OAuth::generateToken();
@@ -294,9 +291,9 @@ class OAuth extends Service implements AuthInterface
 
     private function validateRequiredParams($params, $requiredParams)
     {
-        //TODO: Use json-schema validator
+        //TODO 0.11.x: Use GraphQL to validate these params
         foreach ($requiredParams as $requiredParam) {
-            if (!isset($params[$requiredParam])) {
+            if (!isset($params->{$requiredParam})) {
                 throw new Exception('Parameter '.$requiredParam.' is missing!', Controller::STATUS_BAD_REQUEST);
             }
         }

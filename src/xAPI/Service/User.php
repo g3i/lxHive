@@ -57,13 +57,12 @@ class User extends Service
      */
     public function loginPost()
     {
-        // TODO: This will be fetched from Parser class in future!
         $parameters = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $this->validateCsrf($parameters);
         $this->validateRequiredParameters($parameters);
 
-        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($parameters['email'], $parameters['password']);
+        $document = $this->getStorage()->getUserStorage()->findByEmailAndPassword($parameters->email, $parameters->password);
 
         if (null === $document) {
             $errorMessage = 'Invalid login attempt. Try again!';

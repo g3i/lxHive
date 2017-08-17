@@ -146,7 +146,7 @@ class Statement extends Service
 
     private function validateJsonMediaType($jsonRequest)
     {
-        // TODO: Move header validation in json-schema as well
+        // TODO 0.11.x: Possibly validate this using GraphQL
         if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }

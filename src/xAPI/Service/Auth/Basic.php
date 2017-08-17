@@ -114,55 +114,48 @@ class Basic extends Service implements AuthInterface
      */
     public function accessTokenPost()
     {
-        // TODO: This isn't okay, as we are switching to objects everywhere. However, there is not nice way to "merge" objects in PHP...
-        $body = json_decode($this->getContainer()->get('parser')->getData()->getRawPayload(), true);
-        $requestParams = new Util\Collection($body);
-        $this->validateRequiredParams($requestParams);
+        $body = $this->getContainer()->get('parser')->getData()->getPayload();
+        $this->validateRequiredParams($body);
         $currentDate = new \DateTime();
 
-        $defaultParams = new Util\Collection([
+        $parsedParams = (object)[
             'user' => [
-                'name' => 'anonymous',
-                'description' => '',
-                'password' => 'password',
-                'permissions' => [
-                    'all',
-                ],
+                'name' => isset($body->user->name) ? $body->user->name : 'anonymous',
+                'description' => isset($body->user->description) ? $body->user->description : '',
+                'password' => isset($body->user->password) ? $body->user->password : 'password',
+                'permissions' => isset($body->user->permissions) ? $body->user->permissions :  ['all'],
             ],
-            'scopes' => [
-                'all',
-            ],
-            'name' => 'Token for '.$requestParams->get('user')['email'],
+            'scopes' => isset($body->scopes) ? $body->scopes : ['all'],
+            'name' => 'Token for '.$body->user->email,
             'description' => 'Token generated at '.Util\Date::dateTimeToISO8601($currentDate),
-            'expiresAt' => null,
-        ]);
+            'expiresAt' => isset($body->expiresAt) ? $body->expiresAt : null,
+        ];
 
-        $params = new Util\Collection(array_replace_recursive($defaultParams->all(), $requestParams->all()));
         $permissionService = new AuthService($this->getContainer());
 
         // Sanitize submitted token permissions
-        $scopes = $params->get('scopes');
+        $scopes = $parsedParams->scopes;
         $scopeDocuments = $permissionService->sanitizePermissions($scopes);
 
         // Sanitize submitted user permissions
-        $permissions = $params->get('user')['permissions'];
+        $permissions = $parsedParams->user->permissions;
         $permissionDocuments = $permissionService->sanitizePermissions($permissions);
 
         // TODO: Compare user vs token permissions. Token permissions can be only a sub-set or equal user permissions.
 
-        if (is_numeric($params->get('expiresAt'))) {
-            $expiresAt = $params->get('expiresAt');
-        } elseif (null === $params->get('expiresAt')) {
+        if (is_numeric($parsedParams->expiresAt)) {
+            $expiresAt = $parsedParams->expiresAt;
+        } elseif (null === $parsedParams->expiresAt) {
             $expiresAt = null;
         } else {
-            $expiresAt = new \DateTime($params->get('expiresAt'));
+            $expiresAt = new \DateTime($parsedParams->expiresAt);
             $expiresAt = $expiresAt->getTimestamp();
         }
 
-        // TODO: This is ugly, remove this! @sraka, less ugly if separated in two functions, for user, for token :)
+        // TODO 0.11.x: This functionality (user creation + token creation should be in two separate API calls)
         $userService = new UserService($this->getContainer());
-        $user = $userService->addUser($params->get('user')['name'], $params->get('user')['description'], $params->get('user')['email'], $params->get('user')['password'], $permissionDocuments)->toArray();
-        $accessTokenDocument = $this->addToken($params->get('name'), $params->get('description'), $expiresAt, $user, $scopeDocuments);
+        $user = $userService->addUser($parsedParams->user->name, $parsedParams->user->description, $parsedParams->user->email, $parsedParams->user->password, $permissionDocuments)->toArray();
+        $accessTokenDocument = $this->addToken($parsedParams->name, $parsedParams->description, $expiresAt, $user, $scopeDocuments);
 
         return $accessTokenDocument;
     }
@@ -213,7 +206,7 @@ class Basic extends Service implements AuthInterface
 
     private function validateRequiredParams($requestParams)
     {
-        if ($requestParams['user']['email'] === null) {
+        if (!isset($requestParams->user->email) || $requestParams->user->email === null) {
             throw new Exception('Invalid request, user.email property not present!', Controller::STATUS_BAD_REQUEST);
         }
     }
