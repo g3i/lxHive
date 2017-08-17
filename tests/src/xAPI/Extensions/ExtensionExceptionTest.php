@@ -3,7 +3,6 @@ namespace Tests\Extensions;
 
 use Tests\TestCase;
 
-
 use API\HttpException;
 use API\Extensions\ExtensionException;
 

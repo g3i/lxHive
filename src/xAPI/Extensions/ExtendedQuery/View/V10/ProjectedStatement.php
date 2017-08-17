@@ -49,9 +49,9 @@ class ProjectedStatement extends View
 
         foreach ($statementResult->getCursor() as $result) {
             unset($result->_id);
-            if (isset($result['statement'])) {
-                $result = $result['statement'];
-                $idArray[] = $result['id'];
+            if (isset($result->statement)) {
+                $result = $result->statement;
+                $idArray[] = $result->id;
                 $resultArray[] = $result;
             }
         }
