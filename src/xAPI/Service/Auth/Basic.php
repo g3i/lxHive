@@ -146,7 +146,7 @@ class Basic extends Service implements AuthInterface
 
         // Sanitize submitted user permissions
         $permissions = $params->get('user')['permissions'];
-        $permissionDocuments = $permissionService->sanitizePermissions($scopes);
+        $permissionDocuments = $permissionService->sanitizePermissions($permissions);
 
         // TODO: Compare user vs token permissions. Token permissions can be only a sub-set or equal user permissions.
 
