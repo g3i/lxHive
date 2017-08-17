@@ -1,77 +1,121 @@
+# LRS name (displayed in /about)
 name: lxHive
+# Runtime mode
 mode: production
+# App version, do not edit!
 version: 0.10.0
+####
+# Database
+# Do NOT make changes in production mode
+####
 storage:
     in_use: Mongo
     Mongo:
         host_uri: 'mongodb://127.0.0.1'
         db_name: lxHive
+####
+# Extensions
+# Register and configure lxHive extensions
+####
 extensions:
+    # Single extension entry with identifier
     ExtendedQuery:
+        # Extension base class  mapper
         class_name: '\API\Extensions\ExtendedQuery\ExtendedQuery'
+        # Enable or disable extension
         enabled: true
+####
+# xAPI spec related configuration
+####
 xAPI:
+    # main xAPI version to target
     latest_version: 1.0.3
+    # limit of documents to return per call
     statement_get_limit: 100
+    # statement return format
     default_statement_get_format: exact
+    # legacy xAPI versions (include main version as well)
     supported_versions: [1.0.0, 1.0.1, 1.0.2, 1.0.3]
+    ####
+    # Authentication and permission matrix, we recommended not to change this in production LRS
+    #
+    # - changes do only apply to NEW users and tokens
+    # - permission inheritance: one-level inheritance only
+    #   - a parent inherits the assigned permissions but not the children of the inherited permissions
+    # - inherited permission names must also be defined as top-level permissions
+    #
+    # https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#authentication
+    ####
     supported_auth_scopes:
+        # client can create statements
         'statements/write':
             module: xAPI
             description: 'Write statements'
             inherits: ['attachments']
-        'statements/read':
-            module: xAPI
-            description: 'Read statements'
-            inherits: ['attachments', 'ext/extendedquery/statements']
+        # client can read own statement documents only
         'statements/read/mine':
             module: xAPI
             description: 'Read own statements'
             inherits: ['attachments', 'ext/extendedquery/statements']
+         # client can read any statement
+        'statements/read':
+            module: xAPI
+            description: 'Read statements'
+            inherits: ['attachments', 'ext/extendedquery/statements']
+        # client can crud any state dcument
         'state':
             module: xAPI
             description: 'Access the State API'
             inherits: []
+         # client can crud any state dcument
         'profile':
             module: xAPI
             description: 'Access the Profile API'
             inherits: []
+        # client can define global activity documents
         'define':
             module: xAPI
             description: '(Re)define new Activities'
             inherits: []
+        # client can read any document
         'all/read':
             module: xAPI
             description: 'Full read-only access'
             inherits: ['statements/read/mine', 'attachments', 'state', 'profile', 'attachments', 'ext/extendedquery/statements']
+        # client can read/write any document
         'all':
             module: xAPI
             description: 'Full access'
             inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'attachments', 'ext/extendedquery/statements']
+        # client is lrs adminstrator
         'super':
             module: System
             description: 'Administrate the LRS'
             inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'all', 'attachments', 'ext/extendedquery/statements']
+        # client can store statement attachment documents
         'attachments':
             module: System
             description: 'Include attachments'
             inherits: []
-        ####
         # Extension permissions - TODO: Refactor extension permissions in 0.11.0
-        ####
         'ext/extendedquery/statements':
             module: Extension
             description: 'Extended statement querying'
             inherits: []
+    ####
+    # OAuth2 configuration
+    ####
     oauth:
-        reauthorize_time: 0
-        reauthenticate_time: 2592000
+        # oauth pages branding
         branding:
             enabled: false
             logo_path: null
             header: null
             footer: null
             css_path: null
+####
+# File storage configuration
+####
 filesystem:
     exposed_url: /attachments
     in_use: local
