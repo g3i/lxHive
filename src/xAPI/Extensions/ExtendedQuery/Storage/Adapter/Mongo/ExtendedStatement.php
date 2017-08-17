@@ -63,10 +63,9 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
                 $query = json_decode($query, true);
             }
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ExtensionException('Invalid JSON in query param.', Controller::STATUS_BAD_REQUEST);
+                throw new Exception('Invalid JSON in query param.', Controller::STATUS_BAD_REQUEST);
             }
 
-            // TODO: Add validation that JSON is valid!
             $expression->fromArray($query);
         }
 
@@ -78,7 +77,7 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
                 $fields = json_decode($fields, true);
             }
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ExtensionException('Invalid JSON in projection param.', Controller::STATUS_BAD_REQUEST);
+                throw new Exception('Invalid JSON in projection param.', Controller::STATUS_BAD_REQUEST);
             }
 
             foreach ($fields as $field => $value) {
