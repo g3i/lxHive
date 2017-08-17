@@ -141,7 +141,25 @@ class Basic extends Service implements AuthInterface
         $permissions = $parsedParams->user->permissions;
         $permissionDocuments = $permissionService->sanitizePermissions($permissions);
 
-        // TODO: Compare user vs token permissions. Token permissions can be only a sub-set or equal user permissions.
+        // You cannot create a user with more permissions than the user associated with the API call
+        $callingTokenPermissions = $this->getContainer()->get('auth')->getPermissions();
+
+        // User-permisisons can only be a subset of callingTokenPermissions
+        if (!(array_intersect($parsedParams->user->permissions, $callingTokenPermissions) == $parsedParams->user->permissions)) {
+            // $parsedParams->scopes is not a subset of $parsedParams->user->permissions
+            throw new Exception('Permissions array cannot contain more permissions that the used accessToken associated users\' permissions!', Controller::STATUS_BAD_REQUEST);
+        }
+
+        // Scopes can only be a subset of user->permissions
+        if (!(array_intersect($parsedParams->scopes, $parsedParams->user->permissions) == $parsedParams->scopes)) {
+            // $parsedParams->scopes is not a subset of $parsedParams->user->permissions
+            throw new Exception('Scopes array cannot contain more permissions that the associated users\' permissions!', Controller::STATUS_BAD_REQUEST);
+        }
+
+        // Temporary super tokens cannot be created
+        if (in_array('super', $parsedParams->scopes) || in_array('super', $parsedParams->scopes)) {
+            throw new Exception('Tokens and users with super permissions cannot be created using this endpoint!', Controller::STATUS_BAD_REQUEST);
+        }
 
         if (is_numeric($parsedParams->expiresAt)) {
             $expiresAt = $parsedParams->expiresAt;
