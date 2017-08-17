@@ -23,11 +23,11 @@ xAPI:
         'statements/read':
             module: xAPI
             description: 'Read statements'
-            inherits: ['attachments']
+            inherits: ['attachments', 'ext/extendedquery/statements']
         'statements/read/mine':
             module: xAPI
             description: 'Read own statements'
-            inherits: ['attachments']
+            inherits: ['attachments', 'ext/extendedquery/statements']
         'state':
             module: xAPI
             description: 'Access the State API'
@@ -43,15 +43,15 @@ xAPI:
         'all/read':
             module: xAPI
             description: 'Full read-only access'
-            inherits: ['statements/read/mine', 'attachments', 'state', 'profile', 'attachments']
+            inherits: ['statements/read/mine', 'attachments', 'state', 'profile', 'attachments', 'ext/extendedquery/statements']
         'all':
             module: xAPI
             description: 'Full access'
-            inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'attachments']
+            inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'attachments', 'ext/extendedquery/statements']
         'super':
             module: System
             description: 'Administrate the LRS'
-            inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'all', 'attachments']
+            inherits: ['statements/write', 'statements/read/mine', 'statements/read', 'state', 'define', 'profile', 'all/read', 'all', 'attachments', 'ext/extendedquery/statements']
         'attachments':
             module: System
             description: 'Include attachments'
