@@ -97,9 +97,7 @@ class AuthTest extends TestCase
         $this->assertEquals($uid, 'testuserid');
 
         $perms = $aut->getPermissions();
-        //TODO remove if discussed
-        $this->assertTrue(in_array('super', $perms));
-        $this->assertGreaterThan(1, count($perms), 'super should have merged inherited permissions');
+        $this->assertEquals($perms, [ 'super' ]);
     }
 
     // register: userId can be Mongo ObjectId instance

@@ -172,6 +172,10 @@ class BasicTokenCreateCommand extends Command
             $permissions = explode(',', $input->getOption('scopes'));
         }
 
+        $output->writeln('<info> * Selected permissions: </info>'. implode(', ', $permissions));
+        $permissions = $userAdmin->mergeInheritedPermissions($permissions);
+        $output->writeln('<info> * with inherited permissions: </info>'. implode(', ', $permissions));
+
         // 6. store token
         $key = null;
         if (null !== $input->getOption('key')) {

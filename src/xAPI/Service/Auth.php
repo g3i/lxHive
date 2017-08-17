@@ -30,6 +30,19 @@ use API\Bootstrap;
 
 use API\HttpException;
 
+/**
+ * Inheritance writes the inherited permissions into the token and user records AS IT IS ON TIME OF CREATION,
+ * Applying changed permissions (config) requires to re-issue the token
+ *
+ *      Flat permissions: Permission inheritances of the config are merged into a flat, unique array of permissions inside the token or user document.
+ *      Creation time only: a user / token permissions are created on date of creation and don't change when the config was changed
+ *      One level inheritance only: Inheritance is a first-level only merge. It doesn\'t include childs of childs (only first children)
+ *      Unknown permissions in user/token stored documents are ignored
+ *
+ * We do not considder inheritance changes on run-time as this can be troublesome.
+ * Such a dynamic permission assignment is a ROLE behaviour and planned for a future release.
+ * Roles are understood as goups of permissions who can be updated at any time an reflect the changes.
+*/
 class Auth extends Service
 {
     /**
@@ -86,7 +99,8 @@ class Auth extends Service
         $filtered = $this->filterPermissions($permissionNames);
 
         // we do not update inheritance here
-        $this->permissions = $this->mergeInheritance($filtered);
+        $this->permissions = $filtered;
+        // $this->permissions = $this->mergeInheritance($filtered);
     }
 
     /**
