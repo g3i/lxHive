@@ -228,8 +228,8 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
             throw new AdapterException('Profile does not exist!.', Controller::STATUS_NOT_FOUND);
         }
 
-        isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
-        $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
