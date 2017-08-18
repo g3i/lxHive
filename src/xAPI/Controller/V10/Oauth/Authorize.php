@@ -57,12 +57,12 @@ class Authorize extends Controller
         // TODO 0.11.x request validation
 
         if ($this->userService->loggedIn()) {
-            $this->oAuthService->authorizeGet();
+            $authorizeClientData = $this->oAuthService->authorizeGet();
             // Authorization is always requested
             $view = new OAuthAuthorizeView($this->getResponse(), $this->getContainer(), ['service' => $this->oAuthService]);
             $user = $this->userService->getLoggedIn();
-            $client = $this->oAuthService->getClient();
-            $scopes = $this->oAuthService->getScopes();
+            $client = $authorizeClientData;
+            $scopes = $authorizeClientData->scopes;
             $view = $view->renderGet($user, $client, $scopes);
             return $this->response(Controller::STATUS_OK, $view);
         } else {
@@ -81,8 +81,7 @@ class Authorize extends Controller
 
         if ($this->userService->loggedIn()) {
             // Authorization is always requested
-            $this->oAuthService->authorizePost();
-            $redirectUri = $this->oAuthService->getRedirectUri();
+            $redirectUri = $this->oAuthService->authorizePost();
             $this->setResponse($this->getResponse()->withHeader('Location', $redirectUri));
             return $this->response(Controller::STATUS_FOUND);
         } else {

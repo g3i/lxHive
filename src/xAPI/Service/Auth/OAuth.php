@@ -36,55 +36,6 @@ use API\Config;
 
 class OAuth extends Service implements AuthInterface
 {
-    /**
-     * Access tokens.
-     *
-     * @var array
-     */
-    protected $accessTokens;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    /**
-     * Is this a single access token fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
-    /**
-     * The relevant client(s).
-     *
-     * @var \API\Document\Auth\OAuthClient
-     */
-    protected $client;
-
-    /**
-     * The relevant scopes.
-     *
-     * @var array
-     */
-    protected $scopes;
-
-    /**
-     * The relevant token.
-     *
-     * @var \API\Document\Auth\OAuthToken
-     */
-    protected $token;
-
-    /**
-     * The relevant redirectUri.
-     *
-     * @var string
-     */
-    protected $redirectUri;
-
     public function addToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
         $accessTokenDocument = $this->getStorage()->getOAuthStorage()->storeToken($expiresAt, $user, $client, $scopes, $code);
@@ -146,7 +97,7 @@ class OAuth extends Service implements AuthInterface
 
         $this->validateResponseType($parameters->response_type);
 
-        // get client by id
+        // Get client by id
         $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($parameters->client_id);
 
         $this->validateClientDocument($clientDocument);
@@ -155,10 +106,11 @@ class OAuth extends Service implements AuthInterface
 
         $scopeDocuments = [];
         $scopes = explode(',', $parameters->scope);
-        $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
+        $scopeDocuments = $this->validateAndMapScopes($scopes); // Throws exception if not a valid scope
 
-        $this->client = $clientDocument;
-        $this->scopes = $scopeDocuments;
+        // Return client document object with added authorize request scopes
+        $clientDocument->scopes = $scopeDocuments;
+        return $clientDocument;
     }
 
     // TODO Add AuthorizeResult or something like that!
@@ -191,14 +143,13 @@ class OAuth extends Service implements AuthInterface
 
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);
-            $this->token = $token;
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['code' => $token->getCode()]); //We could also use just $code
-            $this->redirectUri = $redirectUri;
+            return $redirectUri;
         } elseif ($postParams->get('action') === 'deny') {
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['error' => 'User denied authorization!']);
-            $this->redirectUri = $redirectUri;
+            return $redirectUri;
         }
     }
 
@@ -325,159 +276,5 @@ class OAuth extends Service implements AuthInterface
         if (null === $clientDocument) {
             throw new \Exception('Invalid client_id', Controller::STATUS_BAD_REQUEST);
         }
-    }
-
-    /**
-     * Gets the Access tokens.
-     *
-     * @return array
-     */
-    public function getAccessTokens()
-    {
-        return $this->accessTokens;
-    }
-
-    /**
-     * Sets the Access tokens.
-     *
-     * @param array $accessTokens the access tokens
-     *
-     * @return self
-     */
-    public function setAccessTokens(array $accessTokens)
-    {
-        $this->accessTokens = $accessTokens;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor($cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Is this a single access token fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single access token fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
-    }
-
-    /**
-     * Gets the The relevant client(s).
-     *
-     * @return \API\Document\Auth\OAuthClient
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
-     * Sets the The relevant client(s).
-     *
-     * @param \API\Document\Auth\OAuthClient $client the client
-     *
-     * @return self
-     */
-    public function setClient(\API\Document\Auth\OAuthClient $client)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * Gets the The relevant scopes.
-     *
-     * @return array
-     */
-    public function getScopes()
-    {
-        return $this->scopes;
-    }
-
-    /**
-     * Gets the The relevant token.
-     *
-     * @return \API\Document\Auth\OAuthToken
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * Sets the The relevant token.
-     *
-     * @param \API\Document\Auth\OAuthToken $token the token
-     *
-     * @return self
-     */
-    public function setToken(\API\Document\Auth\OAuthToken $token)
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * Gets the The relevant redirectUri.
-     *
-     * @return string
-     */
-    public function getRedirectUri()
-    {
-        return $this->redirectUri;
-    }
-
-    /**
-     * Sets the The relevant redirectUri.
-     *
-     * @param string $redirectUri the redirect uri
-     *
-     * @return self
-     */
-    public function setRedirectUri($redirectUri)
-    {
-        $this->redirectUri = $redirectUri;
-
-        return $this;
     }
 }
