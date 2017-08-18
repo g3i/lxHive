@@ -45,7 +45,7 @@ class Collection implements CollectionInterface
      */
     public function __construct(array $items = [])
     {
-        $this->replace($items);
+        $this->replace((array) $items);
     }
 
     /********************************************************************************
@@ -175,7 +175,7 @@ class Collection implements CollectionInterface
     {
         $this->data = [];
     }
-    
+
     /********************************************************************************
      * Property Overloading
      *******************************************************************************/
