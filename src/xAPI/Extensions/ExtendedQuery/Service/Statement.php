@@ -87,6 +87,7 @@ class Statement extends Service
                 if (strpos($field, 'statement.') !== 0) {
                     throw new Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
                 }
+            }
         }
 
         $statementResult = $extendedStatementStorage->extendedQuery($parameters);
