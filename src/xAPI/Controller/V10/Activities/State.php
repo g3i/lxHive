@@ -56,7 +56,7 @@ class State extends Controller
         $documentResult = $this->activityStateService->activityStateGet();
 
         // Render them
-        $view = new ActivityStateView();
+        $view = new ActivityStateView($this->getResponse(), $this->getContainer());
 
         if ($this->activityStateService->getIsSingle()) {
             $view = $view->renderGetSingle($documentResult);
