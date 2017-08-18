@@ -228,7 +228,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
             throw new AdapterException('Profile does not exist!.', Controller::STATUS_NOT_FOUND);
         }
 
-        $ifMatchHeader = $parameters['headers']['If-Match'];
+        isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
         $ifNoneMatchHeader = $parameters['headers']['If-None-Match'];
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
