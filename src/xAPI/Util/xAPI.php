@@ -30,14 +30,14 @@ class xAPI
      * normalizes xAPI IRI
      * @param $obj
      *
-     * @return sting|object|null
+     * @return string|object|null
      */
     public static function extractUniqueIdentifier($obj)
     {
         $uniqueIdentifier = null;
         $obj = (object) $obj;
 
-        //Fetch the identifier - otherwise we'd have to order the JSON
+        // Fetch the identifier - otherwise we'd have to order the JSON
         if (isset($obj->mbox)) {
             $uniqueIdentifier = 'mbox';
         } elseif (isset($obj->mbox_sha1sum)) {
