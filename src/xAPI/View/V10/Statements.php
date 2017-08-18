@@ -52,22 +52,30 @@ class Statements extends View
         }
 
         $view['statements'] = $resultArray;
-        $view['more'] = '';
+        $view['more'] = $this->renderMore($statementResult);
         $view['totalCount'] = $statementResult->getTotalCount();
 
         // TODO: Abstract this away somewhere...
+
+
+        return $view;
+    }
+
+    private function renderMore($statementResult)
+    {
         if ($statementResult->getHasMore()) {
             $latestId = end($idArray);
             $latestId = $latestId->__toString();
             if ($statementResult->getSortDescending()) {
+                // TODO 0.11.x: Moving away from existing URL library, this code will need to be modified
                 $this->getContainer()->get('url')->getQuery()->modify(['until_id' => $latestId]);
             } else { //Ascending
                 $this->getContainer()->get('url')->getQuery()->modify(['since_id' => $latestId]);
             }
-            $view['more'] = $this->getContainer()->get('url')->getRelativeUrl();
+            return $this->getContainer()->get('url')->getRelativeUrl();
+        } else {
+            return '';
         }
-
-        return $view;
     }
 
     public function renderGetSingle($statementResult)

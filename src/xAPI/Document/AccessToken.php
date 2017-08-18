@@ -46,7 +46,7 @@ use API\Bootstrap;
 use API\Document;
 use API\Controller;
 
-// TODO 0.11.x
+// TODO 0.11.x: implement normalize, validate, etc. (GraphQL)
 
 class AccessToken extends Document
 {
@@ -124,29 +124,4 @@ class AccessToken extends Document
             return false;
         }
     }
-
-    /**
-     * Check if fetched token document is a super token document
-     * @return bool
-     */
-     // TODO, this is legacy remove and change references!
-    public function isSuperToken()
-    {
-        $container = Bootstrap::getContainer();
-        return $container->get('auth')->hasPermission('super');
-    }
-
-    /**
-     * Loose check if fetched token document includes a specified permission
-     * @param string $permissionName
-     *
-     * @return bool
-     */
-     // TODO, this is legacy remove and change references!
-    public function hasPermission(string $name)
-    {
-        $container = Bootstrap::getContainer();
-        return $container->get('auth')->hasPermission($name);
-    }
-
 }

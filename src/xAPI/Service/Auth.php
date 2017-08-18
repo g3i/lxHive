@@ -232,7 +232,7 @@ class Auth extends Service
     {
         $configured = array_keys($this->scopes);
         return array_filter($permissionNames, function($name) use ($configured) {
-            //TODO issue logger warning
+            // TODO 0.10.x Issue warning to logger
             if(!is_string($name)) {
                 return false;
             }
@@ -240,7 +240,7 @@ class Auth extends Service
                 return false;
             }
             return in_array($name, $configured);
-            //TODO issue waring
+            // TODO 0.10.x Issue warning
         });
     }
 

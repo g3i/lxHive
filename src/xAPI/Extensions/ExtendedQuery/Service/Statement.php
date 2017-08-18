@@ -54,7 +54,7 @@ class Statement extends Service
         $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
         $bodyParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
-        $allParams = array_merge($parameters, $bodyParams);
+        $allParams = (object)array_merge((array)$parameters, (array)$bodyParams);
         $response = $this->statementQuery($parameters);
 
         return $response;
@@ -68,6 +68,28 @@ class Statement extends Service
     {
         $storageClass = $this->resolveStorageClass();
         $extendedStatementStorage = new $storageClass($this->getContainer());
+
+        // Parse parameters
+        if (isset($parameters->query) && is_string($parameters->query)) {
+            $parameters->query = json_decode($parameters->query);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Invalid JSON in query param.', Controller::STATUS_BAD_REQUEST);
+            }
+        }
+
+        if (isset($parameters->projection) && is_string($parameters->projection)) {
+            $parameters->projection = json_decode($parameters->projection);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('Invalid JSON in projection param.', Controller::STATUS_BAD_REQUEST);
+            }
+
+            foreach ($parameters->projection as $field => $value) {
+                if (strpos($field, 'statement.') !== 0) {
+                    throw new Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
+                }
+            }
+        }
+
         $statementResult = $extendedStatementStorage->extendedQuery($parameters);
 
         return $statementResult;

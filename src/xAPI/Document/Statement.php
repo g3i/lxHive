@@ -48,7 +48,7 @@ use API\Controller;
 use API\Document;
 use API\DocumentState;
 
-// TODO 0.11.x
+// TODO 0.11.x: implement normalize, validate, etc. (GraphQL)
 
 class Statement extends Document
 {

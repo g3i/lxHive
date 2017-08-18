@@ -56,36 +56,16 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
         $expression = $storage->createExpression();
 
         // Merge in query
-        if (isset($parameters['query'])) {
-            $query = $parameters['query'];
+        if (isset($parameters->query)) {
+            $query = (array)$parameters->query;
 
-            if (is_string($query)) {
-                $query = json_decode($query, true);
-            }
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ExtensionException('Invalid JSON in query param.', Controller::STATUS_BAD_REQUEST);
-            }
-
-            // TODO: Add validation that JSON is valid!
             $expression->fromArray($query);
         }
 
         // Add projection
-        if (isset($parameters['projection'])) {
-            $fields = $parameters['projection'];
+        if (isset($parameters->projection)) {
+            $fields = $parameters->projection;
 
-            if (is_string($fields)) {
-                $fields = json_decode($fields, true);
-            }
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new ExtensionException('Invalid JSON in projection param.', Controller::STATUS_BAD_REQUEST);
-            }
-
-            foreach ($fields as $field => $value) {
-                if (strpos($field, 'statement.') !== 0) {
-                    throw new Exception('Invalid projection parameters!.', Controller::STATUS_BAD_REQUEST);
-                }
-            }
             $fields = ['_id' => 1] + $fields;
             $queryOptions['projection'] = $fields;
         } else {
@@ -97,17 +77,17 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
         $statementResult->setTotalCount($count);
 
         // Handle pagination
-        if (isset($parameters['since_id'])) {
-            $id = new \MongoDB\BSON\ObjectID($parameters->get('since_id'));
+        if (isset($parameters->since_id)) {
+            $id = new \MongoDB\BSON\ObjectID($parameters->since_id);
             $expression->whereGreater('_id', $id);
         }
 
-        if (isset($parameters['until_id'])) {
-            $id = new \MongoDB\BSON\ObjectID($parameters->get('until_id'));
+        if (isset($parameters->until_id)) {
+            $id = new \MongoDB\BSON\ObjectID($parameters->until_id);
             $expression->whereLess('_id', $id);
         }
 
-        if (isset($parameters['ascending']) && $parameters['ascending'] === 'true') {
+        if (isset($parameters->ascending) && $parameters->ascending === 'true') {
             $statementResult->setSortDescending(false);
             $statementResult->setSortAscending(true);
             $queryOptions['sort'] = ['_id' => 1];
@@ -117,8 +97,8 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
             $queryOptions['sort'] = ['_id' => -1];
         }
 
-        if (isset($parameters['limit']) && $parameters['limit'] < Config::get(['xAPI', 'statement_get_limit']) && $parameters['limit'] > 0) {
-            $limit = $parameters['limit'];
+        if (isset($parameters->limit) && $parameters->limit < Config::get(['xAPI', 'statement_get_limit']) && $parameters->limit > 0) {
+            $limit = $parameters->limit;
         } else {
             $limit = Config::get(['xAPI', 'statement_get_limit']);
         }

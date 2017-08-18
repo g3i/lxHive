@@ -381,7 +381,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $queryOptions['limit'] = (int)$limit;
 
-        // TODO improve
+        // TODO 0.11.x improve following or abstract it into method
         $auth = $this->getContainer()->get('auth');
         if ($auth->hasPermission('statements/read/mine') && !$auth->hasPermission('statements/read')) {
             $expression->where('userId', $this->getAccessToken()->userId);
@@ -413,7 +413,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
     /**
      * {@inheritDoc}
-     * //TODO make this rather private and remove from interface
+     * // TODO 0.11.x make this rather private and remove from interface
      */
     public function transformForInsert($statementObject)
     {
@@ -435,7 +435,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $statementDocument = new \API\Document\Statement();
         // Overwrite authority - unless it's a super token and manual authority is set
-        if (!($this->getAccessToken()->isSuperToken() && isset($statementObject->{'authority'})) || !isset($statementObject->{'authority'})) {
+        if (!($this->getAuth()->hasPermission('super') && isset($statementObject->{'authority'})) || !isset($statementObject->{'authority'})) {
             $statementObject->{'authority'} = $this->getAccessToken()->generateAuthority();
         }
         $statementDocument->setStatement($statementObject);
@@ -476,11 +476,11 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
             $storage->update(self::COLLECTION_NAME, $expression, $referencedStatement);
         }
-        if ($this->getAccessToken()->hasPermission('define')) {
+        if ($this->getAuth()->hasPermission('define')) {
             $activities = $statementDocument->extractActivities();
             if (count($activities) > 0) {
-                // TODO: Possibly optimize this using a bulk update (using executeBulkWrite)
-                // TODO2: Create upsertMultiple and updateMultiple methods on CRUD layer!
+                // TODO 0.11.x  Possibly optimize this using a bulk update (using executeBulkWrite)
+                // TODO 0.11.x Create upsertMultiple and updateMultiple methods on CRUD layer!
                 foreach ($activities as $activity) {
                     $storage->upsert(Activity::COLLECTION_NAME, ['id' => $activity->id], $activity);
                 }
@@ -489,8 +489,8 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         $statementDocument->setUserId($this->getAccessToken()->getUserId());
 
-        // Add to log
-        //$this->getContainer()->get('requestLog')->addRelation('statements', $statementDocument)->save();
+        // Add to log (disabled)
+        // $this->getContainer()->get('requestLog')->addRelation('statements', $statementDocument)->save();
 
         return $statementDocument;
     }
@@ -569,6 +569,16 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     public function delete($parameters)
     {
         throw AdapterException('Statements cannot be deleted, only voided!', Controller::STATUS_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Gets the Auth to validate for permissions.
+     *
+     * @return API\Document\Auth\AbstractToken
+     */
+    private function getAuth()
+    {
+        return $this->getContainer()->get('auth');
     }
 
     /**

@@ -34,6 +34,8 @@ use API\Storage\Query\DocumentResult;
 
 use API\Storage\AdapterException;
 
+// TODO 0.11.x remove header dependency from this layer into parser and submit abstract args from there, like an array of options: put($data, $profileId, $agentIfi, array $options (contentType, if match))
+
 class ActivityState extends Provider implements ActivityStateInterface, SchemaInterface
 {
     const COLLECTION_NAME = 'activityStates';
@@ -155,8 +157,6 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
     public function put($parameters, $stateObject)
     {
         // TODO optimise (upsert),
-        // TODO remove header dependency form this layer: put($data, $stateId, $profileId, $agentIfi, array $options (contentType, if match))
-
         $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 

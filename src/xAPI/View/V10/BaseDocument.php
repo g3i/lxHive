@@ -35,11 +35,6 @@ abstract class BaseDocument extends View
         $cursor = $documentResult->getCursor();
 
         foreach ($cursor as $document) {
-            // This has been commented out for performance reasons
-            //$document = new \API\Document\Generic($document);
-            // Obsolete - TODO: Implement check in Generic document for document type and fetch identifier accordingly
-            // TODO: Maybe move identifier out of views? Might not be semantically correct place for it...
-            //$idArray[] = $document->getIdentifier();
             $idArray[] = $document->{static::IDENTIFIER};
         }
 

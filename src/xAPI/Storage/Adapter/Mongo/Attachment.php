@@ -49,15 +49,7 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
      *      ...
      *  ],
      */
-    private $indexes = [
-        [
-            'name' => 'sha2.unique',
-            'key'  => [
-                'sha2' => 1
-            ],
-            'unique' => true,
-        ]
-    ];
+    private $indexes = [];
 
     /**
      * {@inheritDoc}
@@ -66,9 +58,9 @@ class Attachment extends Provider implements AttachmentInterface, SchemaInterfac
     {
         $container = $this->getContainer()->get('storage');
         $container->executeCommand(['create' => self::COLLECTION_NAME]);
-        // TODO: Enable attachment indexing - planned for 0.11.x
+        // TODO 0.11.x: Enable attachment indexing - planned for
         // This will require checksum matching to check for existing attachments
-        //$container->createIndexes(self::COLLECTION_NAME, $this->indexes);
+        $container->createIndexes(self::COLLECTION_NAME, $this->indexes);
     }
 
     /**
