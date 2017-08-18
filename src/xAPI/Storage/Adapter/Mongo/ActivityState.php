@@ -98,7 +98,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
             $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
             if (isset($parameters['registration'])) {
-                $cursor->where('registration', $parameters->get('registration'));
+                $expression->where('registration', $parameters->get('registration'));
             }
 
             $cursorCount = $storage->count(self::COLLECTION_NAME, $expression);
