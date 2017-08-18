@@ -119,7 +119,8 @@ class Basic extends Service implements AuthInterface
         $currentDate = new \DateTime();
 
         $parsedParams = (object)[
-            'user' => [
+            'user' => (object)[
+                'email' => $body->user->email,
                 'name' => isset($body->user->name) ? $body->user->name : 'anonymous',
                 'description' => isset($body->user->description) ? $body->user->description : '',
                 'password' => isset($body->user->password) ? $body->user->password : 'password',
