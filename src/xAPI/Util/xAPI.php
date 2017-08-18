@@ -42,7 +42,7 @@ class xAPI
             $uniqueIdentifier = 'mbox';
         } elseif (isset($obj->mbox_sha1sum)) {
             $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($obj->openid])) {
+        } elseif (isset($obj->openid)) {
             $uniqueIdentifier = 'openid';
         } elseif (isset($obj->account)) {
             $uniqueIdentifier = 'account';
