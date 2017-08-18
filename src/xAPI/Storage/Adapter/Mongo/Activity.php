@@ -94,7 +94,7 @@ class Activity extends Provider implements ActivityInterface, SchemaInterface
             throw new AdapterException('Activity does not exist.', Controller::STATUS_NOT_FOUND);
         }
 
-        $document = $storage->findOne($collection, $expression);
+        $document = $storage->findOne(self::COLLECTION_NAME, $expression);
 
         return $document;
     }
