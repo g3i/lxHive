@@ -26,16 +26,25 @@ namespace API\Util;
 
 class xAPI
 {
-    public static function extractUniqueIdentifier($object)
+    /**
+     * normalizes xAPI IRI
+     * @param $obj
+     *
+     * @return string|object|null
+     */
+    public static function extractUniqueIdentifier($obj)
     {
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($object['mbox'])) {
+        $uniqueIdentifier = null;
+        $obj = (object) $obj;
+
+        // Fetch the identifier - otherwise we'd have to order the JSON
+        if (isset($obj->mbox)) {
             $uniqueIdentifier = 'mbox';
-        } elseif (isset($object['mbox_sha1sum'])) {
+        } elseif (isset($obj->mbox_sha1sum)) {
             $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($object['openid'])) {
+        } elseif (isset($obj->openid)) {
             $uniqueIdentifier = 'openid';
-        } elseif (isset($object['account'])) {
+        } elseif (isset($obj->account)) {
             $uniqueIdentifier = 'account';
         }
 
