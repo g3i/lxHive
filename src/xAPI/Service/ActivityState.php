@@ -73,6 +73,8 @@ class ActivityState extends Service
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getRawPayload();
 
+        $params->set('headers', $request->getHeaders());
+
         $documentResult = $this->getStorage()->getActivityStateStorage()->put($params, $rawBody);
 
         return $documentResult;

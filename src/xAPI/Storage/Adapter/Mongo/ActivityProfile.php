@@ -157,7 +157,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         $contentType = $parameters['headers']['content-type'];
-        if ($contentType === null) {
+        if ($contentType === null || empty($contentType)) {
             $contentType = 'text/plain';
         } else {
             $contentType = $contentType[0];

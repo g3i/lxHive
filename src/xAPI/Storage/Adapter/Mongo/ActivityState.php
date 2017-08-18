@@ -187,9 +187,11 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         }
 
         // ID exists, merge body
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
+        $contentType = $parameters['headers']['content-type'];
+        if ($contentType === null || empty($contentType)) {
             $contentType = 'text/plain';
+        } else {
+            $contentType = $contentType[0];
         }
 
         // ID exists, try to merge body if applicable

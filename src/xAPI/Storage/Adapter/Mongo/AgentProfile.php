@@ -171,7 +171,7 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
 
         // ID exists, merge body
         $contentType = $parameters['headers']['content-type'];
-        if ($contentType === null) {
+        if ($contentType === null || empty($contentType)) {
             $contentType = 'text/plain';
         } else {
             $contentType = $contentType[0];
