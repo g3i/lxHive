@@ -156,12 +156,15 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
      */
     public function put($parameters, $stateObject)
     {
-        // TODO optimise (upsert),
+        // TODO 0.11.x: optimise (upsert)
+        // rawPayload input is a stream...read it
+        $stateObject = (string)$stateObject; 
+        
         $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
         // Set up the body to be saved
-        $agentProfileDocument = new \API\Document\Generic();
+        $activityStateDocument = new \API\Document\Generic();
 
         // Check for existing state - then merge if applicable
         $expression = $storage->createExpression();

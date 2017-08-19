@@ -142,8 +142,8 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
      */
     public function put($parameters, $profileObject)
     {
-        // TODO optimise (upsert)
-
+        // TODO 0.11.x: optimise (upsert)
+        // rawPayload input is a stream...read it
         $profileObject = (string)$profileObject;
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
@@ -165,8 +165,9 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
             $result = new \API\Document\Generic($result);
         }
 
-        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
-        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : false;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : false;
+        $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         // ID exists, merge body
@@ -224,12 +225,15 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
 
         $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
-        if (!$result) {
+        if ($result) {
+            $result = new \API\Document\Generic($result);
+        } else {
             throw new AdapterException('Profile does not exist!.', Controller::STATUS_NOT_FOUND);
         }
 
-        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : null;
-        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : null;
+        $ifMatchHeader = isset($parameters['headers']['if-match']) ? $parameters['headers']['if-match'] : false;
+        $ifNoneMatchHeader = isset($parameters['headers']['if-none-match']) ? $parameters['headers']['if-none-match'] : false;
+        $this->validateMatchHeaderExists($ifMatchHeader, $ifNoneMatchHeader, $result);
         $this->validateMatchHeaders($ifMatchHeader, $ifNoneMatchHeader, $result);
 
         $deletionResult = $storage->delete(self::COLLECTION_NAME, $expression);
@@ -238,13 +242,13 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)
     {
         // If-Match first
-        $ifMatch = isset($ifMatch[0]) ? $ifMatch[0] : [];
+        $ifMatch = (is_array($ifMatch) && isset($ifMatch[0])) ? $ifMatch[0] : $ifMatch;
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
-            throw new AdapterException('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
+            throw new AdapterException('If-Match header doesn\'t match the current) ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
-        $ifMatch = isset($ifNoneMatch[0]) ? $ifNoneMatch[0] : [];
+        $ifNoneMatch = (is_array($ifNoneMatch) && isset($ifNoneMatch[0])) ? $ifNoneMatch[0] : $ifNoneMatch;
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
                 throw new AdapterException('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);

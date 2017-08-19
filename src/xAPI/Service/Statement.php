@@ -58,7 +58,7 @@ class Statement extends Service
             $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
             foreach ($this->getContainer()->get('parser')->getAttachments() as $attachment) {
-                $attachmentBody = $attachment->getPayload();
+                $attachmentBody = $attachment->getRawPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
                 $contentEncoding = isset($attachment->getHeaders()['content-transfer-encoding']) ? $attachment->getHeaders()['content-transfer-encoding'] : null;
@@ -71,6 +71,7 @@ class Statement extends Service
                     }
                 }
 
+                $this->validateAttachmentRequest($attachment);
                 $hash = $attachment->getHeaders()['x-experience-api-hash'][0];
                 $contentType = $attachment->getHeaders()['content-type'][0];
 
@@ -149,6 +150,18 @@ class Statement extends Service
         // TODO 0.11.x: Possibly validate this using GraphQL
         if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
+        }
+    }
+
+    private function validateAttachmentRequest($attachmentRequest)
+    {
+        // TODO 0.11.x: Possibly validate this using GraphQL
+        if (!isset($attachmentRequest->getHeaders()['x-experience-api-hash']) || (empty($attachmentRequest->getHeaders()['x-experience-api-hash']))) {
+            throw new Exception('Missing X-Experience-API-Hash on attachment!', Controller::STATUS_BAD_REQUEST);
+        }
+
+        if (!isset($attachmentRequest->getHeaders()['content-type']) || (empty($attachmentRequest->getHeaders()['content-type']))) {
+            throw new Exception('Missing Content-Type on attachment!', Controller::STATUS_BAD_REQUEST);
         }
     }
 }

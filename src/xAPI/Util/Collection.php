@@ -41,9 +41,9 @@ class Collection implements CollectionInterface
     /**
      * Create new collection
      *
-     * @param array $items Pre-populate collection with this key-value array
+     * @param array|object $items Pre-populate collection with this key-value array
      */
-    public function __construct(array $items = [])
+    public function __construct($items = [])
     {
         $this->replace((array) $items);
     }

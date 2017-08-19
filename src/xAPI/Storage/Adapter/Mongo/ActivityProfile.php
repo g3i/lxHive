@@ -134,9 +134,10 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
      */
     public function put($parameters, $profileObject)
     {
-        // TODO optimise (upsert),
+        // TODO 0.11.x: optimise (upsert)
+        // rawPayload input is a stream...read it
         $profileObject = (string)$profileObject;
-
+        
         $storage = $this->getContainer()->get('storage');
 
         // Set up the body to be saved
@@ -223,13 +224,13 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
     private function validateMatchHeaders($ifMatch, $ifNoneMatch, $result)
     {
         // If-Match first
-        $ifMatch = isset($ifMatch[0]) ? $ifMatch[0] : [];
+        $ifMatch = isset($ifMatch[0]) ? $ifMatch[0] : false;
         if ($ifMatch && $result && ($this->trimHeader($ifMatch) !== $result->getHash())) {
             throw new AdapterException('If-Match header doesn\'t match the current ETag.', Controller::STATUS_PRECONDITION_FAILED);
         }
 
         // Then If-None-Match
-        $ifMatch = isset($ifNoneMatch[0]) ? $ifNoneMatch[0] : [];
+        $ifNoneMatch = isset($ifNoneMatch[0]) ? $ifNoneMatch[0] : false;
         if ($ifNoneMatch) {
             if ($this->trimHeader($ifNoneMatch) === '*' && $result) {
                 throw new AdapterException('If-None-Match header is *, but a resource already exists.', Controller::STATUS_PRECONDITION_FAILED);
