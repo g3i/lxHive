@@ -28,7 +28,7 @@ class xAPI
 {
     /**
      * normalizes xAPI IRI
-     * @param $obj
+     * @param $obj IRI
      *
      * @return string|object|null
      */
@@ -49,5 +49,33 @@ class xAPI
         }
 
         return $uniqueIdentifier;
+    }
+
+    /**
+     * Extracts xAPI IRI objectType property. Inspects property for allowed values
+     * This function does not validate other IRI properties in relation to objectType
+     * @param $obj IRI
+     *
+     * @return string|null
+     */
+    public static function extractIriObjectType($obj)
+    {
+        $obj = (object) $obj;
+
+        if (!isset($obj->objectType)) {
+            return 'Agent';
+        }
+
+        // case sensititive!
+        if (isset($obj->objectType)) {
+            if($obj->objectType == 'Agent') {
+                return 'Agent';
+            }
+            if($obj->objectType == 'Group') {
+                return 'Group';
+            }
+        }
+        //invalid or falsy objectType values
+        return null;
     }
 }

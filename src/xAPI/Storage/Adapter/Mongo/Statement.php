@@ -149,6 +149,16 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             $agent = json_decode($agent, true);
 
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+            $objectType = Util\xAPI::extractIriObjectType($agent);
+
+            // TODO 0.11.x conformance validation: move into validation layer
+            if (null === $uniqueIdentifier && $objectType === 'Group') {
+                throw new AdapterException('No support for querying Anonymous Groups', Controller::STATUS_BAD_REQUEST);
+            }
+            // TODO 0.11.x move into validation layer
+            if (null === $uniqueIdentifier) {
+                throw new AdapterException('Unknown or invalid agent type', Controller::STATUS_BAD_REQUEST);
+            }
 
             if ($parameters->has('related_agents') && $parameters->get('related_agents') === 'true') {
                 if ($uniqueIdentifier === 'account') {
