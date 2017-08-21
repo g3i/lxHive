@@ -52,7 +52,7 @@ class Statements extends View
         }
 
         $view['statements'] = $resultArray;
-        $view['more'] = $this->renderMore($statementResult);
+        $view['more'] = $this->renderMore($statementResult, $idArray);
         $view['totalCount'] = $statementResult->getTotalCount();
 
         // TODO: Abstract this away somewhere...
@@ -61,7 +61,7 @@ class Statements extends View
         return $view;
     }
 
-    private function renderMore($statementResult)
+    private function renderMore($statementResult, $idArray)
     {
         if ($statementResult->getHasMore()) {
             $latestId = end($idArray);

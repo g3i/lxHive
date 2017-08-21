@@ -25,6 +25,8 @@
 namespace API\Parser;
 
 use Psr\Http\Message\RequestInterface;
+use API\HttpException;
+use API\Controller;
 
 /**
  * HTTP request parser
@@ -79,9 +81,12 @@ class PsrRequest
     private function parseMultipartRequest($request)
     {
         if (false === stripos($request->getContentType(), ';')) {
-            throw new \LogicException('Content-Type does not contain a \';\'');
+            throw new HttpException('Content-Type does not contain a \';\'', Controller::STATUS_BAD_REQUEST);
         }
 
+        if (!isset($request->getMediaTypeParams()['boundary'])) {
+            throw new HttpException('No boundary present on multipart request.', Controller::STATUS_BAD_REQUEST);
+        }
         $boundary = $request->getMediaTypeParams()['boundary'];
 
         // Split bodies by the boundary
@@ -148,6 +153,10 @@ class PsrRequest
             $requestParts[] = $parserResult;
         }
 
+        if (empty($requestParts)) {
+            throw new HttpException('Invalid multipart request!', Controller::STATUS_BAD_REQUEST);
+        }
+
         return $requestParts;
     }
 
@@ -166,6 +175,7 @@ class PsrRequest
      */
     public function getAttachments()
     {
+        // TODO 0.11.x: Test if array_slice works faster than this!
         $parts = $this->parts;
         array_shift($parts);
 

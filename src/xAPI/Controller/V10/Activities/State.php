@@ -56,11 +56,11 @@ class State extends Controller
         $documentResult = $this->activityStateService->activityStateGet();
 
         // Render them
-        $view = new ActivityStateView();
+        $view = new ActivityStateView($this->getResponse(), $this->getContainer());
 
-        if ($this->activityStateService->getIsSingle()) {
+        if ($documentResult->getIsSingle()) {
             $view = $view->renderGetSingle($documentResult);
-            Controller::response(Controller::STATUS_OK, $view);
+            return $this->response(Controller::STATUS_OK, $view);
         } else {
             $view = $view->renderGet($documentResult);
             return $this->jsonResponse(Controller::STATUS_OK, $view);

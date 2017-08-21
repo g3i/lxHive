@@ -52,7 +52,7 @@ class Activities extends Controller
         $activityDocument = $this->activityService->activityGet();
 
         // Render them
-        $view = new ActivityView();
+        $view = new ActivityView($this->getResponse(), $this->getContainer());
 
         $view = $view->renderGetSingle($activityDocument);
         return $this->jsonResponse(Controller::STATUS_OK, $view);
