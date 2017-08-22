@@ -110,8 +110,7 @@ abstract class Validator
      */
     public function validateRequest()
     {
-        $headers = $this->getContainer()->get('parser')->getData()->getHeaders();
-        $version = $this->getContainer()->get('version'); //run version container
+        $version = $this->getContainer()->get('version');//run version container
     }
 
     /**
