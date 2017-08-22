@@ -438,7 +438,6 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
             // ID exists, validate if different or conflict
-            // TODO: Avoid Mongo operation in case it matches
             if ($result) {
                 $existingStatement = $result->statement;
                 $this->validateStatementMatches($statementObject, $existingStatement);
