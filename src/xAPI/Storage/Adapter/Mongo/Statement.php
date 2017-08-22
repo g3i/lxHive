@@ -438,8 +438,10 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
             // ID exists, validate if different or conflict
+            // TODO: Avoid Mongo operation in case it matches
             if ($result) {
-                $this->validateStatementMatches($statementObject, $result);
+                $existingStatement = $result->statement;
+                $this->validateStatementMatches($statementObject, $existingStatement);
             }
         }
 
@@ -511,8 +513,12 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     public function insertOne($statementObject)
     {
         $statementDocument = $this->transformForInsert($statementObject);
-        $storage = $this->getContainer()->get('storage');
-        $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
+        if (!isset($statementDocument->skipInsert)) {
+            $storage = $this->getContainer()->get('storage');
+            $storage->insertOne(self::COLLECTION_NAME, $statementDocument);
+        } else {
+            unset($statementDocument->skipInsert);
+        }
         $statementResult = new StatementResult();
         $statementResult->setCursor([$statementDocument]);
         $statementResult->setRemainingCount(1);
@@ -526,17 +532,24 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
      */
     public function insertMultiple($statementObjects)
     {
-        $statementDocuments = [];
+        $statementDocumentsInsert = [];
+        $statementDocumentsView = [];
         foreach ($statementObjects as $statementObject) {
-            $statementDocuments[] = $this->transformForInsert($statementObject);
+            $statementDocument = $this->transformForInsert($statementObject);
+            if (!isset($statementDocument->skipInsert)) {
+                $statementDocumentsInsert[] = $statementDocument;
+            } else {
+                unset($statementDocument->skipInsert);
+            }
+            $statementDocumentsView[] = $statementDocument;
         }
 
         $storage = $this->getContainer()->get('storage');
-        $storage->insertMultiple(self::COLLECTION_NAME, $statementDocuments);
+        $storage->insertMultiple(self::COLLECTION_NAME, $statementDocumentsInsert);
 
         $statementResult = new StatementResult();
-        $statementResult->setCursor($statementDocuments);
-        $statementResult->setRemainingCount(count($statementDocuments));
+        $statementResult->setCursor($statementDocumentsView);
+        $statementResult->setRemainingCount(count($statementDocumentsView));
         $statementResult->setHasMore(false);
 
         return $statementResult;
@@ -601,12 +614,21 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         return $this->getContainer()->get('accessToken');
     }
 
-    private function validateStatementMatches($statementOne, $statementTwo)
+    private function validateStatementMatches($incomingStatement, $existingStatement)
     {
-        // Same - return 200
-        if ($statementOne == $statementTwo) {
-            // Mismatch - return 409 Conflict
-            throw new AdapterException('An existing statement already exists with the same ID and is different from the one provided.', Controller::STATUS_CONFLICT);
+        // Remove exempted attributes
+        // https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI-Data.md#231-statement-immutability
+        unset($incomingStatement->authority);
+        unset($incomingStatement->stored);
+        unset($incomingStatement->timestamp);
+        unset($incomingStatement->version);
+        unset($existingStatement->authority);
+        unset($existingStatement->stored);
+        unset($existingStatement->timestamp);
+        unset($existingStatement->version);
+        // Mismatch - return 409 Conflict
+        if ($incomingStatement != $existingStatement) {
+            throw new AdapterException('An existing statement already exists with the same ID (' . $existingStatement->id . ') and is different from the one provided.', Controller::STATUS_CONFLICT);
         }
     }
 
