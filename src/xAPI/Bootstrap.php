@@ -458,19 +458,19 @@ class Bootstrap
 
             if (!$versionString) {
                 throw new HttpException('X-Experience-API-Version header missing.', Controller::STATUS_BAD_REQUEST);
-            } else {
-                try {
-                    $version = Versioning::fromString($versionString);
-                } catch (\InvalidArgumentException $e) {
-                    throw new HttpException('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
-                }
-
-                if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
-                    throw new HttpException('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
-                }
-
-                return $version;
             }
+
+            try {
+                $version = Versioning::fromString($versionString);
+            } catch (\InvalidArgumentException $e) {
+                throw new HttpException('X-Experience-API-Version header invalid.', Controller::STATUS_BAD_REQUEST);
+            }
+
+            if (!in_array($versionString, Config::get(['xAPI', 'supported_versions']))) {
+                throw new HttpException('X-Experience-API-Version is not supported.', Controller::STATUS_BAD_REQUEST);
+            }
+
+            return $version;
         };
 
         return $container;
