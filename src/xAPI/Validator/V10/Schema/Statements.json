@@ -588,10 +588,7 @@
                 },
                 {
                     "oneOf": [{"$ref": "#/definitions/mbox"}, {"$ref": "#/definitions/mbox_sha1sum"}, {"$ref": "#/definitions/account"}, {"$ref": "#/definitions/openid"}],
-                    "additionalProperties": false
-                },
-                {
-                    "additionalProperties": false
+                    "additionalProperties": true
                 }
             ]
         },
