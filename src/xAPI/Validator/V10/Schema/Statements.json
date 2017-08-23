@@ -23,11 +23,11 @@
                     },
                     "verb": {
                         "type": "string",
-                        "format": "uri"
+                        "format": "iri"
                     },
                     "activity": {
                         "type": "string",
-                        "format": "uri"
+                        "format": "iri"
                     },
                     "registration": {
                         "type": "string",
@@ -118,7 +118,7 @@
                     "properties": {
                         "id": {
                             "type": "string",
-                            "format": "uri"
+                            "format": "iri"
                         },
                         "display": {
                             "$ref": "#/definitions/languagemap"
@@ -347,7 +347,7 @@
             "properties": {
                 "id": {
                     "type": "string",
-                    "format": "uri"
+                    "format": "iri"
                 },
                 "objectType": {
                     "enum": ["Activity"]
@@ -363,7 +363,7 @@
                         },
                         "type": {
                             "type": "string",
-                            "format": "uri"
+                            "format": "iri"
                         },
                         "moreInfo": {
                             "type": "string",
@@ -594,7 +594,7 @@
         },
         "uuid": {
             "type": "string",
-            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            "format": "uuid"
         },
         "attachment": {
             "type": "object",
@@ -602,7 +602,7 @@
             "properties": {
                 "usageType": {
                     "type": "string",
-                    "format": "uri"
+                    "format": "iri"
                 },
                 "display": {
                     "$ref": "#/definitions/languagemap"
