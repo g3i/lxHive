@@ -87,6 +87,6 @@ class xAPI
      */
     public static function sanitizeUuid($uuid)
     {
-        return strtolower(str_replace(array('urn:', 'uuid:', '{', '}'), '', $uuid));
+        return strtolower(str_replace(['urn:', 'uuid:', '{', '}'], '', $uuid));
     }
 }
