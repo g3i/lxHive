@@ -78,4 +78,15 @@ class xAPI
         //invalid or falsy objectType values
         return null;
     }
+
+    /**
+     * Sanitizes upercase and legacy UUID patterns (issue#76)
+     * @param string $uuid
+     *
+     * @return string sanitized uuid (ready for \Mongo\ObjectId::__constuct())
+     */
+    public static function sanitizeUuid($uuid)
+    {
+        return strtolower(str_replace(['urn:', 'uuid:', '{', '}'], '', $uuid));
+    }
 }

@@ -24,12 +24,16 @@
 
 namespace API;
 
-use API\Config;
-use JsonSchema;
-use API\HttpException as Exception;
 use API\BaseTrait;
+use API\Config;
 
-abstract class Validator
+use JsonSchema;
+use API\Validator\JsonSchema\Constraints\Factory as Factory;
+
+use API\HttpException as Exception;
+
+
+class Validator
 {
     use BaseTrait;
 
@@ -59,6 +63,17 @@ abstract class Validator
     }
 
     /**
+     * Create JsonSchema\Validator instance
+     * @param Factory $factory
+     *
+     * @return JsonSchema\Validator
+     */
+    public function createSchemaValidator($factory)
+    {
+        return new JsonSchema\Validator($factory);
+    }
+
+    /**
      * Validate data with JsonSchema
      * We intentionally create a new Validator instance on each call.
      *
@@ -70,7 +85,7 @@ abstract class Validator
     public function validateSchema($data, $uri)
     {
         $schema = self::$schemaStorage->getSchema($uri);
-        $validator = new JsonSchema\Validator(new JsonSchema\Constraints\Factory(self::$schemaStorage, null, JsonSchema\Constraints\Constraint::CHECK_MODE_TYPE_CAST));
+        $validator = new JsonSchema\Validator(new Factory(self::$schemaStorage, null, JsonSchema\Constraints\Constraint::CHECK_MODE_TYPE_CAST));
         $validator->check($data, $schema);
 
         if ($this->debug) {
@@ -110,7 +125,7 @@ abstract class Validator
      */
     public function validateRequest()
     {
-        $version = $this->getContainer()->get('version');
+        $version = $this->getContainer()->get('version');//run version container
     }
 
     /**
