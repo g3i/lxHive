@@ -177,7 +177,7 @@ class Auth extends Service
      */
     public function getAuthScope(string $name)
     {
-        return (isset($this->scopes[$name])) ? $this->scopes : false;
+        return (isset($this->scopes[$name])) ? $this->scopes[$name] : false;
     }
 
     /**

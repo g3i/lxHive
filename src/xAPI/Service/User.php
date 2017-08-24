@@ -57,7 +57,7 @@ class User extends Service
      */
     public function loginPost()
     {
-        $parameters = $this->getContainer()->get('parser')->getData()->getPayload();
+        $parameters = (object)$this->getContainer()->get('parser')->getData()->getPayload();
 
         $this->validateCsrf($parameters);
         $this->validateRequiredParameters($parameters);
@@ -123,7 +123,7 @@ class User extends Service
     private function validateCsrf($params)
     {
         // CSRF protection
-        if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
+        if (!isset($params->csrfToken) || !isset($_SESSION['csrfToken']) || ($params->csrfToken !== $_SESSION['csrfToken'])) {
             throw new Exception('Invalid CSRF token.', Controller::STATUS_BAD_REQUEST);
         }
     }
@@ -131,7 +131,7 @@ class User extends Service
     private function validateRequiredParameters($params)
     {
         // This could be in JSON schema as well :)
-        if (!isset($params['email']) || !isset($params['password'])) {
+        if (!isset($params->email) || !isset($params->password)) {
             throw new Exception('Username or password missing!', Controller::STATUS_BAD_REQUEST);
         }
     }

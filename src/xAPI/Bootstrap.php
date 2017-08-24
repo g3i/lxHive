@@ -413,6 +413,9 @@ class Bootstrap
             // Public routes
             if ($container['request']->getUri()->getPath() === '/about') {
                 return null;
+            }            
+            if (strpos($container['request']->getUri()->getPath(), '/oauth') === 0) {
+                return null;
             }
 
             $basicAuthService = new BasicAuthService($container);
@@ -443,8 +446,11 @@ class Bootstrap
         // Create Auth service (empty session at that stage)
         $container['auth'] = function ($container) {
             $authService = new AuthService($container);
-            $token = $container['accessToken']->toArray();
-            $authService->register($token->userId, $token->permissions);
+            $token = $container['accessToken'];
+            if (null !== $token) {
+                $token = $token->toArray();
+                $authService->register($token->userId, $token->permissions);
+            }
             return $authService;
         };
 
