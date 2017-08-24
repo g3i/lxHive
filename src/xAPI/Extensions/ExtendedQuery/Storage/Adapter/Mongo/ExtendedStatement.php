@@ -58,13 +58,12 @@ class ExtendedStatement extends Provider implements ExtendedStatementInterface
         // Merge in query
         if (isset($parameters->query)) {
             $query = (array)$parameters->query;
-
             $expression->fromArray($query);
         }
 
         // Add projection
         if (isset($parameters->projection)) {
-            $fields = $parameters->projection;
+            $fields = (array)$parameters->projection;
 
             $fields = ['_id' => 1] + $fields;
             $queryOptions['projection'] = $fields;

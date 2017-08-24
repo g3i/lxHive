@@ -66,6 +66,7 @@ class Statement extends Service
      */
     protected function statementQuery($parameters)
     {
+        $parameters = (object)$parameters;
         $storageClass = $this->resolveStorageClass();
         $extendedStatementStorage = new $storageClass($this->getContainer());
 
