@@ -20,7 +20,7 @@
 > * a changed database model
 > * behavioural changes (permissions)
 >
-> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script.
+> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://www.brightcookie.com/contact-us/) with us should you need to migrate data.
 
 ## <a name="introduction" />Introduction
 
