@@ -48,10 +48,9 @@ class ProjectedStatement extends View
         $view['totalCount'] = $statementResult->getTotalCount();
 
         foreach ($statementResult->getCursor() as $result) {
-            unset($result->_id);
             if (isset($result->statement)) {
+                $idArray[] = $result->_id;
                 $result = $result->statement;
-                $idArray[] = $result->id;
                 $resultArray[] = $result;
             }
         }

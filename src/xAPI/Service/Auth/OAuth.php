@@ -213,12 +213,17 @@ class OAuth extends Service implements AuthInterface
         $scopeDocuments = [];
 
         foreach ($scopes as $scope) {
-            // get scope by name
+            // Get scope by name
             $scopeDocument = $auth->getAuthScope($scope);
 
             if (!$scopeDocument) {
                 throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
             }
+
+            if (!$auth->hasPermission($scope)) {
+                throw new Exception('User does not have enough permissions for requested scope!', Controller::STATUS_BAD_REQUEST);
+            }
+
             $scopeDocuments[$scope] = $scopeDocument;
         }
 
