@@ -368,6 +368,26 @@ class Statement extends Document
         return $statement;
     }
 
+    private function simplifyObject($object)
+    {
+        if (isset($object->mbox)) {
+            $uniqueIdentifier = 'mbox';
+        } elseif (isset($object->mbox_sha1sum)) {
+            $uniqueIdentifier = 'mbox_sha1sum';
+        } elseif (isset($object->openid)) {
+            $uniqueIdentifier = 'openid';
+        } elseif (isset($object->account)) {
+            $uniqueIdentifier = 'account';
+        } elseif (isset($object->id)) {
+            $uniqueIdentifier = 'id';
+        }
+        $object = [
+            'objectType' => $object->objectType,
+            $uniqueIdentifier => $object->{$uniqueIdentifier}
+        ];
+        return $object;
+    }
+
     public function extractActivities()
     {
         $activities = [];
