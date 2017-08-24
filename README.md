@@ -13,6 +13,15 @@
 [![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
 
+> **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
+> This incompatibility is due to :
+>
+> * different server requirements
+> * a changed database model
+> * behavioural changes (permissions)
+>
+> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script.
+
 ## <a name="introduction" />Introduction
 
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
