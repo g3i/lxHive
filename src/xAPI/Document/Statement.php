@@ -47,6 +47,7 @@ use League\Url\Url;
 use API\Controller;
 use API\Document;
 use API\DocumentState;
+use API\Util;
 
 // TODO 0.11.x: implement normalize, validate, etc. (GraphQL)
 
@@ -282,6 +283,21 @@ class Statement extends Document
                 $this->data->statement->object->definition->extensions->{$newExtensionKey} = $this->data->statement->object->definition->extensions->{$oldExtensionKey};
                 unset($this->data->statement->object->definition->extensions->{$oldExtensionKey});
             }
+        }
+    }
+
+    public function normalizeExistingIds()
+    {
+        if (!empty($this->data->statement->id) && $this->data->statement->id !== null) {
+            $this->data->statement->id = Util\xAPI::normalizeUuid($this->data->statement->id);
+        }
+
+        if ($this->isReferencing()) {
+            $this->data->statement->object->id = Util\xAPI::normalizeUuid($this->data->statement->object->id);
+        }
+
+        if (!empty($this->data->statement->context->registration) && $this->data->statement->context->registration !== null) {
+            $this->data->statement->context->registration = Util\xAPI::normalizeUuid($this->data->statement->context->registration);
         }
     }
 

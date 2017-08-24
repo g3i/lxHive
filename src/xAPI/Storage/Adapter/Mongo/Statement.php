@@ -99,7 +99,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         // Single statement
         if ($parameters->has('statementId')) {
-            $expression->where('statement.id', $parameters->get('statementId'));
+            $rawStatementId = $parameters->get('statementId');
+            $normalizedStatementId = Util\xAPI::normalizeUuid($rawStatementId);
+            $expression->where('statement.id', $normalizedStatementId);
             $expression->where('voided', false);
 
             $this->validateStatementId($parameters['statementId']);
@@ -119,7 +121,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         }
 
         if ($parameters->has('voidedStatementId')) {
-            $expression->where('statement.id', $parameters->get('voidedStatementId'));
+            $rawStatementId = $parameters->get('voidedStatementId');
+            $normalizedStatementId = Util\xAPI::normalizeUuid($rawStatementId);
+            $expression->where('statement.id', $normalizedStatementId);
             $expression->where('voided', true);
 
             $this->validateStatementId($parameters['voidedStatementId']);
@@ -324,10 +328,12 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         }
 
         if ($parameters->has('registration')) {
+            $rawRegistrationId = $parameters->get('registration');
+            $normalizedRegistrationId = Util\xAPI::normalizeUuid($rawRegistrationId);
             $expression->whereAnd(
                 $expression->expression()->whereOr(
-                    $expression->expression()->where('statement.context.registration', $parameters->get('registration')),
-                    $expression->expression()->where('references.context.registration', $parameters->get('registration'))
+                    $expression->expression()->where('statement.context.registration', $normalizedRegistrationId),
+                    $expression->expression()->where('references.context.registration', $normalizedRegistrationId)
                 )
             );
         }
@@ -433,7 +439,8 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
 
         if (isset($statementObject->{'id'})) {
             $expression = $storage->createExpression();
-            $expression->where('statement.id', $statementObject->{'id'});
+            $normalizedStatementId = Util\xAPI::normalizeUuid($statementObject->{'id'});
+            $expression->where('statement.id', $normalizedStatementId);
 
             $result = $storage->findOne(self::COLLECTION_NAME, $expression);
 
@@ -452,6 +459,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         $statementDocument->setStatement($statementObject);
         // Dates
         $currentDate = Util\Date::dateTimeExact();
+        $statementDocument->normalizeExistingIds();
         $statementDocument->setVoided(false);
         $statementDocument->setStored(Util\Date::dateTimeToISO8601($currentDate));
         $statementDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
@@ -571,9 +579,9 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         // Check statementId
         if (isset($statementObject->id)) {
             // Check for match
-            $this->validateStatementIdMatch($statementObject->id, $parameters['statementId']);
+            $this->validateStatementIdMatch(Util\xAPI::normalizeUuid($statementObject->id), Util\xAPI::normalizeUuid($parameters['statementId']));
         } else {
-            $statementObject->id = $parameters->get('statementId');
+            $statementObject->id = Util\xAPI::normalizeUuid($parameters->get('statementId'));
         }
 
         $statementDocument = $this->insertOne($statementObject);
