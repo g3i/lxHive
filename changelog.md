@@ -119,12 +119,12 @@ This release focuses on support for modern server environments and advances in a
 
 ## Version 0.9.1
 
-* include StatementRefs in StatementResults
-* mongo log
-* console improvements
-* migration script
-* default (token based) statement.authority
+* Include StatementRefs in StatementResults
+* Mongo log
+* Console improvements
+* Migration script
+* Default (token based) statement.authority
 * GET /statments format param implementation
-* improved oAuth views with configurable css, logo
-* statement attachments (multipart): support for utf-8 and base64
-* conformance improvements
+* Improved oAuth views with configurable css, logo
+* Statement attachments (multipart) - support for UTF-8 and base64
+* Conformance improvements
