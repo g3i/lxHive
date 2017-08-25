@@ -6,9 +6,9 @@ A `phpbench.json.dist` file is setup in the project root folder of your lxHive a
 
 ## Installing PHPBench
 
-PhpBench requires PHP >= 7.1 and is therefore NOT included as a composer dependency.
+PHPBench requires PHP >= 7.1 and is therefore NOT included as a composer dependency.
 
-You can either [install PHPBench globally](http://phpbench.readthedocs.io/en/latest/installing.html) or fetch the phar locally into lxhive root.
+You can either [install PHPBench globally](http://phpbench.readthedocs.io/en/latest/installing.html) or fetch the Phar locally into lxHive root.
 
 ```
 cd <lxhive-root>
