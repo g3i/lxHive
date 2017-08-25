@@ -92,7 +92,13 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
             $agent = $parameters['agent'];
             $agent = json_decode($agent, true);
 
+            // TODO 0.11.x move to validator layer, add to jsonschema
+            //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+            //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
             $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+            if (null === $uniqueIdentifier) {
+                throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+            }
 
             $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -148,7 +154,13 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
 
+        // TODO 0.11.x move to validator layer, add to jsonschema
+        //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+        //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+        if (null === $uniqueIdentifier) {
+            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+        }
 
         $storage = $this->getContainer()->get('storage');
 
@@ -219,7 +231,13 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
         $agent = $parameters['agent'];
         $agent = json_decode($agent, true);
 
+        // TODO 0.11.x move to validator layer, add to jsonschema
+        //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+        //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+        if (null === $uniqueIdentifier) {
+            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+        }
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 

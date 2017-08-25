@@ -86,14 +86,21 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
+        $agent = $parameters->get('agent');
+        $agent = json_decode($agent, true);
+
+        // TODO 0.11.x move to validator layer, add to jsonschema
+        //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+        //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
+        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+        if (null === $uniqueIdentifier) {
+            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+        }
+
         // Single activity state
         if (isset($parameters['stateId'])) {
             $expression->where('stateId', $parameters->get('stateId'));
             $expression->where('activityId', $parameters->get('activityId'));
-            $agent = $parameters->get('agent');
-            $agent = json_decode($agent, true);
-
-            $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
 
             $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -116,11 +123,6 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         }
 
         $expression->where('activityId', $parameters->get('activityId'));
-        $agent = $parameters->get('agent');
-        $agent = json_decode($agent, true);
-
-        $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
-
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
         if ($parameters->has('registration')) {
@@ -158,8 +160,8 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
     {
         // TODO 0.11.x: optimise (upsert)
         // rawPayload input is a stream...read it
-        $stateObject = (string)$stateObject; 
-        
+        $stateObject = (string)$stateObject;
+
         $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
@@ -176,7 +178,13 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
 
+        // TODO 0.11.x move to validator layer, add to jsonschema
+        //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+        //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+        if (null === $uniqueIdentifier) {
+            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+        }
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
@@ -248,7 +256,13 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         $agent = $parameters->get('agent');
         $agent = json_decode($agent, true);
 
+        // TODO 0.11.x move to validator layer, add to jsonschema
+        //      from https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#agentprofres
+        //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
+        if (null === $uniqueIdentifier) {
+            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+        }
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
 
