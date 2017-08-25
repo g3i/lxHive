@@ -28,9 +28,9 @@ class xAPI
 {
     /**
      * normalizes xAPI IRI
-     * @param $obj IRI
+     * @param object $obj IRI
      *
-     * @return string|object|null
+     * @return string|null
      */
     public static function extractUniqueIdentifier($obj)
     {
@@ -54,7 +54,7 @@ class xAPI
     /**
      * Extracts xAPI IRI objectType property. Inspects property for allowed values
      * This function does not validate other IRI properties in relation to objectType
-     * @param $obj IRI
+     * @param object $obj IRI
      *
      * @return string|null
      */
@@ -66,7 +66,7 @@ class xAPI
             return 'Agent';
         }
 
-        // case sensititive!
+        // Case sensititive!
         if (isset($obj->objectType)) {
             if($obj->objectType == 'Agent') {
                 return 'Agent';
@@ -75,17 +75,17 @@ class xAPI
                 return 'Group';
             }
         }
-        //invalid or falsy objectType values
+        // Invalid or falsy objectType values
         return null;
     }
 
     /**
-     * Sanitizes upercase and legacy UUID patterns (issue#76)
+     * Normalizes upercase and legacy UUID patterns (issue#76)
      * @param string $uuid
      *
-     * @return string sanitized uuid (ready for \Mongo\ObjectId::__constuct())
+     * @return string normalized uuid (ready for \Mongo\ObjectId::__constuct())
      */
-    public static function sanitizeUuid($uuid)
+    public static function normalizeUuid($uuid)
     {
         return strtolower(str_replace(['urn:', 'uuid:', '{', '}'], '', $uuid));
     }
