@@ -80,6 +80,27 @@ class xAPI
     }
 
     /**
+     * Checks if object has valid Agent ifi properties and returns unique identifier
+     * @param object $obj IRI
+     *
+     * @return string|null
+     */
+    public static function extractAgentIdentifier($obj)
+    {
+        $obj = (object) $obj;
+
+        if (self::extractIriObjectType($obj) !== 'Agent') {
+            return null;
+        }
+
+        if (isset($obj->member)) {
+            return null;
+        }
+
+        return self::extractUniqueIdentifier($obj);
+    }
+
+    /**
      * Normalizes upercase and legacy UUID patterns (issue#76)
      * @param string $uuid
      *
