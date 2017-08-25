@@ -16,9 +16,11 @@ sami.phar
 docs/*
 
 # phpBench
+phpbench.phar
+phpbench.phar.pubkey
 phpbench.json
-benchmarks/*
 
+benchmarks/*
 !benchmarks/Example
 !benchmarks/*.md
 !benchmarks/autoload.php
