@@ -356,9 +356,9 @@ class Statement extends Document
             $statement->object = $this->simplifyObject($statement->object);
         } else {
             if ($statement->object->actor->objectType === 'Group') {
-                $statement->object->actor = array_map(function ($singleMember) {
+                $statement->object->actor->member = array_map(function ($singleMember) {
                     return $this->simplifyObject($singleMember);
-                }, $statement->object->actor);
+                }, $statement->object->actor->member);
             } else {
                 $statement->object->actor = $this->simplifyObject($statement->object->actor);
             }
