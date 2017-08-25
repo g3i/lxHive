@@ -28,9 +28,9 @@ class xAPI
 {
     /**
      * normalizes xAPI IRI
-     * @param $obj IRI
+     * @param object $obj IRI
      *
-     * @return string|object|null
+     * @return string|null
      */
     public static function extractUniqueIdentifier($obj)
     {
@@ -54,7 +54,7 @@ class xAPI
     /**
      * Extracts xAPI IRI objectType property. Inspects property for allowed values
      * This function does not validate other IRI properties in relation to objectType
-     * @param $obj IRI
+     * @param object $obj IRI
      *
      * @return string|null
      */
@@ -77,6 +77,27 @@ class xAPI
         }
         // Invalid or falsy objectType values
         return null;
+    }
+
+    /**
+     * Checks if object has valid Agent ifi properties and returns unique identifier
+     * @param object $obj IRI
+     *
+     * @return string|null
+     */
+    public static function extractAgentIdentifier($obj)
+    {
+        $obj = (object) $obj;
+
+        if (self::extractIriObjectType($obj) !== 'Agent') {
+            return null;
+        }
+
+        if (isset($obj->member)) {
+            return null;
+        }
+
+        return self::extractUniqueIdentifier($obj);
     }
 
     /**
