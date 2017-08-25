@@ -243,7 +243,6 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
      */
     public function delete($parameters)
     {
-        $parameters = new Util\Collection($parameters);
         $storage = $this->getContainer()->get('storage');
         $expression = $storage->createExpression();
 
@@ -261,7 +260,7 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
         //      The "agent" parameter is an Agent Object and not a Group. Learning Record Providers wishing to store data against an Identified Group can use the Identified Group's identifier within an Agent Object.
         $uniqueIdentifier = Util\xAPI::extractUniqueIdentifier($agent);
         if (null === $uniqueIdentifier) {
-            throw new AdapterException('Invalid `agent` parameter: missing ifi', Controller::STATUS_BAD_REQUEST);
+            throw new AdapterException('Invalid `agent` parameter: missing IFI', Controller::STATUS_BAD_REQUEST);
         }
 
         $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
