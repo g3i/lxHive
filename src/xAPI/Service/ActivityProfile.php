@@ -96,6 +96,8 @@ class ActivityProfile extends Service
         $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
 
+        $params->set('headers', $request->getHeaders());
+
         $deletionResult = $this->getStorage()->getActivityProfileStorage()->delete($params);
 
         return $deletionResult;

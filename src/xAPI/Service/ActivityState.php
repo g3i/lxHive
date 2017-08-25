@@ -55,6 +55,8 @@ class ActivityState extends Service
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getRawPayload();
 
+        $params->set('headers', $request->getHeaders());
+
         $documentResult = $this->getStorage()->getActivityStateStorage()->post($params, $rawBody);
 
         return $documentResult;
@@ -89,6 +91,8 @@ class ActivityState extends Service
     {
         $request = $this->getContainer()->get('parser')->getData();
         $params = new Collection($request->getParameters());
+
+        $params->set('headers', $request->getHeaders());
 
         $this->getStorage()->getActivityStateStorage()->delete($params);
 
