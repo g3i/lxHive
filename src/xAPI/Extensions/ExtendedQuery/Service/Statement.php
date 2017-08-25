@@ -55,7 +55,7 @@ class Statement extends Service
         $bodyParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $allParams = (object)array_merge((array)$parameters, (array)$bodyParams);
-        $response = $this->statementQuery($parameters);
+        $response = $this->statementQuery($allParams);
 
         return $response;
     }
@@ -66,6 +66,7 @@ class Statement extends Service
      */
     protected function statementQuery($parameters)
     {
+        $parameters = (object)$parameters;
         $storageClass = $this->resolveStorageClass();
         $extendedStatementStorage = new $storageClass($this->getContainer());
 

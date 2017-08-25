@@ -51,11 +51,9 @@ class Factory extends JsonSchema\Constraints\Factory
         JsonSchema\UriRetrieverInterface $uriRetriever = null,
         $checkMode = JsonSchema\Constraints\Constraint::CHECK_MODE_NORMAL
     ) {
-        // merge custom constraints
+        // Merge custom constraints
         $this->constraintMap = array_merge($this->constraintMap, $this->customConstraints);
         parent::__construct($schemaStorage, $uriRetriever, $checkMode);
-        //var_dump($this->constraintMap);
-
     }
 
     /**

@@ -47,6 +47,7 @@ use League\Url\Url;
 use API\Controller;
 use API\Document;
 use API\DocumentState;
+use API\Util;
 
 // TODO 0.11.x: implement normalize, validate, etc. (GraphQL)
 
@@ -285,6 +286,21 @@ class Statement extends Document
         }
     }
 
+    public function normalizeExistingIds()
+    {
+        if (!empty($this->data->statement->id) && $this->data->statement->id !== null) {
+            $this->data->statement->id = Util\xAPI::normalizeUuid($this->data->statement->id);
+        }
+
+        if ($this->isReferencing()) {
+            $this->data->statement->object->id = Util\xAPI::normalizeUuid($this->data->statement->object->id);
+        }
+
+        if (!empty($this->data->statement->context->registration) && $this->data->statement->context->registration !== null) {
+            $this->data->statement->context->registration = Util\xAPI::normalizeUuid($this->data->statement->context->registration);
+        }
+    }
+
     public function setDefaultId()
     {
         // If no ID has been set, set it
@@ -350,6 +366,26 @@ class Statement extends Document
         }
 
         return $statement;
+    }
+
+    private function simplifyObject($object)
+    {
+        if (isset($object->mbox)) {
+            $uniqueIdentifier = 'mbox';
+        } elseif (isset($object->mbox_sha1sum)) {
+            $uniqueIdentifier = 'mbox_sha1sum';
+        } elseif (isset($object->openid)) {
+            $uniqueIdentifier = 'openid';
+        } elseif (isset($object->account)) {
+            $uniqueIdentifier = 'account';
+        } elseif (isset($object->id)) {
+            $uniqueIdentifier = 'id';
+        }
+        $object = [
+            'objectType' => $object->objectType,
+            $uniqueIdentifier => $object->{$uniqueIdentifier}
+        ];
+        return $object;
     }
 
     public function extractActivities()

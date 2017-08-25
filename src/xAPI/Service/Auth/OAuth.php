@@ -89,10 +89,9 @@ class OAuth extends Service implements AuthInterface
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
 
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = (object)$this->getContainer()->get('parser')->getData()->getParameters();
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
-
         $this->validateRequiredParams($parameters, $requiredParams);
 
         $this->validateResponseType($parameters->response_type);
@@ -213,11 +212,15 @@ class OAuth extends Service implements AuthInterface
         $scopeDocuments = [];
 
         foreach ($scopes as $scope) {
-            // get scope by name
+            // Get scope by name
             $scopeDocument = $auth->getAuthScope($scope);
 
             if (!$scopeDocument) {
                 throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
+            }
+            $user = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
+            if (!in_array($scope, $user->permissions)) {
+                throw new Exception('User does not have enough permissions for requested scope!', Controller::STATUS_BAD_REQUEST);
             }
             $scopeDocuments[$scope] = $scopeDocument;
         }

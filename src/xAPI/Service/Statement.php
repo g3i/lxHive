@@ -61,7 +61,7 @@ class Statement extends Service
                 $attachmentBody = $attachment->getRawPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
-                $contentEncoding = isset($attachment->getHeaders()['content-transfer-encoding']) ? $attachment->getHeaders()['content-transfer-encoding'] : null;
+                $contentEncoding = isset($attachment->getHeaders()['content-transfer-encoding']) ? $attachment->getHeaders()['content-transfer-encoding'][0] : null;
 
                 if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
                     try {
@@ -107,10 +107,10 @@ class Statement extends Service
             $fsAdapter = \API\Util\Filesystem::generateAdapter(Config::get('filesystem'));
 
             foreach ($this->getContainer()->get('parser')->getAttachments() as $attachment) {
-                $attachmentBody = $attachment->getPayload();
+                $attachmentBody = $attachment->getRawPayload();
 
                 $detectedEncoding = mb_detect_encoding($attachmentBody);
-                $contentEncoding = $attachment->getHeaders()['Content-Transfer-Encoding'];
+                $contentEncoding = isset($attachment->getHeaders()['content-transfer-encoding']) ? $attachment->getHeaders()['content-transfer-encoding'][0] : null;
 
                 if ($detectedEncoding === 'UTF-8' && ($contentEncoding === null || $contentEncoding === 'binary')) {
                     try {
