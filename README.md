@@ -22,7 +22,7 @@
 >
 > See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://www.brightcookie.com/contact-us/) with us should you need to migrate data.
 
-## <a name="introduction" />Introduction
+## 1. <a name="introduction" />Introduction
 
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
 **lxHive** logs and returns activity statements as defined in the [Experience API specification](https://github.com/adlnet/xAPI-Spec) (formerly TinCan API) currently at xAPI Version 1.0.2.
@@ -38,11 +38,11 @@ The results of learning experiences are stored in a Learning Record Store (LRS).
 
 The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.net/) and should be easy to install on any web server. It supports Basic Authentication, OAuth 2.0 (Authorization Code Grant) and supports pluggable file storage mechanisms.
 
-## <a name="license" />License
+## 2. <a name="license" />License
 
 * GNU GPL v3
 
-## <a name="xAPi-Endpoints" />Document storage endpoints
+## 3. <a name="xAPi-Endpoints" />Document storage endpoints
 
 | endpoint              | xAPI version  | PUT   | POST  | GET   | DELETE | Notes                                        | Links
 | ---                   | ---           |:-----:|:-----:|:-----:|:------:| ---                                          |---
@@ -56,7 +56,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 * see our [wiki](https://github.com/Brightcookie/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
 
-## <a name="installation" />Installation
+## 4. <a name="installation" />Installation
 
 ### Requirements
 
@@ -130,15 +130,23 @@ Default file storage structure:
     ...
 ```
 
-## Documentation
+## 3. Development
 
-See the Wiki and the `docs` directory for more detailed documentation.
+### Documentation
 
-Compile code documentation:
+* [Contributing guidelines](CONTRIBUTING.md)
+* [lxHive Wiki](https://github.com/Brightcookie/lxHive-Internal/wiki)
+* Compile code documentation: run `sh generate-docs.sh` from project root (file must be executable)
 
-run `sh generate-docs.sh` from project root (file must be executable)
+### Unit testing
 
-## Contributors
+* [Instructions](tests/readme.md)
+
+### Benchmarking
+
+* [Instructions](benchmarks/readme.md)
+
+## 4. Contributors
 
 The [Brightcookie](https://www.brightcookie.com/) team
 
