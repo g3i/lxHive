@@ -344,17 +344,15 @@ class Statement extends Document
         $this->convertExtensionKeysFromUnicode();
         $statement = $this->data->statement;
 
-        if ($statement->actor->objectType === 'Group') {
-            $statement->actor = array_map(function ($singleMember) {
+        if (isset($statement->actor->objectType) && $statement->actor->objectType === 'Group') {
+            $statement->actor->member = array_map(function ($singleMember) {
                 return $this->simplifyObject($singleMember);
-            }, $statement->actor);
+            }, $statement->actor->member);
         } else {
             $statement->actor = $this->simplifyObject($statement->actor);
         }
 
-        if ($statement->object->objectType !== 'SubStatement') {
-            $statement->object = $this->simplifyObject($statement->object);
-        } else {
+        if (isset($statement->object->objectType) && $statement->object->objectType === 'SubStatement') {
             if ($statement->object->actor->objectType === 'Group') {
                 $statement->object->actor->member = array_map(function ($singleMember) {
                     return $this->simplifyObject($singleMember);
@@ -363,6 +361,8 @@ class Statement extends Document
                 $statement->object->actor = $this->simplifyObject($statement->object->actor);
             }
             $statement->object->object = $this->simplifyObject($statement->object->object);
+        } else {
+            $statement->object = $this->simplifyObject($statement->object);
         }
 
         return $statement;
