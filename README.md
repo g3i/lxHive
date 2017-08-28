@@ -4,7 +4,7 @@
 * Current release: **0.10.0**
 * Supports xAPI spec <= 1.0.3
 
-[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/development.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/master.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
 [![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/Brightcookie/lx-Test-Suite)
 [![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-86.02%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6.svg)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
