@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,35 +25,10 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
-use API\Util;
-use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
-use DateTime;
+use API\Util\Collection;
 
 class ActivityProfile extends Service
 {
-    /**
-     * Activity profiles.
-     *
-     * @var array
-     */
-    protected $activityProfiles;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
     /**
      * Fetches activity profiles according to the given parameters.
      *
@@ -61,130 +36,32 @@ class ActivityProfile extends Service
      *
      * @return array An array of activityProfile objects.
      */
-    public function activityProfileGet($request)
+    public function activityProfileGet()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        $collection  = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor      = $collection->find();
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->getFiltered($params);
 
-        // Single activity state
-        if ($params->has('profileId')) {
-            $cursor->where('profileId', $params->get('profileId'));
-            $cursor->where('activityId', $params->get('activityId'));
-
-            if ($cursor->count() === 0) {
-                throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
-            }
-
-            $this->cursor   = $cursor;
-            $this->single = true;
-
-            return $this;
-        }
-
-        $cursor->where('activityId', $params->get('activityId'));
-
-        if ($params->has('since')) {
-            $date = Util\Date::dateRFC3339($params->get('since'));
-            if(!$date){
-                throw new Exception('"since" parameter is not a valid ISO 8601 timestamp.(Good example: 2015-11-18T12:17:00+00:00), ', Resource::STATUS_NOT_FOUND);
-            }
-            $since = Util\Date::dateTimeToMongoDate($date);
-            $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
-        }
-
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Tries to save (merge) an activityProfile.
      */
-    public function activityProfilePost($request)
+    public function activityProfilePost()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
-        $rawBody = $request->getBody();
+        $rawBody = $request->getRawPayload();
 
-        $collection  = $this->getDocumentManager()->getCollection('activityProfiles');
+        $params->set('headers', $request->getHeaders());
 
-        // Set up the body to be saved
-        $activityProfileDocument = $collection->createDocument();
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->post($params, $rawBody);
 
-        // Check for existing state - then merge if applicable
-        $cursor      = $collection->find();
-        $cursor->where('profileId', $params->get('profileId'));
-        $cursor->where('activityId', $params->get('activityId'));
-
-        $result = $cursor->findOne();
-
-        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
-        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
-        // if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
-        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        // }
-
-        // If-Match first
-        if ($request->headers('If-Match') && $result && ($this->trimHeader($request->headers('If-Match')) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($request->headers('If-None-Match')) {
-            if ($this->trimHeader($request->headers('If-None-Match')) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($request->headers('If-None-Match')) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
-
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        // ID exists, try to merge body if applicable
-        if ($result) {
-            if ($result->getContentType() !== 'application/json') {
-                throw new \Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            if ($contentType !== 'application/json') {
-                throw new \Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            $decodedExisting = json_decode($result->getContent(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-
-            $decodedPosted = json_decode($rawBody, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON posted. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-
-            $rawBody = json_encode(array_merge($decodedExisting, $decodedPosted));
-            $activityProfileDocument = $result;
-        }
-
-        $activityProfileDocument->setContent($rawBody);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($params->get('activityId'));
-        $activityProfileDocument->setProfileId($params->get('profileId'));
-        $activityProfileDocument->setContentType($contentType);
-        $activityProfileDocument->setHash(sha1($rawBody));
-        $activityProfileDocument->save();
-
-        // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
-        $this->single = true;
-        $this->activityStates = [$activityProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -192,71 +69,19 @@ class ActivityProfile extends Service
      *
      * @return
      */
-    public function activityProfilePut($request)
+    public function activityProfilePut()
     {
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        $rawBody = $request->getBody();
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        // Single
-        $params = new Set($request->get());
+        // Validation has been completed already - everything is assumed to be valid
+        $rawBody = $request->getRawPayload();
 
-        $collection  = $this->getDocumentManager()->getCollection('activityProfiles');
+        $params->set('headers', $request->getHeaders());
 
-        $activityProfileDocument = $collection->createDocument();
+        $documentResult = $this->getStorage()->getActivityProfileStorage()->put($params, $rawBody);
 
-        // Check for existing state - then replace if applicable
-        $cursor      = $collection->find();
-        $cursor->where('profileId', $params->get('profileId'));
-        $cursor->where('activityId', $params->get('activityId'));
-
-        $result = $cursor->findOne();
-
-        // Check If-Match and If-None-Match here
-        if (!$request->headers('If-Match') && !$request->headers('If-Match') && $result) {
-            throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        }
-
-        // If-Match first
-        if ($request->headers('If-Match') && $result && ($this->trimHeader($request->headers('If-Match')) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($request->headers('If-None-Match')) {
-            if ($this->trimHeader($request->headers('If-None-Match')) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($request->headers('If-None-Match')) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
-
-        // ID exists, replace body
-        if ($result) {
-            $activityProfileDocument = $result;
-        }
-
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        $activityProfileDocument->setContent($rawBody);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityProfileDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityProfileDocument->setActivityId($params->get('activityId'));
-        $activityProfileDocument->setProfileId($params->get('profileId'));
-        $activityProfileDocument->setContentType($contentType);
-        $activityProfileDocument->setHash(sha1($rawBody));
-        $activityProfileDocument->save();
-
-        // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $activityProfileDocument)->save();
-
-        $this->single = true;
-        $this->activityProfiles = [$activityProfileDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -266,131 +91,15 @@ class ActivityProfile extends Service
      *
      * @return self Nothing.
      */
-    public function activityProfileDelete($request)
+    public function activityProfileDelete()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        $collection  = $this->getDocumentManager()->getCollection('activityProfiles');
-        $cursor      = $collection->find();
+        $params->set('headers', $request->getHeaders());
 
-        $cursor->where('profileId', $params->get('profileId'));
-        $cursor->where('activityId', $params->get('activityId'));
+        $deletionResult = $this->getStorage()->getActivityProfileStorage()->delete($params);
 
-        $result = $cursor->findOne();
-
-        if (!$result) {
-            throw new \Exception('Profile does not exist!.', Resource::STATUS_NOT_FOUND);
-        }
-
-        // Check If-Match and If-None-Match here - these SHOULD* exist, but they do not have to
-        // See https://github.com/adlnet/xAPI-Spec/blob/1.0.3/xAPI.md#lrs-requirements-7
-        // if (!$request->headers('If-Match') && !$request->headers('If-None-Match') && $result) {
-        //     throw new \Exception('There was a conflict. Check the current state of the resource and set the "If-Match" header with the current ETag to resolve the conflict.', Resource::STATUS_CONFLICT);
-        // }
-
-        // If-Match first
-        if ($request->headers('If-Match') && $result && ($this->trimHeader($request->headers('If-Match')) !== $result->getHash())) {
-            throw new \Exception('If-Match header doesn\'t match the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-        }
-
-        // Then If-None-Match
-        if ($request->headers('If-None-Match')) {
-            if ($this->trimHeader($request->headers('If-None-Match')) === '*' && $result) {
-                throw new \Exception('If-None-Match header is *, but a resource already exists.', Resource::STATUS_PRECONDITION_FAILED);
-            } elseif ($result && $this->trimHeader($request->headers('If-None-Match')) === $result->getHash()) {
-                throw new \Exception('If-None-Match header matches the current ETag.', Resource::STATUS_PRECONDITION_FAILED);
-            }
-        }
-
-        // Add to log
-        $this->getSlim()->requestLog->addRelation('activityProfiles', $result)->save();
-
-        $result->delete();
-
-        return $this;
-    }
-
-    /**
-     * Trims quotes from the header.
-     *
-     * @param string $headerString Header
-     *
-     * @return string Trimmed header
-     */
-    private function trimHeader($headerString)
-    {
-        return trim($headerString, '"');
-    }
-
-    /**
-     * Gets the Activity states.
-     *
-     * @return array
-     */
-    public function getActivityProfiles()
-    {
-        return $this->activityProfiles;
-    }
-
-    /**
-     * Sets the Activity profiles.
-     *
-     * @param array $activityProfiles the activity profiles
-     *
-     * @return self
-     */
-    public function setActivityProfiles(array $activityProfiles)
-    {
-        $this->activityProfiles = $activityProfiles;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Cursor.
-     *
-     * @return cursor
-     */
-    public function getCursor()
-    {
-        return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor(Cursor $cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
-    }
-
-    /**
-     * Gets the Is this a single activity state fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
-    {
-        return $this->single;
-    }
-
-    /**
-     * Sets the Is this a single activity state fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
-    {
-        $this->single = $single;
-
-        return $this;
+        return $deletionResult;
     }
 }

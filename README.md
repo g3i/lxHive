@@ -1,12 +1,28 @@
 
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* v0.9.1
-* supports xAPI specs <= 1.0.2
+* Current release: **0.10.0**
+* Supports xAPI spec <= 1.0.3
 
-[![Circle CI](https://circleci.com/gh/Brightcookie/lxHive/tree/master.svg?style=svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/development.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/development)
+[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/Brightcookie/lx-Test-Suite)
+[![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-86.02%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
+[![SensioLabs Insight](https://img.shields.io/sensiolabs/i/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6.svg)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
+[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/network)
+[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/stargazers)
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
 
-## <a name="introduction" />Introduction
+> **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
+> This incompatibility is due to :
+>
+> * different server requirements
+> * a changed database model
+> * behavioural changes (permissions)
+>
+> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://www.brightcookie.com/contact-us/) with us should you need to migrate data.
+
+## 1. <a name="introduction" />Introduction
 
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
 **lxHive** logs and returns activity statements as defined in the [Experience API specification](https://github.com/adlnet/xAPI-Spec) (formerly TinCan API) currently at xAPI Version 1.0.2.
@@ -15,18 +31,18 @@ The Experience API (also referred to as 'xAPI') is a learning software specifica
 
 The results of learning experiences are stored in a Learning Record Store (LRS). The LRS is defined as part of the Experience API Specification and controls at its core the following functions:
 
-1. authentication of authorised users
-2. validation of compliance to the xAPI Standard
-3. the storage of learning related data
-4. retrieval of learning related data
+1. Authentication of authorised users
+2. Validation of compliance to the xAPI Standard
+3. The storage of learning related data
+4. Retrieval of learning related data
 
 The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.net/) and should be easy to install on any web server. It supports Basic Authentication, OAuth 2.0 (Authorization Code Grant) and supports pluggable file storage mechanisms.
 
-## <a name="license" />License
+## 2. <a name="license" />License
 
 * GNU GPL v3
 
-## <a name="xAPi-Endpoints" />Document storage endpoints
+## 3. <a name="xAPi-Endpoints" />Document storage endpoints
 
 | endpoint              | xAPI version  | PUT   | POST  | GET   | DELETE | Notes                                        | Links
 | ---                   | ---           |:-----:|:-----:|:-----:|:------:| ---                                          |---
@@ -40,28 +56,30 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 * see our [wiki](https://github.com/Brightcookie/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
 
-## <a name="installation" />Installation
+## 4. <a name="installation" />Installation
 
 ### Requirements
 
-* PHP >= 5.4, with [mongo extension](http://php.net/manual/en/mongo.installation.php) installed
+* PHP >= 5.5.9, with [MongoDB extension](http://php.net/manual/en/class.mongodb.php) installed
 * (optional) PHPUnit to run tests.
 * .htaccess enabled (or similar HTTP rewrite function)
 * [Composer](https://getcomposer.org/) installed
-* [Mongo DB](https://www.mongodb.org/) installed (supports Mongo 3.x)
+* [Mongo DB](https://www.mongodb.org/) installed (requires version >= 3.0)
 * [OpenSSL](https://www.openssl.org/)
 
 #### Notes:
 
 * Make sure you have set the `date.timezone` setting in your php.ini
+* lxHive >= 0.10.0 supports **PHP 7.x**
+* since lxHive 0.10.0 we switched the PHP Mongo driver from `mongo` (deprecated) to `mongodb`
 
 ### Setup
 
-* see also our Wiki for a comprehensive [step-bystep guide](https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)
+* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
 
 #### 1. Application install and set-up
 
-1. Install dependencies via `composer install`.
+1. Install dependencies via `composer install --no-dev -o`.
 2. Point your server's `DocumentRoot` directive to the `public` folder
 3. Set up your database & client account:
 
@@ -71,10 +89,8 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 $ cd /<path_to_application_root>
 # View available commands
 $ ./X
-# Set up database
-$ ./X setup:db
-# Set up OAuth scopes
-$ ./X setup:oauth
+# Run the setup
+$ ./X setup
 # Create a new user
 $ ./X user:create
 
@@ -114,17 +130,27 @@ Default file storage structure:
     ...
 ```
 
+## 3. Development
 
-## Documentation
+### Documentation
 
-See the Wiki and the `docs` directory for more detailed documentation.
+* [Contributing guidelines](CONTRIBUTING.md)
+* [lxHive Wiki](https://github.com/Brightcookie/lxHive-Internal/wiki)
+* Compile code documentation: run `sh generate-docs.sh` from project root (file must be executable)
 
-## Contributors
+### Unit testing
 
-The Brightcookie team
+* [Instructions](tests/readme.md)
+
+### Benchmarking
+
+* [Instructions](benchmarks/readme.md)
+
+## 4. Contributors
+
+The [Brightcookie](https://www.brightcookie.com/) team
 
 * Jakob Murko - systems architect, lead developer
-* Leo Gaggl - creator, mentor, specs
-* Kien Vu - legacy support, application development
-* Matthew Smith - initial alpha prototype development & spec
-* Joerg Boeselt - tests, specs, pm
+* Leo Gaggl - creator, mentor, conformance
+* Joerg Boeselt - development, tests, conformance, project management
+* Matthew Smith - alpha prototype

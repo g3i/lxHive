@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,262 +25,94 @@
 namespace API\Service\Auth;
 
 use API\Service;
-use API\Resource;
-use Slim\Helper\Set;
-use API\Document\User;
-use API\Document\Auth\OAuthClient;
+use API\Controller;
 use Slim\Http\Request;
 use API\Util;
 use League\Url\Url;
+use API\HttpException as Exception;
+use API\Service\Auth\Exception as AuthFailureException;
+use API\Util\Collection;
+use API\Config;
 
 class OAuth extends Service implements AuthInterface
 {
-    /**
-     * Access tokens.
-     *
-     * @var array
-     */
-    protected $accessTokens;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    /**
-     * Is this a single access token fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
-    /**
-     * The relevant client(s).
-     *
-     * @var \API\Document\Auth\OAuthClient
-     */
-    protected $client;
-
-    /**
-     * The relevant scopes.
-     *
-     * @var array
-     */
-    protected $scopes;
-
-    /**
-     * The relevant token.
-     *
-     * @var \API\Document\Auth\OAuthToken
-     */
-    protected $token;
-
-    /**
-     * The relevant redirectUri.
-     *
-     * @var string
-     */
-    protected $redirectUri;
-
-    public function addToken($expiresAt, User $user, OAuthClient $client, array $scopes = [], $code = null)
+    public function addToken($expiresAt, $user, $client, array $scopes = [], $code = null)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-
-        $accessTokenDocument = $collection->createDocument();
-
-        $expiresDate = new \DateTime();
-        $expiresDate->setTimestamp($expiresAt);
-        $accessTokenDocument->setExpiresAt(\API\Util\Date::dateTimeToMongoDate($expiresDate));
-        $currentDate = new \DateTime();
-        $accessTokenDocument->setCreatedAt(\API\Util\Date::dateTimeToMongoDate($currentDate));
-        $accessTokenDocument->addRelation('user', $user);
-        $accessTokenDocument->addRelation('client', $client);
-        $scopeIds = [];
-        foreach ($scopes as $scope) {
-            $scopeIds[] = $scope->getId();
-        }
-        $accessTokenDocument->setScopeIds($scopeIds);
-
-        $accessTokenDocument->setToken(Util\OAuth::generateToken());
-        if (null !== $code) {
-            $accessTokenDocument->setCode($code);
-        }
-
-        $accessTokenDocument->save();
-        $this->single = true;
-        $this->setAccessTokens([$accessTokenDocument]);
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->storeToken($expiresAt, $user, $client, $scopes, $code);
 
         return $accessTokenDocument;
     }
 
     public function fetchToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
-
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
-
-        if ($accessTokenDocument === null) {
-            throw new \Exception('Invalid access token specified.', Resource::STATUS_FORBIDDEN);
-        }
-
-        $expiresAt = $accessTokenDocument->getExpiresAt();
-
-        if ($expiresAt !== null) {
-            if ($expiresAt->sec <= time()) {
-                throw new \Exception('Expired token.', Resource::STATUS_FORBIDDEN);
-            }
-        }
-
-        $this->setAccessTokens([$accessTokenDocument]);
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->getToken($accessToken);
 
         return $accessTokenDocument;
     }
 
     public function deleteToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->deleteToken($accessToken);
 
-        $expression = $collection->expression();
-        $expression->where('token', $accessToken);
-        $collection->deleteDocuments($expression);
-
-        return $this;
+        return $accessTokenDocument;
     }
 
     public function expireToken($accessToken)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
+        $accessTokenDocument = $this->getStorage()->getOAuthStorage()->expireToken($accessToken);
 
-        $cursor->where('token', $accessToken);
-        $accessTokenDocument = $cursor->current();
-        $accessTokenDocument->setExpired(true);
-        $accessTokenDocument->save();
-
-        $this->setAccessTokens([$accessTokenDocument]);
-
-        return $document;
+        return $accessTokenDocument;
     }
 
     public function addClient($name, $description, $redirectUri)
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-
-        // Set up the Client to be saved
-        $clientDocument = $collection->createDocument();
-
-        $clientDocument->setName($name);
-
-        $clientDocument->setDescription($description);
-
-        $clientDocument->setRedirectUri($redirectUri);
-
-        $clientId = Util\OAuth::generateToken();
-        $clientDocument->setClientId($clientId);
-
-        $secret = Util\OAuth::generateToken();
-        $clientDocument->setSecret($secret);
-
-        $clientDocument->save();
-
-        $this->single = true;
-        $this->client = [$clientDocument];
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->addClient($name, $description, $redirectUri);
 
         return $clientDocument;
     }
 
     public function fetchClients()
     {
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor      = $collection->find();
+        $documentResult = $this->getStorage()->getOAuthClientsStorage()->getClients();
 
-        $this->setCursor($cursor);
-
-        return $this;
+        return $documentResult;
     }
 
-    public function addScope($name, $description)
-    {
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
-
-        // #104, check if scope document record exists already
-        $exists = $collection->find()->where('name', $name)->findOne();
-        if ($exists) {
-            return false;
-        }
-
-        // Set up the Client to be saved
-        $scopeDocument = $collection->createDocument();
-        $scopeDocument->setName($name);
-        $scopeDocument->setDescription($description);
-        $scopeDocument->save();
-
-        $this->single = true;
-        $this->scopes = [$scopeDocument];
-
-        return $scopeDocument;
-    }
-
+    // TODO 0.12.x: Move this logic a level higher, into Controllers (low-priority)
     /**
      * @param [type] $request [description]
      *
      * @return [type] [description]
      */
-    public function authorizeGet($request)
+    public function authorizeGet()
     {
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
 
-        $params = new Set($request->get());
+        $parameters = (object)$this->getContainer()->get('parser')->getData()->getParameters();
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
+        $this->validateRequiredParams($parameters, $requiredParams);
 
-        //TODO: Use json-schema validator
-        foreach ($requiredParams as $requiredParam) {
-            if (!$params->has($requiredParam)) {
-                throw new \Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
-            }
-        }
+        $this->validateResponseType($parameters->response_type);
 
-        if ($params->get('response_type') !== 'code') {
-            throw new \Exception('Invalid response_type specified.', Resource::STATUS_BAD_REQUEST);
-        }
+        // Get client by id
+        $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($parameters->client_id);
 
-        $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-        $cursor      = $collection->find();
+        $this->validateClientDocument($clientDocument);
 
-        $cursor->where('clientId', $params->get('client_id'));
-        $clientDocument = $cursor->current();
+        $this->validateRedirectUri($parameters->redirect_uri, $clientDocument);
 
-        if (null === $clientDocument) {
-            throw new \Exception('Invalid client_id', Resource::STATUS_BAD_REQUEST);
-        }
-
-        if ($params->get('redirect_uri') !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        $collection  = $this->getDocumentManager()->getCollection('authScopes');
         $scopeDocuments = [];
-        $scopes = explode(',', $params->get('scope'));
-        foreach ($scopes as $scope) {
-            $cursor      = $collection->find();
-            $cursor->where('name', $scope);
-            $scopeDocument = $cursor->current();
-            if (null === $scopeDocument) {
-                throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-            }
-            $scopeDocuments[] = $scopeDocument;
-        }
+        $scopes = explode(',', $parameters->scope);
+        $scopeDocuments = $this->validateAndMapScopes($scopes); // Throws exception if not a valid scope
 
-        $this->client = $clientDocument;
-        $this->scopes = $scopeDocuments;
+        // Return client document object with added authorize request scopes
+        $clientDocument->scopes = $scopeDocuments;
+        return $clientDocument;
     }
 
+    // TODO Add AuthorizeResult or something like that!
     /**
      * POST authorize data.
      *
@@ -288,303 +120,164 @@ class OAuth extends Service implements AuthInterface
      *
      * @return [type] [description]
      */
-    public function authorizePost($request)
+    public function authorizePost()
     {
-        $postParams = new Set($request->post());
-        $params = new Set($request->get());
+        $params = $this->getContainer()->get('parser')->getData()->getParameters();
+        $postParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
-        // CSRF protection
-        if (!$postParams->has('csrfToken') || !isset($_SESSION['csrfToken']) || ($postParams->get('csrfToken') !== $_SESSION['csrfToken'])) {
-            throw new \Exception('Invalid CSRF token.', Resource::STATUS_BAD_REQUEST);
-        }
+        $this->validateCsrf($postParams);
+        $this->validateAction($postParams);
 
-        // TODO: Improve this, load stuff from config, add documented error codes, separate stuff into functions, etc.
         if ($postParams->get('action') === 'accept') {
-            $expiresAt = time() + 3600;
-            $collection  = $this->getDocumentManager()->getCollection('oAuthClients');
-            $cursor      = $collection->find();
-            $cursor->where('clientId', $params->get('client_id'));
-            $clientDocument = $cursor->current();
-            $collection  = $this->getDocumentManager()->getCollection('users');
-            $userDocument = $collection->getDocument($_SESSION['userId']);
-            $collection  = $this->getDocumentManager()->getCollection('authScopes');
+            $expiresAt = time() + Config::get(['xAPI', 'oauth', 'token_expiry_time']);
+            // getClientById
+            $clientDocument = $this->getStorage()->getOAuthClientsStorage()->getClientById($params->client_id);
+
+            // getUserById --  $_SESSION['userId']
+            $userDocument = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
+
             $scopeDocuments = [];
-            $scopes = explode(',', $params->get('scope'));
-            foreach ($scopes as $scope) {
-                $cursor      = $collection->find();
-                $cursor->where('name', $scope);
-                $scopeDocument = $cursor->current();
-                if (null === $scopeDocument) {
-                    throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
-                }
-                $scopeDocuments[] = $scopeDocument;
-            }
+            $scopes = explode(',', $params->scope);
+            $scopeDocuments = $this->validateAndMapScopes($scopes);// throws exception if not a valid scope
+
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);
-            $this->token = $token;
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['code' => $token->getCode()]); //We could also use just $code
-            $this->redirectUri = $redirectUri;
+            return $redirectUri;
         } elseif ($postParams->get('action') === 'deny') {
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['error' => 'User denied authorization!']);
-            $this->redirectUri = $redirectUri;
-        } else {
-            throw new Exception('Invalid.', Resource::STATUS_BAD_REQUEST);
+            return $redirectUri;
         }
     }
 
     /**
-     * @param [type] $request [description]
+     * Validates and retrieves access token
      *
-     * @return [type] [description]
+     * @return array json document
      */
-    public function accessTokenPost($request)
+    public function accessTokenPost()
     {
-        $params = new Set($request->post());
+        $params = $this->getContainer()->get('parser')->getData()->getPayload();
+        $params = new Util\Collection($params);
 
         $requiredParams = ['grant_type', 'client_id', 'client_secret', 'redirect_uri', 'code'];
 
-        //TODO: Use json-schema validator
-        foreach ($requiredParams as $requiredParam) {
-            if (!$params->has($requiredParam)) {
-                throw new \Exception('Parameter '.$requiredParam.' is missing!', Resource::STATUS_BAD_REQUEST);
-            }
-        }
+        $this->validateRequiredParams($params, $requiredParams);
+        $this->validateGrantType($params['grant_type']);
 
-        if ($params->get('grant_type') !== 'authorization_code') {
-            throw new \Exception('Invalid grant_type specified.', Resource::STATUS_BAD_REQUEST);
-        }
-
-        $collection  = $this->getDocumentManager()->getCollection('oAuthTokens');
-        $cursor      = $collection->find();
-
-        $cursor->where('code', $params->get('code'));
-        $tokenDocument = $cursor->current();
-
-        if (null === $tokenDocument) {
-            throw new \Exception('Invalid code specified!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        $clientDocument = $tokenDocument->client;
-
-        if ($clientDocument->getClientId() !== $params->get('client_id') || $clientDocument->getSecret() !== $params->get('client_secret')) {
-            throw new \Exception('Invalid client_id/client_secret combination!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        if ($params->get('redirect_uri') !== $clientDocument->getRedirectUri()) {
-            throw new \Exception('Redirect_uri mismatch!', Resource::STATUS_BAD_REQUEST);
-        }
-
-        //Remove one-time code
-        $tokenDocument->setCode(false);
-        $tokenDocument->save();
-
-        $this->accessTokens = [$tokenDocument];
-        $this->single = true;
+        // getTokenWithOneTimeCode($params)
+        $tokenDocument = $this->getStorage()->getOAuthStorage()->getTokenWithOneTimeCode($params);
 
         return $tokenDocument;
     }
 
     public function extractToken(Request $request)
     {
-        $tokenHeader = $request->headers('Authorization', false);
-        $rawTokenHeader = $request->rawHeaders('Authorization', false);
+        $tokenHeader = $request->getHeaderLine('Authorization');
 
         if ($tokenHeader && preg_match('/Bearer\s*([^\s]+)/', $tokenHeader, $matches)) {
-            $tokenHeader = $matches[1];
-        } elseif ($rawTokenHeader && preg_match('/Bearer\s*([^\s]+)/', $rawTokenHeader, $matches)) {
             $tokenHeader = $matches[1];
         } else {
             $tokenHeader = false;
         }
-        $tokenRequest = $request->post('access_token', false);
-        $tokenQuery = $request->get('access_token', false);
+        $tokenParam = $request->getParam('access_token', false);
         // At least one (and only one) of client credentials method required.
-        if (!$tokenHeader && !$tokenRequest && !$tokenQuery) {
-            throw new Exception('The request is missing a required parameter.', Resource::STATUS_BAD_REQUEST);
-        } elseif (($tokenHeader && $tokenRequest) || ($tokenRequest && $tokenQuery) || ($tokenQuery && $tokenHeader)) {
-            throw new Exception('The request includes multiple credentials.', Resource::STATUS_BAD_REQUEST);
+        if (!$tokenHeader && !$tokenParam) {
+            throw new AuthFailureException('The request is missing a required parameter.', Controller::STATUS_BAD_REQUEST);
+        } elseif ($tokenHeader && $tokenParam) {
+            throw new AuthFailureException('The request includes multiple credentials.', Controller::STATUS_BAD_REQUEST);
         }
 
         $accessToken = $tokenHeader
-            ?: $tokenRequest
-            ?: $tokenQuery;
+            ?: $tokenParam;
 
         try {
             $tokenDocument = $this->fetchToken($accessToken);
         } catch (\Exception $e) {
-            throw new Exception('Access token invalid.');
+            throw new AuthFailureException('Access token invalid.');
         }
 
-        return $tokenDocument;
-    }
-
-    /**
-     * Gets the Access tokens.
-     *
-     * @return array
-     */
-    public function getAccessTokens()
-    {
-        return $this->accessTokens;
-    }
-
-    /**
-     * Sets the Access tokens.
-     *
-     * @param array $accessTokens the access tokens
-     *
-     * @return self
-     */
-    public function setAccessTokens(array $accessTokens)
-    {
-        $this->accessTokens = $accessTokens;
-
         return $this;
     }
 
     /**
-     * Gets the Cursor.
-     *
-     * @return cursor
+     * Validates and compiles a document of given scopes
+     * @return array collection of mapo
      */
-    public function getCursor()
+    private function validateAndMapScopes($scopes)
     {
-        return $this->cursor;
+        $auth = $this->getContainer()->get('auth');
+        $scopeDocuments = [];
+
+        foreach ($scopes as $scope) {
+            // Get scope by name
+            $scopeDocument = $auth->getAuthScope($scope);
+
+            if (!$scopeDocument) {
+                throw new Exception('Invalid scope given!', Controller::STATUS_BAD_REQUEST);
+            }
+            $user = $this->getStorage()->getUserStorage()->findById($_SESSION['userId']);
+            if (!in_array($scope, $user->permissions)) {
+                throw new Exception('User does not have enough permissions for requested scope!', Controller::STATUS_BAD_REQUEST);
+            }
+            $scopeDocuments[$scope] = $scopeDocument;
+        }
+
+        return $scopeDocuments;
     }
 
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor($cursor)
+    private function validateCsrf($params)
     {
-        $this->cursor = $cursor;
-
-        return $this;
+        // CSRF protection
+        if (!isset($params['csrfToken']) || !isset($_SESSION['csrfToken']) || ($params['csrfToken'] !== $_SESSION['csrfToken'])) {
+            throw new Exception('Invalid CSRF token.', Controller::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Gets the Is this a single access token fetch?.
-     *
-     * @return bool
-     */
-    public function getSingle()
+    private function validateAction($params)
     {
-        return $this->single;
+        if ($params['action'] !== 'accept' && $params['action'] !== 'deny') {
+            throw new Exception('Invalid.', Controller::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Sets the Is this a single access token fetch?.
-     *
-     * @param bool $single the is single
-     *
-     * @return self
-     */
-    public function setSingle($single)
+    private function validateRequiredParams($params, $requiredParams)
     {
-        $this->single = $single;
-
-        return $this;
+        //TODO 0.11.x: Use GraphQL to validate these params
+        foreach ($requiredParams as $requiredParam) {
+            if (!isset($params->{$requiredParam})) {
+                throw new Exception('Parameter '.$requiredParam.' is missing!', Controller::STATUS_BAD_REQUEST);
+            }
+        }
     }
 
-    /**
-     * Gets the The relevant client(s).
-     *
-     * @return \API\Document\Auth\OAuthClient
-     */
-    public function getClient()
+    private function validateResponseType($responseType)
     {
-        return $this->client;
+        if ($responseType !== 'code') {
+            throw new \Exception('Invalid response_type specified.', Controller::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Sets the The relevant client(s).
-     *
-     * @param \API\Document\Auth\OAuthClient $client the client
-     *
-     * @return self
-     */
-    public function setClient(\API\Document\Auth\OAuthClient $client)
+    private function validateRedirectUri($redirectUri, $clientDocument)
     {
-        $this->client = $client;
-
-        return $this;
+        if ($redirectUri !== $clientDocument->redirectUri) {
+            throw new \Exception('Redirect_uri mismatch!', Controller::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Gets the The relevant scopes.
-     *
-     * @return array
-     */
-    public function getScopes()
+    private function validateGrantType($grantType)
     {
-        return $this->scopes;
+        if ($grantType !== 'authorization_code') {
+            throw new \Exception('Invalid grant_type specified.', Controller::STATUS_BAD_REQUEST);
+        }
     }
 
-    /**
-     * Sets the The relevant scopes.
-     *
-     * @param array $scopes the scopes
-     *
-     * @return self
-     */
-    public function setScopes(array $scopes)
+    public function validateClientDocument($clientDocument)
     {
-        $this->scopes = $scopes;
-
-        return $this;
-    }
-
-    /**
-     * Gets the The relevant token.
-     *
-     * @return \API\Document\Auth\OAuthToken
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * Sets the The relevant token.
-     *
-     * @param \API\Document\Auth\OAuthToken $token the token
-     *
-     * @return self
-     */
-    public function setToken(\API\Document\Auth\OAuthToken $token)
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * Gets the The relevant redirectUri.
-     *
-     * @return string
-     */
-    public function getRedirectUri()
-    {
-        return $this->redirectUri;
-    }
-
-    /**
-     * Sets the The relevant redirectUri.
-     *
-     * @param string $redirectUri the redirect uri
-     *
-     * @return self
-     */
-    public function setRedirectUri($redirectUri)
-    {
-        $this->redirectUri = $redirectUri;
-
-        return $this;
+        if (null === $clientDocument) {
+            throw new \Exception('Invalid client_id', Controller::STATUS_BAD_REQUEST);
+        }
     }
 }

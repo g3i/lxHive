@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ use API\Util;
 class Log extends Service
 {
     /**
-     * Creates a log entry from the given request
+     * Creates a log entry from the given request.
      *
      * @param Slim\Http\Request $request The request
      *
@@ -38,16 +38,12 @@ class Log extends Service
      */
     public function logRequest($request)
     {
-        $collection  = $this->getDocumentManager()->getCollection('logs');
-        $document = $collection->createDocument();
-
-        $document->setIp($request->getIp());
-        $document->setMethod($request->getMethod());
-        $document->setEndpoint($request->getPathInfo());
+        $ip = $request->getServerParam('REMOTE_ADDR');
+        $method = $request->getMethod();
+        $target = $request->getRequestTarget();
         $currentDate = Util\Date::dateTimeExact();
-        $document->setTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-
-        $document->save();
+        $logStorage = $this->getStorage()->getLogStorage();
+        $document = $logStorage->logRequest($ip, $method, $target, $currentDate);
 
         return $document;
     }

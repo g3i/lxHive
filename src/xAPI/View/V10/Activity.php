@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,17 @@ use API\View;
 
 class Activity extends View
 {
-    public function renderGetSingle()
+    /**
+     * Render the activity
+     * @param  stdClass $activityDocument Activity as an object
+     * @return stdClass Modified activity
+     */
+    public function renderGetSingle($activityDocument)
     {
-        $document = $this->service->getCursor()->current();
-        $document->unsetField('_id');
+        if (isset($activityDocument->_id)) {
+            unset($activityDocument->_id);
+        }
 
-        return $document;
+        return $activityDocument;
     }
 }

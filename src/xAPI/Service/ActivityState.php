@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,209 +25,41 @@
 namespace API\Service;
 
 use API\Service;
-use API\Resource;
-use API\Util;
-use Slim\Helper\Set;
-use Sokil\Mongo\Cursor;
+use API\Util\Collection;
 
 class ActivityState extends Service
 {
     /**
-     * Activity states.
-     *
-     * @var array
-     */
-    protected $activityStates;
-
-    /**
-     * Cursor.
-     *
-     * @var cursor
-     */
-    protected $cursor;
-
-    /**
-     * Is this a single activity state fetch?
-     *
-     * @var bool
-     */
-    protected $single = false;
-
-    /**
      * Fetches activity states according to the given parameters.
-     *
-     * @param array $request The incoming HTTP request
      *
      * @return array An array of statement objects.
      */
-    public function activityStateGet($request)
+    public function activityStateGet()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
-        $cursor      = $collection->find();
+        $documentResult = $this->getStorage()->getActivityStateStorage()->getFiltered($params);
 
-        // Single activity state
-        if ($params->has('stateId')) {
-            $cursor->where('stateId', $params->get('stateId'));
-            $cursor->where('activityId', $params->get('activityId'));
-            $agent = $params->get('agent');
-            $agent = json_decode($agent, true);
-            //Fetch the identifier - otherwise we'd have to order the JSON
-            if (isset($agent['mbox'])) {
-                $uniqueIdentifier = 'mbox';
-            } elseif (isset($agent['mbox_sha1sum'])) {
-                $uniqueIdentifier = 'mbox_sha1sum';
-            } elseif (isset($agent['openid'])) {
-                $uniqueIdentifier = 'openid';
-            } elseif (isset($agent['account'])) {
-                $uniqueIdentifier = 'account';
-            } else {
-                throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-            }
-            $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-            if ($params->has('registration')) {
-                $cursor->where('registration', $params->get('registration'));
-            }
-
-            if ($cursor->count() === 0) {
-                throw new Exception('Activity state does not exist.', Resource::STATUS_NOT_FOUND);
-            }
-
-            $this->cursor   = $cursor;
-            $this->single = true;
-
-            return $this;
-        }
-
-        $cursor->where('activityId', $params->get('activityId'));
-        $agent = $params->get('agent');
-        $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        if ($params->has('registration')) {
-            $cursor->where('registration', $params->get('registration'));
-        }
-
-        if ($params->has('since')) {
-            $date = Util\Date::dateRFC3339($params->get('since'));
-            if(!$date){
-                throw new Exception('"since" parameter is not a valid ISO 8601 timestamp.(Good example: 2015-11-18T12:17:00+00:00), ', Resource::STATUS_NOT_FOUND);
-            }
-            $since = Util\Date::dateTimeToMongoDate($date);
-            $cursor->whereGreaterOrEqual('mongoTimestamp', $since);
-        }
-
-        $this->cursor = $cursor;
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Tries to save (merge) an activityState.
      */
-    public function activityStatePost($request)
+    public function activityStatePost()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
         // Validation has been completed already - everything is assumed to be valid
-        $rawBody = $request->getBody();
+        $rawBody = $request->getRawPayload();
 
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $params->set('headers', $request->getHeaders());
 
-        // Set up the body to be saved
-        $activityStateDocument = $collection->createDocument();
+        $documentResult = $this->getStorage()->getActivityStateStorage()->post($params, $rawBody);
 
-        // Check for existing state - then merge if applicable
-        $cursor      = $collection->find();
-        $cursor->where('stateId', $params->get('stateId'));
-        $cursor->where('activityId', $params->get('activityId'));
-
-        $agent = $params->get('agent');
-        $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        if ($params->has('registration')) {
-            $cursor->where('registration', $params->get('registration'));
-        }
-
-        $result = $cursor->findOne();
-
-        // ID exists, merge body
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        // ID exists, try to merge body if applicable
-        if ($result) {
-            if ($result->getContentType() !== 'application/json') {
-                throw new \Exception('Original document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            if ($contentType !== 'application/json') {
-                throw new \Exception('Posted document is not JSON. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-            $decodedExisting = json_decode($result->getContent(), true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON in existing document. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-
-            $decodedPosted = json_decode($rawBody, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception('Invalid JSON posted. Cannot merge!', Resource::STATUS_BAD_REQUEST);
-            }
-
-            $rawBody = json_encode(array_merge($decodedExisting, $decodedPosted));
-            $activityStateDocument = $result;
-        }
-
-        $activityStateDocument->setContent($rawBody);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityStateDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-
-        $activityStateDocument->setActivityId($params->get('activityId'));
-        $activityStateDocument->setAgent($agent);
-        if ($params->has('registration')) {
-            $activityStateDocument->setRegistration($params->get('registration'));
-        }
-        $activityStateDocument->setStateId($params->get('stateId'));
-        $activityStateDocument->setContentType($contentType);
-        $activityStateDocument->setHash(sha1($rawBody));
-        $activityStateDocument->save();
-
-        // Add to log
-        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
-
-        $this->single = true;
-        $this->activityStates = [$activityStateDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
@@ -235,121 +67,34 @@ class ActivityState extends Service
      *
      * @return
      */
-    public function activityStatePut($request)
+    public function activityStatePut()
     {
-        // Validation has been completed already - everyhing is assumed to be valid (from an external view!)
-        $rawBody = $request->getBody();
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        // Single
-        $params = new Set($request->get());
+        // Validation has been completed already - everything is assumed to be valid
+        $rawBody = $request->getRawPayload();
 
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $params->set('headers', $request->getHeaders());
 
-        $activityStateDocument = $collection->createDocument();
+        $documentResult = $this->getStorage()->getActivityStateStorage()->put($params, $rawBody);
 
-        // Check for existing state - then replace if applicable
-        $cursor      = $collection->find();
-        $cursor->where('stateId', $params->get('stateId'));
-        $cursor->where('activityId', $params->get('activityId'));
-
-        $agent = $params->get('agent');
-        $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
-        $cursor->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        if ($params->has('registration')) {
-            $cursor->where('registration', $params->get('registration'));
-        }
-
-        $result = $cursor->findOne();
-
-        $contentType = $request->headers('Content-Type');
-        if ($contentType === null) {
-            $contentType = 'text/plain';
-        }
-
-        // ID exists, replace
-        if ($result) {
-            $activityStateDocument = $result;
-        }
-
-        $activityStateDocument->setContent($rawBody);
-        // Dates
-        $currentDate = Util\Date::dateTimeExact();
-        $activityStateDocument->setMongoTimestamp(Util\Date::dateTimeToMongoDate($currentDate));
-        $activityStateDocument->setActivityId($params->get('activityId'));
-
-        $activityStateDocument->setAgent($agent);
-        if ($params->has('registration')) {
-            $activityStateDocument->setRegistration($params->get('registration'));
-        }
-        $activityStateDocument->setStateId($params->get('stateId'));
-        $activityStateDocument->setContentType($contentType);
-        $activityStateDocument->setHash(sha1($rawBody));
-        $activityStateDocument->save();
-
-        // Add to log
-        $this->getSlim()->requestLog->addRelation('activityStates', $activityStateDocument)->save();
-
-        $this->single = true;
-        $this->activityStates = [$activityStateDocument];
-
-        return $this;
+        return $documentResult;
     }
 
     /**
      * Fetches activity states according to the given parameters.
      *
-     * @param array $request The incoming HTTP request
-     *
      * @return array An array of statement objects.
      */
-    public function activityStateDelete($request)
+    public function activityStateDelete()
     {
-        $params = new Set($request->get());
+        $request = $this->getContainer()->get('parser')->getData();
+        $params = new Collection($request->getParameters());
 
-        $collection  = $this->getDocumentManager()->getCollection('activityStates');
+        $params->set('headers', $request->getHeaders());
 
-        $expression = $collection->expression();
-
-        if ($params->has('stateId')) {
-            $expression->where('stateId', $params->get('stateId'));
-        }
-
-        $expression->where('activityId', $params->get('activityId'));
-
-        $agent = $params->get('agent');
-        $agent = json_decode($agent, true);
-        //Fetch the identifier - otherwise we'd have to order the JSON
-        if (isset($agent['mbox'])) {
-            $uniqueIdentifier = 'mbox';
-        } elseif (isset($agent['mbox_sha1sum'])) {
-            $uniqueIdentifier = 'mbox_sha1sum';
-        } elseif (isset($agent['openid'])) {
-            $uniqueIdentifier = 'openid';
-        } elseif (isset($agent['account'])) {
-            $uniqueIdentifier = 'account';
-        } else {
-            throw new Exception('Invalid request!', Resource::STATUS_BAD_REQUEST);
-        }
-        $expression->where('agent.'.$uniqueIdentifier, $agent[$uniqueIdentifier]);
-
-        if ($params->has('registration')) {
-            $expression->where('registration', $params->get('registration'));
-        }
-
-        $collection->deleteDocuments($expression);
+        $this->getStorage()->getActivityStateStorage()->delete($params);
 
         return $this;
     }
@@ -386,20 +131,6 @@ class ActivityState extends Service
     public function getCursor()
     {
         return $this->cursor;
-    }
-
-    /**
-     * Sets the Cursor.
-     *
-     * @param cursor $cursor the cursor
-     *
-     * @return self
-     */
-    public function setCursor(Cursor $cursor)
-    {
-        $this->cursor = $cursor;
-
-        return $this;
     }
 
     /**

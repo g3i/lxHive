@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,20 +25,17 @@
 namespace API\View\V10\OAuth;
 
 use API\View;
+use API\Config;
 
 class Login extends View
 {
-    public function renderGet()
+    public function renderGet($errors)
     {
-        $view = $this->getSlim()->view;
-        $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
-        $this->set('csrfToken', $_SESSION['csrfToken']);
-        $this->set('name', $this->getSlim()->config('name'));
-        $this->set('branding', $this->getSlim()->config('xAPI')['oauth']['branding']);
-        $output = $view->render('login.twig', $this->all());
+        $view = $this->getContainer()->get('view');
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding']), 'errors' => $errors]);
+        $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
+        $output = $view->render($response, 'login.twig', $this->getItems());
 
-        // Set Content-Type to html
-        $this->getSlim()->response->headers->set('Content-Type', 'text/html');
 
         return $output;
     }

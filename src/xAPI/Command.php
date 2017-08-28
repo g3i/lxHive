@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,48 +25,34 @@
 namespace API;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Slim\Slim;
-
-// TODO - Derive Resource.php and Command.php from the same parent base class!!!
 
 class Command extends SymfonyCommand
 {
     /**
-     * @var \Slim\Slim
-     */
-    private $slim;
-
-    /**
-     * Construct.
+     * {@inheritDoc}
      */
     public function __construct()
     {
         parent::__construct();
-        $this->setSlim(Slim::getInstance());
 
         $this->init();
     }
 
     /**
      * Default init, use for overwrite only.
+     * {@inheritDoc}
      */
     public function init()
     {
     }
 
     /**
-     * @return \Slim\Slim
+     * Get service container
+     *
+     * @return Interop\Container\ContainerInterface
      */
-    public function getSlim()
+    public function getContainer()
     {
-        return $this->slim;
-    }
-
-    /**
-     * @param \Slim\Slim $slim
-     */
-    public function setSlim($slim)
-    {
-        $this->slim = $slim;
+        return $this->getApplication()->getContainer();
     }
 }

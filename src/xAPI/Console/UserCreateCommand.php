@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,138 +24,166 @@
 
 namespace API\Console;
 
-use API\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use API\Service\User as UserService;
-use API\Service\AuthScopes as AuthScopesService;
+
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
+
+use API\Config;
+use API\Bootstrap;
+use API\Command;
+use API\Admin\Setup;
+use API\Admin\Validator;
+
+use API\Admin;
+use API\Admin\User as UserAdmin;
+
+use RunTimeException;
 
 class UserCreateCommand extends Command
 {
+    /**
+     * @var UserAdmin $userAdmin;
+     */
+    private $userAdmin;
+
+    /**
+     * @var Validator $validator
+     */
+    private $validator;
+
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
             ->setName('user:create')
             ->setDescription('Creates a new user')
             ->setDefinition(
-                new InputDefinition(array(
+                new InputDefinition([
+                    new InputOption('name', 'na', InputOption::VALUE_OPTIONAL),
+                    new InputOption('description', 'd', InputOption::VALUE_OPTIONAL),
                     new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
                     new InputOption('password', 'p', InputOption::VALUE_OPTIONAL),
                     new InputOption('permissions', 'pm', InputOption::VALUE_OPTIONAL),
-                ))
+                ])
             )
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $userService = new UserService($this->getSlim());
-        $scopesService =  new AuthScopesService($this->getSlim());
-        $helper = $this->getHelper('question');
+        $io = new SymfonyStyle($input, $output);
 
-        // abort if no permissions set
-        if (!$scopesService->count()) {
-            throw new \RuntimeException(
-                'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
-            );
+        $io->title('<info>Create a new user.</info>');
+        $io->newLine();
+
+        $this->userAdmin = new UserAdmin($this->getContainer());
+        $this->validator = new Validator();
+
+        // 1. Name
+        if (null === $input->getOption('name')) {
+            $name = $io->ask('<comment>[1/6]</comment> Please enter a name', null, function ($answer) {
+                $this->validator->validateName($answer);
+                return $answer;
+            });
+        } else {
+            $name = $input->getOption('name');
         }
 
-        // email
-        $question = new Question('Please enter an e-mail: ', '');
-        $question->setMaxAttempts(null);
-        $question->setValidator(function ($answer) {
-            $this->validateEmail($answer);
-            return $answer;
-        });
-        $email = $helper->ask($input, $output, $question);
+        // 2. Description
+        if (null === $input->getOption('description')) {
+            $description = $io->ask('<comment>[2/6]</comment> Please enter a description', false);
+        } else {
+            $description = $input->getOption('description');
+        }
 
-        // password
-        $question = new Question('Please enter a password: ', '');
-        $question->setMaxAttempts(null);
-        $question->setValidator(function ($answer) {
-            $this->validatePassword($answer);
-            return $answer;
-        });
-        $password = $helper->ask($input, $output, $question);
+        // 3. Email
+        if (null === $input->getOption('email')) {
+            $email = $io->ask('<comment>[3/6]</comment> Please enter an e-mail', null, function ($answer) {
+                $this->validator->validateEmail($answer);
+                return $answer;
+            });
+        } else {
+            $email = $input->getOption('email');
+        }
 
-        // permissions
-        $permissionsDictionary = $scopesService->fetchAll(true);
+        // 4. Password
+        if (null === $input->getOption('password')) {
+            $password = $io->askHidden('<comment>[4/6]</comment> Please enter a password', function ($answer) {
+                $this->validator->validatePassword($answer);
+                return $answer;
+            });
+        } else {
+            $password = $input->getOption('password');
+        }
+
+        if (null === $input->getOption('password')) {
+            $confirmed = $io->askHidden('<comment>[5/6]</comment> Please confirm password', function ($answer) use ($password) {
+                if ($answer !== $password) {
+                    throw new RuntimeException('Passwords do not match');
+                }
+                return $answer;
+            });
+        } else {
+            $confirmed = true;
+        }
+
+        // 5. Permissions
+        $scopes = [];
+        $scopes = $this->userAdmin->fetchAvailablePermissions();
+
         if (null === $input->getOption('permissions')) {
             $question = new ChoiceQuestion(
-                'Please select which permissions you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                array_keys($permissionsDictionary),
-                '0'
+                implode("\n", [
+                    '<comment>[6/6]</comment> Please select which permissions you would like to enable.',
+                    ' * Separate multiple values with commas (without spaces).',
+                ]),
+                array_keys($scopes),
+                null
             );
             $question->setMultiselect(true);
-
-            $selectedPermissionNames = $helper->ask($input, $output, $question);
+            $question->setMaxAttempts(null);
+            $permissions  = $io->askQuestion($question);// validation by ChoiceQuestion
         } else {
-            $selectedPermissionNames = explode(',', $input->getOption('permissions'));
+            $permissions = explode(',', $input->getOption('permissions'));
         }
 
-        $selectedPermissions = [];
-        foreach ($selectedPermissionNames as $selectedPermissionName) {
-            $selectedPermissions[] = $permissionsDictionary[$selectedPermissionName];
-        }
+        $io->text('<info> * Selected permissions: </info>'. implode(', ', $permissions));
+        $permissions = $this->userAdmin->mergeInheritedPermissions($permissions);
+        $io->text('<info> * with inherited permissions: </info>'. implode(', ', $permissions));
 
-        $user = $userService->addUser($email, $password, $selectedPermissions);
-        $text = json_encode($user, JSON_PRETTY_PRINT);
+        // 6. add record
+        $cursor = $this->userAdmin->addUser($name, $description, $email, $password, $permissions);
 
-        $userCount = $userService->getEmailCount($email);
-        if ($userCount > 1) {
-            $output->writeln('<comment>Note: there are ' . $userCount . ' duplicate accounts with the same email - ' . $email . '</comment>');
-        }
+        $io->success('User successfully created!');
 
-        $output->writeln('<info>User successfully created!</info>');
-        $output->writeln('<info>Info:</info>');
-        $output->writeln($text);
-    }
+        // 7. display
+        $io->text(' <error> !!! </error> Please store below user information privately and secure!');
+        $io->newLine();
 
+        $user = $cursor->toArray();
 
-    /**
-     * Validate password
-     * @param string $str
-     *
-     * @return void
-     * @throws AdminException
-     */
-    public function validatePassword($str)
-    {
-        $errors = [];
-        $length = 6;
+        $io->listing([
+            '<comment>id</comment>: '.$cursor->getId(),
+            '<comment>name</comment>: '.$user->name,
+            '<comment>email</comment>: '.$user->email,
+            '<comment>password</comment>: '.$password,
+            '<comment>permissions</comment>: '.implode(', ', $permissions),
+        ]);
 
-        if (strlen($str) < $length) {
-            $errors[] = 'Must have at least '.$length.' characters';
-        }
-
-        if (!preg_match('/[0-9]+/', $str)) {
-            $errors[] = 'Must include at least one number.';
-        }
-
-        if (!preg_match('/[a-zA-Z]+/', $str)) {
-            $errors[] = 'Must include at least one letter.';
-        }
-
-        if (!empty($errors)) {
-            throw new \RuntimeException(json_encode($errors));
-        }
-    }
-
-    /**
-     * Validate email address
-     * @param string $email
-     *
-     * @return void
-     * @throws AdminException
-     */
-    public function validateEmail($email)
-    {
-        if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            throw new \RuntimeException('Invalid email address!');
-        }
+        $io->text('<info> --> </info> NEXT: Create a basic token with <comment>./X auth:basic:create</comment>');
+        $io->text('or');
+        $io->text('<info> --> </info> NEXT: Create an oAuth token with <comment>./X oauth:client:create</comment>');
+        $io->newLine();
     }
 }

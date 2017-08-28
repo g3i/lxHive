@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2016 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,90 +25,64 @@
 namespace API\Validator\V10;
 
 use API\Validator;
-use API\Resource;
-use API\Validator\Exception;
 
 class Statement extends Validator
 {
-    protected function retrieveByFragment($fragment)
+    protected function validateBySchemaFragment($data, $fragment, $debug = false)
     {
-        $schema = $this->getSchemaRetriever()->retrieve('file://'.__DIR__.'/Schema/Statements.json#'.$fragment);
+        $fragment = ($fragment) ? '#'.$fragment : '';
 
-        return $schema;
-    }
-
-    protected function throwErrors($message, $errors)
-    {
-        $message .= ' Violations: ';
-        foreach ($errors as $error) {
-            $message .= sprintf("[%s] %s\n", $error['property'], $error['message']);
-        }
-        throw new Exception($message, Resource::STATUS_BAD_REQUEST);
+        return $this->validateSchema($data, 'file://'.__DIR__.'/Schema/Statements.json'.$fragment, $debug);
     }
 
     // Handles the validation of GET /statements
-    public function validateGetRequest($request)
+    public function validateGetRequest()
     {
-        $data = $request->get();
+        $data = $this->getContainer()->get('parser')->getData()->getParameters();
 
         foreach ($data as $key => $value) {
             $decodedValue = json_decode($value);
             if (json_last_error() == JSON_ERROR_NONE) {
                 $data[$key] = $decodedValue;
-            }  
+            }
         }
 
         if (!empty($data)) {
             $data = (object) $data;
         }
 
-        $schema = $this->retrieveByFragment('getParameters');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('GET parameters do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'getParameters');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('GET parameters do not validate.', $validator);
         }
     }
 
     // POST-ing a statement validation
-    public function validatePostRequest($request)
+    public function validatePostRequest()
     {
-        // Then do specific validation
-        $data = $request->getBody();
-        $data = json_decode($data);
+        $data = $this->getContainer()->get('parser')->getData()->getPayload();
 
-        $schema = $this->retrieveByFragment('postBody');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('Statements do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'postBody');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('Statements do not validate.', $validator);
         }
     }
 
     // PUT-ing one or more statements validation
-    public function validatePutRequest($request)
+    public function validatePutRequest()
     {
         // Then do specific validation
-        $data = $request->get();
-        $schema = $this->retrieveByFragment('putParameters');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('PUT parameters do not validate.', $this->getSchemaValidator()->getErrors());
+        $data = $this->getContainer()->get('parser')->getData()->getParameters();
+        $validator = $this->validateBySchemaFragment($data, 'putParameters');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('PUT parameters do not validate.', $validator);
         }
 
-        $data = $request->getBody();
-        $data = json_decode($data);
+        $data = $this->getContainer()->get('parser')->getData()->getPayload();
 
-        $schema = $this->retrieveByFragment('putBody');
-        $this->getSchemaReferenceResolver()->resolve($schema);
-        $this->getSchemaValidator()->check($data, $schema);
-
-        if (!$this->getSchemaValidator()->isValid()) {
-            $this->throwErrors('Statements do not validate.', $this->getSchemaValidator()->getErrors());
+        $validator = $this->validateBySchemaFragment($data, 'putBody');
+        if (!$validator->isValid()) {
+            $this->throwSchemaErrors('Statements do not validate.', $validator);
         }
     }
 }

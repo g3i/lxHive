@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with lxHive. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -24,27 +24,27 @@
 $argv = $_SERVER['argv'];
 
 if (isset($argv[0]) && is_dir($argv[0])) {
-	$workingDirectory = $argv[0];
-	array_shift($argv);
-	$_SERVER['argv'] = $argv;
+    $workingDirectory = $argv[0];
+    array_shift($argv);
+    $_SERVER['argv'] = $argv;
 } else {
-	$workingDirectory = __DIR__;
+    $workingDirectory = __DIR__;
 }
 
 if (!file_exists($workingDirectory . '/public/index.php')) {
-	echo 'You must run X from the root directory of your lxHive install or specify its correct path as the first argument!' . PHP_EOL;
-	exit;
+    echo 'You must run X from the root directory of your lxHive install or specify its correct path as the first argument!' . PHP_EOL;
+    exit;
 }
 
 if (!file_exists($workingDirectory . '/vendor/autoload.php')) {
-	echo 'You must run composer install before running X!' . PHP_EOL;
-	exit;
+    echo 'You must run composer install before running X!' . PHP_EOL;
+    exit;
 }
 
 require_once $workingDirectory . '/vendor/autoload.php';
-require_once $workingDirectory . '/public/index.php';
 
-use Symfony\Component\Console\Application;
+use API\Bootstrap;
+use API\Console\Application;
 use API\Console\UserCreateCommand;
 use API\Console\BasicTokenCreateCommand;
 use API\Console\BasicTokenListCommand;
@@ -52,16 +52,22 @@ use API\Console\BasicTokenDeleteCommand;
 use API\Console\BasicTokenExpireCommand;
 use API\Console\OAuthClientCreateCommand;
 use API\Console\OAuthClientListCommand;
-use API\Console\AuthScopeCreateCommand;
-use API\Console\SetupDbCommand;
+use API\Console\SetupCommand;
 use API\Console\SetupOAuthCommand;
-use Sokil\Mongo\Migrator\Console\Command\Create as MigrationCreateCommand;
-use Sokil\Mongo\Migrator\Console\Command\Init as MigrationInitCommand;
-use Sokil\Mongo\Migrator\Console\Command\Migrate as MigrationMigrateCommand;
-use Sokil\Mongo\Migrator\Console\Command\Rollback as MigrationRollbackCommand;
-use Sokil\Mongo\Migrator\Console\Command\Status as MigrationStatusCommand;
+use API\Console\LrsReportCommand;
+use API\AppInitException;
 
-$application = new Application();
+// If container cannot be instantiated due to missing Config file, allow only Setup command to be executed!
+try {
+    $bootstrapper = Bootstrap::factory(Bootstrap::Console);
+    $application = $bootstrapper->bootCliApp();
+} catch (AppInitException $e) {
+    $application = new Application();
+    $application->add(new SetupCommand());
+    $application->add(new LrsReportCommand());
+    $application->run();
+}
+
 $application->add(new UserCreateCommand());
 $application->add(new BasicTokenListCommand());
 $application->add(new BasicTokenDeleteCommand());
@@ -69,24 +75,7 @@ $application->add(new BasicTokenExpireCommand());
 $application->add(new BasicTokenCreateCommand());
 $application->add(new OAuthClientCreateCommand());
 $application->add(new OAuthClientListCommand());
-$application->add(new AuthScopeCreateCommand());
-$application->add(new SetupDbCommand());
-$application->add(new SetupOAuthCommand());
-$migrationCreateCommand = new MigrationCreateCommand();
-$migrationCreateCommand->setName('db:migration:create');
-$migrationInitCommand = new MigrationInitCommand();
-$migrationInitCommand->setName('db:migration:init');
-$migrationMigrateCommand = new MigrationMigrateCommand();
-$migrationMigrateCommand->setName('db:migration:migrate');
-$migrationRollbackCommand = new MigrationRollbackCommand();
-$migrationRollbackCommand->setName('db:migration:rollback');
-$migrationStatusCommand = new MigrationStatusCommand();
-$migrationStatusCommand->setName('db:migration:status');
-$application->add($migrationCreateCommand);
-$application->add($migrationInitCommand);
-$application->add($migrationMigrateCommand);
-$application->add($migrationRollbackCommand);
-$application->add($migrationStatusCommand);
+$application->add(new SetupCommand());
+$application->add(new LrsReportCommand());
 $application->run();
- 
 ?>

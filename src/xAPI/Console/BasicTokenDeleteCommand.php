@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use API\Service\Auth\Basic as AccessTokenService;
+use API\Admin\Auth;
 
 class BasicTokenDeleteCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -41,30 +44,29 @@ class BasicTokenDeleteCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $authAdmin = new Auth($this->getContainer());
+        $keys = $authAdmin->listBasicTokenIds();
+
+        // 1. key
         $helper = $this->getHelper('question');
-        $accessTokenService = new AccessTokenService($this->getSlim());
-
-        $accessTokenService->fetchTokens();
-        $keys = [];
-        foreach ($accessTokenService->getCursor() as $document) {
-            $keys[] = $document->getKey();
-        }
-
         $question = new Question('Please enter the key of the token you wish to delete: ');
         $question->setAutocompleterValues($keys);
-
         $key = $helper->ask($input, $output, $question);
 
+        //2. confirm
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
-
         if (!$helper->ask($input, $output, $question)) {
             return;
         }
 
-        $accessTokenService->deleteToken($key);
+        // 2. delete
+        $authAdmin->deleteBasicToken($key);
 
-        $output->writeln('<info>Basic token successfully deleted!</info>');
+        $output->writeln('<info>Token successfully deleted!</info>');
     }
 }

@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,16 @@ namespace API\Console;
 use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use API\Service\Auth\OAuth as OAuthService;
+use API\Admin\Auth;
+
+// TODO 0.11.x review, command seems to have no real use
 
 class OAuthClientListCommand extends Command
 {
+
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -39,17 +45,13 @@ class OAuthClientListCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getSlim());
-
-        $oAuthService->fetchClients();
-
-        $textArray = [];
-        foreach ($oAuthService->getCursor() as $document) {
-            $textArray[] = $document->jsonSerialize();
-        }
-
+        $authAdmin = new Auth($this->getContainer());
+        $textArray = $authAdmin->listOAuthClients();
         $text = json_encode($textArray, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Clients successfully fetched!</info>');

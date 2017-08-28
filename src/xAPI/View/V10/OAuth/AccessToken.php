@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,33 +30,19 @@ use API\View;
 
 class AccessToken extends View
 {
-    public function render()
+    public function render($accessTokenDocument)
     {
-        $accessTokenDocument = $this->service->getAccessTokens()[0];
-
         $view = [
             'token' => $accessTokenDocument->getToken(),
-            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->sec,
+            'expiresAt' => (null === $accessTokenDocument->getExpiresAt()) ? null : $accessTokenDocument->getExpiresAt()->toDateTime()->getTimestamp(),
             'expiresIn' => $accessTokenDocument->getExpiresIn(),
-            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->sec,
+            'createdAt' => (null === $accessTokenDocument->getCreatedAt()) ? null : $accessTokenDocument->getCreatedAt()->toDateTime()->getTimestamp(),
             'expired' => $accessTokenDocument->isExpired(),
-            'scopes' => array_values($accessTokenDocument->scopes),
-            'user' => $accessTokenDocument->user->renderSummary(),
-            'client' => $accessTokenDocument->client->renderSummary(),
+            //'scopes' => array_values($accessTokenDocument->scopes),
+            //'user' => $accessTokenDocument->user->renderSummary(),
+            //'client' => $accessTokenDocument->client->renderSummary(),
         ];
 
         return $view;
-    }
-
-    public function renderGet()
-    {
-        // POST is same as GET
-        return $this->render();
-    }
-
-    public function renderPost()
-    {
-        // POST is same as GET
-        return $this->render();
     }
 }

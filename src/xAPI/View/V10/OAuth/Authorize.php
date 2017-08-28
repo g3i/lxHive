@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,20 +25,22 @@
 namespace API\View\V10\OAuth;
 
 use API\View;
+use API\Config;
 
 class Authorize extends View
 {
-    public function renderGet()
+    public function renderGet($user, $client, $scopes)
     {
-        $view = $this->getSlim()->view;
-        $view->setTemplatesDirectory(dirname(__FILE__).'/Templates');
-        $this->set('csrfToken', $_SESSION['csrfToken']);
-        $this->set('name', $this->getSlim()->config('name'));
-        $this->set('branding', $this->getSlim()->config('xAPI')['oauth']['branding']);
-        $output = $view->render('authorize.twig', $this->all());
-
-        // Set Content-Type to html
-        $this->getSlim()->response->headers->set('Content-Type', 'text/html');
+        $view = $this->getContainer()->get('view');
+        $this->setItems(['csrfToken' => $_SESSION['csrfToken'],
+                         'name' => Config::get(['name']),
+                         'branding' => Config::get(['xAPI', 'oauth', 'branding']),
+                         'user' => $user,
+                         'client' => $client,
+                         'scopes' => $scopes
+                         ]);
+        $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
+        $output = $view->render($response, 'authorize.twig', $this->getItems());
 
         return $output;
     }

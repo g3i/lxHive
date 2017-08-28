@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,15 @@ use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use API\Service\Auth\OAuth as OAuthService;
+
+use API\Admin\Auth;
+use API\Admin;
 
 class OAuthClientCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -40,22 +45,41 @@ class OAuthClientCreateCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $oAuthService = new OAuthService($this->getSlim());
+        $authAdmin = new Auth($this->getContainer());
+        $validator = new Admin\Validator();
 
+        // 1. name
         $helper = $this->getHelper('question');
-
-        $question = new Question('Please enter a name: ', 'untitled');
+        $question = new Question('Please enter a name: ', '');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateName($answer);
+            return $answer;
+        });
         $name = $helper->ask($input, $output, $question);
 
+        // 2. description
+        $helper = $this->getHelper('question');
         $question = new Question('Please enter a description: ', '');
         $description = $helper->ask($input, $output, $question);
 
+        // 3. redirect Uri
+        $helper = $this->getHelper('question');
         $question = new Question('Please enter a redirect URI: ');
+        $question->setMaxAttempts(null);
+        $question->setValidator(function ($answer) use ($validator) {
+            $validator->validateRedirectUri($answer);
+            return $answer;
+        });
         $redirectUri = $helper->ask($input, $output, $question);
 
-        $client = $oAuthService->addClient($name, $description, $redirectUri);
+        // 4. write record
+        $client = $authAdmin->addOAuthClient($name, $description, $redirectUri);
         $text = json_encode($client, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>OAuth client successfully created!</info>');

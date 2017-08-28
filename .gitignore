@@ -1,23 +1,38 @@
+# vendor libs
 vendor/*
 
-htrouter.phar
+# config
+src/xAPI/Config/*.yml
+!src/xAPI/Config/Templates/*.yml
 
+# file storage
 storage/logs/*
-
+storage/files/*
 src/xAPI/View/V10/OAuth/.Cache/[A-z0-9]*
-
-sami.phar
-
-SamiConfig.php
-
 cache/*
 
-storage/*
+# doc generator
+sami.phar
+docs/*
 
-src/xAPI/Config/Config.yml
+# phpBench
+phpbench.phar
+phpbench.phar.pubkey
+phpbench.json
 
+benchmarks/*
+!benchmarks/Example
+!benchmarks/*.md
+!benchmarks/autoload.php
+
+# development
+htrouter.phar
 sftp-config.json
-
 .DS_Store
+dev/*
 
+# linting, code standards
 .php_cs.cache
+phplint.sh
+
+src/xAPI/View/V10/OAuth/Templates/*

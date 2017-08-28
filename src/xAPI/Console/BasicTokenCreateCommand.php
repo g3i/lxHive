@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,47 +30,45 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use API\Service\Auth\Basic as BasicAuthService;
-use API\Service\User as UserService;
-use API\Service\AuthScopes as AuthScopesService;
+use API\Admin\Auth;
+use API\Admin\User;
 
 class BasicTokenCreateCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
             ->setName('auth:basic:create')
             ->setDescription('Creates a new basic auth token')
             ->setDefinition(
-                new InputDefinition(array(
-                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
+                new InputDefinition([
                     new InputOption('name', 'na', InputOption::VALUE_OPTIONAL),
                     new InputOption('description', 'd', InputOption::VALUE_OPTIONAL),
                     new InputOption('expiration', 'x', InputOption::VALUE_OPTIONAL),
+                    new InputOption('email', 'e', InputOption::VALUE_OPTIONAL),
                     new InputOption('scopes', 's', InputOption::VALUE_OPTIONAL),
                     new InputOption('key', 'k', InputOption::VALUE_OPTIONAL),
                     new InputOption('secret', 'sc', InputOption::VALUE_OPTIONAL),
-                ))
+                    new InputOption('userid', 'u', InputOption::VALUE_OPTIONAL),
+                ])
             )
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $basicAuthService = new BasicAuthService($this->getSlim());
-        $scopesService =  new AuthScopesService($this->getSlim());
+        $authAdmin = new Auth($this->getContainer());
+        $userAdmin = new User($this->getContainer());
 
-        $userService = new UserService($this->getSlim());
-        $userService->fetchAll();
-
-        $users = [];
-        foreach ($userService->getCursor() as $user) {
-            $users[$user->get('email')] = $user;
-        }
-
-        $helper = $this->getHelper('question');
+        // TODO 0.11.x paginated query
+        $users = $userAdmin->fetchAllUserEmails();
 
         $output->writeln([
             '<info>==========================</>',
@@ -82,53 +80,39 @@ class BasicTokenCreateCommand extends Command
             '',
         ]);
 
-        // get permissions from user service. Abort if no permissions set
-        if (!$scopesService->count()) {
-            throw new \RuntimeException(
-                'No oAuth scopes found. Please run command <comment>setup:oauth</comment> first'
-            );
+        if (!count($users)) {
+            throw new \RuntimeException('No registered users found');
         }
 
-        // intro
-        $question = new ConfirmationQuestion('Continue? (y/n) ', false);
-        if (!$helper->ask($input, $output, $question)) {
-            $output->writeln('<error>Process aborted by user.</error>');
-            return 0;
-        }
-
-        // email
+        // 1. email
         if (null === $input->getOption('email')) {
+            $helper = $this->getHelper('question');
             $question = new Question('Please enter the email of the associated user: ', '');
             $question->setAutocompleterValues(array_keys($users));
 
             $question->setNormalizer(function ($value) {
                 return $value ? trim(strtolower($value)) : '';
             });
-
             $question->setValidator(function ($answer) use ($users, $output) {
                 if (!is_string($answer) || empty($answer)) {
                     throw new \RuntimeException(
                         'Invalid input!'
                     );
                 }
-
                 if ('exit' === $answer) {
                     return $answer;
                 }
-
                 if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
                     throw new \RuntimeException(
                         'Invalid email address!'
                     );
                 }
-
                 if (!isset($users[$answer])) {
                     $output->writeln('  - Hint: Type <info>exit</info> to exit this dialog and return to the console.');
                     throw new \RuntimeException(
                         'No user record for "'.$answer.'" found! '
                     );
                 }
-
                 return $answer;
             });
             $question->setMaxAttempts(null);
@@ -138,81 +122,72 @@ class BasicTokenCreateCommand extends Command
                 $output->writeln('<error>Process aborted by user.</error>');
                 return 0;
             }
-            $user = $users[$email];
+        } else {
+            $email = $input->getOption('email');
         }
+        $user = $users[$email];
 
-        // name
+        // 2. Name
         if (null === $input->getOption('name')) {
+            $helper = $this->getHelper('question');
             $question = new Question('Please enter a name: ', 'untitled');
             $name = $helper->ask($input, $output, $question);
         } else {
             $name = $input->getOption('name');
         }
 
-        // description
+        // 3. description
         if (null === $input->getOption('description')) {
+            $helper = $this->getHelper('question');
             $question = new Question('Please enter a description: ', '');
             $description = $helper->ask($input, $output, $question);
         } else {
             $description = $input->getOption('description');
         }
 
-        // expiration
+        // 4. expiration period
         if (null === $input->getOption('expiration')) {
+            $helper = $this->getHelper('question');
             $question = new Question('Please enter the expiration timestamp for the token (blank == indefinite): ');
             $expiresAt = $helper->ask($input, $output, $question);
         } else {
             $expiresAt = $input->getOption('expiration');
         }
 
-        // permissions
-        $map = array_map(function ($val) {
-            return $val->getName();
-        }, $user->permissions);
-        $_scopes = array_values($map);
-        $scopes = $_scopes;
-
-        // Brightcookie/lxHive-Internal#125 fetch and merge child permissions for displaying options
-        foreach ($_scopes as $scope) {
-            $scopes += $scopesService->getChildrenFor($scope);
-        }
-        $scopesDictionary = $scopesService->findByNames($scopes, true);
-
+        // 5. scopes
         if (null === $input->getOption('scopes')) {
+            $helper = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please select which scopes you would like to enable (defaults to super). Separate multiple values with commas (without spaces). If you select super, all other permissions are also inherited: ',
-                array_keys($scopesDictionary),
+                implode("\n", [
+                    '<comment>Token Permissions:</comment>',
+                    ' * Please select which <comment>user</comment> permissions you would like to enable.',
+                    ' * Separate multiple values with commas (without spaces).',
+                ]),
+                $user->permissions, // USER permissions!
                 '0'
             );
             $question->setMultiselect(true);
-            $selectedScopeNames = $helper->ask($input, $output, $question);
-
-            $selectedScopes = [];
-            foreach ($selectedScopeNames as $selectedScopeName) {
-                $selectedScopes[] = $scopesDictionary[$selectedScopeName];
-            }
+            $permissions = $helper->ask($input, $output, $question);
         } else {
-            $selectedScopeNames = explode(',', $input->getOption('scopes'));
+            $permissions = explode(',', $input->getOption('scopes'));
         }
 
-        $selectedScopes = [];
-        foreach ($selectedScopeNames as $selectedScopeName) {
-            $selectedScopes[] = $scopesDictionary[$selectedScopeName];
-        }
+        $output->writeln('<info> * Selected permissions: </info>'. implode(', ', $permissions));
+        $permissions = $userAdmin->mergeInheritedPermissions($permissions);
+        $output->writeln('<info> * with inherited permissions: </info>'. implode(', ', $permissions));
 
-        $token = $basicAuthService->addToken($name, $description, $expiresAt, $user, $selectedScopes);
-
+        // 6. store token
+        $key = null;
         if (null !== $input->getOption('key')) {
-            $token->setKey($input->getOption('key'));
-            $token->save();
+            $key = $input->getOption('key');
         }
-
+        $secret = null;
         if (null !== $input->getOption('secret')) {
-            $token->setSecret($input->getOption('secret'));
-            $token->save();
+            $secret = $input->getOption('secret');
         }
+        $token = $authAdmin->addToken($name, $description, $expiresAt, $user, $permissions, $key, $secret);
 
-        $text  = json_encode($token, JSON_PRETTY_PRINT);
+        $text = json_encode($token, JSON_PRETTY_PRINT);
 
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');

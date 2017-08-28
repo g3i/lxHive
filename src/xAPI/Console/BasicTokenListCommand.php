@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,15 @@ namespace API\Console;
 use API\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use API\Service\Auth\Basic as AccessTokenService;
+use API\Admin\Auth;
+
+// TODO 0.11.x review, command seems to have no real use
 
 class BasicTokenListCommand extends Command
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this
@@ -39,16 +44,13 @@ class BasicTokenListCommand extends Command
         ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $accessTokenService = new AccessTokenService($this->getSlim());
-
-        $accessTokenService->fetchTokens();
-
-        $textArray = [];
-        foreach ($accessTokenService->getCursor() as $document) {
-            $textArray[] = $document->jsonSerialize();
-        }
+        $authAdmin = new Auth($this->getContainer());
+        $textArray = $authAdmin->listBasicTokens();
 
         $text = json_encode($textArray, JSON_PRETTY_PRINT);
 

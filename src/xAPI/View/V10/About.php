@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,10 @@ class About extends View
 {
     public function render()
     {
-        $object = ['version' => $this->versions];
+        $object = [
+            'version' => $this->versions,
+            'extensions' => $this->extensions
+        ];
 
         return $object;
     }

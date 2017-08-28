@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2015 Brightcookie Pty Ltd
+ * Copyright (C) 2017 Brightcookie Pty Ltd
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,98 +24,147 @@
 
 namespace API;
 
+use API\BaseTrait;
+use API\Config;
+
 use JsonSchema;
-use API\Validator\Exception;
+use API\Validator\JsonSchema\Constraints\Factory as Factory;
 
-abstract class Validator
+use API\HttpException as Exception;
+
+
+class Validator
 {
-    /**
-     * @var \JsonSchema\Validator
-     */
-    private $schemaValidator;
+    use BaseTrait;
 
     /**
-     * @var \JsonSchema\Uri\UriRetriever
+     * @var JsonSchema\SchemaStorage a persistent SchemaStorage instance
+     * Note that a SchemaStorage instance has an internal cache which takes care of loading and caching files.
      */
-    private $retriever;
+    private static $schemaStorage = null;
+
+    protected $lastValidator = null;
+    protected $lastSchema = null;
+
+    protected $debug;
+    private $debugData = null;
 
     /**
-     * @var \JsonSchema\RefResolver
+     * Constructor, creates and caches a  instance.
      */
-    private $refResolver;
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
+    public function __construct($container)
     {
-        $this->setDefaultSchemaValidator();
+        $this->setContainer($container);
+
+        if (!self::$schemaStorage) {
+            self::$schemaStorage = new JsonSchema\SchemaStorage();
+        }
+        $this->debug = Config::get('debug', false);
     }
 
     /**
-     * @return \JsonSchema\Validator
+     * Create JsonSchema\Validator instance
+     * @param Factory $factory
+     *
+     * @return JsonSchema\Validator
      */
-    public function getSchemaValidator()
+    public function createSchemaValidator($factory)
     {
-        return $this->schemaValidator;
-    }
-    /**
-     * @param \JsonSchema\Validator $schemaValidator
-     */
-    public function setSchemaValidator($schemaValidator)
-    {
-        $this->schemaValidator = $schemaValidator;
+        return new JsonSchema\Validator($factory);
     }
 
     /**
-     * @return \JsonSchema\RefResolver
+     * Validate data with JsonSchema
+     * We intentionally create a new Validator instance on each call.
+     *
+     * @param object|array $data
+     * @param string       $uri   (with fragment)
+     *
+     * @return JsonSchema\Validator
      */
-    public function getSchemaReferenceResolver()
+    public function validateSchema($data, $uri)
     {
-        return $this->refResolver;
-    }
-    /**
-     * @param \JsonSchema\RefResolver $refResolver
-     */
-    public function setSchemaReferenceResolver($refResolver)
-    {
-        $this->refResolver = $refResolver;
+        $schema = self::$schemaStorage->getSchema($uri);
+        $validator = new JsonSchema\Validator(new Factory(self::$schemaStorage, null, JsonSchema\Constraints\Constraint::CHECK_MODE_TYPE_CAST));
+        $validator->check($data, $schema);
+
+        if ($this->debug) {
+            $this->debugData = $this->debugSchema($data, $uri, $validator, $schema);
+        }
+
+        return $validator;
     }
 
     /**
-     * @return \JsonSchema\Uri\UriRetriever
+     * Debug data, validated with JsonSchema.
+     *
+     * @param object|array         $data
+     * @param string               $uri       (with fragment)
+     * @param JsonSchema\Validator $validator
+     * @param object               $schema
+     *
+     * @return void
+     * @throws HttpException
      */
-    public function getSchemaRetriever()
+    public function debugSchema($data, $uri, $validator, $schema)
     {
-        return $this->retriever;
-    }
-    /**
-     * @param \JsonSchema\Uri\UriRetriever $uriRetriever
-     */
-    public function setSchemaRetriever($uriRetriever)
-    {
-        $this->retriever = $uriRetriever;
-    }
-
-    /**
-     * Sets the default schema validator.
-     */
-    public function setDefaultSchemaValidator()
-    {
-        $this->retriever = new JsonSchema\Uri\UriRetriever();
-        $this->refResolver = new JsonSchema\RefResolver($this->retriever);
-        $this->schemaValidator = new JsonSchema\Validator();
+        return [
+            'hasErrors' => count($validator->getErrors()),
+            'errors' => ($data) ? $validator->getErrors() : [],
+            'uri' => $uri,
+            'schema' => $schema,
+            'data' => $data,
+        ];
     }
 
     /**
      * Performs general validation of the request.
      *
-     * @param \Silex\Request $request The request
+     * @return void
+     * @throws Exception
      */
-    public function validateRequest($request)
+    public function validateRequest()
     {
-        if ($request->headers('X-Experience-API-Version') === null) {
-            throw new Exception('X-Experience-API-Version header missing.', Resource::STATUS_BAD_REQUEST);
+        $version = $this->getContainer()->get('version');//run version container
+    }
+
+    /**
+     * Throw errors.
+     *
+     * @param string $message
+     * @param mixed  $errors
+     *
+     * @return void
+     * @throws HttpException
+     */
+    protected function throwErrors($message, $errors)
+    {
+        $errors = (array) $errors;
+        throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
+    }
+
+    /**
+     * Processes and Rendes validator errors in an array.
+     *
+     * @param string               $message
+     * @param JsonSchema\Validator $validator validator instance, note that you must have validated at this stage
+     *
+     * @return void
+     * @throws HttpException
+     */
+    protected function throwSchemaErrors($message, $validator)
+    {
+        $errors = $validator->getErrors();
+        foreach ($errors as $key => $error) {
+            if ($error['property']) {
+                $errors[$key] = sprintf('[%s]: %s', $error['property'], $error['message']);
+            } else {
+                $errors[$key] = sprintf($error['message']);
+            }
         }
+        if ($this->debug) {
+            $errors['debug'] = $this->debugData;
+        }
+        throw new Exception($message, Controller::STATUS_BAD_REQUEST, $errors);
     }
 }
