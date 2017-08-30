@@ -18,6 +18,7 @@ class ValidatorTest extends TestCase
 
         $this->expectException(AdminException::class);
         $v->validateName('');
+        $v->validateName([1, 2, 3]);
         $v->validateName(false); // empty space
         $v->validateName(2);
         $v->validateName('a');
@@ -29,6 +30,7 @@ class ValidatorTest extends TestCase
         $v->validateEmail('valid@email.com');
 
         $this->expectException(AdminException::class);
+        $v->validateEmail([1, 2, 3]);
         $v->validateEmail('invalid');
         $v->validateEmail(' valid@email.com'); // empty space
         $v->validateEmail('invalid@');
@@ -40,6 +42,7 @@ class ValidatorTest extends TestCase
         $v->validatePassword('ValidPass999!');
 
         $this->expectException(AdminException::class);
+        $v->validatePassword([1, 2, 3]);
         $v->validatePassword('Val'); // too short
         $v->validatePassword('ValidPass!'); // requires number
         $v->validatePassword('ValidPass999'); // requires non alphaNumeric
@@ -67,6 +70,7 @@ class ValidatorTest extends TestCase
         $this->expectException(AdminException::class);
         $v->validateRedirectUri('');
         $v->validateRedirectUri(true);
+        $v->validatePassword([1, 2, 3]);
         $v->validateRedirectUri('invalid');
         $v->validateRedirectUri('//');
         $v->validateRedirectUri('//test');
