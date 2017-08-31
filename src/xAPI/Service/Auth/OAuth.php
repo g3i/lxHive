@@ -265,6 +265,11 @@ class OAuth extends Service implements AuthInterface
         }
 
         $collection  = $this->getDocumentManager()->getCollection('authScopes');
+
+        $userId = $_SESSION['userId'];
+        $userCollection = $this->getDocumentManager()->getCollection('users');
+        $userDocument = $userCollection->getDocument($userId);
+
         $scopeDocuments = [];
         $scopes = explode(',', $params->get('scope'));
         foreach ($scopes as $scope) {
@@ -273,6 +278,9 @@ class OAuth extends Service implements AuthInterface
             $scopeDocument = $cursor->current();
             if (null === $scopeDocument) {
                 throw new \Exception('Invalid scope given!', Resource::STATUS_BAD_REQUEST);
+            }
+            if (!$userDocument->hasPermission($scope->getName())) {
+                throw new \Exception('User does not have sufficient permissions for given scope!', Resource::STATUS_FORBIDDEN);
             }
             $scopeDocuments[] = $scopeDocument;
         }
