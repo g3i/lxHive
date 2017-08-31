@@ -50,8 +50,12 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validateName(string $str)
+    public function validateName($str)
     {
+        if (!is_string($str)) {
+            throw new AdminException('Must be a string');
+        }
+
         $errors = [];
         $length = 4;
 
@@ -71,8 +75,12 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validatePassword(string $str)
+    public function validatePassword($str)
     {
+        if (!is_string($str)) {
+            throw new AdminException('Must be a string');
+        }
+
         $errors = [];
         $length = 8;
 
@@ -108,8 +116,12 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validateEmail(string $email)
+    public function validateEmail($email)
     {
+
+        if (!is_string($email)) {
+            throw new AdminException('Must be a string');
+        }
         if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
             throw new AdminException('Invalid email address!');
         }
@@ -148,8 +160,13 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validateRedirectUri(string $str)
+    public function validateRedirectUri($str)
     {
+
+        if (!is_string($str)) {
+            throw new AdminException('Must be a string');
+        }
+
         $components = parse_url($str);
         if (false === $components) {
             throw new AdminException('Invalid url');
@@ -171,8 +188,13 @@ class Validator
      * @return void
      * @throws AdminException
      */
-    public function validateMongoName(string $str)
+    public function validateMongoName($str)
     {
+
+        if (!is_string($str)) {
+            throw new AdminException('Must be a string');
+        }
+
         $errors = [];
         $minLength = 4;// mongo does only require a length > 0
         $maxLength = 64;

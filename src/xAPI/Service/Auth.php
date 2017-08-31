@@ -137,7 +137,7 @@ class Auth extends Service
         foreach($permissions as $name) {
             $merged = array_merge($merged, $this->getInheritanceFor($name));
         }
-        return array_unique($merged);
+        return $this->filterPermissions($merged);
     }
 
     /**
@@ -148,8 +148,12 @@ class Auth extends Service
      *
      * @return array inherited permissions (not including $name!)
      */
-    public function getInheritanceFor(string $name)
+    public function getInheritanceFor($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return [];
+        }
         if (!isset($this->scopes[$name])) {
             return [];
         }
@@ -175,8 +179,12 @@ class Auth extends Service
      *
      * @return array|false
      */
-    public function getAuthScope(string $name)
+    public function getAuthScope($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return false;
+        }
         return (isset($this->scopes[$name])) ? $this->scopes[$name] : false;
     }
 
@@ -185,8 +193,12 @@ class Auth extends Service
      *
      * @return bool
      */
-    public function hasPermission(string $name)
+    public function hasPermission($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return false;
+        }
         return in_array($name, $this->permissions);
     }
 
@@ -196,8 +208,13 @@ class Auth extends Service
      *
      * @return bool
      */
-    public function requirePermission(string $name)
+    public function requirePermission($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            throw new \RunTimeException('requirePermission: supplied name is not a string');
+        }
+
         if (!in_array($name, $this->permissions)){
             throw new HttpException('Unauthorized', 401);
         }
@@ -231,7 +248,7 @@ class Auth extends Service
     private function filterPermissions(array $permissionNames)
     {
         $configured = array_keys($this->scopes);
-        return array_filter($permissionNames, function($name) use ($configured) {
+        $sanitized =  array_filter($permissionNames, function($name) use ($configured) {
             // TODO 0.10.x Issue warning to logger
             if(!is_string($name)) {
                 return false;
@@ -242,6 +259,7 @@ class Auth extends Service
             return in_array($name, $configured);
             // TODO 0.10.x Issue warning
         });
+        return array_values(array_unique($sanitized));
     }
 
 }
