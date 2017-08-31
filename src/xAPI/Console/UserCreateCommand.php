@@ -65,22 +65,30 @@ class UserCreateCommand extends Command
         }
 
         // email
-        $question = new Question('Please enter an e-mail: ', '');
-        $question->setMaxAttempts(null);
-        $question->setValidator(function ($answer) {
-            $this->validateEmail($answer);
-            return $answer;
-        });
-        $email = $helper->ask($input, $output, $question);
-
+        if (null === $input->getOption('email')) {
+            $question = new Question('Please enter an e-mail: ', '');
+            $question->setMaxAttempts(null);
+            $question->setValidator(function ($answer) {
+                $this->validateEmail($answer);
+                return $answer;
+            });
+            $email = $helper->ask($input, $output, $question);
+        } else {
+            $email = $input->getOption('email');
+        }
+        
         // password
-        $question = new Question('Please enter a password: ', '');
-        $question->setMaxAttempts(null);
-        $question->setValidator(function ($answer) {
-            $this->validatePassword($answer);
-            return $answer;
-        });
-        $password = $helper->ask($input, $output, $question);
+        if (null === $input->getOption('password')) {
+            $question = new Question('Please enter a password: ', '');
+            $question->setMaxAttempts(null);
+            $question->setValidator(function ($answer) {
+                $this->validatePassword($answer);
+                return $answer;
+            });
+            $password = $helper->ask($input, $output, $question);
+        } else {
+            $password = $input->getOption('password');
+        }
 
         // permissions
         $permissionsDictionary = $scopesService->fetchAll(true);
