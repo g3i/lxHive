@@ -7,7 +7,7 @@ dependencies:
     pre:
         - yes '' | pecl -q install -f mongo
         - echo "extension=mongo.so" > /opt/circleci/php/$(phpenv global)/etc/conf.d/mongo.ini
-        - echo "date.timezone=UTC > /opt/circleci/php/$(phpenv global)/etc/conf.d/timezone.ini
+        - echo "date.timezone=UTC" > /opt/circleci/php/$(phpenv global)/etc/conf.d/timezone.ini
     post:
         - npm install -g newman newman-reporter-phpunit
         - git clone git@github.com:sraka1/xAPITests.git
