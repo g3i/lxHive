@@ -16,7 +16,7 @@ test:
         - yes '' | ./X setup:db
         - ./X setup:oauth
         - ./X user:create --email=test@test.com --password=test --permissions=super
-        - ./X auth:basic:create --name=test --description=test --expiration=1914156000 --email=test@test.com --scopes=super --key=test --secret=test
+        - yes | ./X auth:basic:create --name=test --description=test --expiration=1914156000 --email=test@test.com --scopes=super --key=test --secret=test
         - php -S localhost:8080 -t ./public/:
             background: true
     override:
