@@ -396,7 +396,7 @@ class Bootstrap
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
                 'debug' => 'true',
-                'cache' => dirname(__FILE__).'/View/V10/OAuth/Templates',
+                'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
             $twigDebug = new \Twig_Extension_Debug();
             $view->addExtension($twigDebug);
@@ -413,7 +413,7 @@ class Bootstrap
             // Public routes
             if ($container['request']->getUri()->getPath() === '/about') {
                 return null;
-            }            
+            }
             if (strpos($container['request']->getUri()->getPath(), '/oauth') === 0) {
                 return null;
             }
