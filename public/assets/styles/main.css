@@ -1,26 +1,24 @@
-body{
+body {
     font-family: 'Raleway', sans-serif;
     background-color: #f9f9f9;
     color: rgb(85, 86, 90);
     padding-bottom: 2em;
 }
-.text-center{
+.text-center {
     text-align: center;
 }
-.text-center{
+.text-center {
     margin-top: 1em;
 }
-
 /**
  * Branding
  */
 
 #lxhive-logo,
-#custom-logo{
+#custom-logo {
     max-height: 50px;
     margin: 0 auto;
 }
-
 /*
  * Alerts
  */
@@ -32,10 +30,10 @@ body{
     background-color: rgb(202, 60, 60);
     color: #ffffff;
 }
-.alert{
+.alert {
     border-radius: 5px;
 }
-ul.alert{
+ul.alert {
     list-style-type: none;
 }
 
@@ -44,60 +42,53 @@ ul.alert{
  */
 
 h1,
-h2{
+h2 {
     text-align: center;
 }
-h1{
+h1 {
     margin-top: 2em;
     margin-bottom: 2em;
 }
-h2{
+h2 {
     margin-top: 0;
-    padding-top:0;
+    padding-top: 0;
 }
 
 /*
  * Buttons
  */
 
-.pure-button{
+.pure-button {
     border-radius: 5px;
 }
-pure-button{
+pure-button {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
-.button-xlarge{
+.button-xlarge {
     font-weight: bold;
 }
-.button-allow{
+.button-allow {
     padding-left: 4em;
     padding-right: 4em;
     background: rgb(28, 184, 65);
 }
-.button-disallow{
+.button-disallow {
     background: rgb(202, 60, 60);
     font-weight: normal;
 }
-.pure-form fieldset{
+.pure-form fieldset {
     background: #ffffff;
     padding: 2em 1em;
     border-radius: 5px;
 }
-#id_username, #id_password, #id_remember_me, #id_login{
-   margin-left: auto;
-   margin-right: auto;
-   min-width: 200px;
-   max-width: 250px;
-}
-.pure-form .pure-control-group label{
-   margin-left: auto;
-   margin-right: auto;
-   min-width: 200px;
-   max-width: 250px;
-}
-.pure-form .pure-control-group button{
-   margin-left: auto;
-   margin-right: auto;
-   min-width: 200px;
-   max-width: 250px;
+.form-row,
+#id_username,
+#id_password,
+#id_remember_me,
+#id_login{
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 250px;
+    max-width: 250px;
 }
