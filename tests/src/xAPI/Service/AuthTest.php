@@ -204,7 +204,16 @@ class AuthTest extends TestCase
      */
     public function testHasPermission()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertTrue($aut->hasPermission('define'));
+        $this->assertTrue($aut->hasPermission('statements/read/mine'));
+
+        $this->assertFalse($aut->hasPermission('statements/read'));
+        $this->assertFalse($aut->hasPermission('invalid'));
+        $this->assertFalse($aut->hasPermission(array('define')), 'Returns false if argument is not of type "string"');
     }
 
     /**
@@ -212,7 +221,52 @@ class AuthTest extends TestCase
      */
     public function testRequirePermission()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertNull($aut->requirePermission('define'));
+        $this->assertNull($aut->requirePermission('statements/read/mine'));
+
+        $this->expectException(HttpException::class);
+        $aut->requirePermission('statements/read');
+        $aut->requirePermission('invalid');
+
+        $this->expectException(\RuntimeException::class);
+        $aut->requirePermission(array('define'));
+    }
+
+    /**
+     * @depends testRegister
+     */
+    public function testRequireOneOfPermissions()
+    {
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['statements/read/mine'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'statements/read/mine'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'unknown'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'statements/read/mine', 'unknown'])
+        );
+
+        $this->expectException(HttpException::class);
+        $aut->requireOneOfPermissions(['statements/read']);
+        $aut->requireOneOfPermissions(['unknown']);
+
+        $this->expectException(\RuntimeException::class);
+        $aut->requireOneOfPermissions('define');
     }
 
     /**
