@@ -63,7 +63,7 @@ class Statements extends View
 
     private function renderMore($statementResult, $idArray)
     {
-        if ($statementResult->getHasMore()) {
+        if ($statementResult->getHasMore() && !empty($idArray)) {//TODO @sraka1 temporary fix for https://github.com/Brightcookie/lxHive-Internal/issues/229
             $latestId = end($idArray);
             $latestId = $latestId->__toString();
             if ($statementResult->getSortDescending()) {
