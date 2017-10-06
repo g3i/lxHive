@@ -259,29 +259,71 @@ class Statement extends Document
     public function convertExtensionKeysToUnicode()
     {
         if (isset($this->data->statement->context->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->context->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('.', '\uFF0E', $oldExtensionKey);
-                $this->data->statement->context->extensions->{$newExtensionKey} = $this->data->statement->context->extensions->{$oldExtensionKey};
-                unset($this->data->statement->context->extensions->{$oldExtensionKey});
-            }
+            $this->extensionKeysToUnicode($this->data->statement->context->extensions);
         }
 
         if (isset($this->data->statement->result->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->result->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('.', '\uFF0E', $oldExtensionKey);
-                $this->data->statement->result->extensions->{$newExtensionKey} = $this->data->statement->result->extensions->{$oldExtensionKey};
-                unset($this->data->statement->result->extensions->{$oldExtensionKey});
-            }
+            $this->extensionKeysToUnicode($this->data->statement->result->extensions);
         }
 
         if (isset($this->data->statement->object->definition->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->object->definition->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('.', '\uFF0E', $oldExtensionKey);
-                $this->data->statement->object->definition->extensions->{$newExtensionKey} = $this->data->statement->object->definition->extensions->{$oldExtensionKey};
-                unset($this->data->statement->object->definition->extensions->{$oldExtensionKey});
+            $this->extensionKeysToUnicode($this->data->statement->object->definition->extensions);
+        }
+
+        if (isset($this->data->statement->context->contextActivities)) {
+            $ca = $this->data->statement->context->contextActivities;
+            foreach($ca as $section) {
+                foreach($section as $activity) {
+                    if(isset($activity->definition->extensions)) {
+                        $this->extensionKeysToUnicode($activity->definition->extensions);
+                    }
+                }
+            }
+        }
+    }
+
+    public function convertExtensionKeysFromUnicode()
+    {
+        if (isset($this->data->statement->context->extensions)) {
+            $this->extensionKeysFromUnicode($this->data->statement->context->extensions);
+        }
+
+        if (isset($this->data->statement->result->extensions)) {
+            $this->extensionKeysFromUnicode($this->data->statement->result->extensions);
+        }
+
+        if (isset($this->data->statement->object->definition->extensions)) {
+            $this->extensionKeysFromUnicode($this->data->statement->object->definition->extensions);
+        }
+
+        if (isset($this->data->statement->context->contextActivities)) {
+            $ca = $this->data->statement->context->contextActivities;
+            foreach($ca as $section) {
+                foreach($section as $activity) {
+                    if(isset($activity->definition->extensions)) {
+                        $this->extensionKeysFromUnicode($activity->definition->extensions);
+                    }
+                }
+            }
+        }
+    }
+
+    private function extensionKeysFromUnicode($obj) {
+        foreach ($obj as $key => $val) {
+            $new = str_replace('\uFF0E', '.', $key);
+            if($new != $key) {
+                $obj->{$new} = $val;
+                unset($obj->{$key});
+            }
+        }
+    }
+
+    private function extensionKeysToUnicode($obj) {
+        foreach ($obj as $key => $val) {
+            $new = str_replace('.', '\uFF0E', $key);
+            if($new != $key) {
+                $obj->{$new} = $val;
+                unset($obj->{$key});
             }
         }
     }
@@ -306,36 +348,6 @@ class Statement extends Document
         // If no ID has been set, set it
         if (empty($this->data->statement->id) || $this->data->statement->id === null) {
             $this->data->statement->id = Uuid::uuid4()->toString();
-        }
-    }
-
-    public function convertExtensionKeysFromUnicode()
-    {
-        if (isset($this->data->statement->context->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->context->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('\uFF0E', '.', $oldExtensionKey);
-                $this->data->statement->context->extensions->{$newExtensionKey} = $this->data->statement->context->extensions->{$oldExtensionKey};
-                unset($this->data->statement->context->extensions->{$oldExtensionKey});
-            }
-        }
-
-        if (isset($this->data->statement->result->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->result->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('\uFF0E', '.', $oldExtensionKey);
-                $this->data->statement->result->extensions->{$newExtensionKey} = $this->data->statement->result->extensions->{$oldExtensionKey};
-                unset($this->data->statement->result->extensions->{$oldExtensionKey});
-            }
-        }
-
-        if (isset($this->data->statement->object->definition->extensions)) {
-            $oldExtensionKeys = array_keys(get_object_vars($this->data->statement->object->definition->extensions));
-            foreach ($oldExtensionKeys as $oldExtensionKey) {
-                $newExtensionKey = str_replace('\uFF0E', '.', $oldExtensionKey);
-                $this->data->statement->object->definition->extensions->{$newExtensionKey} = $this->data->statement->object->definition->extensions->{$oldExtensionKey};
-                unset($this->data->statement->object->definition->extensions->{$oldExtensionKey});
-            }
         }
     }
 
