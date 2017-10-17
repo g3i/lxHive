@@ -310,7 +310,8 @@ class Statement extends Document
 
     private function extensionKeysFromUnicode($obj) {
         foreach ($obj as $key => $val) {
-            $new = str_replace('\uFF0E', '.', $key);
+            $new = str_replace('[dot]', '.', $key);
+            $new = str_replace('\uFF0E', '.', $new); // legacy
             if($new != $key) {
                 $obj->{$new} = $val;
                 unset($obj->{$key});
@@ -320,7 +321,8 @@ class Statement extends Document
 
     private function extensionKeysToUnicode($obj) {
         foreach ($obj as $key => $val) {
-            $new = str_replace('.', '\uFF0E', $key);
+            $new = str_replace('.', '[dot]', $key);
+            $new = str_replace('.', '\uFF0E', $new); // legacy
             if($new != $key) {
                 $obj->{$new} = $val;
                 unset($obj->{$key});
