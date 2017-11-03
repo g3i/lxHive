@@ -107,12 +107,12 @@ class MongoTestCase extends TestCase
      * @see http://php.net/manual/en/mongodb-driver-manager.executebulkwrite.php
      * @param BulkWrite $bulkWrite MongoDb Driver BulkWrite instance
      *
-     * @return Cursor
+     * @return MongoDB\Driver\WriteResult
      * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function bulkWrite(BulkWrite $bulkWrite) {
-        $cursor = self::$client->bulkWrite(self::DB.'.'.$collection, $bulkWrite);
-        return $cursor;
+    public function bulkWrite(string $collection, BulkWrite $bulkWrite) {
+        $result = self::$client->executeBulkWrite(self::DB.'.'.$collection, $bulkWrite);
+        return $result;
     }
 
     /**
@@ -122,7 +122,7 @@ class MongoTestCase extends TestCase
      * @return Cursor
      * @throws \MongoDB\Driver\Exception\Exception
      */
-    public function dropCollection($name) {
+    public function dropCollection(string $name) {
         try {
             $cursor = $this->command([ 'drop' => $name ]);
             return $cursor;
@@ -134,7 +134,7 @@ class MongoTestCase extends TestCase
     }
 
     /**
-     * Drops a databse
+     * Drops a database
      * @see https://docs.mongodb.com/manual/reference/command/dropDatabase/
      *
      * @return Cursor
