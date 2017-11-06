@@ -176,6 +176,7 @@ class Auth extends Service
 
     /**
      * Gets single AuthScope by permission name
+     * permission name
      *
      * @return array|false
      */
@@ -190,6 +191,7 @@ class Auth extends Service
 
     /**
      * Checks if a permission is set for the current user auth
+     * @param string $name permission name
      *
      * @return bool
      */
@@ -205,6 +207,7 @@ class Auth extends Service
     /**
      * Checks if a permission is set for the user auth and throws Exception
      * if queried permission is not assigned to the user auth
+     * @param string $name permission name
      *
      * @return bool
      */
@@ -221,6 +224,39 @@ class Auth extends Service
 
         // this was mapped in constructor already however in this case it's better to check twice
         if (!isset($this->scopes[$name])){
+            throw new HttpException('Unauthorized', 401);
+        }
+
+    }
+
+    /**
+     * Checks if one of the supplied permission is set for the user auth and throws Exception
+     * if queried permission is not assigned to the user auth
+     * @param array $names array of permission names
+     *
+     * @return bool
+     */
+    public function requireOneOfPermissions($names)
+    {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_array($names)) {
+            throw new \RunTimeException('requireOneOfPermissions: supplied argument is not an array');
+        }
+
+        $match = '';
+        foreach($names as $name) {
+            if ($this->hasPermission($name)) {
+                $match = $name;
+                break;
+            }
+        }
+
+        if (!$match){
+            throw new HttpException('Unauthorized', 401);
+        }
+
+        // this was mapped in constructor already however in this case it's better to check twice
+        if (!isset($this->scopes[$match])){
             throw new HttpException('Unauthorized', 401);
         }
 
