@@ -359,14 +359,24 @@ class Bootstrap
             return function ($request, $response, $exception) use ($container) {
                 $data = [];
                 $code = $exception->getCode();
+                $message = $exception->getMessage();
                 if ($code < 100) {
                     $code = 500;
                 }
+
+                // catch MongoDB exceptions, adjust codes AND prevent exception messages giving away connection details
+                if (is_subclass_of($exception, '\MongoDB\Driver\Exception\Exception')) {
+                    $code = 500;
+                    if(Config::get('mode', 'production') !== 'development' ){
+                        $message = 'Database error: ['.$exception->getCode().'], '.get_class($exception);
+                    }
+                }
+
                 if (method_exists($exception, 'getData')) {
                     $data = $exception->getData();
                 }
                 $errorResource = new Error($container, $request, $response);
-                $error = $errorResource->error($code, $exception->getMessage(), $data);
+                $error = $errorResource->error($code, $message, $data);
 
                 return $error;
                 //return $c['response']->withStatus($code)
