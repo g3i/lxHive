@@ -32,6 +32,14 @@ class About extends Resource
     // Boilerplate code until this is figured out...
     public function get()
     {
+        $client = new \API\Service\User($this->getSlim());
+        $version = $client->getDocumentManager()->getDbVersion();
+
+        // quick fix for #221, ping DB via a public endpoint
+        // throws 500 Exception if database is not up
+        $collection  = $client->getDocumentManager()->getCollection('users');
+        $response = $collection->find()->limit(1);
+
         $versions = $this->getSlim()->config('xAPI')['supported_versions'];
 
         $view = new AboutView(['versions' => $versions]);
