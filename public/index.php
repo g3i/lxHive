@@ -102,7 +102,12 @@ $app->configureMode('development', function () use ($app, $appRoot) {
 });
 
 if (PHP_SAPI !== 'cli') {
-    $app->url = Url::createFromServer($_SERVER);
+    // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove an parse native
+    if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
+        $app->url = Url::createFromUrl($_SERVER['REQUEST_URI']);
+    } else {
+        $app->url = Url::createFromServer($_SERVER);
+    }
 }
 
 // Error handling
