@@ -314,7 +314,12 @@ class Bootstrap
         // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
         // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
         try {
-            $container['url'] = Url::createFromServer($_SERVER);
+            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove an parse native
+            if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
+                $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
+            } else {
+                $container['url'] = Url::createFromServer($_SERVER);
+            }
         } catch (\RuntimeException $e) {
             // See comment above
         }
