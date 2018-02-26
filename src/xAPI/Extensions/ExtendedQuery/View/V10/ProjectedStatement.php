@@ -57,6 +57,7 @@ class ProjectedStatement extends View
 
         if ($statementResult->getHasMore()) {
             $latestId = end($idArray);
+            $latestId = $latestId->__toString();
             if ($statementResult->getSortDescending()) {
                 $this->getContainer()->get('url')->getQuery()->modify(['until_id' => $latestId]);
             } else { //Ascending
