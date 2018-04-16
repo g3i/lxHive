@@ -173,7 +173,14 @@ class Basic extends Service implements AuthInterface
 
         // TODO 0.11.x: This functionality (user creation + token creation should be in two separate API calls)
         $userService = new UserService($this->getContainer());
-        $user = $userService->addUser($parsedParams->user->name, $parsedParams->user->description, $parsedParams->user->email, $parsedParams->user->password, $permissionDocuments)->toArray();
+        
+        // Fetch user or create it if it doesn't exist
+        $user = $userService->getStorage()->getUserStorage()->findByEmail($parsedParams->user->email);
+        
+        if ($user === null) {
+            $user = $userService->addUser($parsedParams->user->name, $parsedParams->user->description, $parsedParams->user->email, $parsedParams->user->password, $permissionDocuments)->toArray();
+        }
+        
         $accessTokenDocument = $this->addToken($parsedParams->name, $parsedParams->description, $expiresAt, $user, $scopeDocuments);
 
         return $accessTokenDocument;
