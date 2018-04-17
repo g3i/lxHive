@@ -194,11 +194,13 @@ class Auth extends Service
      * Checks if a permission is set for the user auth and throws Exception
      * if queried permission is not assigned to the user auth
      *
-     * @return bool
+     * @throws HttpException when unauthorized
      */
     public function requirePermission(string $name)
     {
-        if (!in_array($name, $this->permissions)){
+        $permissions = $this->mergeInheritance($this->permissions);
+        
+        if (!in_array($name, $permissions)){
             throw new HttpException('Unauthorized', 401);
         }
 
@@ -206,7 +208,6 @@ class Auth extends Service
         if (!isset($this->scopes[$name])){
             throw new HttpException('Unauthorized', 401);
         }
-
     }
 
     /**
