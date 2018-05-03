@@ -124,6 +124,15 @@ class Routes
             'description' =>'Temporary BASIC token endpoint',
             'controller' => 'API\\Controller\\V10\\Auth\\Tokens',
         ],
+
+        // root
+
+        '/' => [
+            'module' => 'Public',
+            'methods' => ['GET', 'OPTIONS'],
+            'description' =>'LRS Information',
+            'controller' => 'API\\Controller\\V10\\Home', // temporary
+        ],
     ];
 
     /**

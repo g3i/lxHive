@@ -400,7 +400,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
         // TODO 0.11.x improve following or abstract it into method
         $auth = $this->getContainer()->get('auth');
         if ($auth->hasPermission('statements/read/mine') && !$auth->hasPermission('statements/read')) {
-            $expression->where('userId', $this->getAccessToken()->userId);
+            $expression->where('userId', $this->getAccessToken()->getUserId());
         }
 
         $cursor = $storage->find(self::COLLECTION_NAME, $expression, $queryOptions);

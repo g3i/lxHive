@@ -35,9 +35,16 @@ class About extends Controller
      * Compile and render GET /about response
      *
      * @return void
+     * @throws \MongoDB\Driver\Exception\Exception
      */
     public function get()
     {
+        // quick fix for #221, ping DB via a public endpoint
+        // throws Exception if database is not up
+        // @TODO improve
+        $service = new \API\Storage\Adapter\Mongo($this->getContainer());
+        $service->getDatabaseversion();
+
         $versions = Config::get(['xAPI', 'supported_versions']);
         $extensions = $this->getExtensionInfo();
         $core = [

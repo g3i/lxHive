@@ -22,21 +22,9 @@
  * file that was distributed with this source code.
  */
 
-namespace API\View\V10\OAuth;
+namespace API\Controller\V10;
 
-use API\View;
-use API\Config;
-
-class Login extends View
+class Home extends About
 {
-    public function renderGet($errors = [])
-    {
-        $view = $this->getContainer()->get('view');
-        $this->setItems(['csrfToken' => $_SESSION['csrfToken'], 'name' => Config::get(['name']), 'branding' => Config::get(['xAPI', 'oauth', 'branding']), 'errors' => $errors]);
-        $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
-        $output = $view->render($response, 'login.twig', $this->getItems());
 
-
-        return $output;
-    }
 }

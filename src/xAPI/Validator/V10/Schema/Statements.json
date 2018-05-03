@@ -415,9 +415,7 @@
         "extensions": {
             "type": "object",
             "patternProperties": {
-                "^[a-zA-Z][a-zA-Z+.-]*:": {
-                    "type": ["string", "number", "object"]
-                }
+                "^[a-zA-Z][a-zA-Z+.-]*:": {}
             },
             "additionalProperties": false
         },

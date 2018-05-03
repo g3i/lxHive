@@ -137,7 +137,7 @@ class Auth extends Service
         foreach($permissions as $name) {
             $merged = array_merge($merged, $this->getInheritanceFor($name));
         }
-        return array_unique($merged);
+        return $this->filterPermissions($merged);
     }
 
     /**
@@ -148,8 +148,12 @@ class Auth extends Service
      *
      * @return array inherited permissions (not including $name!)
      */
-    public function getInheritanceFor(string $name)
+    public function getInheritanceFor($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return [];
+        }
         if (!isset($this->scopes[$name])) {
             return [];
         }
@@ -172,35 +176,51 @@ class Auth extends Service
 
     /**
      * Gets single AuthScope by permission name
+     * permission name
      *
      * @return array|false
      */
-    public function getAuthScope(string $name)
+    public function getAuthScope($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return false;
+        }
         return (isset($this->scopes[$name])) ? $this->scopes[$name] : false;
     }
 
     /**
      * Checks if a permission is set for the current user auth
+     * @param string $name permission name
      *
      * @return bool
      */
-    public function hasPermission(string $name)
+    public function hasPermission($name)
     {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_string($name)) {
+            return false;
+        }
         return in_array($name, $this->permissions);
     }
 
     /**
      * Checks if a permission is set for the user auth and throws Exception
      * if queried permission is not assigned to the user auth
+     * @param string $name permission name
      *
      * @throws HttpException when unauthorized
      */
-    public function requirePermission(string $name)
+    public function requirePermission($name)
     {
         $permissions = $this->mergeInheritance($this->permissions);
         
-        if (!in_array($name, $permissions)){
+        // TODO 0.10.x Issue warning to logger
+        if (!is_string($name)) {
+            throw new \RunTimeException('requirePermission: supplied name is not a string');
+        }
+
+        if (!in_array($name, $this->permissions)) {
             throw new HttpException('Unauthorized', 401);
         }
 
@@ -208,6 +228,39 @@ class Auth extends Service
         if (!isset($this->scopes[$name])){
             throw new HttpException('Unauthorized', 401);
         }
+    }
+
+    /**
+     * Checks if one of the supplied permission is set for the user auth and throws Exception
+     * if queried permission is not assigned to the user auth
+     * @param array $names array of permission names
+     *
+     * @return bool
+     */
+    public function requireOneOfPermissions($names)
+    {
+        // TODO 0.10.x Issue warning to logger
+        if(!is_array($names)) {
+            throw new \RunTimeException('requireOneOfPermissions: supplied argument is not an array');
+        }
+
+        $match = '';
+        foreach($names as $name) {
+            if ($this->hasPermission($name)) {
+                $match = $name;
+                break;
+            }
+        }
+
+        if (!$match){
+            throw new HttpException('Unauthorized', 401);
+        }
+
+        // this was mapped in constructor already however in this case it's better to check twice
+        if (!isset($this->scopes[$match])){
+            throw new HttpException('Unauthorized', 401);
+        }
+
     }
 
     /**
@@ -232,7 +285,7 @@ class Auth extends Service
     private function filterPermissions(array $permissionNames)
     {
         $configured = array_keys($this->scopes);
-        return array_filter($permissionNames, function($name) use ($configured) {
+        $sanitized =  array_filter($permissionNames, function($name) use ($configured) {
             // TODO 0.10.x Issue warning to logger
             if(!is_string($name)) {
                 return false;
@@ -243,6 +296,7 @@ class Auth extends Service
             return in_array($name, $configured);
             // TODO 0.10.x Issue warning
         });
+        return array_values(array_unique($sanitized));
     }
 
 }

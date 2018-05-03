@@ -314,7 +314,12 @@ class Bootstrap
         // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
         // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
         try {
-            $container['url'] = Url::createFromServer($_SERVER);
+            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove an parse native
+            if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
+                $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
+            } else {
+                $container['url'] = Url::createFromServer($_SERVER);
+            }
         } catch (\RuntimeException $e) {
             // See comment above
         }
@@ -359,14 +364,24 @@ class Bootstrap
             return function ($request, $response, $exception) use ($container) {
                 $data = [];
                 $code = $exception->getCode();
+                $message = $exception->getMessage();
                 if ($code < 100) {
                     $code = 500;
                 }
+
+                // catch MongoDB exceptions, adjust codes AND prevent exception messages giving away connection details
+                if (is_subclass_of($exception, '\MongoDB\Driver\Exception\Exception')) {
+                    $code = 500;
+                    if(Config::get('mode', 'production') !== 'development' ){
+                        $message = 'Database error: ['.$exception->getCode().'], '.get_class($exception);
+                    }
+                }
+
                 if (method_exists($exception, 'getData')) {
                     $data = $exception->getData();
                 }
                 $errorResource = new Error($container, $request, $response);
-                $error = $errorResource->error($code, $exception->getMessage(), $data);
+                $error = $errorResource->error($code, $message, $data);
 
                 return $error;
                 //return $c['response']->withStatus($code)
@@ -396,7 +411,7 @@ class Bootstrap
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
                 'debug' => 'true',
-                'cache' => dirname(__FILE__).'/View/V10/OAuth/Templates',
+                'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
             $twigDebug = new \Twig_Extension_Debug();
             $view->addExtension($twigDebug);
@@ -413,7 +428,7 @@ class Bootstrap
             // Public routes
             if ($container['request']->getUri()->getPath() === '/about') {
                 return null;
-            }            
+            }
             if (strpos($container['request']->getUri()->getPath(), '/oauth') === 0) {
                 return null;
             }

@@ -135,7 +135,7 @@ class AuthTest extends TestCase
     /**
      * @depends testRegister
      */
-    public function mergeInheritance()
+    public function testMergeInheritance()
     {
         $mock = [
             'parent' => [
@@ -147,7 +147,7 @@ class AuthTest extends TestCase
             'child' => [
                 'inherits' => ['subChild']
             ],
-            'subchild' => [
+            'subChild' => [
                 'inherits' => ['parent']
             ],
             'noChild' => [
@@ -160,23 +160,26 @@ class AuthTest extends TestCase
 
         //
         $perms = $aut->mergeInheritance(['parent', 'notInConfiguration']);
-        $this->assertFalse(in_array('parent', $perms), 'Doesn\'t merge in submitted names');
+        $this->assertTrue(in_array('parent', $perms), 'Merge in submitted names');
 
         // only merge first level childs
         $this->assertFalse(in_array('subChild', $perms), 'One level inheritance only: doesn\'t include childs of childs (only first children)');
 
         // strip out invalid permissions in both arguments and child configuration
         $this->assertFalse(in_array('notInfConfiguration', $perms), 'Strip unkown: doesn\'t include childs of childs');
+
+        $perms = $aut->mergeInheritance(['parent', 'notInConfiguration']);
         $this->assertFalse(in_array('nonExisting', $perms),         'Misconfiguration: doesn\'t include childs which are not top-level properties');
 
         // strict check
-        $this->assertEquals($perms, ['child']);
+        $this->assertEquals($perms, ['parent', 'child']);
 
         // uniqueness
         $perms = $aut->mergeInheritance(['parent', 'child', 'parent']);
+
         $unique = array_unique($perms);
         $this->assertEquals($perms, $unique, 'Returns unique set of permissions');
-        $this->assertEquals($perms, ['child', 'subChild'], 'Merges first children of submitted permissions');
+        $this->assertEquals($perms, ['parent', 'child', 'subChild'], 'Merges first children of submitted permissions');
 
         // ensure uniqueness of childs even if misconfigured
         $perms = $aut->mergeInheritance(['notUniqueChilds']);
@@ -199,64 +202,18 @@ class AuthTest extends TestCase
     /**
      * @depends testRegister
      */
-    public function mergeInheritanceFor()
-    {
-        $mock = [
-            'parent' => [
-                'inherits' => ['child', 'nonExisting']
-            ],
-            'notUniqueChilds' => [
-                'inherits' => ['child', 'child']
-            ],
-            'child' => [
-                'inherits' => ['subChild']
-            ],
-            'subchild' => [
-                'inherits' => ['parent']
-            ],
-            'noChild' => [
-                'inherits' => []
-            ],
-            'noInheritsProp' => [],
-        ];
-        $aut = new Auth($this->container);
-        $aut->mockAuthScopes($mock);
-
-        //
-        $perms = $aut->mergeInheritanceFor('parent');
-        $this->assertFalse(in_array('parent', $perms), 'Doesn\'t merge in submitted name');
-
-        // only merge first level childs
-        $this->assertFalse(in_array('subChild', $perms), 'One level inheritance only: doesn\'t include childs of childs (only first children)');
-
-        // strip out invalid permission argument
-        $perms = $aut->mergeInheritanceFor('notInConfiguration');
-        $this->assertEquals($perms, [], 'Handle unkown: returns empty array');
-
-        // strict check
-        $this->assertEquals($perms, ['child']);
-
-        // uniqueness
-        $perms = $aut->mergeInheritanceFor('parent');
-        $unique = array_unique($perms);
-        $this->assertEquals($perms, $unique,  'Returns unique set of permissions');
-
-        // ensure uniqueness of childs even if misconfigured
-        $perms = $aut->mergeInheritanceFor('notUniqueChilds');
-        $unique = array_unique($perms);
-        $this->assertEquals($perms, $unique, 'Misconfiguration: returns unique set of permissions');
-
-        // (currently) no hierarchical logic supported
-        $perms  = $aut->mergeInheritanceFor('subChild');
-        $this->assertTrue(in_array('parent', $perms), 'No hierarchy: inheritance is not hierarchy');
-    }
-
-    /**
-     * @depends testRegister
-     */
     public function testHasPermission()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertTrue($aut->hasPermission('define'));
+        $this->assertTrue($aut->hasPermission('statements/read/mine'));
+
+        $this->assertFalse($aut->hasPermission('statements/read'));
+        $this->assertFalse($aut->hasPermission('invalid'));
+        $this->assertFalse($aut->hasPermission(array('define')), 'Returns false if argument is not of type "string"');
     }
 
     /**
@@ -264,7 +221,52 @@ class AuthTest extends TestCase
      */
     public function testRequirePermission()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertNull($aut->requirePermission('define'));
+        $this->assertNull($aut->requirePermission('statements/read/mine'));
+
+        $this->expectException(HttpException::class);
+        $aut->requirePermission('statements/read');
+        $aut->requirePermission('invalid');
+
+        $this->expectException(\RuntimeException::class);
+        $aut->requirePermission(array('define'));
+    }
+
+    /**
+     * @depends testRegister
+     */
+    public function testRequireOneOfPermissions()
+    {
+        $aut = new Auth($this->container);
+        $aut->mockAuthScopes($this->mockScopes);
+        $aut->register('testuserid', [ 'define', 'statements/read/mine' ]);
+
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['statements/read/mine'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'statements/read/mine'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'unknown'])
+        );
+        $this->assertNull(
+            $aut->requireOneOfPermissions(['define', 'statements/read/mine', 'unknown'])
+        );
+
+        $this->expectException(HttpException::class);
+        $aut->requireOneOfPermissions(['statements/read']);
+        $aut->requireOneOfPermissions(['unknown']);
+
+        $this->expectException(\RuntimeException::class);
+        $aut->requireOneOfPermissions('define');
     }
 
     /**

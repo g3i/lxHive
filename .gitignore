@@ -8,7 +8,7 @@ src/xAPI/Config/*.yml
 # file storage
 storage/logs/*
 storage/files/*
-src/xAPI/View/V10/OAuth/.Cache/[A-z0-9]*
+storage/.cache/*
 cache/*
 
 # doc generator
