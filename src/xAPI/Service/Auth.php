@@ -209,16 +209,18 @@ class Auth extends Service
      * if queried permission is not assigned to the user auth
      * @param string $name permission name
      *
-     * @return bool
+     * @throws HttpException when unauthorized
      */
     public function requirePermission($name)
     {
+        $permissions = $this->mergeInheritance($this->permissions);
+        
         // TODO 0.10.x Issue warning to logger
-        if(!is_string($name)) {
+        if (!is_string($name)) {
             throw new \RunTimeException('requirePermission: supplied name is not a string');
         }
 
-        if (!in_array($name, $this->permissions)){
+        if (!in_array($name, $this->permissions)) {
             throw new HttpException('Unauthorized', 401);
         }
 
@@ -226,7 +228,6 @@ class Auth extends Service
         if (!isset($this->scopes[$name])){
             throw new HttpException('Unauthorized', 401);
         }
-
     }
 
     /**
