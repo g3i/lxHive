@@ -1,6 +1,6 @@
 # Benchmarks
 
-lxHive supports testing with [PhpBench](http://phpbench.readthedocs.org/).
+lxHive supports testing with [PHPBench](http://phpbench.readthedocs.org/).
 
 A `phpbench.json.dist` file is setup in the project root folder of your lxHive app.
 
@@ -25,7 +25,7 @@ phpbench.phar and phpbench.pharpubkey are excluded via .gitignore.
 php phpbench.phar run <options>
 ```
 
-You can create your custom configuration file (`phpbench.json`) in the root folder. This file is excluded via .gitignore
+You may create your custom configuration file (`phpbench.json`) in the root folder. This file is excluded via .gitignore
 
 ## Structure
 
@@ -36,6 +36,6 @@ You can create your custom configuration file (`phpbench.json`) in the root fold
 * Benchmark Classes have to have the `*Bench` suffix, i.e. `BootstrapBench`
 * Benchmark methods have to have the `bench*` prefix, i.e. `benchFactory()`
 
-Benchmarks are under `.gitignore` (except example) so you can freely create your tests.
+Benchmark files are included in `.gitignore` (except the example), thus you can freely create your own tests.
 
 See documentation: http://phpbench.readthedocs.io/en/latest/writing-benchmarks.html
