@@ -1,6 +1,6 @@
 {
-    "name": "brightcookie/lxhive",
-    "description": "An open-source LRS from Brightcookie",
+    "name": "g3i/lxhive",
+    "description": "An open-source LRS from G3 International Pty Ltd",
     "license": "GPL-3.0",
     "keywords": ["experience api", "xapi", "lrs"],
     "type": "project",

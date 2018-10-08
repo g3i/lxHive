@@ -20,7 +20,7 @@
 > * a changed database model
 > * behavioural changes (permissions)
 >
-> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://www.brightcookie.com/contact-us/) with us should you need to migrate data.
+> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://g3i.com.au/contact-us/) with us should you need to migrate data.
 
 ## 1. <a name="introduction" />Introduction
 
@@ -135,7 +135,7 @@ Default file storage structure:
 ### Documentation
 
 * [Contributing guidelines](CONTRIBUTING.md)
-* [lxHive Wiki](https://github.com/Brightcookie/lxHive-Internal/wiki)
+* [lxHive Wiki](https://github.com/Brightcookie/lxHive/wiki)
 * Compile code documentation: run `sh generate-docs.sh` from project root (file must be executable)
 
 ### Unit testing
@@ -148,9 +148,9 @@ Default file storage structure:
 
 ## 4. Contributors
 
-The [Brightcookie](https://www.brightcookie.com/) team
+The [G3 International](https://g3i.com.au/) team
 
 * Jakob Murko - systems architect, lead developer
 * Leo Gaggl - creator, mentor, conformance
-* Joerg Boeselt - development, tests, conformance, project management
+* Joerg Boeselt - lead developer, project and community manager, tests, conformance
 * Matthew Smith - alpha prototype
