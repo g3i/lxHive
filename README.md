@@ -8,9 +8,9 @@
 [![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/Brightcookie/lx-Test-Suite)
 [![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-86.02%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6.svg)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
-[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/network)
-[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/network)
+[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
 
 > **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
@@ -54,7 +54,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 |  /agents              | 1.0.2         | -     | -     | x     | -      | (JSON) retrieve a single agent               | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
 |  /agents/profile      | 1.0.2         | x     | x     | x     | x      | (JSON) CRUD - profile(s) of an actor         | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
 
-* see our [wiki](https://github.com/Brightcookie/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
+* see our [wiki](https://github.com/g3i/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
 
 ## 4. <a name="installation" />Installation
 
@@ -75,7 +75,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
-* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
+* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/g3i/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
 
 #### 1. Application install and set-up
 
@@ -135,7 +135,7 @@ Default file storage structure:
 ### Documentation
 
 * [Contributing guidelines](CONTRIBUTING.md)
-* [lxHive Wiki](https://github.com/Brightcookie/lxHive/wiki)
+* [lxHive Wiki](https://github.com/g3i/lxHive/wiki)
 * Compile code documentation: run `sh generate-docs.sh` from project root (file must be executable)
 
 ### Unit testing

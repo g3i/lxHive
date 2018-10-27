@@ -14,7 +14,7 @@ Lastly, visit the links listed in the *Additional Resources* section, below.
 
 ## Getting Started
 
-* [Create a new issue](https://github.com/Brightcookie/lxHive/issues/new) for your issue. If a ticket
+* [Create a new issue](https://github.com/g3i/lxHive/issues/new) for your issue. If a ticket
 already exists for the issue, participate via the existing ticket.
   * Describe the issue clearly. If it is a bug, include steps to reproduce it.
   * Select an appropriate label for the issue.
@@ -42,7 +42,7 @@ For example:
 ## Submitting Changes
 
 * Push changes in your branch to your fork.
-* [Create a pull request](https://github.com/Brightcookie/lxHive/compare) and mention the issue it fixes [as described here](https://github.com/blog/1506-closing-issues-via-pull-requests).
+* [Create a pull request](https://github.com/g3i/lxHive/compare) and mention the issue it fixes [as described here](https://github.com/blog/1506-closing-issues-via-pull-requests).
 * You're done! Your changes will be reviewed. Please respond to comments and questions to your pull request until it is closed.
 
 ## Additional Resources
