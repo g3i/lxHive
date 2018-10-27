@@ -4,14 +4,14 @@
 * Current release: **0.10.0**
 * Supports xAPI spec <= 1.0.3
 
-[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/master.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
-[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/Brightcookie/lx-Test-Suite)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/g3i/lxHive/master.svg)](https://circleci.com/gh/g3i/lxHive/tree/master)
+[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/g3i/lx-Test-Suite)
 [![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-86.02%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6.svg)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
-[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/network)
-[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
-[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/g3i/lxHive.svg)](https://github.com/g3i/lxHive/issues)
+[![GitHub forks](https://img.shields.io/github/forks/g3i/lxHive.svg)](https://github.com/g3i/lxHive/network)
+[![GitHub stars](https://img.shields.io/github/stars/g3i/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/g3i/lxHive/master/LICENSE.md)
 
 > **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
 > This incompatibility is due to :
