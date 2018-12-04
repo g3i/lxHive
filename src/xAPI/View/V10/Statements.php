@@ -3,7 +3,7 @@
 /*
  * This file is part of lxHive LRS - http://lxhive.org/
  *
- * Copyright (C) 2017 Brightcookie Pty Ltd
+ * Copyright (C) 2017 G3 International
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class Statements extends View
 
     private function renderMore($statementResult, $idArray)
     {
-        if ($statementResult->getHasMore() && !empty($idArray)) {//TODO @sraka1 temporary fix for https://github.com/Brightcookie/lxHive-Internal/issues/229
+        if ($statementResult->getHasMore() && !empty($idArray)) {//TODO @sraka1 temporary fix for https://github.com/g3i/lxHive-Internal/issues/229
             $latestId = end($idArray);
             $latestId = $latestId->__toString();
             if ($statementResult->getSortDescending()) {

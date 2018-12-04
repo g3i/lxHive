@@ -1,17 +1,23 @@
-
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* Current release: **0.10.0**
+* Current release: **0.10.1**
 * Supports xAPI spec <= 1.0.3
 
-[![CircleCI branch](https://img.shields.io/circleci/project/github/Brightcookie/lxHive/master.svg)](https://circleci.com/gh/Brightcookie/lxHive/tree/master)
-[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/Brightcookie/lx-Test-Suite)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/g3i/lxHive/master.svg)](https://circleci.com/gh/g3i/lxHive/tree/master)
+[![lx-Test-Suite](https://img.shields.io/badge/lx--Test--Suite-82.75%25-yellowgreen.svg)](https://github.com/g3i/lx-Test-Suite)
 [![lrs-conformance-test-suite](https://img.shields.io/badge/lrs--conformance--test--suite-86.02%25-yellowgreen.svg)](https://github.com/adlnet/lrs-conformance-test-suite)
 [![SensioLabs Insight](https://img.shields.io/sensiolabs/i/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6.svg)](https://insight.sensiolabs.com/projects/9e0e6f28-b099-4c84-ad85-ccf4de70d6a6)
-[![GitHub issues](https://img.shields.io/github/issues/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/network)
-[![GitHub stars](https://img.shields.io/github/stars/Brightcookie/lxHive.svg)](https://github.com/Brightcookie/lxHive/stargazers)
-[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/Brightcookie/lxHive/master/LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/g3i/lxHive.svg)](https://github.com/g3i/lxHive/issues)
+[![GitHub forks](https://img.shields.io/github/forks/g3i/lxHive.svg)](https://github.com/g3i/lxHive/network)
+[![GitHub stars](https://img.shields.io/github/stars/g3i/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
+[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/g3i/lxHive/master/LICENSE.md)
+
+> **Important note:** lxHive changes ownership. Our organisation name changes from *Brightcookie* to *G3 International*. Please update your remotes in your fork.
+
+```bash
+# given your linked remote's name is "upstream"
+git remote set-url upstream <TODO>
+```
 
 > **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
 > This incompatibility is due to :
@@ -20,7 +26,7 @@
 > * a changed database model
 > * behavioural changes (permissions)
 >
-> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://www.brightcookie.com/contact-us/) with us should you need to migrate data.
+> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://g3i.com.au/contact-us/) with us should you need to migrate data.
 
 ## 1. <a name="introduction" />Introduction
 
@@ -54,7 +60,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 |  /agents              | 1.0.2         | -     | -     | x     | -      | (JSON) retrieve a single agent               | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
 |  /agents/profile      | 1.0.2         | x     | x     | x     | x      | (JSON) CRUD - profile(s) of an actor         | [xAPI, section 7.6](https://github.com/adlnet/xAPI-Spec/blob/1.0.2/xAPI.md#76-agent-profile-api)
 
-* see our [wiki](https://github.com/Brightcookie/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
+* see our [wiki](https://github.com/g3i/lxHive/wiki/List-of-xAPI-and-lxHive-Endpoints) for a complete list of lxHive endpoints
 
 ## 4. <a name="installation" />Installation
 
@@ -75,7 +81,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
-* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/Brightcookie/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
+* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/g3i/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
 
 #### 1. Application install and set-up
 
@@ -135,7 +141,7 @@ Default file storage structure:
 ### Documentation
 
 * [Contributing guidelines](CONTRIBUTING.md)
-* [lxHive Wiki](https://github.com/Brightcookie/lxHive-Internal/wiki)
+* [lxHive Wiki](https://github.com/g3i/lxHive/wiki)
 * Compile code documentation: run `sh generate-docs.sh` from project root (file must be executable)
 
 ### Unit testing
@@ -148,9 +154,9 @@ Default file storage structure:
 
 ## 4. Contributors
 
-The [Brightcookie](https://www.brightcookie.com/) team
+The [G3 International](https://g3i.com.au/) team
 
 * Jakob Murko - systems architect, lead developer
 * Leo Gaggl - creator, mentor, conformance
-* Joerg Boeselt - development, tests, conformance, project management
+* Joerg Boeselt - lead developer, project and community manager, tests, conformance
 * Matthew Smith - alpha prototype

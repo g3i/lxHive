@@ -2,7 +2,7 @@
 
 >This version is **NOT COMPATIBLE** with older lxHive versions. (server requirements, codebase, database model).
 
-Currently there are no plans to release database migration functionality. Please launch a request to `support@brightcookie.com.au` if you need help with migrating records from older lxHive versions.
+Currently there are no plans to release database migration functionality. Please launch a request to `support@g3i.com.au` if you need help with migrating records from older lxHive versions.
 
 #### Summary
 Extensive changes in regards to stability, testability, reporting administration and configurability.
