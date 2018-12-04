@@ -15,6 +15,9 @@ cache/*
 sami.phar
 docs/*
 
+# composer
+composer.phar
+
 # phpBench
 phpbench.phar
 phpbench.phar.pubkey
