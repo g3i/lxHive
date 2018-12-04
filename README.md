@@ -1,7 +1,6 @@
-
 # ![lxHive](./public/assets/images/lxHive.logo.png)
 
-* Current release: **0.10.0**
+* Current release: **0.10.1**
 * Supports xAPI spec <= 1.0.3
 
 [![CircleCI branch](https://img.shields.io/circleci/project/github/g3i/lxHive/master.svg)](https://circleci.com/gh/g3i/lxHive/tree/master)
@@ -12,6 +11,13 @@
 [![GitHub forks](https://img.shields.io/github/forks/g3i/lxHive.svg)](https://github.com/g3i/lxHive/network)
 [![GitHub stars](https://img.shields.io/github/stars/g3i/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/g3i/lxHive/master/LICENSE.md)
+
+> **Important note:** lxHive changes ownership. Our organisation name changes from *Brightcookie* to *G3 International*. Please update your remotes in your fork.
+
+```bash
+# given your linked remote's name is "upstream"
+git remote set-url upstream <TODO>
+```
 
 > **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
 > This incompatibility is due to :
