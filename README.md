@@ -12,22 +12,6 @@
 [![GitHub stars](https://img.shields.io/github/stars/g3i/lxHive.svg)](https://github.com/g3i/lxHive/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/g3i/lxHive/master/LICENSE.md)
 
-> **Important note:** lxHive changes ownership. Our organisation name changes from *Brightcookie* to *G3 International*. Please update your remotes in your fork.
-
-```bash
-# given your linked remote's name is "upstream"
-git remote set-url upstream <TODO>
-```
-
-> **Important note:** Current version (0.10.0) is **not compatible** with older lxHive versions. It is not possible to upgrade a legacy lxHive instance.
-> This incompatibility is due to :
->
-> * different server requirements
-> * a changed database model
-> * behavioural changes (permissions)
->
-> See the [changelog](changelog.md) for more details. At the moment there are no plans to release an open source database migration script. Please [get in touch](https://g3i.com.au/contact-us/) with us should you need to migrate data.
-
 ## 1. <a name="introduction" />Introduction
 
 **lxHive** is a fast and lightweight open source xAPI conformant Learning Record Store (LRS).
