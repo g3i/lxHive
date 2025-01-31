@@ -1,7 +1,7 @@
 /*!
- * Start Bootstrap - Grayscale Bootstrap Theme (http://startbootstrap.com)
+ * Start Bootstrap - Grayscale Bootstrap Theme (https://startbootstrap.com)
  * Code licensed under the Apache License v2.0.
- * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ * For details, see https://www.apache.org/licenses/LICENSE-2.0.
  */
 
 body {
@@ -435,9 +435,28 @@ body {
   font-size: 1em;
   color: {{ site.color.primary }};
 }
+
 .framework-logo{
   max-height: 90px;
   margin:0 auto;
+}
+
+/* contact */
+
+.contact-section {
+  width: 100%;
+  padding: 200px 0;
+  color: {{ site.color.body }};
+  background-color:{{ site.color.light-grey }};
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+
+@media (min-width: 767px)
+.contact-section {
+  padding: 100px 0;
 }
 
 /* lxHive text formatting */
@@ -462,20 +481,26 @@ body {
   color: {{ site.color.body-bg }};
 }
 
-.intro-body img.brightcookie-logo{
+.intro-body img.owner-logo{
   max-height: 45px;
 }
-.intro-body a.brightcookie{
+.intro-body a.owner{
   padding-bottom: 5px;
   border-bottom: 1px solid {{ site.color.body-bg }};
   color: {{ site.color.body-bg }};
 }
 
-.intro-body  a.brightcookie:hover,
-.intro-body  a.brightcookie:focus {
+.intro-body  a.owner:hover,
+.intro-body  a.owner:focus {
   border: none;
 }
 
+.framing {
+  display: inline-block;
+  padding: 2px;
+  background-color: white;
+  border-radius: 4px;
+}
 
 @media(max-width:767px) {
   .brand-heading img{

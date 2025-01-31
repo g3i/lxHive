@@ -1,6 +1,6 @@
 # Site settings
 title: lxHive - a fast and lightweight open source xAPI LRS
-email: support@brightcookie.com.au
+email: support@g3i.com.au
 url: http://localhost:4000
 baseurl: ""
 description: "lxHive is a fast and lightweight open source xAPI conformant Learning Record Store (LRS). lxHive logs and returns activity statements as defined in the Experience API specification."
@@ -26,19 +26,16 @@ formats:
   lxHive-hl: '<span class="lxHive hl"><span class="light">lx</span>Hive</span>'
 
 # Footer settings
-footer: Brightcookie Pty Ltd
+footer: G3i Pty Ltd
 
 # Social networks usernames (many more available: google-plus, flickr, dribbble, pinterest, instagram, tumblr, linkedin, etc.)
 social:
   - title: 'Issues'
-    url: https://github.com/Brightcookie/lxHive/issues
+    url: 'https://github.com/g3i/lxHive/issues'
     icon: '<i class="fa fa-github"></i>'
   - title: Enquiries
-    url: 'http://www.brightcookie.com/contact-us/'
+    url: 'https://g3i.com.au/contact-us/'
     'icon': '<i class="fa fa-envelope"></i>'
-  - title: facebook
-    url: https://www.facebook.com/brightcookie/
-    icon: '<i class="fa fa-facebook-square"></i>'
 
 # GA and linked data
 analytics:
