@@ -65,7 +65,7 @@ The application uses [MongoDB](https://www.mongodb.org/) and [PHP](http://php.ne
 
 ### Setup
 
-* *Note: Check out our Wiki for a more comprehensive [step-by-step guide].(https://github.com/g3i/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app)*
+* You'll find a comprehensive [setup guide](https://github.com/g3i/lxHive/wiki/Step-by-step:-Install-lxHive-and-setup-authentication-for-your-app) here
 
 #### 1. Application install and set-up
 
