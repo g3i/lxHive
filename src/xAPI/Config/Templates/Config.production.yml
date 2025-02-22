@@ -1,5 +1,4 @@
 # Production configuration overrides
 log:
   handlers: [StreamHandler]
-  name: Production
 debug: false

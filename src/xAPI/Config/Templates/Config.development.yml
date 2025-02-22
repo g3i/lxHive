@@ -1,5 +1,4 @@
 # Development configuration overrides
 log:
   handlers: [ErrorLogHandler, FirePHPHandler]
-  name: Development
 debug: true
