@@ -139,20 +139,8 @@ class SetupCommand extends SymfonyCommand
      */
     private function ioCheckConfig($io)
     {
-        $msg = [];
-
-        $this->setup->installYaml('Config.yml');
-        $msg[] = 'Config.yml installed';
-
-        $this->setup->removeYaml('Config.production.yml');
-        $this->setup->installYaml('Config.production.yml');
-        $msg[] = 'Config.production.yml installed';
-
-        $this->setup->removeYaml('Config.development.yml');
-        $this->setup->installYaml('Config.development.yml');
-        $msg[] = 'Config.development.yml installed';
-
-        $io->listing($msg);
+        $configs = $this->setup->installDefaultConfig();
+        $io->listing($configs);
     }
 
     /**
