@@ -1,0 +1,59 @@
+config:
+    # this section will be parsed with enviroment vars and merged into the configuration files (src/xAPI/Config/*.yml)
+    default:
+        # - Config.yml
+        name: lxHive
+        mode: ${LXHIVE_MODE}
+        storage:
+            in_use: Mongo
+            Mongo:
+                host_uri: 'mongodb://${LXHIVE_MONGO_USERNAME}:${LXHIVE_MONGO_PASSWORD}@${LXHIVE_MONGO_HOST}:27017'
+                db_name: ${LXHIVE_MONGO_DATABASE}
+    production:
+        # - Config.production.yml
+        log:
+            enabled: true
+            handlers: [StreamHandler, ErrorLogHandler]
+            level: DEBUG
+        debug: false
+
+    development:
+        # - Config.development.yml
+        log:
+            enabled: true
+            handlers: [ErrorLogHandler]
+            ErrorLogHandler:
+                # 'default' sets log target to bootstrap defaultLog
+                error_log: default
+            level: DEBUG
+        debug: true
+
+users:
+    # This section creates users and basic auth tokens
+    - name: admin
+      description: admin account
+      email: admin@admin.admin
+      # password: at least 8 digits, containing at least one of lower case letter, upper case letter, number, symbol
+      password: '<INSERT>'
+      permissions:
+          - super
+      _basic_auth: true
+    - name: student
+      description: student account
+      email: student@student.student
+      # password: at least 8 digits, containing at least one of lower case letter, upper case letter, number, symbol
+      password: '<INSERT>'
+      permissions:
+         - statements/write
+         - statements/read/mine
+         - state
+         - profile
+         - define
+         - attachments
+         - ext/extendedquery/statements
+      _basic_auth: true
+
+oauth:
+    - name: example
+      description: 'learning record provider development example'
+      redirectUri: 'http://localhost:3000'
