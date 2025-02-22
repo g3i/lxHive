@@ -314,7 +314,7 @@ class Bootstrap
         // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
         // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
         try {
-            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove an parse native
+            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove and parse native
             if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
                 $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
             } else {
@@ -324,36 +324,44 @@ class Bootstrap
             // See comment above
         }
 
-        $handlerConfig = Config::get(['log', 'handlers']);
-        $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
-
-        if (null === $handlerConfig) {
-            $handlerConfig = ['ErrorLogHandler'];
-        }
+        $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
+        $defaultLevel = Config::get(['log', 'level'], Logger::DEBUG);
+        $defaultLog = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
 
         $logger = new Logger('web');
-
-        $formatter = new \Monolog\Formatter\LineFormatter();
+        $formatter = new \Monolog\Formatter\LineFormatter("[%datetime%][%channel%][%level_name%]: %message% %context% %extra%\n", null, true, true);
 
         // Set up logging
         if (in_array('FirePHPHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\FirePHPHandler();
+            $level = Config::get(['log', 'FirePHPHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\FirePHPHandler($level);
             $logger->pushHandler($handler);
         }
 
         if (in_array('ChromePHPHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\ChromePHPHandler();
+            $level = Config::get(['log', 'ChromePHPHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\ChromePHPHandler($level);
             $logger->pushHandler($handler);
         }
 
         if (in_array('StreamHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\StreamHandler($stream);
+            $level = Config::get(['log', 'StreamHandler', 'level'], $defaultLevel);
+            $stream = Config::get(['log', 'StreamHandler', 'stream'], $defaultLog);
+
+            $handler = new \Monolog\Handler\StreamHandler($stream, $level);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
         }
 
         if (in_array('ErrorLogHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\ErrorLogHandler();
+            $errorLog = Config::get(['log', 'ErrorLogHandler', 'error_log']);
+            if ($errorLog) {
+                // @see https://www.php.net/manual/en/errorfunc.configuration.php#ini.error-log
+                ini_set('log_errors', 1); // not set in ErrorLogHandler
+                ini_set('error_log', ($errorLog == 'defaultLog') ? $defaultLog : $errorLog);
+            }
+            $level = Config::get(['log', 'StreamHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
         }
