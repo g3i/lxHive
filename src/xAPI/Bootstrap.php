@@ -96,10 +96,11 @@ class Bootstrap
      * | Bootstrap::Web     | x        | x         | x         | x          | no            | default: run web app  |
      *
      * @param  int $mode Bootstrap mode constant
+     * @param array config merge/overwrite values (test mode only)
      * @return void
      * @throw AppInitException
      */
-    public static function factory($mode)
+    public static function factory($mode, $testConfig=[])
     {
         if (self::$containerInstantiated) {
             // modes test and none (admin,etc) shall pass
@@ -134,7 +135,7 @@ class Bootstrap
             }
 
             case self::Testing: {
-                $bootstrap->initConfig();
+                $bootstrap->initConfig($testConfig);
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -207,10 +208,12 @@ class Bootstrap
 
     /**
      * Initialize default configuration and load services
+     * @param array config merge/overwrite values (test mode only)
+     *
      * @return \Psr\Container\ContainerInterface service container
      * @throws AppInitException if self::$mode > self::None
      */
-    public function initConfig()
+    public function initConfig($testConfig=[])
     {
         // Defaults
         $appRoot = realpath(__DIR__.'/../../');
@@ -244,8 +247,12 @@ class Bootstrap
         }
 
         // ad-hoc db for unit test @see phpunit.xml
+        // #238 allow overwriting config properties inside unittests
         if (defined('LXHIVE_UNITTEST')) {
             $config['storage']['Mongo']['db_name'] = 'LXHIVE_UNITTEST';
+            if ($testConfig) {
+                $config = array_merge($config, $testConfig);
+            }
         }
 
         Config::merge($config);
@@ -358,9 +365,10 @@ class Bootstrap
             if ($errorLog) {
                 // @see https://www.php.net/manual/en/errorfunc.configuration.php#ini.error-log
                 ini_set('log_errors', 1); // not set in ErrorLogHandler
-                ini_set('error_log', ($errorLog == 'defaultLog') ? $defaultLog : $errorLog);
+                ini_set('error_log', ($errorLog == 'default') ? $defaultLog : $errorLog);
             }
-            $level = Config::get(['log', 'StreamHandler', 'level'], $defaultLevel);
+
+            $level = Config::get(['log', 'ErrorLogHandler', 'level'], $defaultLevel);
             $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
