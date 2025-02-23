@@ -68,7 +68,7 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * Test `get()` throws  a ContainerExpception - ]when there is a DI config error
+     * Test `get()` throws  a ContainerExpception - when there is a DI config error
      */
     public function testGetWithDiConfigErrorThrownAsContainerValueNotFoundException()
     {
