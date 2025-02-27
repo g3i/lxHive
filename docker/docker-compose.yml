@@ -11,12 +11,15 @@ name: lxhive
 services:
 
     nginx:
-        # https://hub.docker.com/_/nginx
+        # https://hub.docker.com/r/nginxinc/nginx-unprivileged
         container_name: lxserver
         restart: always
         build:
             context: ./
             dockerfile: docker/nginx/Dockerfile
+            args:
+                UID: ${USER_ID}
+                GID: ${GROUP_ID}
         ports:
             - "${LXHIVE_HOST_PORT}:80"
         volumes:
@@ -37,7 +40,6 @@ services:
             - "27017:27017"
         volumes:
             - ../storage/logs/mongodb:/var/log/mongodb
-            - ../storage/data/db:/data/db
 
     mongo-express:
         # https://hub.docker.com/_/mongo-express
@@ -63,8 +65,8 @@ services:
             context: ./
             dockerfile: docker/php/Dockerfile
             args:
-                DEVEL_UID: ${USER_ID}
-                DEVEL_GID: ${GROUP_ID}
+                UID: ${USER_ID}
+                GID: ${GROUP_ID}
         environment:
             LXHIVE_MODE: ${LXHIVE_MODE}
             LXHIVE_MONGO_HOST: mongo
@@ -75,4 +77,3 @@ services:
             - mongo
         volumes:
             - ../:/api/lxHive:rw
-            - ../install:/api/install:rw

@@ -1,4 +1,9 @@
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged
+
+####
+# https://hub.docker.com/r/nginxinc/nginx-unprivileged
+# https://github.com/nginxinc/docker-nginx-unprivileged/pkgs/container/nginx-unprivileged
+####
 
 RUN apk add --no-cache bash
 

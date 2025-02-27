@@ -26,8 +26,8 @@ function usage () {
     echo "    -i|install Run lxHive install script (force - removes all configs and database)"
     echo "    -u|up      Starts application and all its services (docker compose up [args])"
     echo "    -d|down    Stops containers and removes containerss, networks, volumes, and images"
-    echo "    -d|list    List containers"
-    echo "    -l|logs    lxhive logs"
+    echo "    -l|list    List containers"
+    echo "    -L|logs    lxhive logs"
     echo "    -s|shell   Shell access to lxhive container"
     echo
 }
@@ -58,13 +58,13 @@ for arg in "${@}"; do
         do_compose_up=0
         do_compose_down=1
     fi
-    if [[ "${arg}" == "list"    || "${arg}" == "-d" ]]; then
+    if [[ "${arg}" == "list"    || "${arg}" == "-l" ]]; then
         do_list_containers=1
     fi
     if [[ "${arg}" == "install" || "${arg}" == "-i" ]]; then
         do_install_lxhive=1
     fi
-    if [[ "${arg}" == "logs"    || "${arg}" == "-l" ]]; then
+    if [[ "${arg}" == "logs"    || "${arg}" == "-L" ]]; then
         do_logs_lxhive=1
     fi
     if [[ "${arg}" == "shell"    || "${arg}" == "-s" ]]; then
@@ -78,10 +78,22 @@ function list() {
     echo -e "\e[33m------------------------\e[0m"
 }
 
-function rm_dir() {
+function ownership() {
+    owner="${USER_ID}:${GROUP_ID}"
+    if [[ -d "${1}" ]]; then
+        sudo chown -R "${owner}" "${1}"
+        return
+    fi
+    sudo chown "${owner}" "${1}"
+}
+
+function reset_dir() {
     if [[ -d "${1}" ]]; then
         sudo rm -rf "${1}"
     fi
+    # create as current
+    sudo mkdir -p "${1}"
+    ownership "${1}"
 }
 
 function logs() {
@@ -91,21 +103,20 @@ function logs() {
 }
 
 function shell_lxhive() {
-    docker exec -u www-data -it lxhive bash
+    docker exec -u www-data -w /api/lxHive -it lxhive bash
 }
 
 function install_lxhive() {
-    docker exec -u www-data lxhive bash -c 'cd /api/install && ./install.php force'
+    docker exec -u www-data lxhive bash -c 'cd /api/lxHive/install && ./install.php force'
 }
 
 if [[ $do_compose_down -eq 1 ]]; then
     docker compose down
+    ownership ../storage
 fi
 
 if [[ $do_clear_data -eq 1 ]]; then
-    rm_dir ../storage/data/db
-    rm_dir ../storage/logs/mongodb
-    rm_dir ../storage/logs/nginx
+    reset_dir ../storage
 fi
 
 if [[ $do_compose_build -eq 1 ]]; then
@@ -115,6 +126,7 @@ fi
 
 if [[ $do_compose_up -eq 1 ]]; then
     echo " - run: compose up${compose_args}"
+    ownership ../storage
     docker compose up ${compose_args} && list
 fi
 

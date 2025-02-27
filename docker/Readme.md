@@ -31,16 +31,7 @@ Server logs and MongoDB files are accessible in `../storage/`
 
 The `compose.sh` script aims to make the container administration a bit easier:
 
-```
-Build and run lxHive multi-container network
-
-  syntax: ./compose.sh [flush|build|up|list|logs|shell]
-  options:
-    -h|help   Print this Help.
-    -f|flush  Clear data and files, recreate containers from ground up
-    -b|build  Build containers (docker compose build [args])
-    -u|up     Run services (docker compose up [args])
-    -d|list   List containers
-    -l|logs    lxhive logs
-    -s|shell  Shell access to lxhive container
+```bash
+# show options
+./compose.sh -h
 ```
