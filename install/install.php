@@ -27,7 +27,7 @@
 
 // Require the autoloader
 
-$app_path = dirname(dirname(__FILE__))."/lxHive";
+$app_path = dirname(dirname(__FILE__));
 $src_path = dirname(__FILE__);
 $cfg_path = $app_path.'/src/xAPI/Config';
 
