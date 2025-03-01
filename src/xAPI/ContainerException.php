@@ -23,8 +23,8 @@
 namespace API;
 
 use InvalidArgumentException;
-use Interop\Container\Exception\ContainerException as InteropContainerException;
+use Psr\Container\ContainerExceptionInterface;
 
-class ContainerException extends InvalidArgumentException implements InteropContainerException
+class ContainerException extends InvalidArgumentException implements ContainerExceptionInterface
 {
 }

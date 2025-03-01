@@ -7,14 +7,14 @@ use Slim\Container as SlimContainer;
 
 class CoherentContainersTest extends TestCase
 {
-    public function testSlimContainerInteropInterfaceHandle()
+    public function testSlimContainerInterfaceHandle()
     {
         $container = new SlimContainer();
         $container['testService'] = 'string';
         $this->assertEquals('string', $container->get('testService'));
     }
 
-    public function testApiContainerInteropInterfaceHandle()
+    public function testApiContainerInterfaceHandle()
     {
         $container = new ApiContainer();
         $container['testService'] = 'string';
@@ -22,7 +22,7 @@ class CoherentContainersTest extends TestCase
     }
 
     /**
-     * @depends testSlimContainerInteropInterfaceHandle
+     * @depends testSlimContainerInterfaceHandle
      */
     public function testSlimContainerObjectHandle()
     {
@@ -32,7 +32,7 @@ class CoherentContainersTest extends TestCase
     }
 
     /**
-     * @depends testSlimContainerInteropInterfaceHandle
+     * @depends testSlimContainerInterfaceHandle
      * @expectedException PHPUnit_Framework_Error
      */
     public function testApiContainerObjectHandle()

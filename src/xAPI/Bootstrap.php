@@ -199,7 +199,7 @@ class Bootstrap
 
     /**
      * Get service container
-     * @return \Interop\Container\ContainerInterface|null
+     * @return \Psr\Container\ContainerInterface|null
      */
     public static function getContainer()
     {
@@ -300,19 +300,19 @@ class Bootstrap
 
         // 4. Set up Slim services
         /*
-            * Slim\App expects a container that implements Interop\Container\ContainerInterface
-            * with these service keys configured and ready for use:
-            *
-            *  - settings: an array or instance of \ArrayAccess
-            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
-            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
-            *  - response: an instance of \Psr\Http\Message\ResponseInterface
-            *  - router: an instance of \Slim\Interfaces\RouterInterface
-            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
-            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
-            *  - notFoundHandler: a callable with the signature: function($request, $response)
-            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
-            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+           * Slim\App expects a container that implements Psr\Container\ContainerInterface
+           * with these service keys configured and ready for use:
+           *
+           *  `settings`          an array or instance of \ArrayAccess
+           *  `environment`       an instance of \Slim\Http\Environment
+           *  `request`           an instance of \Psr\Http\Message\ServerRequestInterface
+           *  `response`          an instance of \Psr\Http\Message\ResponseInterface
+           *  `router`            an instance of \Slim\Interfaces\RouterInterface
+           *  `foundHandler`      an instance of \Slim\Interfaces\InvocationStrategyInterface
+           *  `errorHandler`      a callable with the signature: function($request, $response, $exception)
+           *  `notFoundHandler`   a callable with the signature: function($request, $response)
+           *  `notAllowedHandler` a callable with the signature: function($request, $response, $allowedHttpMethods)
+           *  `callableResolver`  an instance of \Slim\Interfaces\CallableResolverInterface
         */
         $slimDefaultServiceProvider = new DefaultServicesProvider();
         $slimDefaultServiceProvider->register($container);
