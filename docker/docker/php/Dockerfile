@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8-fpm
 
 ####
 # https://hub.docker.com/_/php

@@ -14,17 +14,14 @@ config:
         log:
             enabled: true
             handlers: [StreamHandler, ErrorLogHandler]
-            level: DEBUG
+            level: WARNING
         debug: false
 
     development:
         # - Config.development.yml
         log:
             enabled: true
-            handlers: [ErrorLogHandler]
-            ErrorLogHandler:
-                # 'default' sets log target to bootstrap defaultLog
-                error_log: default
+            handlers: [StreamHandler, ErrorLogHandler]
             level: DEBUG
         debug: true
 

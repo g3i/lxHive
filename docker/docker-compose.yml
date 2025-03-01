@@ -38,8 +38,6 @@ services:
             MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
         ports:
             - "27017:27017"
-        volumes:
-            - ../storage/logs/mongodb:/var/log/mongodb
 
     mongo-express:
         # https://hub.docker.com/_/mongo-express

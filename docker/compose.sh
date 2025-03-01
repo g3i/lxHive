@@ -110,6 +110,10 @@ function install_lxhive() {
     docker exec -u www-data lxhive bash -c 'cd /api/lxHive/install && ./install.php force'
 }
 
+# always
+sudo mkdir -p ../storage/logs ../storage/files
+ownership ../storage
+
 if [[ $do_compose_down -eq 1 ]]; then
     docker compose down
     ownership ../storage
