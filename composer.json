@@ -7,7 +7,6 @@
     "homepage": "http://www.lxhive.com/",
     "require": {
         "slim/slim": "3.*",
-        "justinrainbow/json-schema": "~4.0",
         "league/url": "~3.3",
         "ramsey/uuid": "3.*",
         "league/flysystem": "^1.0",
@@ -19,7 +18,8 @@
         "ext-mongodb": "*",
         "pimple/pimple": "^3.0",
         "symfony/yaml": "^4.4",
-        "psr/container": "^1.1"
+        "psr/container": "^1.1",
+        "justinrainbow/json-schema": "^6.2"
     },
     "autoload": {
         "psr-4": {
