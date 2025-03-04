@@ -7,9 +7,10 @@ body {
 .text-center {
     text-align: center;
 }
-.text-center {
+.mt-1 {
     margin-top: 1em;
 }
+
 /**
  * Branding
  */
@@ -81,14 +82,13 @@ pure-button {
     padding: 2em 1em;
     border-radius: 5px;
 }
-.form-row,
-#id_username,
-#id_password,
-#id_remember_me,
-#id_login{
+.form-row{
     display:block;
     margin-left: auto;
     margin-right: auto;
     min-width: 250px;
     max-width: 250px;
+}
+.form-row label{
+    text-align: left;
 }
