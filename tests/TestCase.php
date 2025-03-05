@@ -23,7 +23,7 @@
  */
 namespace Tests;
 
-use PHPUnit_Framework_TestCase as BaseTestCase;
+use \PHPUnit\Framework\TestCase as BaseTestCase;
 
 use API\Bootstrap;
 
@@ -33,7 +33,7 @@ abstract class TestCase extends BaseTestCase
      * Called before the first test of the test case class is run
      * Loads db config
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Bootstrap::reset();
         Bootstrap::factory(Bootstrap::Testing);

@@ -23,7 +23,7 @@
  */
 namespace Tests;
 
-use PHPUnit_Framework_TestCase as BaseTestCase;
+use \PHPUnit\Framework\TestCase as BaseTestCase;
 
 use Symfony\Component\Yaml\Yaml;
 
@@ -51,7 +51,7 @@ class MongoTestCase extends TestCase
      * Called before the first test of the test case class is run
      * Caches default LRS database name from config
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Bootstrap::reset();
         Bootstrap::factory(Bootstrap::Testing);
