@@ -289,10 +289,10 @@ class ActivityState extends Provider implements ActivityStateInterface, SchemaIn
 
     private function validateDocumentType($document, $contentType)
     {
-        if ($document->getContentType() !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($document->getContentType())) {
             throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
-        if ($contentType !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($contentType)) {
             throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }

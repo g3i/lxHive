@@ -286,14 +286,14 @@ class AgentProfile extends Provider implements AgentProfileInterface, SchemaInte
 
     private function validateTargetDocumentType($document)
     {
-        if ($document->getContentType() !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($document->getContentType())) {
             throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
 
     private function validateSourceDocumentType($documentType)
     {
-        if ($documentType !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($documentType)) {
             throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }
