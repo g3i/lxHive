@@ -38,7 +38,7 @@ class Statement extends Validator
     // Handles the validation of GET /statements
     public function validateGetRequest()
     {
-        $data = $this->getContainer()->get('parser')->getData()->getParameters();
+        $data = $this->getContainer()->get('parser')->getData()->getQueryParams();
 
         foreach ($data as $key => $value) {
             $decodedValue = json_decode($value);
@@ -72,7 +72,7 @@ class Statement extends Validator
     public function validatePutRequest()
     {
         // Then do specific validation
-        $data = $this->getContainer()->get('parser')->getData()->getParameters();
+        $data = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $validator = $this->validateBySchemaFragment($data, 'putParameters');
         if (!$validator->isValid()) {
             $this->throwSchemaErrors('PUT parameters do not validate.', $validator);

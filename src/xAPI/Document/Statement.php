@@ -43,7 +43,7 @@
 namespace API\Document;
 
 use Ramsey\Uuid\Uuid;
-use League\Url\Url;
+use Slim\Http\Uri;
 use API\Controller;
 use API\Document;
 use API\DocumentState;
@@ -248,9 +248,9 @@ class Statement extends Document
             }
             foreach ($this->data->statement->attachments as &$attachment) {
                 if (!isset($attachment->fileUrl)) {
-                    $url = Url::createFromUrl($baseUrl);
-                    $url->getQuery()->modify(['sha2' => $attachment->sha2]);
-                    $attachment->fileUrl = $url->__toString();
+                    $uri = Uri::createFromString($baseUrl);
+                    $uri = $uri->withQuery('sha2='.$attachment->sha2);
+                    $attachment->fileUrl = (string) $uri;
                 }
             }
         }

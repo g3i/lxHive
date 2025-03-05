@@ -28,7 +28,7 @@ use API\Service;
 use API\Controller;
 use Slim\Http\Request;
 use API\Util;
-use League\Url\Url;
+use Slim\Http\Uri;
 use API\HttpException as Exception;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Collection;
@@ -89,7 +89,7 @@ class OAuth extends Service implements AuthInterface
         // CSRF protection
         $_SESSION['csrfToken'] = Util\OAuth::generateCsrfToken();
 
-        $parameters = (object)$this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = (object)$this->getContainer()->get('parser')->getData()->getQueryParams();
 
         $requiredParams = ['response_type', 'client_id', 'redirect_uri', 'scope'];
         $this->validateRequiredParams($parameters, $requiredParams);
@@ -122,7 +122,7 @@ class OAuth extends Service implements AuthInterface
      */
     public function authorizePost()
     {
-        $params = $this->getContainer()->get('parser')->getData()->getParameters();
+        $params = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $postParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $this->validateCsrf($postParams);
@@ -142,10 +142,12 @@ class OAuth extends Service implements AuthInterface
 
             $code = Util\OAuth::generateToken();
             $token = $this->addToken($expiresAt, $userDocument, $clientDocument, $scopeDocuments, $code);
-            $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
-            $redirectUri->getQuery()->modify(['code' => $token->getCode()]); //We could also use just $code
+            $redirectUri = Uri::createFromString($params->get('redirect_uri'));
+            $redirectUri->getQuery()->modify(['code' => $token->getCode()]); // We could also use just $code
+
             return $redirectUri;
         } elseif ($postParams->get('action') === 'deny') {
+
             $redirectUri = Url::createFromUrl($params->get('redirect_uri'));
             $redirectUri->getQuery()->modify(['error' => 'User denied authorization!']);
             return $redirectUri;

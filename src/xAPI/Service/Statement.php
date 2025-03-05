@@ -38,7 +38,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
 
         $statementResult = $this->getStorage()->getStatementStorage()->get($parameters);
 
@@ -130,7 +130,7 @@ class Statement extends Service
         }
 
         // Single
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $body = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $statementResult = $this->getStorage()->getStatementStorage()->put($parameters, $body);

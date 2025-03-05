@@ -25,6 +25,9 @@
 // Require the autoloader
 require __DIR__.'/../vendor/autoload.php';
 
+// #241 DEV TODO remove
+error_reporting(E_ALL ^ E_DEPRECATED);
+
 use API\Bootstrap;
 
 $bootstrapper = Bootstrap::factory(Bootstrap::Web);

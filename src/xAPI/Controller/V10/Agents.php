@@ -42,7 +42,7 @@ class Agents extends Controller
         // TODO 0.11.x request validation
 
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $params = new Collection($request->getQueryParams());
 
         $agent = $params->get('agent');
         $agent = json_decode($agent, true);

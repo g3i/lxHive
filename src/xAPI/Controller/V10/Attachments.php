@@ -50,7 +50,7 @@ class Attachments extends Controller
         // Check authentication
         $this->getContainer()->get('auth')->requirePermission('attachments');
 
-        $params = new Util\Collection($request->getParameters());
+        $params = new Util\Collection($request->getQueryParams());
         if (!$params->has('sha2')) {
             throw new \Exception('Missing sha2 parameter!', Controller::STATUS_BAD_REQUEST);
         }

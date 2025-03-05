@@ -57,13 +57,18 @@ class ProjectedStatement extends View
 
         if ($statementResult->getHasMore()) {
             $latestId = end($idArray);
-            $latestId = $latestId->__toString();
+            $latestId = (string) $latestId;
+
+            $uri = $this->getContainer()->get('request')->getUri();
+
             if ($statementResult->getSortDescending()) {
-                $this->getContainer()->get('url')->getQuery()->modify(['until_id' => $latestId]);
+                $uri = $uri->withQuery('until_id='.$latestId);
             } else { //Ascending
-                $this->getContainer()->get('url')->getQuery()->modify(['since_id' => $latestId]);
+                $uri = $uri->withQuery('since_id='.$latestId);
             }
-            $view['more'] = $this->getContainer()->get('url')->getRelativeUrl();
+
+            $relativeUri = $uri->withScheme('')->withHost('')->withUserInfo('')->withPort(null);
+            $view['more'] = (string) $relativeUri;
         }
 
         $view['statements'] = array_values($resultArray);

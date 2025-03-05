@@ -29,15 +29,14 @@ use API\HttpException;
 use API\Controller;
 
 /**
- * HTTP request parser
+ * HTTP request parser, handling with both application/json and multipart/mixed requests
+ * @see https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#15-content-types
+ *
+ * TODO This is a Slim 2.* leftover, needs to be replaced with an extended PSR7 compliant parser and storage
  */
-class PsrRequest
+class RequestParser
 {
-    protected $parameters;
-
     protected $parts;
-
-    protected $payload;
 
     /**
      * constructor
@@ -96,11 +95,13 @@ class PsrRequest
         $preamble = array_shift($bodies);
         $epilogue = array_pop($bodies);
         $requestParts = [];
+
         foreach ($bodies as $body) {
             $isHeader = true;
             $headers = [];
             $content = [];
             $data = explode(PHP_EOL, $body);
+
             foreach ($data as $i => $line) {
                 if (0 == $i) {
                     // Skip the first line
@@ -131,8 +132,8 @@ class PsrRequest
 
             $parserResult = new ParserResult();
 
-            $parameters = $request->getQueryParams();
-            $parserResult->setParameters($parameters);
+            $params = $request->getQueryParams();
+            $parserResult->setQueryParams($params);
 
             $parsedHeaders = $this->parseRequestHeaders($request);
             $parserResult->setHeaders($headers + $parsedHeaders);
@@ -200,12 +201,12 @@ class PsrRequest
     private function parseSingleRequest($request)
     {
         $parserResult = new ParserResult();
-        $parameters = $request->getQueryParams();
+        $params = $request->getQueryParams();
         // CORS override!
-        if (isset($parameters['method'])) {
-            mb_parse_str($request->getUri()->getQuery(), $parameters);
+        if (isset($params['method'])) {
+            mb_parse_str($request->getUri()->getQuery(), $params);
         }
-        $parserResult->setParameters($parameters);
+        $parserResult->setQueryParams($params);
 
         $headers = $request->getHeaders();
 

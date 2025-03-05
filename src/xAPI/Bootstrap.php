@@ -27,13 +27,12 @@ namespace API;
 use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
 use API\Controller;
-use League\Url\Url;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
 use API\Service\Auth as AuthService;
-use API\Parser\PsrRequest as PsrRequestParser;
+use API\Parser\RequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 use Slim\DefaultServicesProvider;
@@ -41,6 +40,7 @@ use Slim\App as SlimApp;
 use API\Controller\Error;
 use API\Config;
 use API\Console\Application as CliApp;
+use Twig\Extension\DebugExtension as TwigDebugExtension;
 
 /**
  * Bootstrap lxHive
@@ -317,20 +317,6 @@ class Bootstrap
         $slimDefaultServiceProvider = new DefaultServicesProvider();
         $slimDefaultServiceProvider->register($container);
 
-        // 5. Insert URL object
-        // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
-        // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
-        try {
-            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove and parse native
-            if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
-                $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
-            } else {
-                $container['url'] = Url::createFromServer($_SERVER);
-            }
-        } catch (\RuntimeException $e) {
-            // See comment above
-        }
-
         $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
         $defaultLevel = Config::get(['log', 'level'], Logger::DEBUG);
         $defaultLog = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
@@ -410,7 +396,7 @@ class Bootstrap
 
         // Parser
         $container['parser'] = function ($container) {
-            $parser = new PsrRequestParser($container['request']);
+            $parser = new RequestParser($container['request']);
 
             return $parser;
         };
@@ -429,7 +415,7 @@ class Bootstrap
                 'debug' => 'true',
                 'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
-            $twigDebug = new \Twig_Extension_Debug();
+            $twigDebug = new TwigDebugExtension();
             $view->addExtension($twigDebug);
 
             return $view;
@@ -546,7 +532,6 @@ class Bootstrap
         }
 
         $container = self::$containerInstance;
-
         $app = new SlimApp($container);
 
         // Slim parser override and CORS compatibility layer (Internet Explorer)

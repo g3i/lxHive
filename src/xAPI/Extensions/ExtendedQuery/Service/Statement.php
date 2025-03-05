@@ -41,8 +41,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
-
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $response = $this->statementQuery($parameters);
 
         return $response;
@@ -51,7 +50,7 @@ class Statement extends Service
     public function statementPost()
     {
         // Validation has been completed already - everyhing is assumed to be valid
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $bodyParams = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $allParams = (object)array_merge((array)$parameters, (array)$bodyParams);
