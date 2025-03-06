@@ -34,7 +34,7 @@ users:
       password: '<INSERT>'
       permissions:
           - super
-      _basic_auth: true
+      basic_auth: true
     - name: student
       description: student account
       email: student@student.student
@@ -48,7 +48,12 @@ users:
          - define
          - attachments
          - ext/extendedquery/statements
-      _basic_auth: true
+      # recommended for production: let the app genereate a fresh key:secret pair
+      basic_auth: true
+      # development only:
+      # basic_auth:
+      #     key: '<STRONG-AND-SECRET-KEY>'
+      #     secret: '<STRONG-AND-SECRET-SECRET>'
 
 oauth:
     - name: example
