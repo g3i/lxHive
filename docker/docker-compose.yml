@@ -1,11 +1,3 @@
-####
-# https://docs.docker.com/reference/compose-file/build/#
-# docker compose build [--no-cache]
-#  || docker compose up [-d] [--force-recreate]
-# docker exec -it lxhive bash
-# ./cleanup
-####
-
 name: lxhive
 
 services:
@@ -29,10 +21,9 @@ services:
             - php
     mongo:
         # https://hub.docker.com/_/mongo
-        # - php7 mongodb driver requires mongo >= 4.0
         container_name: lxdata
         restart: unless-stopped
-        image: mongo:4.4
+        image: mongo
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
             MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
