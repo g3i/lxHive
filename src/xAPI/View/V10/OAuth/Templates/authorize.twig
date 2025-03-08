@@ -22,19 +22,21 @@
                 <form class="pure-form pure-form-aligned" action="" method="POST">
                     <fieldset>
                         <h2>Authorize application <span>{{ client.name }}?</h2>
-                        <h5>Logged in as {{ user.email }}</h5>
-                        {% if branding.enabled and branding.header %}
-                            {{ branding.header }}
-                        {% endif %}
-                        <div class="pure-control-group">
-                            This application will be able to:</p>
-                            <ul>
-                            {% for scope in scopes %}
-                                <li><i class="icon-ok"></i>{{ scope.description }}</li>
-                            {% else %}
-                                <li>Do nothing (you must specify a scope parameter!).</li>
-                            {% endfor %}
-                            </ul>
+                        <div class="form-row text-left">
+                            <h5>Logged in as {{ user.email }}</h5>
+                            {% if branding.enabled and branding.header %}
+                                {{ branding.header }}
+                            {% endif %}
+                        </div>
+                        <div class="form-row text-left">
+                                This application will be able to:</p>
+                                <ul>
+                                {% for scope in scopes %}
+                                    <li><i class="icon-ok"></i>{{ scope.description }}</li>
+                                {% else %}
+                                    <li>Do nothing (you must specify a scope parameter!).</li>
+                                {% endfor %}
+                                </ul>
                         </div>
                         <input type="hidden" name="csrfToken" value="{{ csrfToken }}"/>
                         <div class="pure-controls">
@@ -43,7 +45,6 @@
                         </div>
                     </fieldset>
                 </form>
-
             </div>
 
             <div class="pure-u-1 pure-u-1-3"></div>
