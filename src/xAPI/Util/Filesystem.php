@@ -25,9 +25,11 @@
 namespace API\Util;
 
 use League\Flysystem\Filesystem as FS;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
+
 use Aws\S3\S3Client;
-use League\Flysystem\AwsS3v3\AwsS3Adapter as S3Adapter;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 use API\Controller;
 use API\Config;
@@ -35,34 +37,58 @@ use API\Config;
 // Maybe move this to API/Service and remove ODM dependency on Services. Check out the semantics of this...
 class Filesystem
 {
+    /**
+     * Build a path to a storage dir, based on 'publicRoot' (see Bootstrap:: initConfig())
+     * @param array config
+     *
+     * @return string
+     */
+    public static function getStoragePath($config) {
+        $root_dir = $config['local']['root_dir'];
+        $public_root = Config::get('publicRoot', '');
+        return $public_root.'/'.$root_dir;
+    }
+
+    /**
+     * Generate al FilesystemAdapter (local aws)
+     * @param array config
+     *
+     * @return League\Flysystem\Local\FilesystemAdapter
+     */
     public static function generateAdapter($config)
     {
+        // Customize how visibility is converted to unix permissions
+        $visibility = PortableVisibilityConverter::fromArray([
+            'file' => [
+                'public' => 0640,
+                'private' => 0604,
+            ],
+            'dir' => [
+                'public' => 0740,
+                'private' => 7664,
+            ],
+        ]);
         $typeInUse = $config['in_use'];
+
         if ($typeInUse  === 'local') {
+
             $root = Config::get('publicRoot');
             $filesystem = new FS(
-                new Local(
-                    $root.'/'.$config['local']['root_dir'],
-                    \LOCK_EX,
-                    Local::DISALLOW_LINKS,
-                    [
-                        'file' => [
-                            'public' => 0744,
-                            'private' => 0700,
-                        ],
-                        'dir' => [
-                            'public' => 0755,
-                            'private' => 0700,
-                        ]
-                    ]
+                new LocalFilesystemAdapter(
+                    self::getStoragePath($config),
+                    $visibility,
+                    \LOCK_EX
                 )
             );
+
         } elseif ($typeInUse === 's3') {
+
             $client = S3Client::factory(array(
                 'key' => $config['s3']['key'],
                 'secret' => $config['s3']['secret'],
             ));
-            $filesystem = new FS(new S3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));
+            $filesystem = new FS(new AwsS3Adapter($client, $config['s3']['bucket_name'], $config['s3']['prefix']));
+
         } else {
             throw new \Exception('Server error.', Controller::STATUS_INTERNAL_SERVER_ERROR);
         }
@@ -73,7 +99,6 @@ class Filesystem
     public static function generateSHA2($rawData)
     {
         $hash = hash('sha256', $rawData);
-
         return $hash;
     }
 }

@@ -26,6 +26,7 @@ namespace API;
 
 use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use API\Controller;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
@@ -41,6 +42,8 @@ use API\Controller\Error;
 use API\Config;
 use API\Console\Application as CliApp;
 use Twig\Extension\DebugExtension as TwigDebugExtension;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
  * Bootstrap lxHive
@@ -224,7 +227,7 @@ class Bootstrap
 
         Config::factory($defaults);
 
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
+        $filesystem = new Filesystem(new LocalFilesystemAdapter($appRoot));
         $yamlParser = new YamlParser();
 
         try {
@@ -392,7 +395,7 @@ class Bootstrap
             };
         };
 
-        $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
+        $container['eventDispatcher'] = new EventDispatcher();
 
         // Parser
         $container['parser'] = function ($container) {
@@ -628,8 +631,9 @@ class Bootstrap
 
         foreach ($routes as $pattern => $route) {
             // register single route with methods and controller
-            $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {
+            $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {error_log('-----------------------------1');
                 $resource = Controller::load($container, $request, $response, $route['controller']);
+
                 // We could also throw an Exception on load and catch it here...but that might have a performance penalty? It is definitely a cleaner, more proper option.
                 if ($resource instanceof \Psr\Http\Message\ResponseInterface) {
                     return $resource;
