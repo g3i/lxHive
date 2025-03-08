@@ -10,7 +10,7 @@ class ActivityProfileTest extends MongoTestCase
 {
     private $collection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->collection = ActivityProfile::COLLECTION_NAME;
     }
@@ -37,7 +37,11 @@ class ActivityProfileTest extends MongoTestCase
         $indexes = $this->command([
             'listIndexes' => $this->collection
         ])->toArray();
-        $configured = array_keys($coll->getIndexes());
+
+        $configured = array_map(function($i) {
+            return $i['name'];
+        }, $coll->getIndexes());
+
         $installed = array_map(function($i) {
             return $i->name;
         }, $indexes);
@@ -45,5 +49,8 @@ class ActivityProfileTest extends MongoTestCase
         foreach ($configured as $name) {
             $this->assertContains($name, $installed);
         }
+
+         // #241 avoid 'risky' test flag, above tests are left for future reference
+        $this->assertEquals(count($configured), 0, 'no indexes are defined for this collection');
     }
 }

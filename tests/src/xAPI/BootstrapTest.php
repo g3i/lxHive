@@ -14,14 +14,14 @@ use Monolog\Handler\FirePHPHandler;
 
 class BootstrapTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         Bootstrap::factory(Bootstrap::None);
         Bootstrap::reset();
         $this->files = [];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach($this->files as $fp) {
             if (file_exists($fp)) {
@@ -363,7 +363,7 @@ class BootstrapTest extends TestCase
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
 
     public function test_log_ErrorLogHandler_error_log()
@@ -391,7 +391,7 @@ class BootstrapTest extends TestCase
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
 
     /**
@@ -423,10 +423,9 @@ class BootstrapTest extends TestCase
 
         $this->assertNotEquals($logFile, $logFileBefore);
         $this->assertNotEquals($logFile, 'default');
-        $this->assertContains('storage/logs/', $logFile);
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
 }

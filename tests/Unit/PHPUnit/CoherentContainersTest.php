@@ -33,12 +33,13 @@ class CoherentContainersTest extends TestCase
 
     /**
      * @depends testSlimContainerInterfaceHandle
-     * @expectedException PHPUnit_Framework_Error
      */
     public function testApiContainerObjectHandle()
     {
         $container = new ApiContainer();
         $container['testService'] = 'string';
+
+        $this->expectException('PHPUnit\Framework\ExpectationFailedException');
         $this->assertEquals('string', $container->testService);
     }
 }
