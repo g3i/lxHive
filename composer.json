@@ -7,7 +7,7 @@
     "homepage": "http://www.lxhive.com/",
     "require": {
         "slim/slim": "3.*",
-        "ramsey/uuid": "3.*",
+        "ramsey/uuid": "^4.7",
         "league/flysystem": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "symfony/console": "*",

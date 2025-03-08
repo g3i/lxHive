@@ -50,7 +50,7 @@ class LrsReportCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $report = new LrsReport();
         $result = $report->check();
@@ -81,6 +81,8 @@ class LrsReportCommand extends Command
             $s[] = $status.': '.(($count > 0)  ? $this->style($status, $count) : $count);
         }
         $output->writeln(implode(', ', $s));
+
+        return Command::SUCCESS;
     }
 
     /**

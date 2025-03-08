@@ -80,7 +80,7 @@ class UserCreateCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -185,5 +185,7 @@ class UserCreateCommand extends Command
         $io->text('or');
         $io->text('<info> --> </info> NEXT: Create an oAuth token with <comment>./X oauth:client:create</comment>');
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

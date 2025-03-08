@@ -47,7 +47,7 @@ class BasicTokenExpireCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $authAdmin = new Auth($this->getContainer());
         $keys = $authAdmin->listBasicTokenIds();
@@ -61,12 +61,13 @@ class BasicTokenExpireCommand extends Command
         // 2. confirm
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
         if (!$helper->ask($input, $output, $question)) {
-            return;
+            return Command::SUCCESS;
         }
 
         //3. expire document
         $authAdmin->expireBasicToken($key);
 
         $output->writeln('<info>Token successfully expired!</info>');
+        return Command::SUCCESS;
     }
 }
