@@ -8,7 +8,6 @@
     "require": {
         "slim/slim": "3.*",
         "ramsey/uuid": "^4.7",
-        "monolog/monolog": "^1.21",
         "symfony/event-dispatcher": "^7.2",
         "ext-mongodb": "*",
         "justinrainbow/json-schema": "^6.2",
@@ -17,7 +16,8 @@
         "symfony/yaml": "^7.2",
         "pimple/pimple": "^3.5",
         "psr/container": "^1.1",
-        "slim/twig-view": "^2.5"
+        "slim/twig-view": "^2.5",
+        "monolog/monolog": "^3.8"
     },
     "autoload": {
         "psr-4": {
