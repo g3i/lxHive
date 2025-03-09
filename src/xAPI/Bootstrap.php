@@ -320,6 +320,9 @@ class Bootstrap
         $slimDefaultServiceProvider = new DefaultServicesProvider();
         $slimDefaultServiceProvider->register($container);
 
+        $debug = Config::get('debug', false);
+        $container['settings']['displayErrorDetails'] = $debug;
+
         $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
         $defaultLevel = Config::get(['log', 'level'], Logger::DEBUG);
         $defaultLog = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
@@ -415,7 +418,7 @@ class Bootstrap
         // Merge in specific Web settings
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
-                'debug' => 'true',
+                'debug' => $debug,
                 'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
             $twigDebug = new TwigDebugExtension();
