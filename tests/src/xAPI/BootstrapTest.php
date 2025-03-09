@@ -283,12 +283,12 @@ class BootstrapTest extends TestCase
         foreach($handlers as $handler) {
             if ($handler instanceof StreamHandler) {
                 // custom level
-                $this->assertEquals($handler->getLevel(), Logger::WARNING);
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
                 $tick++;
             }
             if ($handler instanceof ErrorLogHandler) {
                 // default level
-                $this->assertEquals($handler->getLevel(), Logger::WARNING);
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
                 $tick++;
             }
         }
@@ -316,7 +316,7 @@ class BootstrapTest extends TestCase
         $handlers = $logger->getHandlers();
         $tick = 0;
         foreach($handlers as $handler) {
-            $level = $handler->getLevel();
+            $level = $handler->getLevel()->value;
             // $name = $logger->getLevelName($level);
 
             if ($handler instanceof StreamHandler) {
