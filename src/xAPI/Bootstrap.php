@@ -321,7 +321,9 @@ class Bootstrap
         $slimDefaultServiceProvider->register($container);
 
         $debug = Config::get('debug', false);
-        $container['settings']['displayErrorDetails'] = $debug;
+        if ($container->has('settings')) {
+            $container['settings']['displayErrorDetails'] = $debug;
+        }
 
         $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
         $defaultLevel = Config::get(['log', 'level'], Logger::DEBUG);

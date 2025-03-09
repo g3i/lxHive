@@ -11,13 +11,13 @@
         "monolog/monolog": "^1.21",
         "symfony/event-dispatcher": "^7.2",
         "ext-mongodb": "*",
-        "pimple/pimple": "^3.0",
-        "symfony/yaml": "^4.4",
-        "psr/container": "^1.1",
         "justinrainbow/json-schema": "^6.2",
-        "slim/twig-view": "^2.5",
         "league/flysystem": "^3.0",
-        "symfony/console": "^7.2"
+        "symfony/console": "^7.2",
+        "symfony/yaml": "^7.2",
+        "pimple/pimple": "^3.5",
+        "psr/container": "^1.1",
+        "slim/twig-view": "^2.5"
     },
     "autoload": {
         "psr-4": {

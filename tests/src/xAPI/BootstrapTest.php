@@ -350,14 +350,12 @@ class BootstrapTest extends TestCase
                     'stream' => $logFile,
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
         $logger = $bootstrap->initWebContainer()->get('logger');
 
         $logger->error('The time is '.$token);
-        // print("\n => logFile: ".$logFile."\n".file_get_contents($logFile)."\n");
 
         $this->assertEquals(Config::get(['log', 'StreamHandler', 'stream']), $logFile);
         $this->assertFileExists($logFile);
@@ -378,7 +376,6 @@ class BootstrapTest extends TestCase
                     'error_log' => $logFile,
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
@@ -411,7 +408,6 @@ class BootstrapTest extends TestCase
                     'error_log' => 'default',
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
@@ -419,7 +415,6 @@ class BootstrapTest extends TestCase
         $logFile = ini_get('error_log');
 
         $logger->error('The time is '.$token);
-        // print("\n => logFile: ".$logFile."\n".file_get_contents($logFile)."\n");
 
         $this->assertNotEquals($logFile, $logFileBefore);
         $this->assertNotEquals($logFile, 'default');
@@ -428,4 +423,5 @@ class BootstrapTest extends TestCase
         $contents = file_get_contents($logFile);
         $this->assertStringContainsString($token, $contents, 'contains log message');
     }
+
 }
