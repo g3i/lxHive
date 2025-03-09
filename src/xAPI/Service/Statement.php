@@ -78,7 +78,7 @@ class Statement extends Service
 
                 $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
-                $fsAdapter->put($hash, $attachmentBody);
+                $fsAdapter->write($hash, $attachmentBody);
             }
         }
 
@@ -126,7 +126,7 @@ class Statement extends Service
 
                 $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
-                $fsAdapter->put($hash, $attachmentBody);
+                $fsAdapter->write($hash, $attachmentBody);
             }
         }
 

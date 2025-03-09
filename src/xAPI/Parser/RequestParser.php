@@ -142,7 +142,7 @@ class RequestParser
 
             $parserResult->setRawPayload($content);
 
-            if (Util\Parser::isApplicationJson(headers['content-type'][0])) {
+            if (Util\Parser::isApplicationJson($headers['content-type'][0])) {
                 $content = json_decode($content);
 
                 // Some clients escape the JSON twice - handle them
