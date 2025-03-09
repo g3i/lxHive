@@ -631,9 +631,8 @@ class Bootstrap
 
         foreach ($routes as $pattern => $route) {
             // register single route with methods and controller
-            $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {error_log('-----------------------------1');
+            $app->map($route['methods'], $pattern, function ($request, $response, $args) use ($container, $route) {
                 $resource = Controller::load($container, $request, $response, $route['controller']);
-
                 // We could also throw an Exception on load and catch it here...but that might have a performance penalty? It is definitely a cleaner, more proper option.
                 if ($resource instanceof \Psr\Http\Message\ResponseInterface) {
                     return $resource;
