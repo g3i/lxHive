@@ -11,7 +11,7 @@ class SetupTest extends TestCase
 {
     const ConfigDir = './src/xAPI/Config/';
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!is_writable(self::ConfigDir)) {
             throw new \RuntimeException(self::ConfigDir.' is not a writable directory.');
@@ -19,7 +19,7 @@ class SetupTest extends TestCase
     }
 
     // cleanup after tests
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists(self::ConfigDir.'UnitTest.yml')) {
             unlink(self::ConfigDir.'UnitTest.yml');

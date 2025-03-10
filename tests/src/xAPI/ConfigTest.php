@@ -11,7 +11,7 @@ use InvalidArgumentException;
 class ConfigTest extends TestCase
 {
 
-    protected function setUp()
+    protected function setUp(): void
     {
         Bootstrap::factory(Bootstrap::None);
         Bootstrap::reset();
@@ -208,7 +208,8 @@ class ConfigTest extends TestCase
 
     public function testReset()
     {
-        // @see testFactoryResetByBootstrap
+        // @see testFactoryResetByBootstrap,
+        $this->assertTrue(true, 'It was tested before');
     }
 
 }

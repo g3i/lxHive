@@ -37,7 +37,7 @@ class ActivityState extends Service
     public function activityStateGet()
     {
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $params = new Collection($request->getQueryParams());
 
         $documentResult = $this->getStorage()->getActivityStateStorage()->getFiltered($params);
 
@@ -50,11 +50,10 @@ class ActivityState extends Service
     public function activityStatePost()
     {
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $params = new Collection($request->getQueryParams());
 
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getRawPayload();
-
         $params->set('headers', $request->getHeaders());
 
         $documentResult = $this->getStorage()->getActivityStateStorage()->post($params, $rawBody);
@@ -70,7 +69,7 @@ class ActivityState extends Service
     public function activityStatePut()
     {
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $params = new Collection($request->getQueryParams());
 
         // Validation has been completed already - everything is assumed to be valid
         $rawBody = $request->getRawPayload();
@@ -90,7 +89,7 @@ class ActivityState extends Service
     public function activityStateDelete()
     {
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $params = new Collection($request->getQueryParams());
 
         $params->set('headers', $request->getHeaders());
 

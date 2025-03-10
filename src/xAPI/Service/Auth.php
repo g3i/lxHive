@@ -214,7 +214,7 @@ class Auth extends Service
     public function requirePermission($name)
     {
         $permissions = $this->mergeInheritance($this->permissions);
-        
+
         // TODO 0.10.x Issue warning to logger
         if (!is_string($name)) {
             throw new \RunTimeException('requirePermission: supplied name is not a string');

@@ -29,6 +29,7 @@ function usage () {
     echo "    -l|list    List containers"
     echo "    -L|logs    lxhive logs"
     echo "    -s|shell   Shell access to lxhive container"
+    echo "    -m|mongo   Shell access to mongo container"
     echo
 }
 
@@ -70,6 +71,9 @@ for arg in "${@}"; do
     if [[ "${arg}" == "shell"    || "${arg}" == "-s" ]]; then
         do_shell_lxhive=1
     fi
+    if [[ "${arg}" == "mongo"    || "${arg}" == "-m" ]]; then
+        do_shell_mongo=1
+    fi
 done
 
 function list() {
@@ -102,6 +106,10 @@ function logs() {
     echo -e "\e[33m------------------------\e[0m"
 }
 
+function shell_mongo() {
+    docker exec -w /data -it lxdata bash
+}
+
 function shell_lxhive() {
     docker exec -u www-data -w /api/lxHive -it lxhive bash
 }
@@ -111,12 +119,12 @@ function install_lxhive() {
 }
 
 # always
-sudo mkdir -p ../storage/logs ../storage/files
+sudo mkdir -p ../storage/logs ../storage/files ../data/mongodump
 ownership ../storage
+ownership ../data
 
 if [[ $do_compose_down -eq 1 ]]; then
     docker compose down
-    ownership ../storage
 fi
 
 if [[ $do_clear_data -eq 1 ]]; then
@@ -130,7 +138,6 @@ fi
 
 if [[ $do_compose_up -eq 1 ]]; then
     echo " - run: compose up${compose_args}"
-    ownership ../storage
     docker compose up ${compose_args} && list
 fi
 
@@ -154,6 +161,11 @@ if [[ $do_shell_lxhive -eq 1 ]]; then
     shell_lxhive
 fi
 
+if [[ $do_shell_mongo -eq 1 ]]; then
+    echo " - run: shell access to mongo container"
+    shell_mongo
+fi
+
 ## actions
 
 echo -e "\e[33m------------------------\e[0m"
@@ -164,7 +176,7 @@ echo -e "\e[33m------------------------\e[0m"
 echo -e "Next step:"
 
 PS3="Select step: "
-options=("Shell into lxHive" "List services" "Stop services" "Start services" "View lxhive logs" "Quit")
+options=("Shell into lxHive" "Shell into Mongo" "List services" "Stop services" "Start services" "View lxhive logs" "Quit")
 select opt in "${options[@]}"
 
 do
@@ -172,6 +184,10 @@ do
         "Shell into lxHive")
             echo  "- accessing container"
             shell_lxhive
+            break;;
+        "Shell into Mongo")
+            echo  "- accessing container"
+            shell_mongo
             break;;
         "List services")
             list

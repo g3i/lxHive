@@ -10,11 +10,11 @@ class StreamContextTest extends TestCase
     protected $lrs;
     protected $mbox;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!class_exists('\Tests\Config')) {
             $this->markTestIncomplete(
-              'class \Tests\Config does not exist or is invalid.'
+                'class \Tests\Config does not exist or is invalid.'
             );
             return;
         }

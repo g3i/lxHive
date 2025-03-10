@@ -137,7 +137,7 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
         // TODO 0.11.x: optimise (upsert)
         // rawPayload input is a stream...read it
         $profileObject = (string)$profileObject;
-        
+
         $storage = $this->getContainer()->get('storage');
 
         // Set up the body to be saved
@@ -250,24 +250,10 @@ class ActivityProfile extends Provider implements ActivityProfileInterface, Sche
 
     private function validateDocumentType($document, $contentType)
     {
-        if ($document->getContentType() !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($document->getContentType())) {
             throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
-        if ($contentType !== 'application/json') {
-            throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
-        }
-    }
-
-    private function validateTargetDocumentType($document)
-    {
-        if ($document->getContentType() !== 'application/json') {
-            throw new AdapterException('Original document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
-        }
-    }
-
-    private function validateSourceDocumentType($documentType)
-    {
-        if ($documentType !== 'application/json') {
+        if (! Util\Parser::isApplicationJson($contentType)) {
             throw new AdapterException('Posted document is not JSON. Cannot merge!', Controller::STATUS_BAD_REQUEST);
         }
     }

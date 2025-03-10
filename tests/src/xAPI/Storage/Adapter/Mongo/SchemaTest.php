@@ -51,6 +51,7 @@ class SchemaTest extends MongoTestCase
         $schema = new Schema(Bootstrap::getContainer());
         $schema->install();
         // passed if no exception are thrown by MongoDriver
+        $this->assertTrue(true, 'No exception was thrown');
 
     }
 }

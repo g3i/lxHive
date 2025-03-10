@@ -47,7 +47,7 @@ class BasicTokenDeleteCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $authAdmin = new Auth($this->getContainer());
         $keys = $authAdmin->listBasicTokenIds();
@@ -61,12 +61,13 @@ class BasicTokenDeleteCommand extends Command
         //2. confirm
         $question = new ConfirmationQuestion('Are you sure (y/n): ', false);
         if (!$helper->ask($input, $output, $question)) {
-            return;
+            return Command::SUCCESS;
         }
 
         // 2. delete
         $authAdmin->deleteBasicToken($key);
 
         $output->writeln('<info>Token successfully deleted!</info>');
+        return Command::SUCCESS;
     }
 }

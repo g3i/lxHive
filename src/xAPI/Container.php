@@ -23,11 +23,11 @@
 
 namespace API;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Pimple\Container as PimpleContainer;
 
 /**
- * Lightweight Interop\Container\ContainerInterface compliant implementation of Symfony's Pimple container
+ * Lightweight \Psr\Container\ContainerInterface compliant implementation of Symfony's Pimple container
  *
  * @see \Pimple\Container
  * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md

@@ -48,7 +48,7 @@ class OAuthClientListCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $authAdmin = new Auth($this->getContainer());
         $textArray = $authAdmin->listOAuthClients();
@@ -57,5 +57,7 @@ class OAuthClientListCommand extends Command
         $output->writeln('<info>Clients successfully fetched!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+
+        return Command::SUCCESS;
     }
 }

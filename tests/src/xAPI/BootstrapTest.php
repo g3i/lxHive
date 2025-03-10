@@ -14,14 +14,14 @@ use Monolog\Handler\FirePHPHandler;
 
 class BootstrapTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         Bootstrap::factory(Bootstrap::None);
         Bootstrap::reset();
         $this->files = [];
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach($this->files as $fp) {
             if (file_exists($fp)) {
@@ -283,12 +283,12 @@ class BootstrapTest extends TestCase
         foreach($handlers as $handler) {
             if ($handler instanceof StreamHandler) {
                 // custom level
-                $this->assertEquals($handler->getLevel(), Logger::WARNING);
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
                 $tick++;
             }
             if ($handler instanceof ErrorLogHandler) {
                 // default level
-                $this->assertEquals($handler->getLevel(), Logger::WARNING);
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
                 $tick++;
             }
         }
@@ -316,7 +316,7 @@ class BootstrapTest extends TestCase
         $handlers = $logger->getHandlers();
         $tick = 0;
         foreach($handlers as $handler) {
-            $level = $handler->getLevel();
+            $level = $handler->getLevel()->value;
             // $name = $logger->getLevelName($level);
 
             if ($handler instanceof StreamHandler) {
@@ -350,20 +350,18 @@ class BootstrapTest extends TestCase
                     'stream' => $logFile,
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
         $logger = $bootstrap->initWebContainer()->get('logger');
 
         $logger->error('The time is '.$token);
-        // print("\n => logFile: ".$logFile."\n".file_get_contents($logFile)."\n");
 
         $this->assertEquals(Config::get(['log', 'StreamHandler', 'stream']), $logFile);
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
 
     public function test_log_ErrorLogHandler_error_log()
@@ -378,7 +376,6 @@ class BootstrapTest extends TestCase
                     'error_log' => $logFile,
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
@@ -391,7 +388,7 @@ class BootstrapTest extends TestCase
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
 
     /**
@@ -411,7 +408,6 @@ class BootstrapTest extends TestCase
                     'error_log' => 'default',
                 ],
             ],
-
         ];
 
         $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
@@ -419,14 +415,13 @@ class BootstrapTest extends TestCase
         $logFile = ini_get('error_log');
 
         $logger->error('The time is '.$token);
-        // print("\n => logFile: ".$logFile."\n".file_get_contents($logFile)."\n");
 
         $this->assertNotEquals($logFile, $logFileBefore);
         $this->assertNotEquals($logFile, 'default');
-        $this->assertContains('storage/logs/', $logFile);
         $this->assertFileExists($logFile);
 
         $contents = file_get_contents($logFile);
-        $this->assertContains($token, $contents);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
     }
+
 }

@@ -49,7 +49,7 @@ class Command extends SymfonyCommand
     /**
      * Get service container
      *
-     * @return Interop\Container\ContainerInterface
+     * @return \Psr\Container\ContainerInterface
      */
     public function getContainer()
     {

@@ -10,7 +10,7 @@ class ActivityTest extends MongoTestCase
 {
     private $collection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->collection = Activity::COLLECTION_NAME;
     }
@@ -37,7 +37,11 @@ class ActivityTest extends MongoTestCase
         $indexes = $this->command([
             'listIndexes' => $this->collection
         ])->toArray();
-        $configured = array_keys($coll->getIndexes());
+
+        $configured = array_map(function($i) {
+            return $i['name'];
+        }, $coll->getIndexes());
+
         $installed = array_map(function($i) {
             return $i->name;
         }, $indexes);

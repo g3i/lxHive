@@ -6,12 +6,10 @@ src/xAPI/Config/*.yml
 !src/xAPI/Config/Templates/*.yml
 
 # file storage
-storage/logs/*
-storage/files/*
-storage/data/*
-storage/.cache/*
+storage/*
 cache/*
 .cache/*
+*.cache
 
 # data
 data/*

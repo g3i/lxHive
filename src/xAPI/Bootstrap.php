@@ -26,14 +26,14 @@ namespace API;
 
 use Monolog\Logger;
 use Symfony\Component\Yaml\Parser as YamlParser;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use API\Controller;
-use League\Url\Url;
 use API\Util\Collection;
 use API\Service\Auth\OAuth as OAuthService;
 use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Log as LogService;
 use API\Service\Auth as AuthService;
-use API\Parser\PsrRequest as PsrRequestParser;
+use API\Parser\RequestParser;
 use API\Service\Auth\Exception as AuthFailureException;
 use API\Util\Versioning;
 use Slim\DefaultServicesProvider;
@@ -41,6 +41,9 @@ use Slim\App as SlimApp;
 use API\Controller\Error;
 use API\Config;
 use API\Console\Application as CliApp;
+use Twig\Extension\DebugExtension as TwigDebugExtension;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
  * Bootstrap lxHive
@@ -199,7 +202,7 @@ class Bootstrap
 
     /**
      * Get service container
-     * @return \Interop\Container\ContainerInterface|null
+     * @return \Psr\Container\ContainerInterface|null
      */
     public static function getContainer()
     {
@@ -224,7 +227,7 @@ class Bootstrap
 
         Config::factory($defaults);
 
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
+        $filesystem = new Filesystem(new LocalFilesystemAdapter($appRoot));
         $yamlParser = new YamlParser();
 
         try {
@@ -300,35 +303,26 @@ class Bootstrap
 
         // 4. Set up Slim services
         /*
-            * Slim\App expects a container that implements Interop\Container\ContainerInterface
-            * with these service keys configured and ready for use:
-            *
-            *  - settings: an array or instance of \ArrayAccess
-            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
-            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
-            *  - response: an instance of \Psr\Http\Message\ResponseInterface
-            *  - router: an instance of \Slim\Interfaces\RouterInterface
-            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
-            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
-            *  - notFoundHandler: a callable with the signature: function($request, $response)
-            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
-            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+           * Slim\App expects a container that implements Psr\Container\ContainerInterface
+           * with these service keys configured and ready for use:
+           *
+           *  `settings`          an array or instance of \ArrayAccess
+           *  `environment`       an instance of \Slim\Http\Environment
+           *  `request`           an instance of \Psr\Http\Message\ServerRequestInterface
+           *  `response`          an instance of \Psr\Http\Message\ResponseInterface
+           *  `router`            an instance of \Slim\Interfaces\RouterInterface
+           *  `foundHandler`      an instance of \Slim\Interfaces\InvocationStrategyInterface
+           *  `errorHandler`      a callable with the signature: function($request, $response, $exception)
+           *  `notFoundHandler`   a callable with the signature: function($request, $response)
+           *  `notAllowedHandler` a callable with the signature: function($request, $response, $allowedHttpMethods)
+           *  `callableResolver`  an instance of \Slim\Interfaces\CallableResolverInterface
         */
         $slimDefaultServiceProvider = new DefaultServicesProvider();
         $slimDefaultServiceProvider->register($container);
 
-        // 5. Insert URL object
-        // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
-        // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
-        try {
-            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove and parse native
-            if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
-                $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
-            } else {
-                $container['url'] = Url::createFromServer($_SERVER);
-            }
-        } catch (\RuntimeException $e) {
-            // See comment above
+        $debug = Config::get('debug', false);
+        if ($container->has('settings')) {
+            $container['settings']['displayErrorDetails'] = $debug;
         }
 
         $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
@@ -406,11 +400,11 @@ class Bootstrap
             };
         };
 
-        $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
+        $container['eventDispatcher'] = new EventDispatcher();
 
         // Parser
         $container['parser'] = function ($container) {
-            $parser = new PsrRequestParser($container['request']);
+            $parser = new RequestParser($container['request']);
 
             return $parser;
         };
@@ -426,10 +420,10 @@ class Bootstrap
         // Merge in specific Web settings
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
-                'debug' => 'true',
+                'debug' => $debug,
                 'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
-            $twigDebug = new \Twig_Extension_Debug();
+            $twigDebug = new TwigDebugExtension();
             $view->addExtension($twigDebug);
 
             return $view;
@@ -546,11 +540,10 @@ class Bootstrap
         }
 
         $container = self::$containerInstance;
-
         $app = new SlimApp($container);
 
         // Slim parser override and CORS compatibility layer (Internet Explorer)
-        $app->add(function ($request, $response, $next) use ($container) {
+        /* $app->add(function ($request, $response, $next) use ($container) {
 
             $request->registerMediaTypeParser('application/json', function ($input) {
                 return json_decode($input);
@@ -599,7 +592,7 @@ class Bootstrap
             $response = $next($request, $response);
 
             return $response;
-        });
+        });*/
 
         ////
         // ROUTER

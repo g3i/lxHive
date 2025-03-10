@@ -137,7 +137,8 @@ class OAuth extends Provider implements OAuthInterface, SchemaInterface
         $accessTokenDocumentTransformed->setUser($accessTokenUser);
 
         // Set the host - needed for generation of access token authority
-        $host = $this->getContainer()->get('url')->getBaseUrl();
+        $uri = $this->getContainer()->get('request')->getUri();
+        $host = $uri->getBaseUrl();
         $accessTokenDocumentTransformed->setHost($host);
 
         return $accessTokenDocumentTransformed;

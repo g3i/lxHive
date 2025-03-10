@@ -37,7 +37,11 @@ if (!is_file($autoloader)) {
     print("\t composer install --working-dir=".$app_path."\n\n");
     exit(1);
 }
-require $autoloader;
+require_once $autoloader;
+
+// #241 suppress deprecated warnings (Slim 3)
+error_reporting(E_ALL ^ E_DEPRECATED);
+ini_set('display_errors', '0');
 
 use Symfony\Component\Yaml\Yaml;
 
@@ -219,7 +223,7 @@ foreach($cursor as $item) {
     $collections[] = $item->name;
 }
 
-_tick('installed DB '.$db);
+_tick('installed DB '.$db_name);
 _tab('collections: '.json_encode($collections));
 
 // - set up file storage
@@ -244,7 +248,6 @@ if (!$user_entries) {
 }
 
 foreach ($user_entries as $entry) {
-
     // create user
     $validator->validateEmail($entry['email']);
     $validator->validatePassword($entry['password']); ///TODO autogenerate a password instead ?
@@ -261,15 +264,28 @@ foreach ($user_entries as $entry) {
     ];
 
     // optionally, create a basic auth token for this user
-    if ($entry['_basic_auth']) {
+
+    if (!array_key_exists('basic_auth', $entry)) {
+        continue;
+    }
+
+    $basic_auth = $entry['basic_auth'];
+    if ($basic_auth) {
         $name = 'auto_token '.$user->name;
         $description = 'imported from '.$src_path.'/LRS.yml';
         $expiresAt = null ; //TODO
+
         $key = null;
         $secret = null;
+        // setting key and password is not recommended for production
+        if (is_array($basic_auth) && array_key_exists('key', $basic_auth)) {
+            $key = $basic_auth['key'];
+            $secret = $basic_auth['secret'];
+        }
+
         $cursor = $authAdmin->addToken($name, $description, $expiresAt, $user, $permissions, $key, $secret);
         $token = $cursor->toArray(); //stdClass
-        $created_tokens[] = [
+        $created_tokens[$user->email] = [
             'userId' => $token->userId,
             'userName' => $user->name,
             'key' => $token->key,

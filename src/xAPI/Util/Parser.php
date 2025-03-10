@@ -22,15 +22,23 @@
  * file that was distributed with this source code.
  */
 
-// Require the autoloader
-require __DIR__.'/../vendor/autoload.php';
+namespace API\Util;
 
-// #241 suppress deprecated warnings (Slim 3)
-error_reporting(E_ALL ^ E_DEPRECATED);
-ini_set('display_errors', '0');
+class Parser
+{
+    /**
+     * Checks if a (header) string contains application/json
+     * #236 there is a need to unify this simple check as it broke activity state and profile apis whe confronted with expanded ContentTypes, like `application/json; charset=utf-8`
+     * @param string $str
+     *
+     * @return bool
+     */
+    public static function isApplicationJson($str)
+    {
+        if (!is_string($str)) {
+            return false;
+        }
+        return strpos($str, 'application/json') !== false;
+    }
 
-use API\Bootstrap;
-
-$bootstrapper = Bootstrap::factory(Bootstrap::Web);
-$app = $bootstrapper->bootWebApp();
-$app->run();
+}

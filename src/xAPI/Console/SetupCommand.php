@@ -90,7 +90,7 @@ class SetupCommand extends SymfonyCommand
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -114,6 +114,8 @@ class SetupCommand extends SymfonyCommand
         $io->success('Setup complete!');
         $io->text('<info> --> </info> NEXT: Create your first user with <comment>./X user:create</comment>');
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 
     /**
