@@ -543,7 +543,7 @@ class Bootstrap
         $app = new SlimApp($container);
 
         // Slim parser override and CORS compatibility layer (Internet Explorer)
-        $app->add(function ($request, $response, $next) use ($container) {
+        /* $app->add(function ($request, $response, $next) use ($container) {
 
             $request->registerMediaTypeParser('application/json', function ($input) {
                 return json_decode($input);
@@ -592,7 +592,7 @@ class Bootstrap
             $response = $next($request, $response);
 
             return $response;
-        });
+        });*/
 
         ////
         // ROUTER

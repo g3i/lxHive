@@ -582,7 +582,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             // Check for match
             $this->validateStatementIdMatch(Util\xAPI::normalizeUuid($statementObject->id), Util\xAPI::normalizeUuid($parameters['statementId']));
         } else {
-            $statementObject->id = Util\xAPI::normalizeUuid($parameters->get('statementId'));
+            $statementObject->id = Util\xAPI::normalizeUuid($parameters['statementId']);
         }
 
         $statementDocument = $this->insertOne($statementObject);

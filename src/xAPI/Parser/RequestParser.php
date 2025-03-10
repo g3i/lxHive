@@ -91,7 +91,7 @@ class RequestParser
         $boundary = $request->getMediaTypeParams()['boundary'];
 
         // Split bodies by the boundary
-        $bodies = explode('--' . $boundary, (string)$request->getBody());
+        $bodies = explode('--' . $boundary, (string) $request->getBody());
 
         // RFC says, to ignore preamble and epilogue.
         $preamble = array_shift($bodies);
@@ -143,11 +143,11 @@ class RequestParser
             $parserResult->setRawPayload($content);
 
             if (Util\Parser::isApplicationJson($headers['content-type'][0])) {
-                $content = json_decode($content);
+                $content = json_decode($content, false); // object
 
                 // Some clients escape the JSON twice - handle them
                 if (is_string($content)) {
-                    $content = json_decode($content);
+                    $content = json_decode($content, false); // object
                 }
             }
             $parserResult->setPayload($content);
@@ -215,10 +215,12 @@ class RequestParser
         $parsedHeaders = $this->parseRequestHeaders($request);
         $parserResult->setHeaders($parsedHeaders);
 
-        $body = $request->getBody();
+        $body = (string) $request->getBody();
         $parserResult->setRawPayload($body);
 
-        $parsedBody = $request->getParsedBody();
+        // #241 Slim3 parses application/json to assoc arrays
+        // $parsedBody = $request->getParsedBody();
+        $parsedBody = json_decode($body, false);
         $parserResult->setPayload($parsedBody);
 
         return $parserResult;
