@@ -22,7 +22,7 @@
                 #241 Migration to PHP-8.x, ingnore vendors (Slim 3)
                 @see https://docs.phpunit.de/en/12.0/error-handling.html#limiting-issues-to-your-code
             -->
-            <directory>src</directory>
+            <directory>tests</directory>
         </include>
     </source>
 

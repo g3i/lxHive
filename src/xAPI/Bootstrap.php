@@ -25,25 +25,31 @@
 namespace API;
 
 use Monolog\Logger;
+use Slim\App as SlimApp;
+use Slim\DefaultServicesProvider;
+
 use Symfony\Component\Yaml\Parser as YamlParser;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use API\Controller;
-use API\Util\Collection;
-use API\Service\Auth\OAuth as OAuthService;
-use API\Service\Auth\Basic as BasicAuthService;
-use API\Service\Log as LogService;
-use API\Service\Auth as AuthService;
-use API\Parser\RequestParser;
-use API\Service\Auth\Exception as AuthFailureException;
-use API\Util\Versioning;
-use Slim\DefaultServicesProvider;
-use Slim\App as SlimApp;
-use API\Controller\Error;
-use API\Config;
-use API\Console\Application as CliApp;
 use Twig\Extension\DebugExtension as TwigDebugExtension;
+
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnableToReadFile as FileNotFoundException;
+
+use API\Config;
+use API\Controller;
+use API\Controller\Error;
+use API\Parser\RequestParser;
+
+use API\Util\Collection;
+use API\Util\Versioning;
+use API\Console\Application as CliApp;
+
+use API\Service\Log as LogService;
+use API\Service\Auth as AuthService;
+use API\Service\Auth\OAuth as OAuthService;
+use API\Service\Auth\Basic as BasicAuthService;
+use API\Service\Auth\Exception as AuthFailureException;
 
 /**
  * Bootstrap lxHive
@@ -233,7 +239,7 @@ class Bootstrap
         try {
             $contents = $filesystem->read('src/xAPI/Config/Config.yml');
             $config = $yamlParser->parse($contents);
-        } catch (\League\Flysystem\FileNotFoundException $e) {
+        } catch (FileNotFoundException $e) {
             if (self::$mode === self::None) {
                 return;
             } else {
@@ -245,7 +251,7 @@ class Bootstrap
         try {
             $contents = $filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml');
             $config = array_merge($config, $yamlParser->parse($contents));
-        } catch (\League\Flysystem\FileNotFoundException $e) {
+        } catch (FileNotFoundException $e) {
             // Ignore exception
         }
 
@@ -543,7 +549,7 @@ class Bootstrap
         $app = new SlimApp($container);
 
         // Slim parser override and CORS compatibility layer (Internet Explorer)
-        /* $app->add(function ($request, $response, $next) use ($container) {
+        $app->add(function ($request, $response, $next) use ($container) {
 
             $request->registerMediaTypeParser('application/json', function ($input) {
                 return json_decode($input);
@@ -592,7 +598,7 @@ class Bootstrap
             $response = $next($request, $response);
 
             return $response;
-        });*/
+        });
 
         ////
         // ROUTER
