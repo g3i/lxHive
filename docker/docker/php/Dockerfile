@@ -26,7 +26,8 @@ RUN pecl install mongodb apcu \
     && docker-php-ext-enable mongodb apcu opcache
 
 #  - php config
-COPY ./docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+#    Use the default production configuration
+RUN mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
 # - composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

@@ -49,7 +49,7 @@ services:
 
     php:
         # https://hub.docker.com/_/php
-        # - lxhive 0.10.0, running on php-7.4-fpm
+        # - lxhive 0.10.0, running on php-8.4-fpm
         container_name: lxhive
         restart: unless-stopped
         build:
@@ -58,6 +58,7 @@ services:
             args:
                 UID: ${USER_ID}
                 GID: ${GROUP_ID}
+        user: ${USER_ID}:${USER_ID}
         environment:
             LXHIVE_MODE: ${LXHIVE_MODE}
             LXHIVE_MONGO_HOST: mongo
