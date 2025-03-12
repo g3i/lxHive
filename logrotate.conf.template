@@ -1,0 +1,28 @@
+# ------------
+# Template for logrotate configuration file
+# @see https://linux.die.net/man/8/logrotate
+#
+# - Check logrotate configuration and verify if external confs enabled: `cat /etc/logrotate.conf | grep /etc/logrotate.d`.
+#   Ensure the entry exists and is not commented out
+#
+# - Register log dir
+#
+# ```
+# sudo mkdir -p /etc/logrotate.d
+# sudo cp ./logrotate.conf.template /etc/logrotate.d/lxhive.conf
+# # adjust your path:
+# sudo vim /etc/logrotate.d/lxhive.conf
+# ```
+#
+# - test: `logrotate -d /etc/logrotate.d/lxhive.conf`
+# ------------
+
+/abs/path/to/storage/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    size 1M
+    compress
+    delaycompress
+    notifempty
+}

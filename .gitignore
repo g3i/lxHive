@@ -43,3 +43,4 @@ dev.*
 phplint.sh
 
 src/xAPI/View/V10/OAuth/Templates/*
+logrotate.conf
