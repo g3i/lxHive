@@ -155,7 +155,7 @@ abstract class Controller
                                          ->withHeader('Access-Control-Allow-Origin', '*')
                                          ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
-                                         ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
+                                         ->withHeader('Access-Control-Allow-Credentials', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
                                          ->withHeader('X-Experience-API-Version', Config::get(['xAPI', 'latest_version']))
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
@@ -181,7 +181,7 @@ abstract class Controller
                                          ->withHeader('Access-Control-Allow-Origin', '*')
                                          ->withHeader('Access-Control-Allow-Methods', 'POST,PUT,GET,OPTIONS,DELETE')
                                          ->withHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,Authorization,Accept,X-Experience-API-Version,If-Match,If-None-Match')
-                                         ->withHeader('Access-Control-Allow-Credentials-Control-Allow-Origin', 'true')
+                                         ->withHeader('Access-Control-Allow-Credentials', 'true')
                                          ->withHeader('Access-Control-Expose-Headers', 'ETag,Last-Modified,Content-Length,X-Experience-API-Version,X-Experience-API-Consistent-Through')
                                          ->withHeader('X-Experience-API-Version', Config::get(['xAPI', 'latest_version']))
                                          ->withHeader('X-Experience-API-Consistent-Through', $date);
