@@ -5,9 +5,9 @@ The code of this repository (`../`) is being mounted into the `php` container, m
 
 ## Setup
 
-1. Copy `docker/.env.template` to `docker/.env` and fill in your credentials
-2. Copy `import/LRS.yml.template` to `import/LRS.yml` and fill in your initial configuration details
-3. Build and start services
+1. Copy `.env.template` to `.env` and fill in your credentials
+2. Go  to `../import/` and Copy `import/LRS.yml.template` to `import/LRS.yml` and fill in your initial configuration details
+3. Switch back into this directory. build and start services
 
 ```bash
 docker-compose up -d --build
@@ -37,7 +37,7 @@ php ./install.php
 The ports can be customized in `.env`
 
 The source code (`../`) is mounted into the lxHive container and can be edited from outside the container.
-Server logs and MongoDB files are accessible in `../storage/`
+Server logs ~~and MongoDB files~~ are accessible in `../storage/`
 
 ## Helpers
 
