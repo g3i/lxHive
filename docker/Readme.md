@@ -1,20 +1,32 @@
 # Dockerize lxHive for development
 
-Goal: allow development without a global installation of PHP and MongoDB
+Allow development without a global installation of PHP and MongoDB. 
+The code of this repository (`../`) is being mounted into the `php` container, making it easy to develop, test and watch logs.
 
 ## Setup
 
-1. Copy `.env.template` to `.env` and fill in your credentials
+1. Copy `docker/.env.template` to `docker/.env` and fill in your credentials
 2. Copy `import/LRS.yml.template` to `import/LRS.yml` and fill in your initial configuration details
-3. Start services `docker-compose up -d --build`
-4. Enter lxHive container shell and run the LRS install script:
+3. Build and start services
 
+```bash
+docker-compose up -d --build
+
+# alternatively use helper script:
+# ./compose.sh build up shell
+```
+
+4. Enter lxHive container shell and run the LRS install script:
+   
 ``` bash
 # shell access to container
 docker exec -it lxhive bash
-    # active directory should be /api...
-    cd /api/install/
-    php ./install.php
+# active directory should be /api...
+cd /api/install/
+php ./install.php
+
+# alternatively use helper script:
+# ./compose.sh up install
 ```
 
 ## Applications
@@ -32,6 +44,8 @@ Server logs and MongoDB files are accessible in `../storage/`
 The `compose.sh` script aims to make the container administration a bit easier:
 
 ```bash
-# show options
-./compose.sh -h
+./compose.sh -h # show all options
+# examples 
+./compose.sh up shell # start and shell
+./compose.sh down flush build up shell # build containers from ground up and start
 ```
