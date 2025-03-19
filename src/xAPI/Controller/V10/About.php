@@ -96,7 +96,7 @@ class About extends Controller
             } catch (\Exception $e) {
                 // Do nothing
             }
-            return $info;
         }
+        return $info;
     }
 }
