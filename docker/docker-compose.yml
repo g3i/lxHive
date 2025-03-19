@@ -1,0 +1,71 @@
+name: lxhive
+
+services:
+
+    nginx:
+        # https://hub.docker.com/r/nginxinc/nginx-unprivileged
+        container_name: lxserver
+        restart: always
+        build:
+            context: ./
+            dockerfile: docker/nginx/Dockerfile
+            args:
+                UID: ${USER_ID}
+                GID: ${GROUP_ID}
+        ports:
+            - "${LXHIVE_HOST_PORT}:80"
+        volumes:
+            - ../:/api/lxHive
+            - ../storage/logs/nginx:/var/log/nginx
+        links:
+            - php
+    mongo:
+        # https://hub.docker.com/_/mongo
+        container_name: lxdata
+        restart: unless-stopped
+        image: mongo
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+        ports:
+            - "27017:27017"
+        volumes:
+            - ../data/mongodump:/data/mongodump:rw
+
+    mongo-express:
+        # https://hub.docker.com/_/mongo-express
+        image: mongo-express
+        container_name: lxdata_admin
+        restart: unless-stopped
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: ${ME_ADMIN_USERNAME}
+            ME_CONFIG_MONGODB_ADMINPASSWORD: ${ME_ADMIN_PASSWORD}
+            ME_CONFIG_MONGODB_URL: mongodb://${ME_ADMIN_USERNAME}:${ME_ADMIN_PASSWORD}@mongo:27017/?authSource=admin
+            ME_CONFIG_BASICAUTH: false
+        depends_on:
+            - mongo
+        ports:
+            - "${ME_HOST_PORT}:8081"
+
+    php:
+        # https://hub.docker.com/_/php
+        # - lxhive 0.10.0, running on php-8.4-fpm
+        container_name: lxhive
+        restart: unless-stopped
+        build:
+            context: ./
+            dockerfile: docker/php/Dockerfile
+            args:
+                UID: ${USER_ID}
+                GID: ${GROUP_ID}
+        user: ${USER_ID}:${USER_ID}
+        environment:
+            LXHIVE_MODE: ${LXHIVE_MODE}
+            LXHIVE_MONGO_HOST: mongo
+            LXHIVE_MONGO_USERNAME: ${LXHIVE_MONGO_USERNAME}
+            LXHIVE_MONGO_PASSWORD: ${LXHIVE_MONGO_PASSWORD}
+            LXHIVE_MONGO_DATABASE: ${LXHIVE_MONGO_DATABASE}
+        depends_on:
+            - mongo
+        volumes:
+            - ../:/api/lxHive:rw

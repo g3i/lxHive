@@ -27,7 +27,7 @@
                 </ul>
                 {% endif %}
 
-                <form class="pure-form pure-form-stacked pure-form-aligned" action="" method="POST">
+                <form class="pure-form pure-form-stacked" action="" method="POST">
                     <fieldset>
                         <h2> Log in to {{ name }}</h2>
                         {% if branding.enabled and branding.header %}
@@ -35,18 +35,26 @@
                         {% endif %}
                         <input type="hidden" name="csrfToken" value="{{ csrfToken }}"/>
                         <div class="pure-control-group">
-                            <input id="id_username" autocorrect="off" autocapitalize="off" type="text" placeholder="Email" name="email" maxlength="254" />
-                        </div>
-                        <div class="pure-control-group">
-                                <input type="password" placeholder="Password" name="password" id="id_password"/>
-                        </div>
-                        <div class="pure-control-group">
                             <div class="form-row">
-                                <br><input type="checkbox" name="rememberMe" id="id_remember_me_checkbox" /> Remember me
+                                <label for="id_username">Email</label>
+                                <input id="id_username" autocorrect="off" autocapitalize="off" type="text" placeholder="Email" name="email" maxlength="254" />
                             </div>
                         </div>
                         <div class="pure-control-group">
-                            <button id="id_login" type="submit" class="pure-button pure-button-primary button-xlarge">Log In</button>
+                            <div class="form-row">
+                                <label for="id_password">Password</label>
+                                <input type="password" placeholder="Password" name="password" id="id_password"/>
+                            </div>
+                        </div>
+                        <div class="pure-control-group mt-1">
+                            <div class="form-row">
+                                <input type="checkbox" name="rememberMe" id="id_remember_me_checkbox" /> Remember me
+                            </div>
+                        </div>
+                        <div class="pure-control-group mt-1">
+                            <div class="form-row">
+                                <button id="id_login" type="submit" class="pure-button pure-button-primary button-xlarge">Log In</button>
+                            </div>
                         </div>
                     </fieldset>
                 </form>

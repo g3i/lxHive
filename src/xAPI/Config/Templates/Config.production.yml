@@ -1,6 +1,16 @@
 # Production configuration overrides
 log:
-  enabled: true
   handlers: [StreamHandler]
-  name: Production
+  level: WARNING
+  ##
+  # Examples for configuring a log handler individually:
+  #
+  # handlers: [StreamHandler, ErrorLogHandler]
+  # StreamHandler:
+  #   stream: /path/to/my/log/or/streamaddress
+  #   level: INFO
+  # ErrorLogHandler:
+  #   level: DEBUG
+  #   error_log: 'default' or path
+  ##
 debug: false

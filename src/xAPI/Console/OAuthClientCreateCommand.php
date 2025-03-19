@@ -48,7 +48,7 @@ class OAuthClientCreateCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $authAdmin = new Auth($this->getContainer());
         $validator = new Admin\Validator();
@@ -85,5 +85,7 @@ class OAuthClientCreateCommand extends Command
         $output->writeln('<info>OAuth client successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+
+        return Command::SUCCESS;
     }
 }

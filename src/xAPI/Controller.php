@@ -209,7 +209,7 @@ abstract class Controller
     /**
      * Dynamically load a routing resource
      * @param string $version xAPI version
-     * @param \Interop\Container\ContainerInterface service container
+     * @param \Psr\Container\ContainerInterface service container
      * @param \Psr\Http\Message\ServerRequestInterface $request Slim request instance
      * @param \Psr\Http\Message\ResponseInterface $response Slim response instance
      * @param string $resource the main resource

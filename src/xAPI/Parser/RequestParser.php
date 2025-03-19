@@ -25,19 +25,20 @@
 namespace API\Parser;
 
 use Psr\Http\Message\RequestInterface;
-use API\HttpException;
+
+use API\Util;
 use API\Controller;
+use API\HttpException;
 
 /**
- * HTTP request parser
+ * HTTP request parser, handling with both application/json and multipart/mixed requests
+ * @see https://github.com/adlnet/xAPI-Spec/blob/master/xAPI-Communication.md#15-content-types
+ *
+ * TODO This is a Slim 2.* leftover, needs to be replaced with an extended PSR7 compliant parser and storage
  */
-class PsrRequest
+class RequestParser
 {
-    protected $parameters;
-
     protected $parts;
-
-    protected $payload;
 
     /**
      * constructor
@@ -90,17 +91,19 @@ class PsrRequest
         $boundary = $request->getMediaTypeParams()['boundary'];
 
         // Split bodies by the boundary
-        $bodies = explode('--' . $boundary, (string)$request->getBody());
+        $bodies = explode('--' . $boundary, (string) $request->getBody());
 
         // RFC says, to ignore preamble and epilogue.
         $preamble = array_shift($bodies);
         $epilogue = array_pop($bodies);
         $requestParts = [];
+
         foreach ($bodies as $body) {
             $isHeader = true;
             $headers = [];
             $content = [];
             $data = explode(PHP_EOL, $body);
+
             foreach ($data as $i => $line) {
                 if (0 == $i) {
                     // Skip the first line
@@ -131,20 +134,20 @@ class PsrRequest
 
             $parserResult = new ParserResult();
 
-            $parameters = $request->getQueryParams();
-            $parserResult->setParameters($parameters);
+            $params = $request->getQueryParams();
+            $parserResult->setQueryParams($params);
 
             $parsedHeaders = $this->parseRequestHeaders($request);
             $parserResult->setHeaders($headers + $parsedHeaders);
 
             $parserResult->setRawPayload($content);
 
-            if (strpos($headers['content-type'][0], 'application/json') === 0) {
-                $content = json_decode($content);
+            if (Util\Parser::isApplicationJson($headers['content-type'][0])) {
+                $content = json_decode($content, false); // object
 
                 // Some clients escape the JSON twice - handle them
                 if (is_string($content)) {
-                    $content = json_decode($content);
+                    $content = json_decode($content, false); // object
                 }
             }
             $parserResult->setPayload($content);
@@ -200,22 +203,24 @@ class PsrRequest
     private function parseSingleRequest($request)
     {
         $parserResult = new ParserResult();
-        $parameters = $request->getQueryParams();
+        $params = $request->getQueryParams();
         // CORS override!
-        if (isset($parameters['method'])) {
-            mb_parse_str($request->getUri()->getQuery(), $parameters);
+        if (isset($params['method'])) {
+            mb_parse_str($request->getUri()->getQuery(), $params);
         }
-        $parserResult->setParameters($parameters);
+        $parserResult->setQueryParams($params);
 
         $headers = $request->getHeaders();
 
         $parsedHeaders = $this->parseRequestHeaders($request);
         $parserResult->setHeaders($parsedHeaders);
 
-        $body = $request->getBody();
+        $body = (string) $request->getBody();
         $parserResult->setRawPayload($body);
 
-        $parsedBody = $request->getParsedBody();
+        // #241 Slim3 parses application/json to assoc arrays
+        // $parsedBody = $request->getParsedBody();
+        $parsedBody = json_decode($body, false);
         $parserResult->setPayload($parsedBody);
 
         return $parserResult;

@@ -149,7 +149,7 @@ class Validator
 
         foreach ($perms as $name) {
             if (!in_array($name, $aNames)) {
-                throw new AdminException('Invalid permission');
+                throw new AdminException('Invalid permission \''.$name.'\'');
             }
         }
     }

@@ -162,7 +162,7 @@ abstract class Document implements DocumentInterface
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->getData();
     }

@@ -36,7 +36,6 @@ class Login extends View
         $response = $this->getResponse()->withHeader('Content-Type', 'text/html');
         $output = $view->render($response, 'login.twig', $this->getItems());
 
-
         return $output;
     }
 }

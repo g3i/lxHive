@@ -114,7 +114,7 @@ class Config
     /**
      * Set collection item
      *
-     * - New config items can be added freely, @see sConfig::set()
+     * - New config items can be added freely
      *
      * @param array $data collection (assoziative array) of items
      *

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.4/phpunit.xsd"
+         backupGlobals="false"
+         backupStaticProperties="false"
          bootstrap="tests/autoload.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
+
     <testsuites>
         <testsuite name="Unit Tests">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
+
+    <source ignoreIndirectDeprecations="true"
+            restrictNotices="true"
+            restrictWarnings="true">
+        <include>
+            <!--
+                #241 Migration to PHP-8.x, ingnore vendors (Slim 3)
+                @see https://docs.phpunit.de/en/12.0/error-handling.html#limiting-issues-to-your-code
+            -->
+            <directory>tests</directory>
+        </include>
+    </source>
+
     <php>
         <const name="LXHIVE_UNITTEST" value="1"/>
     </php>

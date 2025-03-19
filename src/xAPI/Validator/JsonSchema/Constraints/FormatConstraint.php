@@ -24,13 +24,17 @@
 
 namespace API\Validator\JsonSchema\Constraints;
 
-use JsonSchema;
 use Ramsey\Uuid\Uuid;
+
+use JsonSchema\ConstraintError;
+use JsonSchema\Constraints\FormatConstraint as JsonSchemaConstraint;
+use JsonSchema\Entity\JsonPointer;
+
 
 /**
  * Validates against the 'format' property
  */
-class FormatConstraint extends JsonSchema\Constraints\FormatConstraint
+class FormatConstraint extends JsonSchemaConstraint
 {
     /**
      * Invokes the validation of an element
@@ -41,7 +45,7 @@ class FormatConstraint extends JsonSchema\Constraints\FormatConstraint
      * @param mixed            $i
      * @throws \JsonSchema\Exception\ExceptionInterface
      */
-    public function check($element, $schema = null, JsonSchema\Entity\JsonPointer $path = null, $i = null)
+    public function check(&$element, $schema = null, ?JsonPointer $path = null, $i = null): void
     {
 
         if (!isset($schema->format)) {
@@ -58,20 +62,32 @@ class FormatConstraint extends JsonSchema\Constraints\FormatConstraint
                     $parsed = parse_url($element);
                     // PHP FILTER_VALIDATE_URL covers only rfc2396, non-ansi characters will fail (i.e. https://fa.wikipedia.org/wiki/یوآرآی)
                     if (false === $parsed) {
-                        parent::addError($path, 'Invalid  RFC 3987 IRI format', 'format', [ 'format' => $schema->format ]);
+                        $this->addError(ConstraintError::FORMAT_URL(), $path, [
+                            'value' => $element,
+                            'format' => $schema->format,
+                            'reason'=>  'Invalid  RFC 3987 IRI format',
+                        ]);
                     }
 
                     $scheme = (isset($parsed['scheme'])) ? $parsed['scheme'] : null;
 
                     // empty scheme requires host: //example.org/scheme-relative/URI/with/absolute/path/to/resource)
                     if (!$scheme && empty($parsed['host'])) {
-                        parent::addError($path, 'Invalid  RFC 3987 IRI format', 'format', [ 'format' => $schema->format ]);
+                        $this->addError(ConstraintError::FORMAT_URL(), $path, [
+                            'value' => $element,
+                            'format' => $schema->format,
+                            'reason'=>  'Invalid  RFC 3987 IRI format',
+                        ]);
                     }
 
                     // urn:ISSN:1535-3613
                     if ($scheme) {
                         if($scheme === 'urn' && empty($parsed['path'])) {
-                            parent::addError($path, 'Invalid  RFC 3987 IRI format', 'format', [ 'format' => $schema->format ]);
+                            $this->addError(ConstraintError::FORMAT_URL(), $path, [
+                                'value' => $element,
+                                'format' => $schema->format,
+                                'reason'=>  'Invalid  RFC 3987 IRI format',
+                            ]);
                         }
                     }
                 }
@@ -79,7 +95,11 @@ class FormatConstraint extends JsonSchema\Constraints\FormatConstraint
 
             case 'uuid':
                 if (!Uuid::isValid($element)) {
-                    $this->addError($path, 'Invalid UUID', 'format', [ 'format' => $schema->format ]);
+                    $this->addError(ConstraintError::REQUIRED(), $path, [
+                        'value' => $element,
+                        'format' => $schema->format,
+                        'reason'=>   'Invalid UUID',
+                    ]);
                 }
             break;
 

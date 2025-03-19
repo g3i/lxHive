@@ -136,6 +136,10 @@ Default file storage structure:
 
 * [Instructions](benchmarks/readme.md)
 
+### Docker
+
+* [Instructions](docker/Readme.md)
+
 ## 4. Contributors
 
 The [G3 International](https://g3i.com.au/) team

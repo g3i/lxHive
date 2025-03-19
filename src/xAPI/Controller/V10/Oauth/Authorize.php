@@ -67,10 +67,11 @@ class Authorize extends Controller
             return $this->response(Controller::STATUS_OK, $view);
         } else {
             // Redirect to login
-            $redirectUrl = $this->getContainer()->get('url');
-            $redirectUrl->getPath()->remove('authorize');
-            $redirectUrl->getPath()->append('login');
-            $this->setResponse($this->getResponse()->withHeader('Location', $redirectUrl));
+
+            $redirectUrl = $this->getContainer()->get('request')->getUri();
+            $path = str_replace('authorize', 'login', $redirectUrl->getPath());
+            $redirectUrl = $redirectUrl->withPath($path);
+            $this->setResponse($this->getResponse()->withHeader('Location', (string) $redirectUrl));
             return $this->response(Controller::STATUS_FOUND);
         }
     }

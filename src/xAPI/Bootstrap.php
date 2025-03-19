@@ -25,22 +25,31 @@
 namespace API;
 
 use Monolog\Logger;
+use Slim\App as SlimApp;
+use Slim\DefaultServicesProvider;
+
 use Symfony\Component\Yaml\Parser as YamlParser;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Twig\Extension\DebugExtension as TwigDebugExtension;
+
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnableToReadFile as FileNotFoundException;
+
+use API\Config;
 use API\Controller;
-use League\Url\Url;
+use API\Controller\Error;
+use API\Parser\RequestParser;
+
 use API\Util\Collection;
-use API\Service\Auth\OAuth as OAuthService;
-use API\Service\Auth\Basic as BasicAuthService;
+use API\Util\Versioning;
+use API\Console\Application as CliApp;
+
 use API\Service\Log as LogService;
 use API\Service\Auth as AuthService;
-use API\Parser\PsrRequest as PsrRequestParser;
+use API\Service\Auth\OAuth as OAuthService;
+use API\Service\Auth\Basic as BasicAuthService;
 use API\Service\Auth\Exception as AuthFailureException;
-use API\Util\Versioning;
-use Slim\DefaultServicesProvider;
-use Slim\App as SlimApp;
-use API\Controller\Error;
-use API\Config;
-use API\Console\Application as CliApp;
 
 /**
  * Bootstrap lxHive
@@ -96,10 +105,11 @@ class Bootstrap
      * | Bootstrap::Web     | x        | x         | x         | x          | no            | default: run web app  |
      *
      * @param  int $mode Bootstrap mode constant
+     * @param array config merge/overwrite values (test mode only)
      * @return void
      * @throw AppInitException
      */
-    public static function factory($mode)
+    public static function factory($mode, $testConfig=[])
     {
         if (self::$containerInstantiated) {
             // modes test and none (admin,etc) shall pass
@@ -134,7 +144,7 @@ class Bootstrap
             }
 
             case self::Testing: {
-                $bootstrap->initConfig();
+                $bootstrap->initConfig($testConfig);
                 $container = $bootstrap->initGenericContainer();
                 self::$containerInstance = $container;
                 self::$containerInstantiated = true;
@@ -198,7 +208,7 @@ class Bootstrap
 
     /**
      * Get service container
-     * @return \Interop\Container\ContainerInterface|null
+     * @return \Psr\Container\ContainerInterface|null
      */
     public static function getContainer()
     {
@@ -207,10 +217,12 @@ class Bootstrap
 
     /**
      * Initialize default configuration and load services
+     * @param array config merge/overwrite values (test mode only)
+     *
      * @return \Psr\Container\ContainerInterface service container
      * @throws AppInitException if self::$mode > self::None
      */
-    public function initConfig()
+    public function initConfig($testConfig=[])
     {
         // Defaults
         $appRoot = realpath(__DIR__.'/../../');
@@ -221,13 +233,13 @@ class Bootstrap
 
         Config::factory($defaults);
 
-        $filesystem = new \League\Flysystem\Filesystem(new \League\Flysystem\Adapter\Local($appRoot));
+        $filesystem = new Filesystem(new LocalFilesystemAdapter($appRoot));
         $yamlParser = new YamlParser();
 
         try {
             $contents = $filesystem->read('src/xAPI/Config/Config.yml');
             $config = $yamlParser->parse($contents);
-        } catch (\League\Flysystem\FileNotFoundException $e) {
+        } catch (FileNotFoundException $e) {
             if (self::$mode === self::None) {
                 return;
             } else {
@@ -239,13 +251,17 @@ class Bootstrap
         try {
             $contents = $filesystem->read('src/xAPI/Config/Config.' . $config['mode'] . '.yml');
             $config = array_merge($config, $yamlParser->parse($contents));
-        } catch (\League\Flysystem\FileNotFoundException $e) {
+        } catch (FileNotFoundException $e) {
             // Ignore exception
         }
 
         // ad-hoc db for unit test @see phpunit.xml
+        // #238 allow overwriting config properties inside unittests
         if (defined('LXHIVE_UNITTEST')) {
             $config['storage']['Mongo']['db_name'] = 'LXHIVE_UNITTEST';
+            if ($testConfig) {
+                $config = array_merge($config, $testConfig);
+            }
         }
 
         Config::merge($config);
@@ -293,67 +309,67 @@ class Bootstrap
 
         // 4. Set up Slim services
         /*
-            * Slim\App expects a container that implements Interop\Container\ContainerInterface
-            * with these service keys configured and ready for use:
-            *
-            *  - settings: an array or instance of \ArrayAccess
-            *  - environment: an instance of \Slim\Interfaces\Http\EnvironmentInterface
-            *  - request: an instance of \Psr\Http\Message\ServerRequestInterface
-            *  - response: an instance of \Psr\Http\Message\ResponseInterface
-            *  - router: an instance of \Slim\Interfaces\RouterInterface
-            *  - foundHandler: an instance of \Slim\Interfaces\InvocationStrategyInterface
-            *  - errorHandler: a callable with the signature: function($request, $response, $exception)
-            *  - notFoundHandler: a callable with the signature: function($request, $response)
-            *  - notAllowedHandler: a callable with the signature: function($request, $response, $allowedHttpMethods)
-            *  - callableResolver: an instance of \Slim\Interfaces\CallableResolverInterface
+           * Slim\App expects a container that implements Psr\Container\ContainerInterface
+           * with these service keys configured and ready for use:
+           *
+           *  `settings`          an array or instance of \ArrayAccess
+           *  `environment`       an instance of \Slim\Http\Environment
+           *  `request`           an instance of \Psr\Http\Message\ServerRequestInterface
+           *  `response`          an instance of \Psr\Http\Message\ResponseInterface
+           *  `router`            an instance of \Slim\Interfaces\RouterInterface
+           *  `foundHandler`      an instance of \Slim\Interfaces\InvocationStrategyInterface
+           *  `errorHandler`      a callable with the signature: function($request, $response, $exception)
+           *  `notFoundHandler`   a callable with the signature: function($request, $response)
+           *  `notAllowedHandler` a callable with the signature: function($request, $response, $allowedHttpMethods)
+           *  `callableResolver`  an instance of \Slim\Interfaces\CallableResolverInterface
         */
         $slimDefaultServiceProvider = new DefaultServicesProvider();
         $slimDefaultServiceProvider->register($container);
 
-        // 5. Insert URL object
-        // TODO 0.11.x: Remove this soon - use PSR-7 request's URI object
-        // TODO 0.10.x: Handle better rather than supressing exceptions when running Unit tests (i.e., create mock ServerEnvironment)
-        try {
-            // #91, TinCan php League\Url::createFromServer throws exception full for uri's in $_SERVER['REQUEST_URI'] and chokes on host label parsing with port TODO: remove an parse native
-            if(strpos($_SERVER['REQUEST_URI'], 'http') === 0) {
-                $container['url'] = Url::createFromUrl($_SERVER['REQUEST_URI']);
-            } else {
-                $container['url'] = Url::createFromServer($_SERVER);
-            }
-        } catch (\RuntimeException $e) {
-            // See comment above
+        $debug = Config::get('debug', false);
+        if ($container->has('settings')) {
+            $container['settings']['displayErrorDetails'] = $debug;
         }
 
-        $handlerConfig = Config::get(['log', 'handlers']);
-        $stream = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
-
-        if (null === $handlerConfig) {
-            $handlerConfig = ['ErrorLogHandler'];
-        }
+        $handlerConfig = Config::get(['log', 'handlers'], ['ErrorLogHandler']);
+        $defaultLevel = Config::get(['log', 'level'], Logger::DEBUG);
+        $defaultLog = $appRoot.'/storage/logs/' . Config::get('mode') . '.' . date('Y-m-d') . '.log';
 
         $logger = new Logger('web');
-
-        $formatter = new \Monolog\Formatter\LineFormatter();
+        $formatter = new \Monolog\Formatter\LineFormatter("[%datetime%][%channel%][%level_name%]: %message% %context% %extra%\n", null, true, true);
 
         // Set up logging
         if (in_array('FirePHPHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\FirePHPHandler();
+            $level = Config::get(['log', 'FirePHPHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\FirePHPHandler($level);
             $logger->pushHandler($handler);
         }
 
         if (in_array('ChromePHPHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\ChromePHPHandler();
+            $level = Config::get(['log', 'ChromePHPHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\ChromePHPHandler($level);
             $logger->pushHandler($handler);
         }
 
         if (in_array('StreamHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\StreamHandler($stream);
+            $level = Config::get(['log', 'StreamHandler', 'level'], $defaultLevel);
+            $stream = Config::get(['log', 'StreamHandler', 'stream'], $defaultLog);
+
+            $handler = new \Monolog\Handler\StreamHandler($stream, $level);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
         }
 
         if (in_array('ErrorLogHandler', $handlerConfig)) {
-            $handler = new \Monolog\Handler\ErrorLogHandler();
+            $errorLog = Config::get(['log', 'ErrorLogHandler', 'error_log']);
+            if ($errorLog) {
+                // @see https://www.php.net/manual/en/errorfunc.configuration.php#ini.error-log
+                ini_set('log_errors', 1); // not set in ErrorLogHandler
+                ini_set('error_log', ($errorLog == 'default') ? $defaultLog : $errorLog);
+            }
+
+            $level = Config::get(['log', 'ErrorLogHandler', 'level'], $defaultLevel);
+            $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
         }
@@ -390,11 +406,11 @@ class Bootstrap
             };
         };
 
-        $container['eventDispatcher'] = new \Symfony\Component\EventDispatcher\EventDispatcher();
+        $container['eventDispatcher'] = new EventDispatcher();
 
         // Parser
         $container['parser'] = function ($container) {
-            $parser = new PsrRequestParser($container['request']);
+            $parser = new RequestParser($container['request']);
 
             return $parser;
         };
@@ -410,10 +426,10 @@ class Bootstrap
         // Merge in specific Web settings
         $container['view'] = function ($c) {
             $view = new \Slim\Views\Twig(dirname(__FILE__).'/View/V10/OAuth/Templates', [
-                'debug' => 'true',
+                'debug' => $debug,
                 'cache' => Config::get('appRoot').'/storage/.cache',
             ]);
-            $twigDebug = new \Twig_Extension_Debug();
+            $twigDebug = new TwigDebugExtension();
             $view->addExtension($twigDebug);
 
             return $view;
@@ -530,7 +546,6 @@ class Bootstrap
         }
 
         $container = self::$containerInstance;
-
         $app = new SlimApp($container);
 
         // Slim parser override and CORS compatibility layer (Internet Explorer)

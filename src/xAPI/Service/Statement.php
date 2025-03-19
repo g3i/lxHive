@@ -24,10 +24,11 @@
 
 namespace API\Service;
 
-use API\Service;
-use API\HttpException as Exception;
+use API\Util;
 use API\Config;
+use API\Service;
 use API\Controller;
+use API\HttpException as Exception;
 
 class Statement extends Service
 {
@@ -38,7 +39,7 @@ class Statement extends Service
      */
     public function statementGet()
     {
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
 
         $statementResult = $this->getStorage()->getStatementStorage()->get($parameters);
 
@@ -77,7 +78,7 @@ class Statement extends Service
 
                 $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
-                $fsAdapter->put($hash, $attachmentBody);
+                $fsAdapter->write($hash, $attachmentBody);
             }
         }
 
@@ -125,12 +126,12 @@ class Statement extends Service
 
                 $this->getStorage()->getAttachmentStorage()->store($hash, $contentType);
 
-                $fsAdapter->put($hash, $attachmentBody);
+                $fsAdapter->write($hash, $attachmentBody);
             }
         }
 
         // Single
-        $parameters = $this->getContainer()->get('parser')->getData()->getParameters();
+        $parameters = $this->getContainer()->get('parser')->getData()->getQueryParams();
         $body = $this->getContainer()->get('parser')->getData()->getPayload();
 
         $statementResult = $this->getStorage()->getStatementStorage()->put($parameters, $body);
@@ -148,7 +149,8 @@ class Statement extends Service
     private function validateJsonMediaType($jsonRequest)
     {
         // TODO 0.11.x: Possibly validate this using GraphQL
-        if (strpos($jsonRequest->getHeaders()['content-type'][0], 'application/json') !== 0) {
+        $ctype = $jsonRequest->getHeaders()['content-type'][0];
+        if (! Util\Parser::isApplicationJson($ctype)) {
             throw new Exception('Media type specified in Content-Type header must be \'application/json\'!', Controller::STATUS_BAD_REQUEST);
         }
     }

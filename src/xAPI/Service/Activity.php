@@ -25,7 +25,6 @@
 namespace API\Service;
 
 use API\Service;
-use API\Util\Collection;
 
 class Activity extends Service
 {
@@ -39,10 +38,9 @@ class Activity extends Service
     public function activityGet()
     {
         $request = $this->getContainer()->get('parser')->getData();
-        $params = new Collection($request->getParameters());
+        $id = $request->getQueryParam('activityId');
 
-        $activityDocument = $this->getStorage()->getActivityStorage()->fetchById($params->get('activityId'));
-
+        $activityDocument = $this->getStorage()->getActivityStorage()->fetchById($id);
         return $activityDocument;
     }
 }

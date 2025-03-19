@@ -16,7 +16,7 @@ class UserTest extends MongoTestCase
     private static $userObjectId = null;
     private static $userEmail = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->collection = User::COLLECTION_NAME;
     }
@@ -43,7 +43,11 @@ class UserTest extends MongoTestCase
         $indexes = $this->command([
             'listIndexes' => $this->collection
         ])->toArray();
-        $configured = array_keys($coll->getIndexes());
+
+        $configured = array_map(function($i) {
+            return $i['name'];
+        }, $coll->getIndexes());
+
         $installed = array_map(function($i) {
             return $i->name;
         }, $indexes);

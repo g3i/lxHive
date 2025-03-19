@@ -24,7 +24,7 @@
 
 namespace API;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 trait BaseTrait
 {

@@ -6,10 +6,13 @@ src/xAPI/Config/*.yml
 !src/xAPI/Config/Templates/*.yml
 
 # file storage
-storage/logs/*
-storage/files/*
-storage/.cache/*
+storage/*
 cache/*
+.cache/*
+*.cache
+
+# data
+data/*
 
 # doc generator
 sami.phar
@@ -33,9 +36,11 @@ htrouter.phar
 sftp-config.json
 .DS_Store
 dev/*
+dev.*
 
 # linting, code standards
 .php_cs.cache
 phplint.sh
 
 src/xAPI/View/V10/OAuth/Templates/*
+logrotate.conf

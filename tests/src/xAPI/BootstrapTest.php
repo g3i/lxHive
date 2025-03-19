@@ -3,16 +3,39 @@ namespace Tests\API;
 
 use Tests\TestCase;
 
-use API\Bootstrap;
 use API\Config;
+use API\Bootstrap;
 use API\AppInitException;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\FirePHPHandler;
 
 class BootstrapTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         Bootstrap::factory(Bootstrap::None);
         Bootstrap::reset();
+        $this->files = [];
+    }
+
+    protected function tearDown(): void
+    {
+        foreach($this->files as $fp) {
+            if (file_exists($fp)) {
+                unlink($fp);
+            }
+        }
+    }
+
+    private function registerFile($fp)
+    {
+        if (!in_array($fp, $this->files)) {
+            $this->files[] = $fp;
+        }
+        return $fp;
     }
 
     public function testConstructorIsNotPublic()
@@ -238,4 +261,167 @@ class BootstrapTest extends TestCase
         $this->expectException(AppInitException::class);
         Config::all();
     }
+
+    ////
+    // Logging
+    ////
+
+    public function test_log_level_global_level()
+    {
+        $overwrite = [
+            'log' =>  [
+                'handlers'=> ['StreamHandler', 'ErrorLogHandler'],
+                'level' => 'WARNING',
+            ],
+        ];
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
+        $logger = $bootstrap->initWebContainer()->get('logger');
+
+        $tick = 0;
+        $handlers = $logger->getHandlers();
+        foreach($handlers as $handler) {
+            if ($handler instanceof StreamHandler) {
+                // custom level
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
+                $tick++;
+            }
+            if ($handler instanceof ErrorLogHandler) {
+                // default level
+                $this->assertEquals($handler->getLevel()->value, Logger::WARNING);
+                $tick++;
+            }
+        }
+        $this->assertEquals($tick, 2, 'all handlers were tested');
+    }
+
+    public function test_log_level_individual_level()
+    {
+        $overwrite = [
+            'log' =>  [
+                'handlers'=> ['StreamHandler', 'ErrorLogHandler', 'FirePHPHandler'],
+                'level' => 'ERROR',
+                'StreamHandler' => [
+                    'level' => 'NOTICE',
+                ],
+                'ErrorLogHandler' => [
+                    'level' => 'WARNING',
+                ],
+            ],
+        ];
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
+        $logger = $bootstrap->initWebContainer()->get('logger');
+
+        $handlers = $logger->getHandlers();
+        $tick = 0;
+        foreach($handlers as $handler) {
+            $level = $handler->getLevel()->value;
+            // $name = $logger->getLevelName($level);
+
+            if ($handler instanceof StreamHandler) {
+                // custom level
+                $this->assertEquals($level, Logger::NOTICE);
+                $tick++;
+            }
+            if ($handler instanceof ErrorLogHandler) {
+                // default level
+                $this->assertEquals($level, Logger::WARNING);
+                $tick++;
+            }
+            if ($handler instanceof FirePHPHandler) {
+                // default level
+                $this->assertEquals($level, Logger::ERROR);
+                $tick++;
+            }
+        }
+        $this->assertEquals($tick, 3, 'all handlers were tested');
+    }
+
+    public function test_log_StreamHandler_stream()
+    {
+        $token = '--'.time().'--';
+
+        $logFile = $this->registerFile('/tmp/'.__FUNCTION__.'.log');
+        $overwrite = [
+            'log' =>  [
+                'handlers'=> ['StreamHandler'],
+                'StreamHandler' => [
+                    'stream' => $logFile,
+                ],
+            ],
+        ];
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
+        $logger = $bootstrap->initWebContainer()->get('logger');
+
+        $logger->error('The time is '.$token);
+
+        $this->assertEquals(Config::get(['log', 'StreamHandler', 'stream']), $logFile);
+        $this->assertFileExists($logFile);
+
+        $contents = file_get_contents($logFile);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
+    }
+
+    public function test_log_ErrorLogHandler_error_log()
+    {
+        $token = '--'.time().'--';
+
+        $logFile = $this->registerFile('/tmp/'.__FUNCTION__.'.log');
+        $overwrite = [
+            'log' =>  [
+                'handlers'=> ['ErrorLogHandler'],
+                'ErrorLogHandler' => [
+                    'error_log' => $logFile,
+                ],
+            ],
+        ];
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
+        $logger = $bootstrap->initWebContainer()->get('logger');
+
+        $logger->error('The time is '.$token);
+        // print("\n => logFile: ".$logFile."\n".file_get_contents($logFile)."\n");
+
+        $this->assertEquals(Config::get(['log', 'ErrorLogHandler', 'error_log']), $logFile);
+        $this->assertFileExists($logFile);
+
+        $contents = file_get_contents($logFile);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
+    }
+
+    /**
+     * Error 'error_log: default' sets ini error_log to defaultLog
+     *
+     * @see Bootstrap::initWebContainer()
+     */
+    public function test_log_ErrorLogHandler_error_log_default()
+    {
+        $token = '--'.time().'--';
+        $logFileBefore = ini_get('error_log');
+
+        $overwrite = [
+            'log' =>  [
+                'handlers'=> ['ErrorLogHandler'],
+                'ErrorLogHandler' => [
+                    'error_log' => 'default',
+                ],
+            ],
+        ];
+
+        $bootstrap = Bootstrap::factory(Bootstrap::Testing, $overwrite);
+        $logger = $bootstrap->initWebContainer()->get('logger');
+        $logFile = ini_get('error_log');
+
+        $logger->error('The time is '.$token);
+
+        $this->assertNotEquals($logFile, $logFileBefore);
+        $this->assertNotEquals($logFile, 'default');
+        $this->assertFileExists($logFile);
+
+        $contents = file_get_contents($logFile);
+        $this->assertStringContainsString($token, $contents, 'contains log message');
+    }
+
 }

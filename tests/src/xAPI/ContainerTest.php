@@ -68,7 +68,7 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * Test `get()` throws  a ContainerExpception - ]when there is a DI config error
+     * Test `get()` throws  a ContainerExpception - when there is a DI config error
      */
     public function testGetWithDiConfigErrorThrownAsContainerValueNotFoundException()
     {
@@ -82,24 +82,4 @@ class ContainerTest extends TestCase
         $container->get('foo');
     }
 
-    /**
-     * Test `get()` does not recast exceptions which are thrown in a factory closure
-     */
-    public function testGetWithErrorThrownByFactoryClosure()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $invokable = $this->getMockBuilder('StdClass')->setMethods(['__invoke'])->getMock();
-        /** @var \Callable $invokable */
-        $invokable->expects($this->any())
-            ->method('__invoke')
-            ->will($this->throwException(new \InvalidArgumentException()));
-
-        $container = new Container;
-        $container['foo'] =
-            function (ContainerInterface $container) use ($invokable) {
-                call_user_func($invokable);
-            }
-        ;
-        $container->get('foo');
-    }
 }

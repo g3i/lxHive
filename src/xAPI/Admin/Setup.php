@@ -57,7 +57,42 @@ class Setup
         if (!Bootstrap::mode()) {
             $bootstrap = Bootstrap::factory(Bootstrap::Config);
         }
-        $this->configDir = Config::get('appRoot').'/src/xAPI/Config/';
+        $this->configDir = Config::get('appRoot').'/src/xAPI/Config';
+    }
+
+    /**
+     * Loads a config yml from a given path
+     * @param string $yaml yaml file to be created from template
+     * @returns array $data associative array of parsed data
+     *
+     * @return array $data
+     * @throws AdminException
+     */
+    public static function loadYamlFile($path)
+    {
+        $contents = false;
+
+        // calling is_file() beforehand prevents any funny remote file business (i.e. https://suspicious.hack/Config.yml)
+        if (is_file($path)) {
+            $contents = file_get_contents($path);
+        }
+
+        if (false === $contents) {
+            throw new AdminException('Error reading file `'.$path.'`. Make sure the file exists and is readable.');
+        }
+
+        try {
+            $data = Yaml::parse($contents, true);
+        } catch (\Exception $e) {
+            // @see \Symfony\Component\Yaml\Yaml::parse()
+            throw new AdminException('Error parsing data from file `'.$path.'`');
+        }
+
+        if (!$data) {
+            throw new AdminException('Error parsing data from file `'.$path.'`: Empty data.');
+        }
+
+        return $data;
     }
 
     /**
@@ -86,24 +121,7 @@ class Setup
         if (false === $file) {
             throw new AdminException('File `'.$yml.'` not found.');
         }
-
-        $contents = file_get_contents($file);
-        if (false === $contents) {
-            throw new AdminException('Error reading file `'.$yml.'`. Make sure the file exists and is readable.');
-        }
-
-        try {
-            $data = Yaml::parse($contents, true);
-        } catch (\Exception $e) {
-            // @see \Symfony\Component\Yaml\Yaml::parse()
-            throw new AdminException('Error parsing data from file `'.$yml.'`');
-        }
-
-        if (!$data) {
-            throw new AdminException('Error parsing data from file `'.$yml.'`: Empty data.');
-        }
-
-        return $data;
+        return self::loadYamlFile($file);
     }
 
     /**
@@ -242,6 +260,29 @@ class Setup
         }
     }
 
+    /**
+     * Sets up default Configuration files
+     *
+     * @return array config file names
+     * @throws \Exception
+     */
+    public function installDefaultConfig()
+    {
+        $files = [];
+
+        $this->installYaml('Config.yml');
+        $files[] = 'Config.yml';
+
+        $this->removeYaml('Config.production.yml');
+        $this->installYaml('Config.production.yml');
+        $files[] = 'Config.production.yml';
+
+        $this->removeYaml('Config.development.yml');
+        $this->installYaml('Config.development.yml');
+        $files[] = 'Config.development.yml';
+
+        return $files;
+    }
 
     /**
      * Creates writable storage directories for files (attachments) and logs
@@ -271,6 +312,11 @@ class Setup
             throw new AdminException('Unable to create folder: '.$dir);
         }
 
+        $dir = $root.'/storage/logs';
+        if (false === $this->createStorageDir($dir)) {
+            throw new AdminException('Unable to create folder: '.$dir);
+        }
+
         return new \SplFileInfo($root.'/storage');
     }
 
@@ -285,6 +331,6 @@ class Setup
         if (is_dir($dir)) {
             return true;
         }
-        return @mkdir($dir, 0755);// surpress PHP warning in console output
+        return @mkdir($dir, 0755);// supress PHP warning in console output
     }
 }

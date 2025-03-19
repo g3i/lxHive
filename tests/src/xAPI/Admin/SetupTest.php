@@ -11,7 +11,7 @@ class SetupTest extends TestCase
 {
     const ConfigDir = './src/xAPI/Config/';
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         if (!is_writable(self::ConfigDir)) {
             throw new \RuntimeException(self::ConfigDir.' is not a writable directory.');
@@ -19,7 +19,7 @@ class SetupTest extends TestCase
     }
 
     // cleanup after tests
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists(self::ConfigDir.'UnitTest.yml')) {
             unlink(self::ConfigDir.'UnitTest.yml');
@@ -41,6 +41,43 @@ class SetupTest extends TestCase
         touch(self::ConfigDir.'UnitTest.yml');
         $file = $admin->locateYaml('UnitTest.yml');
         $this->assertStringEndsWith('/UnitTest.yml', $file);
+    }
+
+    public function testloadYamlFile()
+    {
+        $external = dirname(__FILE__).'/ExternalYaml.yml';
+        $data = Setup::loadYamlFile($external);
+
+        $this->assertTrue(is_array($data));
+        $this->assertGreaterThan(0, count($data));
+        $this->assertEquals($data['name'], 'external');
+    }
+
+    public function testloadYamlFileNotFound()
+    {
+        $this->expectException(AdminException::class);
+        Setup::loadYamlFile('InvalidUnitTest.yml');
+    }
+
+    public function testLoadYamlFileInvalidJson()
+    {
+        $this->expectException(AdminException::class);
+        $external = dirname(__FILE__).'/ExternalYaml.Invalid.yml';
+        $data = Setup::loadYamlFile($external);
+    }
+
+    public function testLoadYamlFileEmptyData()
+    {
+        $this->expectException(AdminException::class);
+        $external = dirname(__FILE__).'/ExternalYaml.Empty.yml';
+        $data = Setup::loadYamlFile($external);
+    }
+
+    public function testLoadYamlNoHttp()
+    {
+        $this->expectException(AdminException::class);
+        $external = 'https://www.php.net'; // throw before reaching file_get_contents()
+        $data = Setup::loadYamlFile($external);
     }
 
     /**

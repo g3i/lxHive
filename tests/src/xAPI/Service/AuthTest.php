@@ -17,7 +17,7 @@ class AuthTest extends TestCase
     private $mockScopes = null;
     private $container = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         if(!$this->mockScopes) {
             $this->mockScopes = json_decode(file_get_contents(dirname(__FILE__).'/mock_config_supported_auth_scopes.json'), true);
@@ -48,8 +48,11 @@ class AuthTest extends TestCase
 
     public function testMockAuthScopes()
     {
+        $scopes = ['test', 'anothertest'];
+
         $aut = new Auth($this->container);
-        $aut->mockAuthScopes($this->mockScopes);
+        $aut->mockAuthScopes($scopes);
+        $this->assertEquals($aut->getAuthScopes(), $scopes);
     }
 
     public function testMockAuthScopesThrowsRunTimeExceptionIfBootstrapMode()

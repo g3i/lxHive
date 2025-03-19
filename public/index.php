@@ -25,6 +25,10 @@
 // Require the autoloader
 require __DIR__.'/../vendor/autoload.php';
 
+// #241 suppress deprecated warnings (Slim 3)
+error_reporting(E_ALL ^ E_DEPRECATED);
+ini_set('display_errors', '0');
+
 use API\Bootstrap;
 
 $bootstrapper = Bootstrap::factory(Bootstrap::Web);

@@ -62,7 +62,7 @@ class BasicTokenCreateCommand extends Command
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $authAdmin = new Auth($this->getContainer());
         $userAdmin = new User($this->getContainer());
@@ -120,7 +120,7 @@ class BasicTokenCreateCommand extends Command
             $email = $helper->ask($input, $output, $question);
             if ('exit' === $email) {
                 $output->writeln('<error>Process aborted by user.</error>');
-                return 0;
+                return Command::SUCCESS;
             }
         } else {
             $email = $input->getOption('email');
@@ -192,5 +192,7 @@ class BasicTokenCreateCommand extends Command
         $output->writeln('<info>Basic token successfully created!</info>');
         $output->writeln('<info>Info:</info>');
         $output->writeln($text);
+
+        return Command::SUCCESS;
     }
 }

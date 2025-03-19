@@ -435,7 +435,8 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
     {
         $storage = $this->getContainer()->get('storage');
 
-        $attachmentBase = $this->getContainer()->get('url')->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
+        $uri = $this->getContainer()->get('request')->getUri();
+        $attachmentBase = $uri->getBaseUrl().Config::get(['filesystem', 'exposed_url']);
 
         if (isset($statementObject->{'id'})) {
             $expression = $storage->createExpression();
@@ -581,7 +582,7 @@ class Statement extends Provider implements StatementInterface, SchemaInterface
             // Check for match
             $this->validateStatementIdMatch(Util\xAPI::normalizeUuid($statementObject->id), Util\xAPI::normalizeUuid($parameters['statementId']));
         } else {
-            $statementObject->id = Util\xAPI::normalizeUuid($parameters->get('statementId'));
+            $statementObject->id = Util\xAPI::normalizeUuid($parameters['statementId']);
         }
 
         $statementDocument = $this->insertOne($statementObject);

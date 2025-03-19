@@ -90,7 +90,7 @@ class SetupCommand extends SymfonyCommand
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -114,6 +114,8 @@ class SetupCommand extends SymfonyCommand
         $io->success('Setup complete!');
         $io->text('<info> --> </info> NEXT: Create your first user with <comment>./X user:create</comment>');
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 
     /**
@@ -139,20 +141,8 @@ class SetupCommand extends SymfonyCommand
      */
     private function ioCheckConfig($io)
     {
-        $msg = [];
-
-        $this->setup->installYaml('Config.yml');
-        $msg[] = 'Config.yml installed';
-
-        $this->setup->removeYaml('Config.production.yml');
-        $this->setup->installYaml('Config.production.yml');
-        $msg[] = 'Config.production.yml installed';
-
-        $this->setup->removeYaml('Config.development.yml');
-        $this->setup->installYaml('Config.development.yml');
-        $msg[] = 'Config.development.yml installed';
-
-        $io->listing($msg);
+        $configs = $this->setup->installDefaultConfig();
+        $io->listing($configs);
     }
 
     /**

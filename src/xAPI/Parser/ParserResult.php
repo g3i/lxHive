@@ -32,41 +32,53 @@ class ParserResult
     /**
      * @var array request params
      */
-    public $parameters;
+    protected $queryParams;
     /**
      * @var array request headers
      */
-    public $headers;
+    protected $headers;
 
     /**
      * @var string request payload (JSON)
      */
-    public $rawPayload;
+    protected $rawPayload;
 
     /**
      * @var object|array parsed json data
      */
-    public $payload;
+    protected $payload;
 
     /**
-     * Get request parameters
+     * Get request queryParams
      * @return array
      */
-    public function getParameters()
+    public function getQueryParams()
     {
-        return $this->parameters;
+        return ($this->queryParams) ? $this->queryParams : [];
     }
 
     /**
-     * Set (parsed) request parameters.
-     * @param  array $parameters
+     * Set (parsed) request queryParams.
+     * @param  array $queryParams
      * @return self
      */
-    public function setParameters($parameters)
+    public function setQueryParams($queryParams)
     {
-        $this->parameters = $parameters;
-
+        $this->queryParams = $queryParams;
         return $this;
+    }
+
+    /**
+     * Fetch request parameter value
+     * @param  string $key     The parameter key.
+     * @param  mixed  $default The default value.
+     *
+     * @return mixed
+     */
+    public function getQueryParam($key, $default = '')
+    {
+        $params = $this->getQueryParams();
+        return (isset($params[$key])) ? $params[$key] : $default;
     }
 
     /**
@@ -75,7 +87,20 @@ class ParserResult
      */
     public function getHeaders()
     {
-        return $this->headers;
+        return ($this->headers) ? $this->headers : [];
+    }
+
+    /**
+     * Fetch request header value
+     * @param  string $key     The parameter key.
+     * @param  mixed  $default The default value.
+     *
+     * @return mixed
+     */
+    public function getHeader($key, $default = '')
+    {
+        $headers = $this->getHeaders();
+        return (isset($headers[$key])) ? $headers[$key] : $default;
     }
 
     /**
@@ -112,7 +137,7 @@ class ParserResult
     }
 
     /**
-     * Gets (parsed) )payload.
+     * Gets (parsed) payload.
      * @return array|object
      */
     public function getPayload()

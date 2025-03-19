@@ -65,14 +65,18 @@ class Statements extends View
     {
         if ($statementResult->getHasMore() && !empty($idArray)) {//TODO @sraka1 temporary fix for https://github.com/g3i/lxHive-Internal/issues/229
             $latestId = end($idArray);
-            $latestId = $latestId->__toString();
+            $latestId = (string) $latestId;
+
+            $uri = $this->getContainer()->get('request')->getUri();
+
             if ($statementResult->getSortDescending()) {
-                // TODO 0.11.x: Moving away from existing URL library, this code will need to be modified
-                $this->getContainer()->get('url')->getQuery()->modify(['until_id' => $latestId]);
+                $uri = $uri->withQuery('until_id='.$latestId);
             } else { //Ascending
-                $this->getContainer()->get('url')->getQuery()->modify(['since_id' => $latestId]);
+                $uri = $uri->withQuery('since_id='.$latestId);
             }
-            return $this->getContainer()->get('url')->getRelativeUrl();
+
+            $relativeUri = $uri->withScheme('')->withHost('')->withUserInfo('')->withPort(null);
+            return (string) $relativeUri;
         } else {
             return '';
         }
